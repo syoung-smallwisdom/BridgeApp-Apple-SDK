@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>appGroupIdentifier</key>
+	<string>group.org.sagebase.BridgeAppSDK</string>
+	<key>studyIdentifier</key>
+	<string>sample-study</string>
+	<key>certificateName</key>
+	<string>sample-study</string>
+	<key>emailForLoginViaExternalId</key>
+	<string>bridge-testing@sagebase.org</string>
+	<key>appUpdateURL</key>
+	<string>https://notsupported.null</string>
+	<key>cacheDaysBehind</key>
+	<integer>31</integer>
+	<key>cacheDaysAhead</key>
+	<integer>31</integer>
+</dict>
+</plist>
