@@ -1,5 +1,5 @@
 # BridgeApp-Apple-SDK
-Shared code for developing ResearchSuite applications that use [Sage Bionetworks](http://sagebionetworks.org) [Bridge services](https://developer.sagebridge.org).
+Shared code for developing ResearchSuite applications that use [Sage Bionetworks](http://sagebase.org) [Bridge services](https://developer.sagebridge.org).
 
 ## License
 

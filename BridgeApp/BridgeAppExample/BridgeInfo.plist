@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>appGroupIdentifier</key>
-	<string>group.org.sagebase.BridgeAppSDK</string>
+	<string>group.org.sagebase.BridgeAppExample</string>
 	<key>studyIdentifier</key>
 	<string>sample-study</string>
 	<key>certificateName</key>

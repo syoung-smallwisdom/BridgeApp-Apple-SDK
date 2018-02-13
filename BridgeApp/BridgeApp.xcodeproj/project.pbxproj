@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F818E2412032B07E00C538ED /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F818E2402032B07D00C538ED /* README.md */; };
 		F83906FB20325D13005FC0BA /* BridgeInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = F83906FA20325D13005FC0BA /* BridgeInfo.plist */; };
 		F83906FE20325E70005FC0BA /* sample-study.pem in Resources */ = {isa = PBXBuildFile; fileRef = F83906FD20325E70005FC0BA /* sample-study.pem */; };
 		F83B44AF2032467D002825AE /* BridgeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44A52032467D002825AE /* BridgeApp.framework */; };
@@ -167,6 +168,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F818E23F2032AFA500C538ED /* BridgeAppExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BridgeAppExample.entitlements; sourceTree = "<group>"; };
+		F818E2402032B07D00C538ED /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../README.md; sourceTree = "<group>"; };
 		F83906FA20325D13005FC0BA /* BridgeInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BridgeInfo.plist; sourceTree = "<group>"; };
 		F83906FD20325E70005FC0BA /* sample-study.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "sample-study.pem"; sourceTree = "<group>"; };
 		F83B44A52032467D002825AE /* BridgeApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BridgeApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -231,6 +234,7 @@
 		F83906F820325C6D005FC0BA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F818E23F2032AFA500C538ED /* BridgeAppExample.entitlements */,
 				F83906FA20325D13005FC0BA /* BridgeInfo.plist */,
 				F83B451020324A33002825AE /* Info.plist */,
 			);
@@ -278,6 +282,7 @@
 		F83B44A72032467D002825AE /* BridgeApp */ = {
 			isa = PBXGroup;
 			children = (
+				F818E2402032B07D00C538ED /* README.md */,
 				F83B44A82032467D002825AE /* BridgeApp.h */,
 				F83B44A92032467D002825AE /* Info-iOS.plist */,
 			);
@@ -442,6 +447,20 @@
 					F83B450120324A33002825AE = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -571,6 +590,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F818E2412032B07E00C538ED /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -860,6 +880,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BridgeAppExample/BridgeAppExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KA9Z8R6M6K;
 				INFOPLIST_FILE = BridgeAppExample/Info.plist;
@@ -876,6 +897,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BridgeAppExample/BridgeAppExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KA9Z8R6M6K;
 				INFOPLIST_FILE = BridgeAppExample/Info.plist;
