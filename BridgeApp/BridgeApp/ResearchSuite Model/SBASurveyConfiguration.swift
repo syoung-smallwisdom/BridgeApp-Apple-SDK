@@ -1,6 +1,6 @@
 //
-//  BridgeAppTests.swift
-//  BridgeAppTests
+//  SBASurveyConfiguration.swift
+//  BridgeApp (iOS)
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
@@ -31,32 +31,28 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+import Foundation
 
-import XCTest
-@testable import BridgeApp
-
-class BridgeAppTests: XCTestCase {
+/// `SBASurveyConfiguration` is a survey wrapper that can extend the default implementation
+/// of UI/UX handling for all the Bridge surveys used by a given app.
+open class SBASurveyConfiguration : RSDUIActionHandlerObject {
     
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    public static var shared = SBASurveyConfiguration()
+    
+    /// Allow customization of the step type for a given survey element.
+    /// Default returns nil.
+    open func stepType(for step: SBBSurveyElement) -> RSDStepType? {
+        return nil
     }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
+    /// Allows customization of the result instantiated for a given survey element.
+    /// Default returns nil.
+    open func instantiateStepResult(for step: SBBSurveyElement) -> RSDResult? {
+        return nil
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    /// Is the input field optional? Default = `true`.
+    open func isOptional(for inputField: RSDInputField) -> Bool {
+        return true
     }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
 }

@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */; };
+		F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */; };
 		F818E2412032B07E00C538ED /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F818E2402032B07D00C538ED /* README.md */; };
 		F83906FB20325D13005FC0BA /* BridgeInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = F83906FA20325D13005FC0BA /* BridgeInfo.plist */; };
 		F83906FE20325E70005FC0BA /* sample-study.pem in Resources */ = {isa = PBXBuildFile; fileRef = F83906FD20325E70005FC0BA /* sample-study.pem */; };
 		F83B44AF2032467D002825AE /* BridgeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44A52032467D002825AE /* BridgeApp.framework */; };
-		F83B44B42032467D002825AE /* BridgeAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83B44B32032467D002825AE /* BridgeAppTests.swift */; };
 		F83B44B62032467D002825AE /* BridgeApp.h in Headers */ = {isa = PBXBuildFile; fileRef = F83B44A82032467D002825AE /* BridgeApp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F83B44FB203247A7002825AE /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44D42032473D002825AE /* BridgeSDK.framework */; };
 		F83B44FC203247AD002825AE /* ResearchSuiteUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44E32032475F002825AE /* ResearchSuiteUI.framework */; };
@@ -27,6 +28,9 @@
 		F83B451A20324A6B002825AE /* ResearchSuite.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44F22032476F002825AE /* ResearchSuite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F83B451D20324A74002825AE /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44D42032473D002825AE /* BridgeSDK.framework */; };
 		F83B451E20324A74002825AE /* BridgeSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44D42032473D002825AE /* BridgeSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F67692032789800B5CC4B /* StepProtocolTests.swift */; };
+		F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */; };
+		F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -168,6 +172,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurveyRule+RSDSurveyRule.swift"; sourceTree = "<group>"; };
+		F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyNavigationRuleTests.swift; sourceTree = "<group>"; };
 		F818E23F2032AFA500C538ED /* BridgeAppExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BridgeAppExample.entitlements; sourceTree = "<group>"; };
 		F818E2402032B07D00C538ED /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../README.md; sourceTree = "<group>"; };
 		F83906FA20325D13005FC0BA /* BridgeInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BridgeInfo.plist; sourceTree = "<group>"; };
@@ -176,7 +182,6 @@
 		F83B44A82032467D002825AE /* BridgeApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeApp.h; sourceTree = "<group>"; };
 		F83B44A92032467D002825AE /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
 		F83B44AE2032467D002825AE /* BridgeAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BridgeAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F83B44B32032467D002825AE /* BridgeAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeAppTests.swift; sourceTree = "<group>"; };
 		F83B44B52032467D002825AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F83B44C12032473D002825AE /* BridgeSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BridgeSDK.xcodeproj; path = "../Bridge-iOS-SDK/BridgeSDK.xcodeproj"; sourceTree = "<group>"; };
 		F83B44DB2032475F002825AE /* ResearchSuiteUI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ResearchSuiteUI.xcodeproj; path = ../SageResearch/ResearchSuiteUI/ResearchSuiteUI.xcodeproj; sourceTree = "<group>"; };
@@ -188,6 +193,9 @@
 		F83B450B20324A33002825AE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F83B450E20324A33002825AE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F83B451020324A33002825AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F89F67692032789800B5CC4B /* StepProtocolTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepProtocolTests.swift; sourceTree = "<group>"; };
+		F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurveyElement+RSDStep.swift"; sourceTree = "<group>"; };
+		F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASurveyConfiguration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -285,6 +293,7 @@
 				F818E2402032B07D00C538ED /* README.md */,
 				F83B44A82032467D002825AE /* BridgeApp.h */,
 				F83B44A92032467D002825AE /* Info-iOS.plist */,
+				F89F67602032774800B5CC4B /* ResearchSuite Model */,
 			);
 			path = BridgeApp;
 			sourceTree = "<group>";
@@ -292,7 +301,8 @@
 		F83B44B22032467D002825AE /* BridgeAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				F83B44B32032467D002825AE /* BridgeAppTests.swift */,
+				F89F67692032789800B5CC4B /* StepProtocolTests.swift */,
+				F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */,
 				F83B44B52032467D002825AE /* Info.plist */,
 			);
 			path = BridgeAppTests;
@@ -351,6 +361,16 @@
 				F83906F820325C6D005FC0BA /* Supporting Files */,
 			);
 			path = BridgeAppExample;
+			sourceTree = "<group>";
+		};
+		F89F67602032774800B5CC4B /* ResearchSuite Model */ = {
+			isa = PBXGroup;
+			children = (
+				F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */,
+				F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */,
+				F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */,
+			);
+			path = "ResearchSuite Model";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -437,6 +457,7 @@
 				TargetAttributes = {
 					F83B44A42032467D002825AE = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 					};
 					F83B44AD2032467D002825AE = {
@@ -620,6 +641,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */,
+				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,
+				F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,7 +651,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F83B44B42032467D002825AE /* BridgeAppTests.swift in Sources */,
+				F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */,
+				F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -806,6 +831,7 @@
 		F83B44BA2032467D002825AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -819,6 +845,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.sagebase.BridgeApp-iOS";
 				PRODUCT_NAME = BridgeApp;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -827,6 +854,7 @@
 		F83B44BB2032467D002825AE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -848,6 +876,7 @@
 		F83B44BD2032467D002825AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KA9Z8R6M6K;
 				INFOPLIST_FILE = BridgeAppTests/Info.plist;
@@ -863,6 +892,7 @@
 		F83B44BE2032467D002825AE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KA9Z8R6M6K;
 				INFOPLIST_FILE = BridgeAppTests/Info.plist;
