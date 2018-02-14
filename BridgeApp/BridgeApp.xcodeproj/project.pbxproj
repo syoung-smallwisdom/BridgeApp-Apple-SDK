@@ -243,7 +243,6 @@
 			isa = PBXGroup;
 			children = (
 				F818E23F2032AFA500C538ED /* BridgeAppExample.entitlements */,
-				F83906FA20325D13005FC0BA /* BridgeInfo.plist */,
 				F83B451020324A33002825AE /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -354,6 +353,7 @@
 		F83B450320324A33002825AE /* BridgeAppExample */ = {
 			isa = PBXGroup;
 			children = (
+				F83906FA20325D13005FC0BA /* BridgeInfo.plist */,
 				F83B450420324A33002825AE /* AppDelegate.swift */,
 				F83B450620324A33002825AE /* ViewController.swift */,
 				F83906F920325CB6005FC0BA /* Storyboards */,
