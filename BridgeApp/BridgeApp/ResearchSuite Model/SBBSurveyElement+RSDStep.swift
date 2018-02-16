@@ -33,7 +33,34 @@
 
 import Foundation
 
+extension SBBBridgeObject {
+    
+    /// Do nothing. Validation is handled by the server for all bridge objects.
+    public func validate() throws {
+    }
+    
+    /// All bridge objects call through to the shared `SBASurveyConfiguration`.
+    public func action(for actionType: RSDUIActionType, on step: RSDStep) -> RSDUIAction? {
+        return SBASurveyConfiguration.shared.action(for: actionType, on:step, callingObject: self)
+    }
+    
+    /// All bridge objects call through to the shared `SBASurveyConfiguration`.
+    public func shouldHideAction(for actionType: RSDUIActionType, on step: RSDStep) -> Bool? {
+        return SBASurveyConfiguration.shared.shouldHideAction(for: actionType, on: step, callingObject: self)
+    }
+}
+
 extension SBBSurveyElement {
+    public var viewTheme: RSDViewThemeElement? {
+        return SBASurveyConfiguration.shared.viewTheme(for: self)
+    }
+    
+    public var colorTheme: RSDColorThemeElement? {
+        return SBASurveyConfiguration.shared.colorTheme(for: self)
+    }
+}
+
+extension SBBSurveyElement : RSDUIStep {
     
     public var text: String? {
         return self.prompt
@@ -46,22 +73,7 @@ extension SBBSurveyElement {
     public var footnote: String? {
         return nil
     }
-    
-    public func validate() throws {
-        // No validation required
-    }
-    
-    public func action(for actionType: RSDUIActionType, on step: RSDStep) -> RSDUIAction? {
-        return SBASurveyConfiguration.shared.action(for: actionType, on:step)
-    }
-    
-    public func shouldHideAction(for actionType: RSDUIActionType, on step: RSDStep) -> Bool? {
-        return SBASurveyConfiguration.shared.shouldHideAction(for: actionType, on: step)
-    }
-}
 
-extension SBBSurveyInfoScreen : RSDUIStep {
-    
     public var stepType: RSDStepType {
         return SBASurveyConfiguration.shared.stepType(for: self) ?? .instruction
     }
@@ -71,15 +83,13 @@ extension SBBSurveyInfoScreen : RSDUIStep {
     }
 }
 
-extension SBBSurveyQuestion : RSDUIStep {
-    
-    public var stepType: RSDStepType {
-        return SBASurveyConfiguration.shared.stepType(for: self) ?? .form
+extension SBBSurveyInfoScreen : RSDThemedUIStep {
+    public var imageTheme: RSDImageThemeElement? {
+        return self.image
     }
-    
-    public func instantiateStepResult() -> RSDResult {
-        return SBASurveyConfiguration.shared.instantiateStepResult(for: self) ?? RSDCollectionResultObject(identifier: self.identifier)
-    }
+}
+
+extension SBBSurveyInfoScreen : sbb_BridgeImageOwner {
 }
 
 /// Use a protocol so that this can easily be extended to either `SBBSurveyQuestion` or
@@ -91,6 +101,12 @@ protocol sbb_InputField : RSDSurveyInputField {
     var constraints : SBBSurveyConstraints { get }
 }
 
+extension SBBSurveyQuestion : RSDThemedUIStep {
+    public var imageTheme: RSDImageThemeElement? {
+        return nil
+    }
+}
+
 extension SBBSurveyQuestion : RSDFormUIStep {
     
     /// `SBBSurveyQuestion` only supports a single input field per step.
@@ -100,14 +116,14 @@ extension SBBSurveyQuestion : RSDFormUIStep {
 }
 
 extension SBBSurveyQuestion : sbb_InputField {
-}
-
-extension sbb_InputField {
-
+    
     /// The input prompt is not supported.
     public var inputPrompt: String? {
         return nil
     }
+}
+
+extension sbb_InputField {
     
     public var placeholder: String? {
         guard let constraint = self.constraints as? SBBStringConstraints else { return nil }
@@ -296,28 +312,9 @@ extension SBBSurveyQuestionOption : RSDChoice, RSDComparable {
     public var isExclusive: Bool {
         return false
     }
-    
-    public var hasIcon: Bool {
-        return self.image != nil
-    }
-    
-    public func fetchIcon(for size: CGSize, callback: @escaping ((UIImage?) -> Void)) {
-        self.image?.fetchIcon(for: size, callback: callback)
-    }
 }
 
-extension SBBImage {
-    
-    public var size: CGSize {
-        return CGSize(width: self.widthValue, height: self.heightValue)
-    }
-    
-    public func fetchIcon(for size: CGSize, callback: @escaping ((UIImage?) -> Void)) {
-        DispatchQueue.main.async {
-            let img = UIImage(named: self.source)
-            callback(img)
-        }
-    }
+extension SBBSurveyQuestionOption : sbb_BridgeImageOwner {
 }
 
 protocol sbb_NumberRange: RSDNumberRange {
