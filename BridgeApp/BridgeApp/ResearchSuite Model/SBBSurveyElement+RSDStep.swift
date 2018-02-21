@@ -75,7 +75,7 @@ extension SBBSurveyElement : RSDUIStep {
     }
 
     public var stepType: RSDStepType {
-        return SBASurveyConfiguration.shared.stepType(for: self) ?? .instruction
+        return SBASurveyConfiguration.shared.stepType(for: self)
     }
     
     public func instantiateStepResult() -> RSDResult {

@@ -51,7 +51,7 @@ open class SBASurveyConfiguration {
     ///
     /// - parameter step: The survey element to check.
     /// - returns: The appropriate step type for this element.
-    open func stepType(for step: SBBSurveyElement) -> RSDStepType? {
+    open func stepType(for step: SBBSurveyElement) -> RSDStepType {
         if let stepType = stepTypeMap[step.guid] {
             return stepType
         } else if step is SBBSurveyQuestion {
@@ -74,33 +74,33 @@ open class SBASurveyConfiguration {
     }
     
     /// Default implementation is to use the default view theme.
-    public func viewTheme(for surveyElement: SBBSurveyElement) -> RSDViewThemeElement? {
+    open func viewTheme(for surveyElement: SBBSurveyElement) -> RSDViewThemeElement? {
         return nil
     }
     
     /// Default implementation is to use the default color theme.
-    public func colorTheme(for surveyElement: SBBSurveyElement) -> RSDColorThemeElement? {
+    open func colorTheme(for surveyElement: SBBSurveyElement) -> RSDColorThemeElement? {
         return nil
     }
     
     /// A conditional rule to return for this task. Default = `nil`.
-    open func conditionalRule(for activityIdentifier: String) -> RSDConditionalRule? {
+    open func conditionalRule(for survey: SBBSurvey) -> RSDConditionalRule? {
         return nil
     }
     
-    /// The async actions to return for this survey. Default = `nil`.
-    open func asyncActions(for survey: SBBSurvey) -> [RSDAsyncActionConfiguration]? {
+    /// Returns the progress markers for a given survey. Default = `nil`.
+    open func progressMarkers(for survey: SBBSurvey) -> [String]? {
         return nil
     }
     
     /// The actions for this step. By default, returns `nil`. Can be called by both the survey and the step.
-    public func action(for actionType: RSDUIActionType, on step: RSDStep, callingObject: Any? = nil) -> RSDUIAction? {
-        return SBASurveyConfiguration.shared.action(for: actionType, on:step)
+    open func action(for actionType: RSDUIActionType, on step: RSDStep, callingObject: Any? = nil) -> RSDUIAction? {
+        return nil
     }
     
     /// The actions for this step. By default, returns `nil`. Can be called by both the survey and the step.
-    public func shouldHideAction(for actionType: RSDUIActionType, on step: RSDStep, callingObject: Any? = nil) -> Bool? {
-        return SBASurveyConfiguration.shared.shouldHideAction(for: actionType, on: step)
+    open func shouldHideAction(for actionType: RSDUIActionType, on step: RSDStep, callingObject: Any? = nil) -> Bool? {
+        return nil
     }
     
     // MARK: Survey management

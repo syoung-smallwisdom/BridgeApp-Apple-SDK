@@ -38,7 +38,8 @@ class StepProtocolTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        SBABridgeConfiguration.shared = SBABridgeConfiguration()
+        SBASurveyConfiguration.shared = SBASurveyConfiguration()
     }
     
     override func tearDown() {
@@ -72,6 +73,66 @@ class StepProtocolTests: XCTestCase {
         XCTAssertEqual(SBBDataType.integer.dataType, .base(.integer))
         XCTAssertEqual(SBBDataType.decimal.dataType, .base(.decimal))
         XCTAssertEqual(SBBDataType.duration.dataType, .base(.duration))
+    }
+    
+    // MARK: SBASurveyConfiguration
+    
+    func testSurveyInfoScreen_Configuration_Default() {
+        
+        let inputStep = SBBSurveyInfoScreen()
+        inputStep.identifier = "abc123"
+        
+        XCTAssertNil(inputStep.action(for: .navigation(.skip), on: inputStep))
+        XCTAssertNil(inputStep.shouldHideAction(for: .navigation(.skip), on: inputStep))
+        XCTAssertNil(inputStep.viewTheme)
+        XCTAssertNil(inputStep.colorTheme)
+        XCTAssertEqual(inputStep.stepType, .instruction)
+        XCTAssertTrue(inputStep.instantiateStepResult() is RSDResultObject)
+    }
+    
+    func testSurveyQuestion_Configuration_Default() {
+        
+        let inputStep = SBBSurveyQuestion()
+        inputStep.identifier = "abc123"
+        
+        XCTAssertNil(inputStep.action(for: .navigation(.skip), on: inputStep))
+        XCTAssertNil(inputStep.shouldHideAction(for: .navigation(.skip), on: inputStep))
+        XCTAssertNil(inputStep.viewTheme)
+        XCTAssertNil(inputStep.colorTheme)
+        XCTAssertEqual(inputStep.stepType, .form)
+        XCTAssertTrue(inputStep.instantiateStepResult() is RSDCollectionResultObject)
+        XCTAssertTrue(inputStep.isOptional)
+    }
+    
+    func testSurveyInfoScreen_Configuration_Overrides() {
+        
+        let testConfig = TestSurveyConfiguration()
+        SBASurveyConfiguration.shared = testConfig
+        let inputStep = SBBSurveyInfoScreen()
+        inputStep.identifier = "abc123"
+        
+        XCTAssertNotNil(inputStep.action(for: .navigation(.skip), on: inputStep))
+        XCTAssertNotNil(inputStep.shouldHideAction(for: .navigation(.skip), on: inputStep))
+        XCTAssertNotNil(inputStep.viewTheme)
+        XCTAssertNotNil(inputStep.colorTheme)
+        XCTAssertEqual(inputStep.stepType, testConfig.stepType)
+        XCTAssertTrue(inputStep.instantiateStepResult() is TestResult)
+    }
+    
+    func testSurveyQuestion_Configuration_Overrides() {
+        
+        let testConfig = TestSurveyConfiguration()
+        SBASurveyConfiguration.shared = testConfig
+        let inputStep = SBBSurveyQuestion()
+        inputStep.identifier = "abc123"
+        
+        XCTAssertNotNil(inputStep.action(for: .navigation(.skip), on: inputStep))
+        XCTAssertNotNil(inputStep.shouldHideAction(for: .navigation(.skip), on: inputStep))
+        XCTAssertNotNil(inputStep.viewTheme)
+        XCTAssertNotNil(inputStep.colorTheme)
+        XCTAssertEqual(inputStep.stepType, testConfig.stepType)
+        XCTAssertTrue(inputStep.instantiateStepResult() is TestResult)
+        XCTAssertFalse(inputStep.isOptional)
     }
     
     // MARK: SBBSurveyInfoScreen
@@ -609,5 +670,84 @@ class StepProtocolTests: XCTestCase {
         inputStep.promptDetail = "Question prompt detail"
         inputStep.constraints = constraints
         return inputStep
+    }
+}
+
+// MARK: Test structs
+
+struct TestResult : RSDResult {
+    
+    let identifier: String
+    var type: RSDResultType = .base
+    var startDate: Date = Date()
+    var endDate: Date = Date()
+    
+    init(identifier: String) {
+        self.identifier = identifier
+    }
+}
+
+struct TestConditionalRule : RSDConditionalRule {
+    func shouldSkip(step: RSDStep, with result: RSDTaskResult?) -> Bool {
+        return false
+    }
+    
+    func nextStepIdentifier(after step: RSDStep?, with result: RSDTaskResult?) -> String? {
+        return nil
+    }
+    
+    func replacementStep(for step: RSDStep?, with result: RSDTaskResult?) -> RSDStep? {
+        return step
+    }
+}
+
+struct TestAsyncActionConfiguration : RSDAsyncActionConfiguration {
+    var identifier: String = "foo"
+    var startStepIdentifier: String?
+    var permissions: [RSDPermissionType] = []
+    func validate() throws {
+    }
+    init() {
+    }
+}
+
+class TestSurveyConfiguration : SBASurveyConfiguration {
+    
+    var stepType: RSDStepType = "foo"
+    override func stepType(for step: SBBSurveyElement) -> RSDStepType {
+        return stepType
+    }
+    
+    override func instantiateStepResult(for step: SBBSurveyElement) -> RSDResult? {
+        return TestResult(identifier: step.identifier)
+    }
+    
+    override func isOptional(for inputField: RSDInputField) -> Bool {
+        return false
+    }
+    
+    override func viewTheme(for surveyElement: SBBSurveyElement) -> RSDViewThemeElement? {
+        return RSDViewThemeElementObject(viewIdentifier: "foo")
+    }
+    
+    var colorTheme : RSDColorThemeElement = RSDColorThemeElementObject(backgroundColorName: "goo")
+    override func colorTheme(for surveyElement: SBBSurveyElement) -> RSDColorThemeElement? {
+        return RSDColorThemeElementObject(backgroundColorName: "goo")
+    }
+    
+    override func conditionalRule(for survey: SBBSurvey) -> RSDConditionalRule? {
+        return TestConditionalRule()
+    }
+    
+    override func progressMarkers(for survey: SBBSurvey) -> [String]? {
+        return ["a", "b", "c"]
+    }
+    
+    override func action(for actionType: RSDUIActionType, on step: RSDStep, callingObject: Any? = nil) -> RSDUIAction? {
+        return RSDUIActionObject(iconName: "foo")
+    }
+    
+    override func shouldHideAction(for actionType: RSDUIActionType, on step: RSDStep, callingObject: Any? = nil) -> Bool? {
+        return true
     }
 }

@@ -62,6 +62,7 @@ open class SBASurveyLoader: RSDTaskTransformer {
     /// Instantiate an appropriate wrapper for the survey.
     open func instantiateSurveyWrapper(for survey: SBBSurvey?) -> SBASurveyWrapper? {
         guard survey != nil else { return nil }
+        SBASurveyConfiguration.shared.registerSurvey(survey!)
         return SBASurveyWrapper(survey: survey!)
     }
 }
@@ -92,9 +93,7 @@ open class SBASurveyWrapper : RSDTask {
         return self.survey
     }
     
-    lazy open var asyncActions: [RSDAsyncActionConfiguration]? = {
-        return SBASurveyConfiguration.shared.asyncActions(for: self.survey)
-    }()
+    open var asyncActions: [RSDAsyncActionConfiguration]?
     
     open func instantiateTaskResult() -> RSDTaskResult {
         return RSDTaskResultObject(identifier: self.identifier, schemaInfo: self.survey)
@@ -138,10 +137,10 @@ extension SBBSurvey : RSDConditionalStepNavigator {
     }
     
     public var conditionalRule: RSDConditionalRule? {
-        return SBASurveyConfiguration.shared.conditionalRule(for: identifier)
+        return SBASurveyConfiguration.shared.conditionalRule(for: self)
     }
     
     public var progressMarkers: [String]? {
-        return nil
+        return SBASurveyConfiguration.shared.progressMarkers(for: self)
     }
 }

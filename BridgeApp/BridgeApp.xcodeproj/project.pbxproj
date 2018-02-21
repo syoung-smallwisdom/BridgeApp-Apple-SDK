@@ -43,6 +43,7 @@
 		F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */; };
 		F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */; };
 		F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */; };
+		F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7241D203D007800AC0E5B /* SurveyTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -220,6 +221,7 @@
 		F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurveyElement+RSDStep.swift"; sourceTree = "<group>"; };
 		F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASurveyConfiguration.swift; sourceTree = "<group>"; };
 		F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAModuleIdentifier.swift; sourceTree = "<group>"; };
+		F8F7241D203D007800AC0E5B /* SurveyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -326,9 +328,10 @@
 		F83B44B22032467D002825AE /* BridgeAppTests */ = {
 			isa = PBXGroup;
 			children = (
+				F87D69BF203B5C4900409087 /* ActivityReferenceTests.swift */,
 				F89F67692032789800B5CC4B /* StepProtocolTests.swift */,
 				F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */,
-				F87D69BF203B5C4900409087 /* ActivityReferenceTests.swift */,
+				F8F7241D203D007800AC0E5B /* SurveyTests.swift */,
 				F83B44B52032467D002825AE /* Info.plist */,
 			);
 			path = BridgeAppTests;
@@ -715,6 +718,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F87D69C0203B5C4900409087 /* ActivityReferenceTests.swift in Sources */,
+				F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */,
 				F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */,
 				F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */,
 			);
