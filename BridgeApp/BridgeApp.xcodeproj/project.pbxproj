@@ -9,7 +9,11 @@
 /* Begin PBXBuildFile section */
 		F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */; };
 		F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */; };
+		F80F17A32033CB1B00352C3E /* SBBSurvey+RSDTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */; };
 		F818E2412032B07E00C538ED /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F818E2402032B07D00C538ED /* README.md */; };
+		F82B1A892036305200FEA16D /* SBBImage+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1A882036305200FEA16D /* SBBImage+Utilities.swift */; };
+		F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */; };
+		F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1AB02036410C00FEA16D /* SBABridgeConfiguration.swift */; };
 		F83906FB20325D13005FC0BA /* BridgeInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = F83906FA20325D13005FC0BA /* BridgeInfo.plist */; };
 		F83906FE20325E70005FC0BA /* sample-study.pem in Resources */ = {isa = PBXBuildFile; fileRef = F83906FD20325E70005FC0BA /* sample-study.pem */; };
 		F83B44AF2032467D002825AE /* BridgeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44A52032467D002825AE /* BridgeApp.framework */; };
@@ -28,9 +32,17 @@
 		F83B451A20324A6B002825AE /* ResearchSuite.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44F22032476F002825AE /* ResearchSuite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F83B451D20324A74002825AE /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44D42032473D002825AE /* BridgeSDK.framework */; };
 		F83B451E20324A74002825AE /* BridgeSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44D42032473D002825AE /* BridgeSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87D69692037956B00409087 /* SBAActivityReference.swift */; };
+		F87D69C0203B5C4900409087 /* ActivityReferenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87D69BF203B5C4900409087 /* ActivityReferenceTests.swift */; };
+		F886FD1320351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F886FD1220351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift */; };
+		F886FD2D2035244F00EF2248 /* NSPredicate+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F886FD2C2035244F00EF2248 /* NSPredicate+Utilities.swift */; };
+		F886FD2F2035248600EF2248 /* SBBScheduledActivity+Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */; };
+		F886FD31203524C600EF2248 /* Date+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F886FD30203524C600EF2248 /* Date+Utilities.swift */; };
+		F886FD342036067300EF2248 /* BridgeApp.strings in Resources */ = {isa = PBXBuildFile; fileRef = F886FD332036067300EF2248 /* BridgeApp.strings */; };
 		F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F67692032789800B5CC4B /* StepProtocolTests.swift */; };
 		F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */; };
 		F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */; };
+		F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -174,8 +186,12 @@
 /* Begin PBXFileReference section */
 		F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurveyRule+RSDSurveyRule.swift"; sourceTree = "<group>"; };
 		F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyNavigationRuleTests.swift; sourceTree = "<group>"; };
+		F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurvey+RSDTask.swift"; sourceTree = "<group>"; };
 		F818E23F2032AFA500C538ED /* BridgeAppExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BridgeAppExample.entitlements; sourceTree = "<group>"; };
 		F818E2402032B07D00C538ED /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../README.md; sourceTree = "<group>"; };
+		F82B1A882036305200FEA16D /* SBBImage+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBImage+Utilities.swift"; sourceTree = "<group>"; };
+		F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+Utilities.swift"; sourceTree = "<group>"; };
+		F82B1AB02036410C00FEA16D /* SBABridgeConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBABridgeConfiguration.swift; sourceTree = "<group>"; };
 		F83906FA20325D13005FC0BA /* BridgeInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BridgeInfo.plist; sourceTree = "<group>"; };
 		F83906FD20325E70005FC0BA /* sample-study.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "sample-study.pem"; sourceTree = "<group>"; };
 		F83B44A52032467D002825AE /* BridgeApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BridgeApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -193,9 +209,17 @@
 		F83B450B20324A33002825AE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F83B450E20324A33002825AE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F83B451020324A33002825AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F87D69692037956B00409087 /* SBAActivityReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAActivityReference.swift; sourceTree = "<group>"; };
+		F87D69BF203B5C4900409087 /* ActivityReferenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityReferenceTests.swift; sourceTree = "<group>"; };
+		F886FD1220351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBActivity+RSDTaskInfo.swift"; sourceTree = "<group>"; };
+		F886FD2C2035244F00EF2248 /* NSPredicate+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSPredicate+Utilities.swift"; sourceTree = "<group>"; };
+		F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+Filters.swift"; sourceTree = "<group>"; };
+		F886FD30203524C600EF2248 /* Date+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Utilities.swift"; sourceTree = "<group>"; };
+		F886FD332036067300EF2248 /* BridgeApp.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = BridgeApp.strings; sourceTree = "<group>"; };
 		F89F67692032789800B5CC4B /* StepProtocolTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepProtocolTests.swift; sourceTree = "<group>"; };
 		F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurveyElement+RSDStep.swift"; sourceTree = "<group>"; };
 		F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASurveyConfiguration.swift; sourceTree = "<group>"; };
+		F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAModuleIdentifier.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -243,7 +267,6 @@
 			isa = PBXGroup;
 			children = (
 				F818E23F2032AFA500C538ED /* BridgeAppExample.entitlements */,
-				F83906FA20325D13005FC0BA /* BridgeInfo.plist */,
 				F83B451020324A33002825AE /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -294,6 +317,8 @@
 				F83B44A82032467D002825AE /* BridgeApp.h */,
 				F83B44A92032467D002825AE /* Info-iOS.plist */,
 				F89F67602032774800B5CC4B /* ResearchSuite Model */,
+				F886FD2B203523D400EF2248 /* Extensions */,
+				F886FD322036042E00EF2248 /* Localization */,
 			);
 			path = BridgeApp;
 			sourceTree = "<group>";
@@ -303,6 +328,7 @@
 			children = (
 				F89F67692032789800B5CC4B /* StepProtocolTests.swift */,
 				F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */,
+				F87D69BF203B5C4900409087 /* ActivityReferenceTests.swift */,
 				F83B44B52032467D002825AE /* Info.plist */,
 			);
 			path = BridgeAppTests;
@@ -354,6 +380,7 @@
 		F83B450320324A33002825AE /* BridgeAppExample */ = {
 			isa = PBXGroup;
 			children = (
+				F83906FA20325D13005FC0BA /* BridgeInfo.plist */,
 				F83B450420324A33002825AE /* AppDelegate.swift */,
 				F83B450620324A33002825AE /* ViewController.swift */,
 				F83906F920325CB6005FC0BA /* Storyboards */,
@@ -363,12 +390,37 @@
 			path = BridgeAppExample;
 			sourceTree = "<group>";
 		};
+		F886FD2B203523D400EF2248 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				F886FD30203524C600EF2248 /* Date+Utilities.swift */,
+				F886FD2C2035244F00EF2248 /* NSPredicate+Utilities.swift */,
+				F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */,
+				F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		F886FD322036042E00EF2248 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				F886FD332036067300EF2248 /* BridgeApp.strings */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
 		F89F67602032774800B5CC4B /* ResearchSuite Model */ = {
 			isa = PBXGroup;
 			children = (
+				F82B1AB02036410C00FEA16D /* SBABridgeConfiguration.swift */,
+				F87D69692037956B00409087 /* SBAActivityReference.swift */,
+				F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */,
 				F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */,
+				F82B1A882036305200FEA16D /* SBBImage+Utilities.swift */,
+				F886FD1220351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift */,
 				F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */,
 				F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */,
+				F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */,
 			);
 			path = "ResearchSuite Model";
 			sourceTree = "<group>";
@@ -612,6 +664,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F818E2412032B07E00C538ED /* README.md in Resources */,
+				F886FD342036067300EF2248 /* BridgeApp.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -642,8 +695,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */,
+				F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */,
+				F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */,
 				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,
+				F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */,
+				F80F17A32033CB1B00352C3E /* SBBSurvey+RSDTask.swift in Sources */,
+				F886FD2D2035244F00EF2248 /* NSPredicate+Utilities.swift in Sources */,
+				F886FD31203524C600EF2248 /* Date+Utilities.swift in Sources */,
+				F82B1A892036305200FEA16D /* SBBImage+Utilities.swift in Sources */,
 				F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */,
+				F886FD2F2035248600EF2248 /* SBBScheduledActivity+Filters.swift in Sources */,
+				F886FD1320351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift in Sources */,
+				F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -651,6 +714,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F87D69C0203B5C4900409087 /* ActivityReferenceTests.swift in Sources */,
 				F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */,
 				F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */,
 			);

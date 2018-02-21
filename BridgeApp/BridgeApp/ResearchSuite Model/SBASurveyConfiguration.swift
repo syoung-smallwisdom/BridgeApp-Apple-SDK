@@ -1,6 +1,6 @@
 //
 //  SBASurveyConfiguration.swift
-//  BridgeApp (iOS)
+//  BridgeApp
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
@@ -35,24 +35,89 @@ import Foundation
 
 /// `SBASurveyConfiguration` is a survey wrapper that can extend the default implementation
 /// of UI/UX handling for all the Bridge surveys used by a given app.
-open class SBASurveyConfiguration : RSDUIActionHandlerObject {
+open class SBASurveyConfiguration {
     
+    /// The shared singleton.
     public static var shared = SBASurveyConfiguration()
     
     /// Allow customization of the step type for a given survey element.
-    /// Default returns nil.
+    ///
+    /// Default implementation will check the `stepTypeMap` for a guid and return that value if found.
+    /// Otherwise it will return `.form` for `SBBSurveyQuestion` classes and return `.instruction` for
+    /// all other classes.
+    ///
+    /// The step type is used within the UI to determine the default view controller to associate with
+    /// a given step.
+    ///
+    /// - parameter step: The survey element to check.
+    /// - returns: The appropriate step type for this element.
     open func stepType(for step: SBBSurveyElement) -> RSDStepType? {
-        return nil
+        if let stepType = stepTypeMap[step.guid] {
+            return stepType
+        } else if step is SBBSurveyQuestion {
+            return .form
+        } else {
+            return .instruction
+        }
     }
     
     /// Allows customization of the result instantiated for a given survey element.
-    /// Default returns nil.
+    /// By default, this will return an instance of `RSDResultObject` for an instruction step
+    /// and `RSDCollectionResultObject` for a form step.
     open func instantiateStepResult(for step: SBBSurveyElement) -> RSDResult? {
-        return nil
+        return step is SBBSurveyInfoScreen ? RSDResultObject(identifier: step.identifier) : RSDCollectionResultObject(identifier: step.identifier)
     }
     
     /// Is the input field optional? Default = `true`.
     open func isOptional(for inputField: RSDInputField) -> Bool {
         return true
+    }
+    
+    /// Default implementation is to use the default view theme.
+    public func viewTheme(for surveyElement: SBBSurveyElement) -> RSDViewThemeElement? {
+        return nil
+    }
+    
+    /// Default implementation is to use the default color theme.
+    public func colorTheme(for surveyElement: SBBSurveyElement) -> RSDColorThemeElement? {
+        return nil
+    }
+    
+    /// A conditional rule to return for this task. Default = `nil`.
+    open func conditionalRule(for activityIdentifier: String) -> RSDConditionalRule? {
+        return nil
+    }
+    
+    /// The async actions to return for this survey. Default = `nil`.
+    open func asyncActions(for survey: SBBSurvey) -> [RSDAsyncActionConfiguration]? {
+        return nil
+    }
+    
+    /// The actions for this step. By default, returns `nil`. Can be called by both the survey and the step.
+    public func action(for actionType: RSDUIActionType, on step: RSDStep, callingObject: Any? = nil) -> RSDUIAction? {
+        return SBASurveyConfiguration.shared.action(for: actionType, on:step)
+    }
+    
+    /// The actions for this step. By default, returns `nil`. Can be called by both the survey and the step.
+    public func shouldHideAction(for actionType: RSDUIActionType, on step: RSDStep, callingObject: Any? = nil) -> Bool? {
+        return SBASurveyConfiguration.shared.shouldHideAction(for: actionType, on: step)
+    }
+    
+    // MARK: Survey management
+    
+    /// Mapping of the step type to the survey element. By default, this is set up when a survey is registered
+    /// and includes mapping the last step as a `.completion` step type.
+    open var stepTypeMap : [String : RSDStepType] = [:]
+    
+    /// Register a survey before running it. By default, the only customization is to inspect the last element
+    /// and if that element is a `SBBSurveyInfoScreen` subclass, then set its `RSDStepType` in the `stepTypeMap`
+    /// to `.completion`.
+    ///
+    /// - parameter survey: The survey to register.
+    open func registerSurvey(_ survey: SBBSurvey) {
+        /// add last element to the custom step type map.
+        if let lastElement = survey.surveyElements.last, lastElement is SBBSurveyInfoScreen {
+            stepTypeMap[lastElement.guid] = .completion
+        }
     }
 }
