@@ -47,6 +47,25 @@ extension SBBSurveyElement {
     }
 }
 
+extension SBBSurveyElement : RSDCohortNavigationStep {
+    
+    private var _beforeRules: [SBBSurveyRule]? {
+        return self.beforeRules as? [SBBSurveyRule]
+    }
+    
+    private var _afterRules: [SBBSurveyRule]? {
+        return self.afterRules as? [SBBSurveyRule]
+    }
+    
+    public var beforeCohortRules: [RSDCohortNavigationRule]? {
+        return self._beforeRules?.filter { $0.requiredCohorts.count > 0 }
+    }
+    
+    public var afterCohortRules: [RSDCohortNavigationRule]? {
+        return self._afterRules?.filter { $0.requiredCohorts.count > 0 }
+    }
+}
+
 extension SBBSurveyInfoScreen : RSDNavigationRule {
     
     /// Only applicable rule for a survey info screen is direct navigation.
@@ -82,7 +101,7 @@ extension sbb_InputField {
 }
 
 extension SBBSurveyRule : RSDComparableSurveyRule {
-    
+
     /// Is this rule a navigation rule
     var isValidComparableRule : Bool {
         return self.ruleOperator != nil
@@ -99,11 +118,30 @@ extension SBBSurveyRule : RSDComparableSurveyRule {
     public var matchingAnswer: Any? {
         return self.value
     }
+    
+    public var cohort: String? {
+        return self.assignDataGroup
+    }
+}
+
+extension SBBSurveyRule : RSDCohortNavigationRule {
+    
+    public var requiredCohorts: Set<String> {
+        return self.dataGroups ?? []
+    }
+    
+    public var cohortOperator: RSDCohortRuleOperator? {
+        return self.operatorType.cohortOperator
+    }
 }
 
 extension SBBOperatorType {
     
     public var ruleOperator: RSDSurveyRuleOperator? {
         return RSDSurveyRuleOperator(rawValue: self.rawValue)
+    }
+    
+    public var cohortOperator: RSDCohortRuleOperator? {
+        return RSDCohortRuleOperator(rawValue: self.rawValue)
     }
 }

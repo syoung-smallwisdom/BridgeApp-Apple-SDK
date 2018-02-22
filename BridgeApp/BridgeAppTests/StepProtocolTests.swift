@@ -688,16 +688,13 @@ struct TestResult : RSDResult {
 }
 
 struct TestConditionalRule : RSDConditionalRule {
-    func shouldSkip(step: RSDStep, with result: RSDTaskResult?) -> Bool {
-        return false
-    }
     
-    func nextStepIdentifier(after step: RSDStep?, with result: RSDTaskResult?) -> String? {
+    func skipToStepIdentifier(before step: RSDStep, with result: RSDTaskResult?, isPeeking: Bool) -> String? {
         return nil
     }
     
-    func replacementStep(for step: RSDStep?, with result: RSDTaskResult?) -> RSDStep? {
-        return step
+    func nextStepIdentifier(after step: RSDStep?, with result: RSDTaskResult?, isPeeking: Bool) -> String? {
+        return nil
     }
 }
 
