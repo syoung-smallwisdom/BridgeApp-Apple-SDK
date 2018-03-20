@@ -117,6 +117,11 @@ extension SBBSurveyQuestion : RSDFormUIStep {
 
 extension SBBSurveyQuestion : sbb_InputField {
     
+    /// The input prompt detail is not supported.
+    public var inputPromptDetail: String? {
+        return nil
+    }
+    
     /// The input prompt is not supported.
     public var inputPrompt: String? {
         return nil
@@ -393,12 +398,22 @@ protocol sbb_DateRange : RSDDateRange {
 }
 
 extension SBBDateConstraints : sbb_DateRange {
+    
+    public var defaultDate: Date? {
+        return nil
+    }
+    
     public var dateCoder: RSDDateCoder? {
         return RSDDateCoderObject.dateOnly
     }
 }
 
 extension SBBDateTimeConstraints : sbb_DateRange {
+    
+    public var defaultDate: Date? {
+        return nil
+    }
+    
     public var dateCoder: RSDDateCoder? {
         return RSDDateCoderObject.timestamp
     }
@@ -428,6 +443,10 @@ extension sbb_DateRange {
 }
 
 extension SBBTimeConstraints : RSDDateRange {
+    
+    public var defaultDate: Date? {
+        return nil
+    }
     
     public var minDate: Date? {
         return nil

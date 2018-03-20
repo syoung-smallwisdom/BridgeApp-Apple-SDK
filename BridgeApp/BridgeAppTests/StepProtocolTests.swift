@@ -699,6 +699,7 @@ struct TestConditionalRule : RSDConditionalRule {
 }
 
 struct TestAsyncActionConfiguration : RSDAsyncActionConfiguration {
+    var permissionTypes: [RSDPermissionType] = []
     var identifier: String = "foo"
     var startStepIdentifier: String?
     var permissions: [RSDPermissionType] = []

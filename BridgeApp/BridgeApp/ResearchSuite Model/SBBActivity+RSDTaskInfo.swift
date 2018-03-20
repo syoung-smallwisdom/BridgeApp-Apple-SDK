@@ -58,6 +58,14 @@ extension SBBActivity : RSDTaskInfo {
     public var imageVendor: RSDImageVendor? {
         return self.image ?? activityReference?.imageVendor
     }
+    
+    public var schemaInfo: RSDSchemaInfo? {
+        return self.activityReference.schemaInfo
+    }
+    
+    public var resourceTransformer: RSDTaskTransformer? {
+        return self.activityReference.resourceTransformer
+    }
 }
 
 extension SBBActivity {
