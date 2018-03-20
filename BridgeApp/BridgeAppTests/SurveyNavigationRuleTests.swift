@@ -46,12 +46,6 @@ class SurveyNavigationRuleTests: XCTestCase {
         super.tearDown()
     }
     
-//    @property (nullable, nonatomic, strong) NSNumber* endSurvey;
-//    @property (nonatomic, assign) BOOL endSurveyValue;
-//    @property (nonatomic, strong) NSString* operator;
-//    @property (nullable, nonatomic, strong) NSString* skipTo;
-//    @property (nullable, nonatomic, strong) id value;
-    
     func testNavigation_SBBSurveyInfoScreen_EndSurvey() {
         let rule = SBBSurveyRule()
         rule.endSurveyValue = true
@@ -287,19 +281,69 @@ class SurveyNavigationRuleTests: XCTestCase {
         XCTAssertEqual(identifier2, "correct")
     }
     
+    func testCohortRules() {
+        let constraints = SBBIntegerConstraints()
+        let inputStep = createQuestion(.numberfield, constraints)
+        
+        let beforeRule = SBBSurveyRule()
+        beforeRule.operator = SBBOperatorType.all.stringValue
+        beforeRule.skipTo = "alpha"
+        beforeRule.dataGroups = ["a"]
+        
+        let rule = SBBSurveyRule()
+        rule.operator = SBBOperatorType.notEqual.stringValue
+        rule.skipTo = "correct"
+        rule.value = NSNumber(value: 1)
+        
+        let afterRule = SBBSurveyRule()
+        afterRule.operator = SBBOperatorType.any.stringValue
+        afterRule.skipTo = "beta"
+        afterRule.dataGroups = ["b", "c"]
+        
+        inputStep.add(beforeRulesObject: beforeRule)
+        inputStep.add(afterRulesObject: rule)
+        inputStep.add(afterRulesObject: afterRule)
+        
+        if let firstRule = inputStep.beforeCohortRules?.first, let lastRule = inputStep.beforeCohortRules?.last {
+            XCTAssertEqual(firstRule.requiredCohorts, lastRule.requiredCohorts, "Expecting only one rule")
+            XCTAssertEqual(firstRule.requiredCohorts, ["a"])
+        } else {
+            XCTFail("Expected non-nil cohort rules")
+        }
+        
+        if let firstRule = inputStep.afterCohortRules?.first, let lastRule = inputStep.afterCohortRules?.last {
+            XCTAssertEqual(firstRule.requiredCohorts, lastRule.requiredCohorts, "Expecting only one rule")
+            XCTAssertEqual(firstRule.requiredCohorts, ["b", "c"])
+        } else {
+            XCTFail("Expected non-nil cohort rules")
+        }
+    }
+    
     func testOperators() {
         
         XCTAssertNil(SBBOperatorType.all.ruleOperator)
         XCTAssertNil(SBBOperatorType.always.ruleOperator)
         XCTAssertNil(SBBOperatorType.any.ruleOperator)
-
-        XCTAssertEqual(SBBOperatorType.equal, .equal)
-        XCTAssertEqual(SBBOperatorType.notEqual, .notEqual)
-        XCTAssertEqual(SBBOperatorType.lessThan, .lessThan)
-        XCTAssertEqual(SBBOperatorType.lessThanEqual, .lessThanEqual)
-        XCTAssertEqual(SBBOperatorType.greaterThan, .greaterThan)
-        XCTAssertEqual(SBBOperatorType.greaterThanEqual, .greaterThanEqual)
-        XCTAssertEqual(SBBOperatorType.skip, .skip)
+        
+        XCTAssertEqual(SBBOperatorType.equal.ruleOperator, .equal)
+        XCTAssertEqual(SBBOperatorType.notEqual.ruleOperator, .notEqual)
+        XCTAssertEqual(SBBOperatorType.lessThan.ruleOperator, .lessThan)
+        XCTAssertEqual(SBBOperatorType.lessThanEqual.ruleOperator, .lessThanEqual)
+        XCTAssertEqual(SBBOperatorType.greaterThan.ruleOperator, .greaterThan)
+        XCTAssertEqual(SBBOperatorType.greaterThanEqual.ruleOperator, .greaterThanEqual)
+        XCTAssertEqual(SBBOperatorType.skip.ruleOperator, .skip)
+        
+        XCTAssertEqual(SBBOperatorType.all.cohortOperator, .all)
+        XCTAssertEqual(SBBOperatorType.any.cohortOperator, .any)
+        
+        XCTAssertNil(SBBOperatorType.always.cohortOperator)
+        XCTAssertNil(SBBOperatorType.equal.cohortOperator)
+        XCTAssertNil(SBBOperatorType.notEqual.cohortOperator)
+        XCTAssertNil(SBBOperatorType.lessThan.cohortOperator)
+        XCTAssertNil(SBBOperatorType.lessThanEqual.cohortOperator)
+        XCTAssertNil(SBBOperatorType.greaterThan.cohortOperator)
+        XCTAssertNil(SBBOperatorType.greaterThanEqual.cohortOperator)
+        XCTAssertNil(SBBOperatorType.skip.cohortOperator)
     }
     
     // MARK: Helper methods
@@ -314,5 +358,4 @@ class SurveyNavigationRuleTests: XCTestCase {
         inputStep.constraints = constraints
         return inputStep
     }
-    
 }

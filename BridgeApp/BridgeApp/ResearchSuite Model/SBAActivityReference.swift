@@ -33,10 +33,11 @@
 
 import Foundation
 
+
 /// `SBAActivityReference` is used to cast all the activity reference types to a
 /// common interface. This includes both compound tasks with different schema tables
 /// for each task and single tasks with a single schema table.
-public protocol SBAActivityReference : class, RSDTaskInfoStep {
+public protocol SBAActivityReference : class, RSDTaskInfo {
     
     /// The detailed description of the activity. This maps to the `detail` property of
     /// the `RSDTaskInfo` protocol.
@@ -45,7 +46,7 @@ public protocol SBAActivityReference : class, RSDTaskInfoStep {
 
 /// `SBASingleActivityReference` refers to tasks that point at a single instance of
 /// the schema reference.
-public protocol SBASingleActivityReference : SBAActivityReference {
+public protocol SBASingleActivityReference : SBAActivityReference, RSDTaskInfoStep {
     
     /// Optional number for the estimated minutes.
     var minuteDuration: NSNumber? { get }
@@ -87,6 +88,11 @@ extension SBAActivityReference {
 
 extension SBASingleActivityReference {
     
+    /// For single activity references, the reference is both the task info and the step.
+    public var taskInfo: RSDTaskInfo {
+        return self
+    }
+    
     /// Return the `minuteDuration` if not nil, otherwise return the activity info estimated minutes.
     public var estimatedMinutes : Int {
         return minuteDuration?.intValue ?? self.activityInfo?.estimatedMinutes ?? 0
@@ -102,6 +108,14 @@ extension SBASingleActivityReference {
         return RSDTaskResultObject(identifier: identifier, schemaInfo: schemaInfo)
     }
     
+    /// The resource transformer on `RSDTaskInfo` is used in cases where the transformer is
+    /// loaded from a resource by the task info (when decoded). In the case of Bridge objects,
+    /// this does not apply. Instead, the bridge objects defer to the app configuation singletons.
+    /// - returns: `nil`
+    public var resourceTransformer: RSDTaskTransformer? {
+        return nil
+    }
+    
     /// Checks to see if the `transformer` is holding an instance of a `RSDTaskTransformer` and
     /// if not then calls the shared config and sets the transformer returned by the config.
     public var taskTransformer: RSDTaskTransformer! {
@@ -115,6 +129,7 @@ extension SBASingleActivityReference {
 }
 
 extension SBBSchemaReference : SBASingleActivityReference, RSDSchemaInfo {
+    
     
     public var schemaInfo: RSDSchemaInfo? {
         return self
@@ -183,7 +198,7 @@ extension SBBCompoundActivity : SBAActivityReference {
         return nil
     }
     
-    public var taskTransformer: RSDTaskTransformer! {
+    public var resourceTransformer: RSDTaskTransformer? {
         return self
     }
     

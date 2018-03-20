@@ -282,41 +282,67 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
 ///            """.data(using: .utf8)! // our data in native (JSON) format
 /// ````
 public struct SBAActivityInfoObject : Decodable, SBAOptionalImageVendor, SBAActivityInfo {
+
+    private enum CodingKeys : String, CodingKey {
+        case identifier, title, subtitle, detail, _estimatedMinutes = "minuteDuration", imageSource, resource, moduleId
+    }
     
     /// A short string that uniquely identifies the task.
     public let identifier : String
     
     /// The primary text to display for the task in a localized string.
-    public let title : String?
+    public var title : String?
     
     /// The subtitle text to display for the task in a localized string.
-    public let subtitle : String?
+    public var subtitle : String?
     
     /// Additional detail text to display for the task. Generally, this would be displayed
     /// while the task is being fetched.
-    public let detail : String?
+    public var detail : String?
     
     /// The estimated number of minutes that the task will take.
     public var estimatedMinutes: Int {
         return _estimatedMinutes ?? 0
     }
-    private let _estimatedMinutes: Int?
+    private var _estimatedMinutes: Int?
     
     /// An optional resource for loading a task from a `SBBTaskReference` or `SBBSchemaReference`.
-    public let resource: RSDResourceTransformerObject?
+    public var resource: RSDResourceTransformerObject?
     
     /// An optional string that can be used to identify an active task module such as a
     /// "tapping" task or "walkAndBalance" task.
-    public let moduleId: SBAModuleIdentifier?
+    public var moduleId: SBAModuleIdentifier?
     
     /// An icon image that can be used for displaying the task.
-    public let imageSource : RSDImageWrapper?
+    public var imageSource : RSDImageWrapper?
     
     /// Use an image directly rather than an image wrapper.
-    public private(set) var image : UIImage? = nil
+    public var image : UIImage? = nil
     
-    private enum CodingKeys : String, CodingKey {
-        case identifier, title, subtitle, detail, _estimatedMinutes = "minuteDuration", imageSource, resource, moduleId
+    /// The schema info on this object is ignored.
+    public var schemaInfo: RSDSchemaInfo? = nil
+    
+    /// The resource transformer points to the `resource`.
+    public var resourceTransformer: RSDTaskTransformer? {
+        return resource
+    }
+    
+    public func copy(with identifier: String) -> SBAActivityInfoObject {
+        var copy = SBAActivityInfoObject(identifier: identifier)
+        copy.title = self.title
+        copy.subtitle = self.subtitle
+        copy.detail = self.detail
+        copy._estimatedMinutes = self._estimatedMinutes
+        copy.resource = self.resource
+        copy.moduleId = self.moduleId
+        copy.imageSource = self.imageSource
+        copy.image = self.image
+        copy.schemaInfo = self.schemaInfo
+        return copy
+    }
+    
+    public init(identifier : String) {
+        self.identifier = identifier
     }
     
     /// Default initializer.

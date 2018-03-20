@@ -1,6 +1,6 @@
 //
-//  SBBActivity+RSDTaskInfo.swift
-//  BridgeApp
+//  SurveyTests.swift
+//  BridgeAppTests
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
@@ -31,48 +31,46 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-import Foundation
+import XCTest
+@testable import BridgeApp
 
-extension SBBActivity : RSDTaskInfo {
-
-    public var identifier: String {
-        return self.activityReference?.identifier ?? self.guid
+class SurveyTests: XCTestCase {
+    
+    override func setUp() {
+        super.setUp()
+        // Put setup code here. This method is called before the invocation of each test method in the class.
     }
     
-    public var title: String? {
-        return self.label
+    override func tearDown() {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        super.tearDown()
     }
     
-    public var subtitle: String? {
-        return self.labelDetail ?? activityReference?.subtitle
+    // MARK: SBASurveyConfiguration
+    
+    func testSurvey_Configuration_Default() {
+        
+        let inputStep = SBBSurveyQuestion()
+        inputStep.identifier = "abc123"
+        let inputSurvey = SBBSurvey()
+        
+        XCTAssertNil(inputSurvey.action(for: .navigation(.skip), on: inputStep))
+        XCTAssertNil(inputSurvey.shouldHideAction(for: .navigation(.skip), on: inputStep))
+        XCTAssertNil(inputSurvey.conditionalRule)
+        XCTAssertNil(inputSurvey.progressMarkers)
     }
     
-    public var detail: String? {
-        return self.activityReference?.activityDescription ?? activityReference?.detail
-    }
-    
-    public var estimatedMinutes: Int {
-        return self.activityReference?.estimatedMinutes ?? activityReference?.estimatedMinutes ?? 0
-    }
-    
-    public var imageVendor: RSDImageVendor? {
-        return self.image ?? activityReference?.imageVendor
-    }
-    
-    public var schemaInfo: RSDSchemaInfo? {
-        return self.activityReference.schemaInfo
-    }
-    
-    public var resourceTransformer: RSDTaskTransformer? {
-        return self.activityReference.resourceTransformer
-    }
-}
-
-extension SBBActivity {
-
-    /// The activity should only have one `nonnull` reference pointer.
-    /// Either the `task`, `survey`, or `compoundActivity`.
-    public var activityReference : SBAActivityReference! {
-        return self.task ?? self.survey ?? self.compoundActivity
+    func testSurvey_Configuration_Overrides() {
+        
+        let testConfig = TestSurveyConfiguration()
+        SBASurveyConfiguration.shared = testConfig
+        let inputStep = SBBSurveyInfoScreen()
+        inputStep.identifier = "abc123"
+        let inputSurvey = SBBSurvey()
+        
+        XCTAssertNotNil(inputSurvey.action(for: .navigation(.skip), on: inputStep))
+        XCTAssertNotNil(inputSurvey.shouldHideAction(for: .navigation(.skip), on: inputStep))
+        XCTAssertNotNil(inputSurvey.conditionalRule)
+        XCTAssertNotNil(inputSurvey.progressMarkers)
     }
 }
