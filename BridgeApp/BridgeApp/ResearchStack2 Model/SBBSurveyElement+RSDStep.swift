@@ -307,7 +307,15 @@ extension SBBSurveyQuestionOption : RSDChoice, RSDComparable {
     }
     
     public var answerValue: Codable? {
-        return self.value as Codable
+        if let strValue = self.value as? String {
+            return strValue
+        }
+        else if let numValue = self.value as? NSNumber {
+            return numValue.doubleValue
+        }
+        else {
+            return self.value as? Codable
+        }
     }
     
     public var text: String? {

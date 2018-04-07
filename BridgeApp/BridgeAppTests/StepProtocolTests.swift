@@ -195,6 +195,14 @@ class StepProtocolTests: XCTestCase {
         XCTAssertTrue(inputField.isOptional)
         XCTAssertEqual(inputField.dataType, .collection(.singleChoice, .string))
         XCTAssertEqual(inputField.inputUIHint, .radioButton)
+
+    }
+    
+    func testStep_MultiValueConstraints_StringValue() {
+        
+        let inputStep = createMultipleChoiceQuestion(allowMultiple: false)
+        let inputField = inputStep
+        XCTAssertEqual(inputField.dataType, .collection(.singleChoice, .string))
         
         if let picker = inputField.pickerSource as? RSDChoiceOptions {
             let choices = picker.choices
@@ -206,6 +214,53 @@ class StepProtocolTests: XCTestCase {
                 XCTAssertEqual(choices[1].answerValue as? String, "false")
                 XCTAssertEqual(choices[2].text, "Maybe")
                 XCTAssertEqual(choices[2].answerValue as? String, "maybe")
+            } else {
+                XCTAssertEqual(choices.count, expectedCount, "\(choices)")
+            }
+        } else {
+            XCTFail("Picker not expected type: \(String(describing: inputField.pickerSource))")
+        }
+    }
+    
+    func testStep_MultiValueConstraints_NumberValue() {
+        
+        let constraints = SBBMultiValueConstraints()
+        constraints.allowMultiple = NSNumber(value: false)
+        constraints.dataType = "decimal"
+        constraints.addEnumerationObject(
+            SBBSurveyQuestionOption(dictionaryRepresentation:[
+                "label" : "Yes, I have done this",
+                "value" : 0,
+                "type" : "SurveyQuestionOption"
+                ]))
+        constraints.addEnumerationObject(
+            SBBSurveyQuestionOption(dictionaryRepresentation:[
+                "label" : "No, I have never done this",
+                "value" : 1,
+                "type" : "SurveyQuestionOption"
+                ]))
+        constraints.addEnumerationObject(
+            SBBSurveyQuestionOption(dictionaryRepresentation:[
+                "label" : "Maybe",
+                "value" : 2,
+                "type" : "SurveyQuestionOption"
+                ]))
+        
+        let inputStep = createQuestion(.list, constraints)
+
+        let inputField = inputStep
+        XCTAssertEqual(inputField.dataType, .collection(.singleChoice, .decimal))
+        
+        if let picker = inputField.pickerSource as? RSDChoiceOptions {
+            let choices = picker.choices
+            let expectedCount = 3
+            if choices.count == expectedCount {
+                XCTAssertEqual(choices[0].text, "Yes, I have done this")
+                XCTAssertEqual(choices[0].answerValue as? Double, 0)
+                XCTAssertEqual(choices[1].text, "No, I have never done this")
+                XCTAssertEqual(choices[1].answerValue as? Double, 1)
+                XCTAssertEqual(choices[2].text, "Maybe")
+                XCTAssertEqual(choices[2].answerValue as? Double, 2)
             } else {
                 XCTAssertEqual(choices.count, expectedCount, "\(choices)")
             }
