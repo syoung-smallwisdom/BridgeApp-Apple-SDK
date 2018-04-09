@@ -141,7 +141,7 @@ extension SBAActivityGroup {
     /// Returns the configuration activity info objects mapped by activity identifier.
     public var tasks : [RSDTaskInfo] {
         let map = SBABridgeConfiguration.shared.activityInfoMap
-        return self.activityIdentifiers.rsd_mapAndFilter { map[$0.stringValue] }
+        return self.activityIdentifiers.flatMap { map[$0.stringValue] }
     }
 }
 
