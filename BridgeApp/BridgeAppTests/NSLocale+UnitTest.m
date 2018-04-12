@@ -1,6 +1,6 @@
 //
-//  ViewController.swift
-//  BridgeAppExample
+//  NSLocale+UnitTest.m
+//  BridgeAppTests
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
@@ -31,20 +31,36 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-import UIKit
+#import "NSLocale+UnitTest.h"
+#import <objc/runtime.h>
 
-class ViewController: UIViewController {
+static NSLocale * _currentTestLocale;
+static BOOL _hasBeenSwizzled = false;
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+@implementation NSLocale (UnitTest)
+
++ (void)swizzleLocale {
+    if (!_hasBeenSwizzled) {
+        _hasBeenSwizzled = true;
+        
+        // Swizzle the locale
+        Method origMethod = class_getClassMethod(self, @selector(currentLocale));
+        Method newMethod = class_getClassMethod(self, @selector(rsd_testLocale));
+        method_exchangeImplementations(origMethod, newMethod);
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
 
++ (NSLocale *)rsd_testLocale {
+    return [self currentTestLocale];
+}
+
++ (NSLocale *)currentTestLocale {
+    return _currentTestLocale ? : [NSLocale localeWithLocaleIdentifier:@"en_US"];
+}
+
++ (void)setCurrentTestLocale: (NSLocale *)locale {
+    _currentTestLocale = locale;
+    [self swizzleLocale];
+}
+
+@end
