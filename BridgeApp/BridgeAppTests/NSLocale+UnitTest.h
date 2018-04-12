@@ -1,6 +1,6 @@
 //
-//  AppDelegate.swift
-//  BridgeAppExample
+//  NSLocale+UnitTest.h
+//  BridgeAppTests
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
@@ -31,20 +31,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+#import <Foundation/Foundation.h>
 
-import UIKit
-import BridgeApp
+@interface NSLocale (UnitTest)
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
++ (NSLocale * _Nonnull)currentTestLocale;
++ (void)setCurrentTestLocale: (NSLocale * _Nullable)locale;
 
-    var window: UIWindow?
-
-    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
-        SBABridgeConfiguration.shared.setupBridge(with: SBAFactory())
-        
-        return true
-    }
-}
-
+@end

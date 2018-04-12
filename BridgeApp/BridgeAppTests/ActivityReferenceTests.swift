@@ -42,12 +42,17 @@ struct TestImageWrapperDelegate : RSDImageWrapperDelegate {
     }
 }
 
+let testFactory: RSDFactory = {
+    RSDFactory.shared = SBAFactory()
+    return RSDFactory.shared
+}()
+
 var decoder: JSONDecoder {
-    return RSDFactory.shared.createJSONDecoder()
+    return testFactory.createJSONDecoder()
 }
 
 var encoder: JSONEncoder {
-    return RSDFactory.shared.createJSONEncoder()
+    return testFactory.createJSONEncoder()
 }
 
 class ActivityReferenceTests: XCTestCase {

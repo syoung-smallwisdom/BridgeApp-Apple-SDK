@@ -130,7 +130,6 @@ extension SBASingleActivityReference {
 
 extension SBBSchemaReference : SBASingleActivityReference, RSDSchemaInfo {
     
-    
     public var schemaInfo: RSDSchemaInfo? {
         return self
     }

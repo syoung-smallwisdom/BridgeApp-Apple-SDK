@@ -52,13 +52,16 @@ open class SBABridgeConfiguration {
     open var schemaReferenceMap : [String : SBBSchemaReference] = [:]
     
     /// Set up BridgeSDK including loading any cached configurations.
-    open func setupBridge() {
+    open func setupBridge(with factory: RSDFactory) {
         guard !_hasInitialized else { return }
         _hasInitialized = true
         
         // Insert this bundle into the list of localized bundles.
         Localization.insert(bundle: LocalizationBundle(Bundle(for: SBABridgeConfiguration.self)),
                             at: UInt(Localization.allBundles.count))
+        
+        // Set the factory to this one by default.
+        RSDFactory.shared = factory
         
         // TODO: implement syoung 02/16/2018
     }
