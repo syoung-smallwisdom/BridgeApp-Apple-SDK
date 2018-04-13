@@ -393,11 +393,11 @@ class ActivityReferenceTests: XCTestCase {
         XCTAssertTrue(compoundRef.hasStep(before: schemaRef1, with: taskResult))
         XCTAssertTrue(compoundRef.hasStep(before: schemaRef2, with: taskResult))
 
-        XCTAssertEqual(compoundRef.step(after: nil, with: &taskResult) as? SBBBridgeObject, surveyRef1)
-        XCTAssertEqual(compoundRef.step(after: surveyRef1, with: &taskResult) as? SBBBridgeObject, surveyRef2)
-        XCTAssertEqual(compoundRef.step(after: surveyRef2, with: &taskResult) as? SBBBridgeObject, schemaRef1)
-        XCTAssertEqual(compoundRef.step(after: schemaRef1, with: &taskResult) as? SBBBridgeObject, schemaRef2)
-        XCTAssertNil(compoundRef.step(after: schemaRef2, with: &taskResult))
+        XCTAssertEqual(compoundRef.step(after: nil, with: &taskResult).step as? SBBBridgeObject, surveyRef1)
+        XCTAssertEqual(compoundRef.step(after: surveyRef1, with: &taskResult).step as? SBBBridgeObject, surveyRef2)
+        XCTAssertEqual(compoundRef.step(after: surveyRef2, with: &taskResult).step as? SBBBridgeObject, schemaRef1)
+        XCTAssertEqual(compoundRef.step(after: schemaRef1, with: &taskResult).step as? SBBBridgeObject, schemaRef2)
+        XCTAssertNil(compoundRef.step(after: schemaRef2, with: &taskResult).step)
         
         XCTAssertEqual(compoundRef.step(before: schemaRef2, with: &taskResult) as? SBBBridgeObject, schemaRef1)
         XCTAssertEqual(compoundRef.step(before: schemaRef1, with: &taskResult) as? SBBBridgeObject, surveyRef2)
@@ -435,9 +435,9 @@ class ActivityReferenceTests: XCTestCase {
         XCTAssertFalse(compoundRef.hasStep(before: surveyRef1, with: taskResult))
         XCTAssertTrue(compoundRef.hasStep(before: surveyRef2, with: taskResult))
         
-        XCTAssertEqual(compoundRef.step(after: nil, with: &taskResult) as? SBBBridgeObject, surveyRef1)
-        XCTAssertEqual(compoundRef.step(after: surveyRef1, with: &taskResult) as? SBBBridgeObject, surveyRef2)
-        XCTAssertNil(compoundRef.step(after: surveyRef2, with: &taskResult))
+        XCTAssertEqual(compoundRef.step(after: nil, with: &taskResult).step as? SBBBridgeObject, surveyRef1)
+        XCTAssertEqual(compoundRef.step(after: surveyRef1, with: &taskResult).step as? SBBBridgeObject, surveyRef2)
+        XCTAssertNil(compoundRef.step(after: surveyRef2, with: &taskResult).step)
         
         XCTAssertEqual(compoundRef.step(before: surveyRef2, with: &taskResult) as? SBBBridgeObject, surveyRef1)
         XCTAssertNil(compoundRef.step(before: surveyRef1, with: &taskResult))
@@ -471,9 +471,9 @@ class ActivityReferenceTests: XCTestCase {
         XCTAssertFalse(compoundRef.hasStep(before: schemaRef1, with: taskResult))
         XCTAssertTrue(compoundRef.hasStep(before: schemaRef2, with: taskResult))
         
-        XCTAssertEqual(compoundRef.step(after: nil, with: &taskResult) as? SBBBridgeObject, schemaRef1)
-        XCTAssertEqual(compoundRef.step(after: schemaRef1, with: &taskResult) as? SBBBridgeObject, schemaRef2)
-        XCTAssertNil(compoundRef.step(after: schemaRef2, with: &taskResult))
+        XCTAssertEqual(compoundRef.step(after: nil, with: &taskResult).step as? SBBBridgeObject, schemaRef1)
+        XCTAssertEqual(compoundRef.step(after: schemaRef1, with: &taskResult).step as? SBBBridgeObject, schemaRef2)
+        XCTAssertNil(compoundRef.step(after: schemaRef2, with: &taskResult).step)
         
         XCTAssertEqual(compoundRef.step(before: schemaRef2, with: &taskResult) as? SBBBridgeObject, schemaRef1)
         XCTAssertNil(compoundRef.step(before: schemaRef1, with: &taskResult))
