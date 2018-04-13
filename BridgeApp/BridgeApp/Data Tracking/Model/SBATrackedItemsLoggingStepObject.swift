@@ -85,7 +85,7 @@ extension RSDCollectionResultObject : SBATrackedItemsResult {
     
     /// Returns the subset of selected answers that conform to the tracked item answer.
     public var selectedAnswers: [SBATrackedItemAnswer] {
-        return self.inputResults.flatMap { $0 as? SBATrackedItemAnswer }
+        return self.inputResults.compactMap { $0 as? SBATrackedItemAnswer }
     }
     
     /// Adds a `SBATrackedLoggingResultObject` for each identifier.

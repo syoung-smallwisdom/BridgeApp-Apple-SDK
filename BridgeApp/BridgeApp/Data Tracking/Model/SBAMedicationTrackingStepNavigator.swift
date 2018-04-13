@@ -330,7 +330,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsResult {
 
         // Filter and replace the meds.
         var allIdentifiers = newIdentifiers
-        var meds = items.flatMap { (item) -> SBAMedicationAnswer? in
+        var meds = items.compactMap { (item) -> SBAMedicationAnswer? in
             guard allIdentifiers.contains(item.identifier) else { return nil }
             allIdentifiers.remove(where: { $0 == item.identifier })
             var medication = getMedication(with: item.identifier)

@@ -124,7 +124,7 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
         // update selection for this group
         let ret = try itemGroup.select(item, indexPath: indexPath)
         let choiceGroups = self.itemGroups.filter { $0 is RSDChoicePickerTableItemGroup } as! [RSDChoicePickerTableItemGroup]
-        let selectedIdentifiers = choiceGroups.flatMap({ $0.answer as? [String] }).flatMap{$0}
+        let selectedIdentifiers = choiceGroups.compactMap({ $0.answer as? [String] }).flatMap{$0}
         let items = (self.step as? SBATrackedItemsStep)?.items ?? []
         
         // Update the answers
