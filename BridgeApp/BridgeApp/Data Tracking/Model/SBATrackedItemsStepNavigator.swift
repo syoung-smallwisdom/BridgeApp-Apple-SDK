@@ -354,7 +354,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
     }
     
     /// The next step in the series depends upon what information is remaining to be entered.
-    open func step(after step: RSDStep?, with result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection)? {
+    open func step(after step: RSDStep?, with result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection) {
         return (_step(after: step, with: result), .forward)
     }
     

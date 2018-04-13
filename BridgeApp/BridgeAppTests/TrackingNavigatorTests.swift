@@ -56,7 +56,7 @@ class TrackingNavigatorTests: XCTestCase {
             return
         }
 
-        let firstStep = tracker.step(after: nil, with: &taskPath.result)
+        let (firstStep, _) = tracker.step(after: nil, with: &taskPath.result)
         XCTAssertNotNil(firstStep)
         XCTAssertEqual(firstStep?.identifier, "selection")
 
@@ -77,7 +77,7 @@ class TrackingNavigatorTests: XCTestCase {
         selectionResult.updateSelected(to: ["itemA2", "itemB1", "itemC3"], with: selectionStep.items)
         taskPath.result.appendStepHistory(with: selectionResult)
 
-        let secondStep = tracker.step(after: selectionStep, with: &taskPath.result)
+        let (secondStep, _) = tracker.step(after: selectionStep, with: &taskPath.result)
         XCTAssertNotNil(secondStep)
         XCTAssertEqual(secondStep?.identifier, "logging")
 
@@ -90,7 +90,7 @@ class TrackingNavigatorTests: XCTestCase {
         XCTAssertFalse(tracker.hasStep(after: loggingStep, with: taskPath.result))
         XCTAssertFalse(tracker.hasStep(before: loggingStep, with: taskPath.result))
         XCTAssertNil(tracker.step(before: loggingStep, with: &taskPath.result))
-        XCTAssertNil(tracker.step(after: loggingStep, with: &taskPath.result))
+        XCTAssertNil(tracker.step(after: loggingStep, with: &taskPath.result).step)
         
         // The logging should use the "Submit" title for forward navigation.
         if let action = loggingStep.action(for: .navigation(.goForward), on: loggingStep) {
@@ -113,7 +113,7 @@ class TrackingNavigatorTests: XCTestCase {
         initialResult.updateSelected(to: ["itemA2", "itemB1", "itemC3"], with: tracker.items)
         tracker.previousResult = initialResult
         
-        let firstStep = tracker.step(after: nil, with: &taskPath.result)
+        let (firstStep, _) = tracker.step(after: nil, with: &taskPath.result)
         XCTAssertNotNil(firstStep)
         XCTAssertEqual(firstStep?.identifier, "logging")
         
@@ -126,7 +126,7 @@ class TrackingNavigatorTests: XCTestCase {
         XCTAssertFalse(tracker.hasStep(after: loggingStep, with: taskPath.result))
         XCTAssertFalse(tracker.hasStep(before: loggingStep, with: taskPath.result))
         XCTAssertNil(tracker.step(before: loggingStep, with: &taskPath.result))
-        XCTAssertNil(tracker.step(after: loggingStep, with: &taskPath.result))
+        XCTAssertNil(tracker.step(after: loggingStep, with: &taskPath.result).step)
         
         // The logging should use the "Submit" title for forward navigation.
         if let action = loggingStep.action(for: .navigation(.goForward), on: loggingStep) {

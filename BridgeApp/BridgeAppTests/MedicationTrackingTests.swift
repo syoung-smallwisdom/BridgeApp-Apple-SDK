@@ -119,7 +119,7 @@ class MedicationTrackingTests: XCTestCase {
     
         var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "medication")
         
-        let firstStep = medTracker.step(after: nil, with: &taskResult)
+        let (firstStep, _) = medTracker.step(after: nil, with: &taskResult)
         XCTAssertNotNil(firstStep)
         
         guard let selectionStep = firstStep as? SBATrackedSelectionStepObject else {
@@ -141,7 +141,7 @@ class MedicationTrackingTests: XCTestCase {
         taskResult.appendStepHistory(with: selectionResult)
         
         // Next step after selection is review.
-        let secondStep = medTracker.step(after: firstStep, with: &taskResult)
+        let (secondStep, _) = medTracker.step(after: firstStep, with: &taskResult)
         XCTAssertNotNil(secondStep)
         
         // Check that the med tracker can navigate to any step by identifier
@@ -171,7 +171,7 @@ class MedicationTrackingTests: XCTestCase {
         
         taskResult.appendStepHistory(with: secondResult)
         
-        let thirdStep = medTracker.step(after: secondStep, with: &taskResult)
+        let (thirdStep, _) = medTracker.step(after: secondStep, with: &taskResult)
         XCTAssertNotNil(thirdStep)
         XCTAssertEqual(thirdStep?.identifier, "medA2")
         
@@ -187,7 +187,7 @@ class MedicationTrackingTests: XCTestCase {
 
         taskResult.appendStepHistory(with: medA2Result())
         
-        let fourthStep = medTracker.step(after: thirdStep, with: &taskResult)
+        let (fourthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
         XCTAssertNotNil(fourthStep)
         XCTAssertEqual(fourthStep?.identifier, "medB4")
         
@@ -204,7 +204,7 @@ class MedicationTrackingTests: XCTestCase {
         taskResult.appendStepHistory(with: medB4Result())
         
         // Next step after selection is review.
-        let fifthStep = medTracker.step(after: fourthStep, with: &taskResult)
+        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
         XCTAssertNotNil(fifthStep)
         
         guard let finalReviewStep = fifthStep as? SBATrackedItemsReviewStepObject else {
@@ -228,11 +228,12 @@ class MedicationTrackingTests: XCTestCase {
         
         var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "medication")
         
-        guard let selectionStep = medTracker.step(after: nil, with: &taskResult) as? SBATrackedSelectionStepObject else {
+        let (step1, _) = medTracker.step(after: nil, with: &taskResult)
+        guard let selectionStep = step1 as? SBATrackedSelectionStepObject else {
             XCTFail("Failed to create the selection step. Exiting.")
             return
         }
-        
+         
         guard let firstResult = selectionStep.instantiateStepResult() as? SBATrackedItemsResult else {
             XCTFail("Failed to create the expected result. Exiting.")
             return
@@ -241,7 +242,8 @@ class MedicationTrackingTests: XCTestCase {
         selectionResult.updateSelected(to: ["medA2", "medB4"], with: selectionStep.items)
         taskResult.appendStepHistory(with: selectionResult)
         
-        guard let initialReviewStep = medTracker.step(after: selectionStep, with: &taskResult) as? SBATrackedItemsReviewStepObject else {
+        let (step2, _) = medTracker.step(after: selectionStep, with: &taskResult)
+        guard let initialReviewStep = step2 as? SBATrackedItemsReviewStepObject else {
             XCTFail("Failed to create the initial review step. Exiting.")
             return
         }
@@ -255,7 +257,7 @@ class MedicationTrackingTests: XCTestCase {
         // Set up the review step with a custom order by setting the next step identifier
         initialReviewStep.nextStepIdentifier = "medB4"
         
-        let thirdStep = medTracker.step(after: initialReviewStep, with: &taskResult)
+        let (thirdStep, _) = medTracker.step(after: initialReviewStep, with: &taskResult)
 
         XCTAssertNotNil(thirdStep)
         XCTAssertEqual(thirdStep?.identifier, "medB4")
@@ -269,7 +271,7 @@ class MedicationTrackingTests: XCTestCase {
         
         taskResult.appendStepHistory(with: medB4Result())
         
-        let fourthStep = medTracker.step(after: thirdStep, with: &taskResult)
+        let (fourthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
         XCTAssertNotNil(fourthStep)
         XCTAssertEqual(fourthStep?.identifier, "medA2")
         
@@ -286,7 +288,7 @@ class MedicationTrackingTests: XCTestCase {
         taskResult.appendStepHistory(with: medA2Result())
         
         // Next step after selection is review.
-        let fifthStep = medTracker.step(after: fourthStep, with: &taskResult)
+        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
         XCTAssertNotNil(fifthStep)
         
         guard let finalReviewStep = fifthStep as? SBATrackedItemsReviewStepObject else {
@@ -340,7 +342,7 @@ class MedicationTrackingTests: XCTestCase {
         }
 
         // For the case where the meds have been set, this should jump to logging the medication results.
-        let firstStep = medTracker.step(after: nil, with: &taskResult)
+        let (firstStep, _) = medTracker.step(after: nil, with: &taskResult)
         
         guard let loggingStep = firstStep as? SBAMedicationLoggingStepObject else {
             XCTFail("First step not of expected type. For a follow-up run should start with logging step.")
@@ -351,7 +353,7 @@ class MedicationTrackingTests: XCTestCase {
         XCTAssertFalse(medTracker.hasStep(after: loggingStep, with: taskResult))
         XCTAssertFalse(medTracker.hasStep(before: loggingStep, with: taskResult))
         XCTAssertNil(medTracker.step(before: loggingStep, with: &taskResult))
-        XCTAssertNil(medTracker.step(after: loggingStep, with: &taskResult))
+        XCTAssertNil(medTracker.step(after: loggingStep, with: &taskResult).step)
     }
     
     // MARK: Shared tests

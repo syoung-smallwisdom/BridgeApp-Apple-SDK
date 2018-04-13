@@ -232,7 +232,7 @@ extension SBBCompoundActivity : RSDStepNavigator {
         return idx > 0
     }
     
-    public func step(after step: RSDStep?, with result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection)? {
+    public func step(after step: RSDStep?, with result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection) {
         return (_step(after: step), .forward)
     }
     
