@@ -211,7 +211,7 @@ extension SBBCompoundActivity : SBAActivityReference {
 }
 
 extension SBBCompoundActivity : RSDStepNavigator {
-    
+
     public func step(with identifier: String) -> RSDStep? {
         return _surveyList.first(where: { $0.identifier == identifier }) ??
             _schemaList.first(where: { $0.identifier == identifier })
@@ -232,7 +232,11 @@ extension SBBCompoundActivity : RSDStepNavigator {
         return idx > 0
     }
     
-    public func step(after step: RSDStep?, with result: inout RSDTaskResult) -> RSDStep? {
+    public func step(after step: RSDStep?, with result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection)? {
+        return (_step(after: step), .forward)
+    }
+    
+    private func _step(after step: RSDStep?) -> RSDStep? {
         if step == nil {
             return _surveyList.first ?? _schemaList.first
         } else if let ref = step as? SBBSurveyReference {
