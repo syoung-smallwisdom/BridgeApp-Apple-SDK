@@ -64,9 +64,9 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         }
         
         let inputField = RSDChoiceInputFieldObject(identifier: step.identifier, choices: result.selectedAnswers, dataType: .collection(.multipleChoice, .string), uiHint: .logging)
-        let trackedItems = result.selectedAnswers.enumerated().map { (idx, item) -> SBATrackedLoggingTableItem in
+        let trackedItems = result.selectedAnswers.enumerated().map { (idx, item) -> RSDTableItem in
             let choice: RSDChoice = step.items.first(where: { $0.identifier == item.identifier }) ?? item
-            return SBATrackedLoggingTableItem(rowIndex: idx, inputField: inputField, uiHint: .logging, choice: choice)
+            return self.instantiateTableItem(at: idx, inputField: inputField, itemAnswer: item, choice: choice)
         }
         
         var itemGroups: [RSDTableItemGroup] = [RSDTableItemGroup(beginningRowIndex: 0, items: trackedItems)]
@@ -80,6 +80,17 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         }
         
         return (sections, itemGroups)
+    }
+    
+    /// Instantiate an appropriate table item for the given row.
+    /// - parameters:
+    ///     - rowIndex: The row index for the table item.
+    ///     - inputField: The input field associated with the table item.
+    ///     - itemAnswer: The tracked item answer currently set for this row.
+    ///     - choice: The choice for this row.
+    /// - returns: New instance of a table item appropriate to this row.
+    open class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
+        return SBATrackedLoggingTableItem(rowIndex: rowIndex, inputField: inputField, uiHint: .logging, choice: choice)
     }
     
     /// Override to mark the item as logged.

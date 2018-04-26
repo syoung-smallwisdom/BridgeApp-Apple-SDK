@@ -34,3 +34,6 @@
 
 "TIME_NOW" = "Now"; // Time if now
 
+/* Data tracking */
+"ADD_DURATION_BUTTON" = "Add duration"; // The title for the "Add duration" button of the symptoms tracking.
+

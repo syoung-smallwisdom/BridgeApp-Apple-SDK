@@ -52,6 +52,9 @@ extension RSDStepType {
     
     /// Defaults to creating a `RSDTrackedSelectionStepObject`.
     public static let selection: RSDStepType = "selection"
+    
+    /// Defaults to creating a `SBASymptomLoggingStepObject`.
+    public static let symptomLogging: RSDStepType = "symptomLogging"
 }
 
 open class SBAFactory : RSDFactory {
@@ -73,6 +76,10 @@ open class SBAFactory : RSDFactory {
         switch (type) {
         case .selection:
             return try SBATrackedSelectionStepObject(from: decoder)
+        case .logging:
+            return try SBATrackedItemsLoggingStepObject(from: decoder)
+        case .symptomLogging:
+            return try SBASymptomLoggingStepObject(from: decoder)
         default:
             return try super.decodeStep(from: decoder, with: type)
         }

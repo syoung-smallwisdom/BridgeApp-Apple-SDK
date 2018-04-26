@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="668" id="KGk-i7-Jjw" customClass="SBASymptomLoggingCell" customModule="BridgeApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="668"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="667.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nRL-JT-023">
+                        <rect key="frame" x="29" y="12" width="41.5" height="24"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nap-8b-dch">
+                        <rect key="frame" x="29" y="36" width="56" height="19.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Severity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fVg-UM-rk1">
+                        <rect key="frame" x="29" y="67.5" width="64" height="19.5"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qfO-hr-hg7" userLabel="Severity Line Separator">
+                        <rect key="frame" x="0.0" y="89" width="320" height="1"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="uh6-UY-rdz"/>
+                        </constraints>
+                    </view>
+                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="fjX-fh-Mlp">
+                        <rect key="frame" x="16" y="100" width="288" height="60"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BZI-YR-K5P" customClass="SBASeverityButton" customModule="BridgeApp" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="70" height="60"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="None"/>
+                                <connections>
+                                    <action selector="severityTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="thS-iV-ulR"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wfi-R4-TPv" customClass="SBASeverityButton" customModule="BridgeApp" customModuleProvider="target">
+                                <rect key="frame" x="73" y="0.0" width="69.5" height="60"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Mild"/>
+                                <connections>
+                                    <action selector="severityTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="OQF-if-UEn"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="flH-oC-dvF" customClass="SBASeverityButton" customModule="BridgeApp" customModuleProvider="target">
+                                <rect key="frame" x="145.5" y="0.0" width="70" height="60"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Moderate"/>
+                                <connections>
+                                    <action selector="severityTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ZGP-SC-ByR"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gfU-76-99P" customClass="SBASeverityButton" customModule="BridgeApp" customModuleProvider="target">
+                                <rect key="frame" x="218.5" y="0.0" width="69.5" height="60"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Severe"/>
+                                <connections>
+                                    <action selector="severityTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="U2G-qg-0zK"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="60" id="e2W-fX-OV3"/>
+                        </constraints>
+                    </stackView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vqS-Y4-aky">
+                        <rect key="frame" x="29" y="184" width="77.5" height="19.5"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Kwf-zh-HMw" userLabel="Timing Line Separator">
+                        <rect key="frame" x="0.0" y="205.5" width="320" height="1"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="JEq-6z-fgC"/>
+                        </constraints>
+                    </view>
+                    <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="975" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dyG-4c-Rfv" customClass="RSDUnderlinedButton" customModule="ResearchStack2UI">
+                        <rect key="frame" x="29" y="206.5" width="65" height="32.5"/>
+                        <state key="normal" title="7:00 AM"/>
+                        <connections>
+                            <action selector="timeTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ZJf-sz-25D"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rVc-pW-GGU" customClass="RSDUnderlinedButton" customModule="ResearchStack2UI">
+                        <rect key="frame" x="114" y="206" width="99" height="32.5"/>
+                        <state key="normal" title="Add duration"/>
+                        <connections>
+                            <action selector="addDurationTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="fnJ-aZ-Rpz"/>
+                        </connections>
+                    </button>
+                    <datePicker contentMode="scaleToFill" verticalHuggingPriority="980" verticalCompressionResistancePriority="980" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="Z6W-kF-sY1">
+                        <rect key="frame" x="0.0" y="205" width="320" height="216"/>
+                        <date key="date" timeIntervalSinceReferenceDate="546545880.15172601">
+                            <!--2018-04-27 18:18:00 +0000-->
+                        </date>
+                    </datePicker>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S6Z-hb-7Zh">
+                        <rect key="frame" x="29" y="418" width="54" height="19.5"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S0D-Pw-QHw" userLabel="Severity Line Separator">
+                        <rect key="frame" x="0.0" y="440" width="320" height="1"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="uVL-y3-7AX"/>
+                        </constraints>
+                    </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q4V-bp-JYL" customClass="RSDDetailsChevronButton" customModule="BridgeApp" customModuleProvider="target">
+                        <rect key="frame" x="260" y="413" width="44" height="24"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="44" id="4vB-ke-EQ3"/>
+                            <constraint firstAttribute="height" constant="24" id="d9X-Ns-SnZ"/>
+                        </constraints>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="S6Z-hb-7Zh" firstAttribute="top" secondItem="dyG-4c-Rfv" secondAttribute="bottom" priority="950" constant="24" id="1aK-IQ-Xmr"/>
+                    <constraint firstItem="nRL-JT-023" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="29" id="1dO-4W-KTb"/>
+                    <constraint firstItem="Kwf-zh-HMw" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="1zf-Zu-VyS"/>
+                    <constraint firstItem="fjX-fh-Mlp" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="5B8-rr-5Dv"/>
+                    <constraint firstItem="fVg-UM-rk1" firstAttribute="top" secondItem="nap-8b-dch" secondAttribute="bottom" constant="12" id="5WR-X3-k3h"/>
+                    <constraint firstItem="qfO-hr-hg7" firstAttribute="top" secondItem="fVg-UM-rk1" secondAttribute="bottom" constant="2" id="9l2-ds-EhH"/>
+                    <constraint firstItem="S0D-Pw-QHw" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="9y8-z4-ctB"/>
+                    <constraint firstItem="fVg-UM-rk1" firstAttribute="leading" secondItem="nap-8b-dch" secondAttribute="leading" id="AR7-mG-UYj"/>
+                    <constraint firstItem="qfO-hr-hg7" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="BaU-ey-do3"/>
+                    <constraint firstItem="fjX-fh-Mlp" firstAttribute="top" secondItem="qfO-hr-hg7" secondAttribute="bottom" constant="10" id="FYZ-jp-Oxe"/>
+                    <constraint firstItem="nRL-JT-023" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="Jvl-hN-b11"/>
+                    <constraint firstItem="rVc-pW-GGU" firstAttribute="centerY" secondItem="dyG-4c-Rfv" secondAttribute="centerY" id="Jyr-2p-DoQ"/>
+                    <constraint firstItem="Z6W-kF-sY1" firstAttribute="top" secondItem="Kwf-zh-HMw" secondAttribute="bottom" constant="-1.5" id="OVA-aF-N5n"/>
+                    <constraint firstItem="S6Z-hb-7Zh" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="13" id="RzL-S1-MIJ"/>
+                    <constraint firstItem="nap-8b-dch" firstAttribute="top" secondItem="nRL-JT-023" secondAttribute="bottom" id="Ttm-fO-Nd3"/>
+                    <constraint firstItem="Z6W-kF-sY1" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="W1h-hb-0Jm"/>
+                    <constraint firstItem="vqS-Y4-aky" firstAttribute="top" secondItem="fjX-fh-Mlp" secondAttribute="bottom" constant="24" id="WRC-75-bJ9"/>
+                    <constraint firstAttribute="trailing" secondItem="S0D-Pw-QHw" secondAttribute="trailing" id="Xx8-1y-adj"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="q4V-bp-JYL" secondAttribute="trailing" id="a5n-IL-Wjk"/>
+                    <constraint firstItem="dyG-4c-Rfv" firstAttribute="top" secondItem="Kwf-zh-HMw" secondAttribute="bottom" id="aaZ-pe-yNY"/>
+                    <constraint firstItem="Kwf-zh-HMw" firstAttribute="top" secondItem="vqS-Y4-aky" secondAttribute="bottom" constant="2" id="b49-Eh-bAe"/>
+                    <constraint firstAttribute="trailing" secondItem="Kwf-zh-HMw" secondAttribute="trailing" id="fLQ-gc-bPv"/>
+                    <constraint firstItem="dyG-4c-Rfv" firstAttribute="leading" secondItem="vqS-Y4-aky" secondAttribute="leading" id="kJd-op-kx5"/>
+                    <constraint firstItem="Kwf-zh-HMw" firstAttribute="top" secondItem="vqS-Y4-aky" secondAttribute="bottom" constant="2" id="lrO-jQ-rnP"/>
+                    <constraint firstItem="nap-8b-dch" firstAttribute="leading" secondItem="nRL-JT-023" secondAttribute="leading" id="mjc-34-Q1U"/>
+                    <constraint firstAttribute="trailing" secondItem="qfO-hr-hg7" secondAttribute="trailing" id="nTG-WJ-L5W"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="fjX-fh-Mlp" secondAttribute="trailing" id="oJl-a9-NCU"/>
+                    <constraint firstAttribute="trailing" secondItem="Z6W-kF-sY1" secondAttribute="trailing" id="oX1-f4-aZF"/>
+                    <constraint firstItem="vqS-Y4-aky" firstAttribute="leading" secondItem="fVg-UM-rk1" secondAttribute="leading" id="oav-5O-QSz"/>
+                    <constraint firstItem="rVc-pW-GGU" firstAttribute="leading" secondItem="dyG-4c-Rfv" secondAttribute="trailing" constant="20" id="pb4-AT-tHQ"/>
+                    <constraint firstItem="S0D-Pw-QHw" firstAttribute="top" secondItem="S6Z-hb-7Zh" secondAttribute="bottom" constant="2" id="qEE-zj-foe"/>
+                    <constraint firstItem="S6Z-hb-7Zh" firstAttribute="top" secondItem="Z6W-kF-sY1" secondAttribute="bottom" constant="-3" id="u12-rs-HlF"/>
+                    <constraint firstItem="S0D-Pw-QHw" firstAttribute="top" secondItem="q4V-bp-JYL" secondAttribute="bottom" constant="3" id="unI-96-sjg"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="durationButton" destination="rVc-pW-GGU" id="UcD-Yg-M4O"/>
+                <outlet property="subtitleLabel" destination="nap-8b-dch" id="8Q0-x0-i1Y"/>
+                <outlet property="timeButton" destination="dyG-4c-Rfv" id="BfS-48-ojY"/>
+                <outlet property="titleLabel" destination="nRL-JT-023" id="Ckx-ja-mZa"/>
+                <outletCollection property="severityButtons" destination="BZI-YR-K5P" collectionClass="NSMutableArray" id="gNk-ao-pNz"/>
+                <outletCollection property="severityButtons" destination="Wfi-R4-TPv" collectionClass="NSMutableArray" id="TNM-q0-zK0"/>
+                <outletCollection property="severityButtons" destination="flH-oC-dvF" collectionClass="NSMutableArray" id="c21-7t-Xh6"/>
+                <outletCollection property="severityButtons" destination="gfU-76-99P" collectionClass="NSMutableArray" id="4Oo-LI-rNO"/>
+                <outletCollection property="separatorLines" destination="qfO-hr-hg7" collectionClass="NSMutableArray" id="0at-It-Fht"/>
+                <outletCollection property="labels" destination="fVg-UM-rk1" collectionClass="NSMutableArray" id="7eF-zm-Kb8"/>
+                <outletCollection property="labels" destination="vqS-Y4-aky" collectionClass="NSMutableArray" id="UOc-9f-9Qj"/>
+                <outletCollection property="separatorLines" destination="Kwf-zh-HMw" collectionClass="NSMutableArray" id="D3w-VS-3fw"/>
+                <outletCollection property="separatorLines" destination="S0D-Pw-QHw" collectionClass="NSMutableArray" id="1Sg-oL-Z17"/>
+                <outletCollection property="labels" destination="S6Z-hb-7Zh" collectionClass="NSMutableArray" id="ix2-n1-CGr"/>
+            </connections>
+            <point key="canvasLocation" x="-63" y="106"/>
+        </tableViewCell>
+    </objects>
+</document>
