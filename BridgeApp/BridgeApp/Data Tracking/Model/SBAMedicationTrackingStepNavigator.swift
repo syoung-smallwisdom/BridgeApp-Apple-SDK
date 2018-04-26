@@ -63,7 +63,7 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         let addMoreAction = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_ADD_MORE_BUTTON"))
         let goForwardAction = RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SUBMIT"))
         step.actions = [.navigation(.goForward) : goForwardAction,
-                        .navigation(.addMore) : addMoreAction]
+                        .addMore : addMoreAction]
         
         return step
     }

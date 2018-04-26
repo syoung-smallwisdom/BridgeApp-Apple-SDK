@@ -39,6 +39,12 @@ extension RSDFormUIHint {
     public static let logging: RSDFormUIHint = "logging"
 }
 
+extension RSDUIActionType {
+    
+    /// Add more selected items.
+    public static let addMore: RSDUIActionType = "addMore"
+}
+
 /// `SBATrackedLoggingDataSource` is a concrete implementation of the `RSDTableDataSource` protocol
 /// that is designed to be used with a `SBATrackedItemsStep` intended for logging of items that were
 /// selected in a previous step.
@@ -66,7 +72,7 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         var itemGroups: [RSDTableItemGroup] = [RSDTableItemGroup(beginningRowIndex: 0, items: trackedItems)]
         var sections: [RSDTableSection] = [RSDTableSection(identifier: "logging", sectionIndex: 0, tableItems: trackedItems)]
         
-        let actionType: RSDUIActionType = .navigation(.addMore)
+        let actionType: RSDUIActionType = .addMore
         if let uiStep = step as? RSDUIActionHandler, let action = uiStep.action(for: actionType, on: step) {
             let tableItem = RSDModalStepTableItem(identifier: actionType.stringValue, rowIndex: 0, reuseIdentifier: RSDFormUIHint.modalButton.stringValue, action: action)
             itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: [tableItem]))

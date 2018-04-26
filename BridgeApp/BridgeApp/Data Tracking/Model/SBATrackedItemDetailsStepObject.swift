@@ -80,9 +80,9 @@ open class SBATrackedItemDetailsStepObject : RSDFormUIStepObject, SBATrackedItem
     
     private func _commonInit() {
         // Add the customization of the add more and go forward buttons.
-        if self.actions?[.navigation(.addMore)] == nil {
+        if self.actions?[.addMore] == nil {
             let addMoreAction = RSDUIActionObject(buttonTitle: Localization.localizedString("ADD_ANOTHER_SCHEDULE_BUTTON"))
-            self.actions = [.navigation(.addMore) : addMoreAction]
+            self.actions = [.addMore : addMoreAction]
         }
     }
     
