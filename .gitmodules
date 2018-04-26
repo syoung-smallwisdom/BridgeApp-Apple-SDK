@@ -3,4 +3,4 @@
 	url = https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git
 [submodule "SageResearch"]
 	path = SageResearch
-	url = https://github.com/ResearchKit/SageResearch.git
+	url = https://github.com/Sage-Bionetworks/SageResearch.git
