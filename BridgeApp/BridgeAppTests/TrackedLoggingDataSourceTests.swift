@@ -284,7 +284,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         let taskPath = RSDTaskPath(task: task)
         
         let step = SBATrackedItemsLoggingStepObject(identifier: "logging", items: items, sections: sections)
-        step.actions = [ .navigation(.addMore) : RSDUIActionObject(buttonTitle: "Edit Items") ]
+        step.actions = [.addMore : RSDUIActionObject(buttonTitle: "Edit Items") ]
         step.result = result
 
         guard let dataSource = step.instantiateDataSource(with: taskPath, for: [.logging, .list, .textfield]) else {

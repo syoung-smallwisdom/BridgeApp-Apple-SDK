@@ -71,7 +71,7 @@ class MedicationTrackingTests: XCTestCase {
         XCTAssertEqual(reviewStep.addDetailsTitle, "Add medication details")
         XCTAssertEqual(reviewStep.addDetailsSubtitle, "Select to add your medication dosing information and schedule(s).")
         XCTAssertEqual(reviewStep.reviewTitle, "Review medications")
-        if let action = reviewStep.actions?[.navigation(.addMore)] {
+        if let action = reviewStep.actions?[.addMore] {
             XCTAssertEqual(action.buttonTitle, "＋ Add medications")
         } else {
             XCTFail("Step action does not include `.addMore`")

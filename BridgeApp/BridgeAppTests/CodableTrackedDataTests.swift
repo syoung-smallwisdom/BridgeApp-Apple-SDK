@@ -532,7 +532,7 @@ class CodableTrackedDataTests: XCTestCase {
             }
             
             XCTAssertEqual((navigator.loggingStep as? RSDUIStep)?.title, "Your logged items")
-            XCTAssertEqual((navigator.loggingStep as? RSDUIStepObject)?.actions?[.navigation(.addMore)]?.buttonTitle, "Edit Logged Items")
+            XCTAssertEqual((navigator.loggingStep as? RSDUIStepObject)?.actions?[.addMore]?.buttonTitle, "Edit Logged Items")
             
         } catch let err {
             XCTFail("Failed to decode/encode object: \(err)")
@@ -556,9 +556,7 @@ class CodableTrackedDataTests: XCTestCase {
             "actions": { "goForward": { "buttonTitle" : "Go, Dogs! Go!" },
                          "cancel": { "iconName" : "closeX" },
                          "learnMore": { "iconName" : "infoIcon",
-                                        "url" : "fooInfo" },
-                         "skip": { "buttonTitle" : "not applicable",
-                                    "skipToIdentifier": "boo"}
+                                        "url" : "fooInfo" }
                         },
             "shouldHideActions": ["goBackward", "skip"],
             "items" : [ {"identifier" : "itemA1", "sectionIdentifier" : "a"},
@@ -595,11 +593,6 @@ class CodableTrackedDataTests: XCTestCase {
             XCTAssertNotNil(learnMoreAction)
             XCTAssertEqual((learnMoreAction as? RSDWebViewUIActionObject)?.iconName, "infoIcon")
             XCTAssertEqual((learnMoreAction as? RSDWebViewUIActionObject)?.url, "fooInfo")
-            
-            let skipAction = object.action(for: .navigation(.skip), on: object)
-            XCTAssertNotNil(skipAction)
-            XCTAssertEqual((skipAction as? RSDSkipToUIActionObject)?.buttonTitle, "not applicable")
-            XCTAssertEqual((skipAction as? RSDSkipToUIActionObject)?.skipToIdentifier, "boo")
             
             XCTAssertTrue(object.shouldHideAction(for: .navigation(.goBackward), on: object) ?? false)
             
