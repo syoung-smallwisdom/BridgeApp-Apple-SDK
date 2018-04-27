@@ -32,7 +32,7 @@
 //
 
 import Foundation
-
+import BridgeSDK
 
 /// `SBABridgeConfiguration` is used as a wrapper for combining task group and task info objects that are
 /// singletons with the `SBBActivity` objects that contain a subset of the information used to implement
@@ -63,9 +63,26 @@ open class SBABridgeConfiguration {
         // Set the factory to this one by default.
         RSDFactory.shared = factory
         
-        // TODO: implement syoung 02/16/2018
+        BridgeSDK.setup()
+        
+        if let appConfig = BridgeSDK.appConfig() {
+            setup(fromAppConfig: appConfig)
+        } else {
+            // this is the first time this app has been set up for Bridge and the appConfig hasn't
+            // had time to load yet, so we'll explicitly request it and defer that part of configuration
+            // until its completion handler gets called.
+            (SBBComponentManager.component(SBBStudyManager.classForCoder()) as! SBBStudyManagerProtocol).getAppConfig { (response, error) in
+                guard error == nil, let appConfig = response as? SBBAppConfig else { return }
+                self.setup(fromAppConfig: appConfig)
+            }
+            return
+        }
     }
     private var _hasInitialized = false
+    
+    open func setup(fromAppConfig appConfig: SBBAppConfig) {
+        // TODO: implement emm 2018-04-13
+    }
     
     /// Convenience method for setting up the mappings used by this app to sort and filter schedules
     /// by task group and to extend the `SBAActivityReference` implementations.
