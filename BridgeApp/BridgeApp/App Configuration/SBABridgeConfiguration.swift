@@ -63,10 +63,11 @@ open class SBABridgeConfiguration {
         // Set the factory to this one by default.
         RSDFactory.shared = factory
         
-        // TODO: implement syoung 02/16/2018
         BridgeSDK.setup()
         
-        guard let appConfig = BridgeSDK.appConfig() else {
+        if let appConfig = BridgeSDK.appConfig() {
+            setup(fromAppConfig: appConfig)
+        } else {
             // this is the first time this app has been set up for Bridge and the appConfig hasn't
             // had time to load yet, so we'll explicitly request it and defer that part of configuration
             // until its completion handler gets called.
@@ -76,8 +77,6 @@ open class SBABridgeConfiguration {
             }
             return
         }
-        setup(fromAppConfig: appConfig)
-        
     }
     private var _hasInitialized = false
     
