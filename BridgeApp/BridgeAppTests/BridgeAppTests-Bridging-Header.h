@@ -31,4 +31,4 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-@import ResearchStack2_UnitTest;
+@import Research_UnitTest;
