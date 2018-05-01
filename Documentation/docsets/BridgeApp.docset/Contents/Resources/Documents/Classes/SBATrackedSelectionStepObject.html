@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SBATrackedSelectionStepObject Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/SBATrackedSelectionStepObject" class="dashAnchor"></a>
+    <a title="SBATrackedSelectionStepObject Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">BridgeApp Docs</a></p>
+        <p class="header-right"><a href="https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">BridgeApp Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        SBATrackedSelectionStepObject Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/SBABridgeConfiguration.html">SBABridgeConfiguration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAMedicationDetailsStepObject.html">SBAMedicationDetailsStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/s:9BridgeApp30SBAMedicationLoggingStepObjectC">SBAMedicationLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASurveyConfiguration.html">SBASurveyConfiguration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASurveyWrapper.html">SBASurveyWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemDetailsStepObject.html">SBATrackedItemDetailsStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsLoggingStepObject.html">SBATrackedItemsLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsReviewStepObject.html">SBATrackedItemsReviewStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsStepNavigator.html">SBATrackedItemsStepNavigator</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsStepNavigator.html#/s:9BridgeApp28SBATrackedItemsStepNavigatorC0D10CodingKeysO">– ItemsCodingKeys</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsStepNavigator.html#/s:9BridgeApp28SBATrackedItemsStepNavigatorC0E11IdentifiersO">– StepIdentifiers</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingCell.html">SBATrackedLoggingCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingDataSource.html">SBATrackedLoggingDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingStepViewController.html">SBATrackedLoggingStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingTableItem.html">SBATrackedLoggingTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedSelectionDataSource.html">SBATrackedSelectionDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedSelectionStepObject.html">SBATrackedSelectionStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackingDataSource.html">SBATrackingDataSource</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDCollectionResultObject.html">RSDCollectionResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDFormUIHint.html">RSDFormUIHint</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDIdentifier.html">RSDIdentifier</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDStepNavigatorType.html">RSDStepNavigatorType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDStepType.html">RSDStepType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDUIActionType.html">RSDUIActionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBActivity.html">SBBActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBBridgeObject.html">SBBBridgeObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBCompoundActivity.html">SBBCompoundActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBDateConstraints.html">SBBDateConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBDateTimeConstraints.html">SBBDateTimeConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBDurationConstraints.html">SBBDurationConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBImage.html">SBBImage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBMultiValueConstraints.html">SBBMultiValueConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBScheduledActivity.html">SBBScheduledActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSchemaReference.html">SBBSchemaReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBStringConstraints.html">SBBStringConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurvey.html">SBBSurvey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyElement.html">SBBSurveyElement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyInfoScreen.html">SBBSurveyInfoScreen</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyQuestion.html">SBBSurveyQuestion</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyQuestionOption.html">SBBSurveyQuestionOption</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyReference.html">SBBSurveyReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyRule.html">SBBSurveyRule</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBTaskReference.html">SBBTaskReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBTimeConstraints.html">SBBTimeConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/sbb_InputField.html">sbb_InputField</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAActivityGroup.html">SBAActivityGroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAActivityInfo.html">SBAActivityInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAActivityReference.html">SBAActivityReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAMedication.html">SBAMedication</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAOptionalImageVendor.html">SBAOptionalImageVendor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBASingleActivityReference.html">SBASingleActivityReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItem.html">SBATrackedItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemAnswer.html">SBATrackedItemAnswer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemDetailsStep.html">SBATrackedItemDetailsStep</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemsResult.html">SBATrackedItemsResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemsStep.html">SBATrackedItemsStep</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedSection.html">SBATrackedSection</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/RSDTrackedItemObject.html">RSDTrackedItemObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/RSDTrackedItemsResultObject.html">RSDTrackedItemsResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/RSDTrackedSectionObject.html">RSDTrackedSectionObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAActivityGroupObject.html">SBAActivityGroupObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAActivityInfoObject.html">SBAActivityInfoObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAMedicationAnswer.html">SBAMedicationAnswer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAMedicationItem.html">SBAMedicationItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAMedicationTrackingResult.html">SBAMedicationTrackingResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAModuleIdentifier.html">SBAModuleIdentifier</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedLoggingResultObject.html">SBATrackedLoggingResultObject</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>SBATrackedSelectionStepObject</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBATrackedSelectionStepObject</span> <span class="p">:</span> <span class="kt">RSDUIStepObject</span><span class="p">,</span> <span class="kt"><a href="../Protocols/SBATrackedItemsStep.html">SBATrackedItemsStep</a></span></code></pre>
+
+                </div>
+              </div>
+            <p><code>SBATrackedSelectionStepObject</code> is intended for use in selecting items from a long, sectioned list.
+In general, this would be the first step in setting up tracked data such as symptoms of a disease
+or triggers associated with a medical condition.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <code><a href="../Classes/SBATrackedItemsStepNavigator.html">SBATrackedItemsStepNavigator</a></code>
+
+</div>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectC6resultAA0C11ItemsResult_pSgvp"></a>
+                    <a name="//apple_ref/swift/Property/result" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectC6resultAA0C11ItemsResult_pSgvp">result</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The shared result for review, details, and selection.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">result</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SBATrackedItemsResult.html">SBATrackedItemsResult</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectC5itemsSayAA0C4Item_pGvp"></a>
+                    <a name="//apple_ref/swift/Property/items" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectC5itemsSayAA0C4Item_pGvp">items</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The list of the items to track.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">items</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Protocols/SBATrackedItem.html">SBATrackedItem</a></span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectC8sectionsSayAA0C7Section_pGSgvp"></a>
+                    <a name="//apple_ref/swift/Property/sections" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectC8sectionsSayAA0C7Section_pGSgvp">sections</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The section items for mapping each medication.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sections</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Protocols/SBATrackedSection.html">SBATrackedSection</a></span><span class="p">]?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectCACSS10identifier_8Research11RSDStepTypeVSg4typetcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(identifier:type:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectCACSS10identifier_8Research11RSDStepTypeVSg4typetcfc">init(identifier:type:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initializer required for <code>copy(with:)</code> implementation.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">required</span> <span class="nf">init</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">RSDStepType</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectC8copyIntoy8Research09RSDUIStepF0CF"></a>
+                    <a name="//apple_ref/swift/Method/copyInto(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectC8copyIntoy8Research09RSDUIStepF0CF">copyInto(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Override to set the properties of the subclass.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">open</span> <span class="kd">func</span> <span class="nf">copyInto</span><span class="p">(</span><span class="n">_</span> <span class="nv">copy</span><span class="p">:</span> <span class="kt">RSDUIStepObject</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectCACSS10identifier_SayAA0C4Item_pG5itemsSayAA0C7Section_pGSg8sections8Research11RSDStepTypeVSg4typetcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(identifier:items:sections:type:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectCACSS10identifier_SayAA0C4Item_pG5itemsSayAA0C7Section_pGSg8sections8Research11RSDStepTypeVSg4typetcfc">init(identifier:items:sections:type:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Default initializer.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">items</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Protocols/SBATrackedItem.html">SBATrackedItem</a></span><span class="p">],</span> <span class="nv">sections</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Protocols/SBATrackedSection.html">SBATrackedSection</a></span><span class="p">]?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">RSDStepType</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>identifier</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A short string that uniquely identifies the step.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>inputFields</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The input fields used to create this step.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectCACs7Decoder_p4from_tKcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectCACs7Decoder_p4from_tKcfc">init(from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize from a <code>Decoder</code>.</p>
+<li><p>example:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">json</span> <span class="o">=</span> <span class="s">"""
+   {
+       "</span><span class="n">identifier</span><span class="s">": "</span><span class="n">foo</span><span class="s">",
+       "</span><span class="n">type</span><span class="s">": "</span><span class="n">selection</span><span class="s">",
+       "</span><span class="n">title</span><span class="s">": "</span><span class="kt">Please</span> <span class="n">select</span> <span class="n">the</span> <span class="n">items</span> <span class="n">you</span> <span class="n">wish</span> <span class="n">to</span> <span class="n">track</span><span class="s">",
+       "</span><span class="n">detail</span><span class="s">": "</span><span class="kt">Select</span> <span class="n">all</span> <span class="n">that</span> <span class="n">apply</span><span class="s">",
+       "</span><span class="n">actions</span><span class="s">": { "</span><span class="n">goForward</span><span class="s">": { "</span><span class="n">buttonTitle</span><span class="s">" : "</span><span class="kt">Go</span><span class="p">,</span> <span class="kt">Dogs</span><span class="o">!</span> <span class="kt">Go</span><span class="o">!</span><span class="s">" },
+                    "</span><span class="n">cancel</span><span class="s">": { "</span><span class="n">iconName</span><span class="s">" : "</span><span class="n">closeX</span><span class="s">" },
+                   },
+       "</span><span class="n">shouldHideActions</span><span class="s">": ["</span><span class="n">goBackward</span><span class="s">", "</span><span class="n">skip</span><span class="s">"],
+       "</span><span class="n">items</span><span class="s">" : [ {"</span><span class="n">identifier</span><span class="s">" : "</span><span class="n">itemA1</span><span class="s">", "</span><span class="n">sectionIdentifier</span><span class="s">" : "</span><span class="n">a</span><span class="s">"},
+                   {"</span><span class="n">identifier</span><span class="s">" : "</span><span class="n">itemA2</span><span class="s">", "</span><span class="n">sectionIdentifier</span><span class="s">" : "</span><span class="n">a</span><span class="s">"},
+                   {"</span><span class="n">identifier</span><span class="s">" : "</span><span class="n">itemA3</span><span class="s">", "</span><span class="n">sectionIdentifier</span><span class="s">" : "</span><span class="n">a</span><span class="s">"},
+                   {"</span><span class="n">identifier</span><span class="s">" : "</span><span class="n">itemB1</span><span class="s">", "</span><span class="n">sectionIdentifier</span><span class="s">" : "</span><span class="n">b</span><span class="s">"},
+                   {"</span><span class="n">identifier</span><span class="s">" : "</span><span class="n">itemB2</span><span class="s">", "</span><span class="n">sectionIdentifier</span><span class="s">" : "</span><span class="n">b</span><span class="s">"},
+                   {"</span><span class="n">identifier</span><span class="s">" : "</span><span class="n">itemB3</span><span class="s">", "</span><span class="n">sectionIdentifier</span><span class="s">" : "</span><span class="n">b</span><span class="s">"}],
+       "</span><span class="n">sections</span><span class="s">" : [ {"</span><span class="n">identifier</span><span class="s">" : "</span><span class="n">a</span><span class="s">"}, {"</span><span class="n">identifier</span><span class="s">" : "</span><span class="n">b</span><span class="s">"}]
+   }
+   """</span><span class="o">.</span><span class="nf">data</span><span class="p">(</span><span class="nv">using</span><span class="p">:</span> <span class="o">.</span><span class="n">utf8</span><span class="p">)</span><span class="o">!</span> <span class="c1">// our data in native (JSON) format</span>
+</code></pre></li>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    <p><code>DecodingError</code></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">required</span> <span class="nf">init</span><span class="p">(</span><span class="n">from</span> <span class="nv">decoder</span><span class="p">:</span> <span class="kt">Decoder</span><span class="p">)</span> <span class="k">throws</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>decoder</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The decoder to use to decode this instance.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectC11decodeItemsSayAA0C4Item_pGSgs7Decoder_p4from_tKFZ"></a>
+                    <a name="//apple_ref/swift/Method/decodeItems(from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectC11decodeItemsSayAA0C4Item_pGSgs7Decoder_p4from_tKFZ">decodeItems(from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Overridable class method for decoding tracking items.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    <code>DecodingError</code>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kd">func</span> <span class="nf">decodeItems</span><span class="p">(</span><span class="n">from</span> <span class="nv">decoder</span><span class="p">:</span> <span class="kt">Decoder</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt"><a href="../Protocols/SBATrackedItem.html">SBATrackedItem</a></span><span class="p">]?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>decoder</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The decoder to use to decode this instance.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The decoded items.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectC14decodeSectionsSayAA0C7Section_pGSgs7Decoder_p4from_tKFZ"></a>
+                    <a name="//apple_ref/swift/Method/decodeSections(from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectC14decodeSectionsSayAA0C7Section_pGSgs7Decoder_p4from_tKFZ">decodeSections(from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Overridable class method for decoding tracking sections.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    <code>DecodingError</code>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kd">func</span> <span class="nf">decodeSections</span><span class="p">(</span><span class="n">from</span> <span class="nv">decoder</span><span class="p">:</span> <span class="kt">Decoder</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt"><a href="../Protocols/SBATrackedSection.html">SBATrackedSection</a></span><span class="p">]?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>decoder</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The decoder to use to decode this instance.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The decoded sections.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectC011instantiateE6Result8Research9RSDResult_pyF"></a>
+                    <a name="//apple_ref/swift/Method/instantiateStepResult()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectC011instantiateE6Result8Research9RSDResult_pyF">instantiateStepResult()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Instantiate a step result that is appropriate for this step. The default for this class is a
+<code><a href="../Structs/RSDTrackedItemsResultObject.html">RSDTrackedItemsResultObject</a></code>. If the <code><a href="../Classes/SBATrackedSelectionStepObject.html#/s:9BridgeApp29SBATrackedSelectionStepObjectC6resultAA0C11ItemsResult_pSgvp">result</a></code> property is set, then this will instantiate a
+copy of the result with this step&rsquo;s identifier.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">instantiateStepResult</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">RSDResult</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A result for this step.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectC8validateyyKF"></a>
+                    <a name="//apple_ref/swift/Method/validate()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectC8validateyyKF">validate()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Validate the step to check for any configuration that should throw an error. This class will
+check that the input fields have unique identifiers and will call the <code>validate()</code> method on each
+input field.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    An error if validation fails.
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">validate</span><span class="p">()</span> <span class="k">throws</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp29SBATrackedSelectionStepObjectC21instantiateDataSource8Research08RSDTablehI0_pSgAE11RSDTaskPathC4with_s3SetVyAE13RSDFormUIHintVG3fortF"></a>
+                    <a name="//apple_ref/swift/Method/instantiateDataSource(with:for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp29SBATrackedSelectionStepObjectC21instantiateDataSource8Research08RSDTablehI0_pSgAE11RSDTaskPathC4with_s3SetVyAE13RSDFormUIHintVG3fortF">instantiateDataSource(with:for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Override the default selector to return a tracked selection data source.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">instantiateDataSource</span><span class="p">(</span><span class="n">with</span> <span class="nv">taskPath</span><span class="p">:</span> <span class="kt">RSDTaskPath</span><span class="p">,</span> <span class="k">for</span> <span class="nv">supportedHints</span><span class="p">:</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">RSDFormUIHint</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">RSDTableDataSource</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017-2018 <a class="link" href="https://developer.sagebridge.org" target="_blank" rel="external">Sage Bionetworks</a>. All rights reserved.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
