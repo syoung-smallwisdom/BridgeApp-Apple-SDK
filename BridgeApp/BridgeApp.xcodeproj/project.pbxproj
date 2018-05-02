@@ -420,7 +420,7 @@
 				F85AABD3207FFCF40059F019 /* BridgeAppTests-Bridging-Header.h */,
 				F84B312B207FF9EB0006F2C7 /* Mock Objects */,
 				F825BA79207FD9AE00D29F60 /* Data Tracking Tests */,
-				F84B3117207FF9BE0006F2C7 /* ResearchStack Protocol Tests */,
+				F84B3117207FF9BE0006F2C7 /* Research Model Tests */,
 			);
 			path = BridgeAppTests;
 			sourceTree = "<group>";
@@ -515,7 +515,7 @@
 			path = "Default Nibs and Storyboards";
 			sourceTree = "<group>";
 		};
-		F84B3117207FF9BE0006F2C7 /* ResearchStack Protocol Tests */ = {
+		F84B3117207FF9BE0006F2C7 /* Research Model Tests */ = {
 			isa = PBXGroup;
 			children = (
 				F87D69BF203B5C4900409087 /* ActivityReferenceTests.swift */,
@@ -523,7 +523,7 @@
 				F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */,
 				F8F7241D203D007800AC0E5B /* SurveyTests.swift */,
 			);
-			name = "ResearchStack Protocol Tests";
+			name = "Research Model Tests";
 			sourceTree = "<group>";
 		};
 		F84B312B207FF9EB0006F2C7 /* Mock Objects */ = {
