@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Protocols  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Section/Protocols" class="dashAnchor"></a>
+    <a title="Protocols  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">BridgeApp Docs</a></p>
+        <p class="header-right"><a href="https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">BridgeApp Reference</a>
+        <img id="carat" src="img/carat.png" />
+        Protocols  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/SBABridgeConfiguration.html">SBABridgeConfiguration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBAMedicationDetailsStepObject.html">SBAMedicationDetailsStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes.html#/s:9BridgeApp30SBAMedicationLoggingStepObjectC">SBAMedicationLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBASurveyConfiguration.html">SBASurveyConfiguration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBASurveyWrapper.html">SBASurveyWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedItemDetailsStepObject.html">SBATrackedItemDetailsStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedItemsLoggingStepObject.html">SBATrackedItemsLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedItemsReviewStepObject.html">SBATrackedItemsReviewStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedItemsStepNavigator.html">SBATrackedItemsStepNavigator</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedItemsStepNavigator.html#/s:9BridgeApp28SBATrackedItemsStepNavigatorC0D10CodingKeysO">– ItemsCodingKeys</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedItemsStepNavigator.html#/s:9BridgeApp28SBATrackedItemsStepNavigatorC0E11IdentifiersO">– StepIdentifiers</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedLoggingCell.html">SBATrackedLoggingCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedLoggingDataSource.html">SBATrackedLoggingDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedLoggingStepViewController.html">SBATrackedLoggingStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedLoggingTableItem.html">SBATrackedLoggingTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedSelectionDataSource.html">SBATrackedSelectionDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackedSelectionStepObject.html">SBATrackedSelectionStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBATrackingDataSource.html">SBATrackingDataSource</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Extensions/RSDCollectionResultObject.html">RSDCollectionResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/RSDFormUIHint.html">RSDFormUIHint</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/RSDIdentifier.html">RSDIdentifier</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/RSDStepNavigatorType.html">RSDStepNavigatorType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/RSDStepType.html">RSDStepType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/RSDUIActionType.html">RSDUIActionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBActivity.html">SBBActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBBridgeObject.html">SBBBridgeObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBCompoundActivity.html">SBBCompoundActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBDateConstraints.html">SBBDateConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBDateTimeConstraints.html">SBBDateTimeConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBDurationConstraints.html">SBBDurationConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBImage.html">SBBImage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBMultiValueConstraints.html">SBBMultiValueConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBScheduledActivity.html">SBBScheduledActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBSchemaReference.html">SBBSchemaReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBStringConstraints.html">SBBStringConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBSurvey.html">SBBSurvey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBSurveyElement.html">SBBSurveyElement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBSurveyInfoScreen.html">SBBSurveyInfoScreen</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBSurveyQuestion.html">SBBSurveyQuestion</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBSurveyQuestionOption.html">SBBSurveyQuestionOption</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBSurveyReference.html">SBBSurveyReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBSurveyRule.html">SBBSurveyRule</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBTaskReference.html">SBBTaskReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/SBBTimeConstraints.html">SBBTimeConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Extensions/sbb_InputField.html">sbb_InputField</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/SBAActivityGroup.html">SBAActivityGroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBAActivityInfo.html">SBAActivityInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBAActivityReference.html">SBAActivityReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBAMedication.html">SBAMedication</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBAOptionalImageVendor.html">SBAOptionalImageVendor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBASingleActivityReference.html">SBASingleActivityReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBATrackedItem.html">SBATrackedItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBATrackedItemAnswer.html">SBATrackedItemAnswer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBATrackedItemDetailsStep.html">SBATrackedItemDetailsStep</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBATrackedItemsResult.html">SBATrackedItemsResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBATrackedItemsStep.html">SBATrackedItemsStep</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/SBATrackedSection.html">SBATrackedSection</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/RSDTrackedItemObject.html">RSDTrackedItemObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/RSDTrackedItemsResultObject.html">RSDTrackedItemsResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/RSDTrackedSectionObject.html">RSDTrackedSectionObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBAActivityGroupObject.html">SBAActivityGroupObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBAActivityInfoObject.html">SBAActivityInfoObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBAMedicationAnswer.html">SBAMedicationAnswer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBAMedicationItem.html">SBAMedicationItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBAMedicationTrackingResult.html">SBAMedicationTrackingResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBAModuleIdentifier.html">SBAModuleIdentifier</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBATrackedLoggingResultObject.html">SBATrackedLoggingResultObject</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Protocols</h1>
+            <p>The following protocols are available globally.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAActivityGroupP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBAActivityGroup" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAActivityGroupP">SBAActivityGroup</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A protocol that can be used to filter and parse the scheduled activities for a
+variety of customized UI/UX designs based on the objects defined in the</p>
+
+                        <a href="Protocols/SBAActivityGroup.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBAActivityGroup</span> <span class="p">:</span> <span class="kt">RSDTaskGroup</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp15SBAActivityInfoP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBAActivityInfo" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp15SBAActivityInfoP">SBAActivityInfo</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Extend the task info protocol to include optional pointers for use by an <code>SBBTaskReference</code>
+as the source of a task transformer.</p>
+
+                        <a href="Protocols/SBAActivityInfo.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBAActivityInfo</span> <span class="p">:</span> <span class="kt">RSDTaskInfo</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Codable%20implementation%20of%20the%20mapping%20objects."></a>
+                <a name="//apple_ref/swift/Section/Codable implementation of the mapping objects." class="dashAnchor"></a>
+                <a href="#/Codable%20implementation%20of%20the%20mapping%20objects.">
+                  <h3 class="section-name">Codable implementation of the mapping objects.</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp22SBAOptionalImageVendorP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBAOptionalImageVendor" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp22SBAOptionalImageVendorP">SBAOptionalImageVendor</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Convenience protocol to allow vending the image either from a <code>UIImage</code> <em>or</em> <code>RSDImageWrapper</code>.</p>
+
+                        <a href="Protocols/SBAOptionalImageVendor.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBAOptionalImageVendor</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp13SBAMedicationP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBAMedication" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp13SBAMedicationP">SBAMedication</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A medication item includes details for displaying a given medication.</p>
+
+                        <a href="Protocols/SBAMedication.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBAMedication</span> <span class="p">:</span> <span class="kt"><a href="Protocols/SBATrackedItem.html">SBATrackedItem</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp14SBATrackedItemP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBATrackedItem" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp14SBATrackedItemP">SBATrackedItem</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>SBATrackedItem</code> is a protocol for defining an item that can be mapped using its <code>identifier</code>
+to a list of selected items.</p>
+
+                        <a href="Protocols/SBATrackedItem.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBATrackedItem</span> <span class="p">:</span> <span class="kt">RSDChoice</span><span class="p">,</span> <span class="kt">RSDComparable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp17SBATrackedSectionP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBATrackedSection" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp17SBATrackedSectionP">SBATrackedSection</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>SBATrackedSection</code> is used to define a subgrouping of <code><a href="Protocols/SBATrackedItem.html">SBATrackedItem</a></code> objects. Because the study
+designer may change these grouping as the study progresses, this is a weak link to the <code><a href="Protocols/SBATrackedItem.html">SBATrackedItem</a></code>
+as it is only used for display.</p>
+
+                        <a href="Protocols/SBATrackedSection.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBATrackedSection</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp20SBATrackedItemAnswerP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBATrackedItemAnswer" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBATrackedItemAnswerP">SBATrackedItemAnswer</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A tracked item answer includes the answer details (including selection) that are tracked for
+this participant.</p>
+
+                        <a href="Protocols/SBATrackedItemAnswer.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBATrackedItemAnswer</span> <span class="p">:</span> <span class="kt">RSDChoice</span><span class="p">,</span> <span class="kt">Decodable</span><span class="p">,</span> <span class="kt">Encodable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp21SBATrackedItemsResultP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBATrackedItemsResult" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp21SBATrackedItemsResultP">SBATrackedItemsResult</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The tracked items result includes a list of all the answers for this tracked selection.</p>
+
+                        <a href="Protocols/SBATrackedItemsResult.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBATrackedItemsResult</span> <span class="p">:</span> <span class="kt">RSDCopyWithIdentifier</span><span class="p">,</span> <span class="kt">RSDResult</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp19SBATrackedItemsStepP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBATrackedItemsStep" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp19SBATrackedItemsStepP">SBATrackedItemsStep</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>SBATrackedItemsStep</code> is customized for selecting a long list of items that are sorted into sections
+for display to the user.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    These steps are used as templates that are retained by the <code><a href="Classes/SBATrackedItemsStepNavigator.html">SBATrackedItemsStepNavigator</a></code>
+and thus need to be mutable classes.
+
+</div>
+
+                        <a href="Protocols/SBATrackedItemsStep.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBATrackedItemsStep</span> <span class="p">:</span> <span class="kt">AnyObject</span><span class="p">,</span> <span class="kt">RSDStep</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp25SBATrackedItemDetailsStepP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBATrackedItemDetailsStep" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp25SBATrackedItemDetailsStepP">SBATrackedItemDetailsStep</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The tracked item detail step is used to add additional details to the tracked item.</p>
+
+                        <a href="Protocols/SBATrackedItemDetailsStep.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBATrackedItemDetailsStep</span> <span class="p">:</span> <span class="kt">RSDStep</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp20SBAActivityReferenceP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBAActivityReference" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBAActivityReferenceP">SBAActivityReference</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>SBAActivityReference</code> is used to cast all the activity reference types to a
+common interface. This includes both compound tasks with different schema tables
+for each task and single tasks with a single schema table.</p>
+
+                        <a href="Protocols/SBAActivityReference.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBAActivityReference</span> <span class="p">:</span> <span class="kt">AnyObject</span><span class="p">,</span> <span class="kt">RSDTaskInfo</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp26SBASingleActivityReferenceP"></a>
+                    <a name="//apple_ref/swift/Protocol/SBASingleActivityReference" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp26SBASingleActivityReferenceP">SBASingleActivityReference</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>SBASingleActivityReference</code> refers to tasks that point at a single instance of
+the schema reference.</p>
+
+                        <a href="Protocols/SBASingleActivityReference.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBASingleActivityReference</span> <span class="p">:</span> <span class="kt"><a href="Protocols/SBAActivityReference.html">SBAActivityReference</a></span><span class="p">,</span> <span class="kt">RSDTaskInfoStep</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017-2018 <a class="link" href="https://developer.sagebridge.org" target="_blank" rel="external">Sage Bionetworks</a>. All rights reserved.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
