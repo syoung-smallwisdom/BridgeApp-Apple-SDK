@@ -69,6 +69,65 @@ open class SBASymptomLoggingDataSource : SBATrackedLoggingDataSource {
         
         return SBASymptomTableItem(loggedResult: loggedResult, rowIndex: rowIndex)
     }
+    
+    /// Returns the selection step.
+    override open func step(for tableItem: RSDModalStepTableItem) -> RSDStep {
+        guard let symptomItem = tableItem as? SBASymptomTableItem else {
+            return super.step(for: tableItem)
+        }
+        
+        let formStep = SBASymptomDurationLevel.formStep(at: symptomItem.time)
+        return formStep
+    }
+    
+    override open func willPresent(_ stepController: RSDStepController, from tableItem: RSDModalStepTableItem) {
+        guard let symptomItem = tableItem as? SBASymptomTableItem else {
+            super.willPresent(stepController, from: tableItem)
+            return
+        }
+
+        // Need to append the step history twice to put the result in both the **current** and previous results.
+        // TODO: syoung 05/08/2018 Refactor to a less obfuscated way of getting results.
+        let step = stepController.step!
+        var navigator = RSDConditionalStepNavigatorObject(with: [step])
+        navigator.progressMarkers = []
+        let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
+        let path = RSDTaskPath(task: task)
+        if let previousResult = symptomItem.loggedResult.findResult(with: step.identifier) {
+            path.appendStepHistory(with: previousResult)
+            path.appendStepHistory(with: previousResult)
+        }
+        path.currentStep = stepController.step
+        setupModal(stepController, path: path, tableItem: symptomItem)
+    }
+    
+    override open func goForward(with taskController: RSDModalStepTaskController) {
+        if let symptomItem = _currentTableItem as? SBASymptomTableItem,
+            let result = taskController.taskPath.result.findAnswerResult(with: SBASymptomTableItem.ResultIdentifier.duration.stringValue) {
+            
+            // Let the delegate know that things are changing.
+            self.delegate?.tableDataSourceWillBeginUpdate(self)
+            
+            // Update the result set for this source.
+            symptomItem.duration = SBASymptomDurationLevel(result: result)
+            updateResults(with: symptomItem)
+            
+            // reload the table delegate.
+            self.delegate?.tableDataSourceDidEndUpdate(self, addedRows: [symptomItem.indexPath], removedRows: [symptomItem.indexPath])
+        }
+        super.goForward(with: taskController)
+    }
+    
+    /// Update the logged result with the new input result.
+    func updateResults(with tableItem: SBASymptomTableItem) {
+        
+        var stepResult = self.trackingResult()
+        stepResult.updateDetails(to: tableItem.loggedResult)
+        self.taskPath.appendStepHistory(with: stepResult)
+        
+        // inform delegate that answers have changed
+        delegate?.tableDataSource(self, didChangeAnswersIn: tableItem.indexPath.section)
+    }
 }
 
 /// The severity level of the symptom being logged.
@@ -85,11 +144,137 @@ public enum SBASymptomMedicationTiming : String, Codable {
         return SBASymptomMedicationTiming.sortOrder.index(of: self)!
     }
     
+    public init?(intValue: Int) {
+        guard intValue < SBASymptomMedicationTiming.sortOrder.count, intValue >= 0 else { return nil }
+        self = SBASymptomMedicationTiming.sortOrder[intValue]
+    }
+    
     private static let sortOrder: [SBASymptomMedicationTiming] = [.preMedication, .postMedication]
 }
 
+/// The symptom duration as a "level" of duration length.
+public enum SBASymptomDurationLevel : Int, Codable {
+    
+    case now, shortPeriod, littleWhile, morning, afternoon, evening, halfDay, halfNight, allDay, allNight
+    
+    private static let choiceKeys = [
+        "DURATION_CHOICE_NOW",
+        "DURATION_CHOICE_SHORT_PERIOD",
+        "DURATION_CHOICE_A_WHILE",
+        "DURATION_CHOICE_MORNING",
+        "DURATION_CHOICE_AFTERNOON",
+        "DURATION_CHOICE_EVENING",
+        "DURATION_CHOICE_HALF_DAY",
+        "DURATION_CHOICE_HALF_NIGHT",
+        "DURATION_CHOICE_ALL_DAY",
+        "DURATION_CHOICE_ALL_NIGHT"
+    ]
+    
+    public init?(result: RSDResult) {
+        guard let answerResult = result as? RSDAnswerResult else { return nil }
+        if let value = answerResult.value as? SBASymptomDurationLevel {
+            self = value
+        }
+        else if let number = answerResult.value as? NSNumber {
+            self.init(rawValue: number.intValue)
+        }
+        else if let rawValue = answerResult.value as? Int {
+            self.init(rawValue: rawValue)
+        }
+        else if let stringValue = answerResult.value as? String {
+            self.init(stringValue: stringValue)
+        }
+        else {
+            return nil
+        }
+    }
+    
+    public init?(stringValue: String) {
+        guard let rawValue = SBASymptomDurationLevel.choiceKeys.index(of: stringValue) else { return nil }
+        self.init(rawValue: rawValue)
+    }
+    
+    public var stringValue : String {
+        return SBASymptomDurationLevel.choiceKeys[self.rawValue]
+    }
+    
+    public var level : Int {
+        switch self {
+        case .now, .shortPeriod, .littleWhile:
+            return rawValue
+        case .morning, .afternoon, .evening:
+            return SBASymptomDurationLevel.morning.rawValue
+        case .halfDay, .halfNight:
+            return SBASymptomDurationLevel.morning.level + 1
+        case .allDay, .allNight:
+            return SBASymptomDurationLevel.halfDay.level + 1
+        }
+    }
+    
+    public static func durationChoices(at time: Date) -> [SBASymptomDurationLevel] {
+        switch time.timeRange() {
+        case .morning:
+            return [.now, .shortPeriod, .littleWhile, .morning, .halfDay, .allDay]
+        case .afternoon:
+            return [.now, .shortPeriod, .littleWhile, .afternoon, .halfDay, .allDay]
+        case .evening:
+            return [.now, .shortPeriod, .littleWhile, .evening, .halfDay, .allDay]
+        case .night:
+            return [.now, .shortPeriod, .littleWhile, .halfNight, .allNight]
+        }
+    }
+    
+    public static func formStep(at time: Date) ->  RSDFormUIStep {
+        let identifier = SBASymptomTableItem.ResultIdentifier.duration.stringValue
+        let choices = durationChoices(at: time)
+        let inputField = RSDChoiceInputFieldObject(identifier: identifier, choices: choices, dataType: dataType)
+        let formStep = RSDFormUIStepObject(identifier: identifier, inputFields: [inputField])
+        formStep.title = Localization.localizedString("DURATION_SELECTION_TITLE")
+        formStep.detail = Localization.localizedString("DURATION_SELECTION_DETAIL")
+        formStep.actions = [.navigation(.goForward) : RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SAVE"))]
+        return formStep
+    }
+    
+    public static var dataType : RSDFormDataType {
+        return .collection(.singleChoice, .string)
+    }
+    
+    public static var answerType : RSDAnswerResultType {
+        return .string
+    }
+}
+
+extension SBASymptomDurationLevel : RSDChoice {
+    
+    public var answerValue: Codable? {
+        return self.stringValue
+    }
+    
+    public var text: String? {
+        let key = SBASymptomDurationLevel.choiceKeys[self.rawValue]
+        return Localization.localizedString(key)
+    }
+    
+    public var detail: String? {
+        return nil
+    }
+    
+    public var isExclusive: Bool {
+        return true
+    }
+    
+    public var imageVendor: RSDImageVendor? {
+        return nil
+    }
+    
+    public func isEqualToResult(_ result: RSDResult?) -> Bool {
+        guard let aResult = result, let level = SBASymptomDurationLevel(result: aResult) else { return false }
+        return level == self
+    }
+}
+
 /// The symptom table item is tracked using the result object.
-open class SBASymptomTableItem : RSDTableItem {
+open class SBASymptomTableItem : RSDModalStepTableItem {
     
     public enum ResultIdentifier : String, CodingKey, Codable {
         case severity, duration, medicationTiming, notes
@@ -125,13 +310,14 @@ open class SBASymptomTableItem : RSDTableItem {
     }
     
     /// The duration window describing how long the symptoms occured.
-    public var duration: String? {
+    public var duration: SBASymptomDurationLevel? {
         get {
-            return loggedResult.findAnswerResult(with: ResultIdentifier.duration.rawValue)?.value as? String
+            guard let result = loggedResult.findAnswerResult(with: ResultIdentifier.duration.rawValue) else { return nil }
+            return SBASymptomDurationLevel(result: result)
         }
         set {
-            var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.duration.rawValue, answerType: .string)
-            answerResult.value = newValue
+            var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.duration.rawValue, answerType: SBASymptomDurationLevel.answerType)
+            answerResult.value = newValue?.answerValue
             _appendResults(answerResult)
         }
     }
@@ -145,7 +331,7 @@ open class SBASymptomTableItem : RSDTableItem {
             }
             return SBASymptomMedicationTiming(rawValue: rawValue)        }
         set {
-            var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.duration.rawValue, answerType: .string)
+            var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.medicationTiming.rawValue, answerType: .string)
             answerResult.value = newValue?.rawValue
             _appendResults(answerResult)
         }

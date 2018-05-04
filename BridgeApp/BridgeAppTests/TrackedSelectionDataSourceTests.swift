@@ -67,7 +67,7 @@ class TrackedSelectionDataSourceTests: XCTestCase {
                 return
             }
 
-            for (sectionIdx, rowCount) in expectedCounts.enumerated() {
+            expectedCounts.enumerated().forEach { (sectionIdx, rowCount) in
                 
                 XCTAssertEqual(dataSource.sections[sectionIdx].tableItems.count, rowCount)
                 let uuid = dataSource.itemGroup(at: IndexPath(row: 0, section: sectionIdx))?.uuid

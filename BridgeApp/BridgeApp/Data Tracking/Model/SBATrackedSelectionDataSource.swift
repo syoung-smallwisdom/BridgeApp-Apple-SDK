@@ -72,26 +72,26 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
             let choiceIdentifiers = choices.map { $0.identifier }
             let answers = trackedAnswers.remove(where: { choiceIdentifiers.contains($0.identifier) }).map { $0.identifier }
             let selectableItems = group.items as! [RSDChoiceTableItem]
-            for input in selectableItems {
-                input.selected = answers.contains((input.choice as! SBATrackedItem).identifier)
+            selectableItems.forEach {
+                $0.selected = answers.contains(($0.choice as! SBATrackedItem).identifier)
             }
             try! group.setAnswer(answers)
         }
         
         // Look through the sections first for a mapped item
-        for section in sectionItems {
+        sectionItems.forEach { (section) in
             let choices = trackedItems.remove(where: { $0.sectionIdentifier == section.identifier })
             appendSection(choices: choices, section: section)
         }
         
         // Look through the items for a sectionIdentifier without a matching section
         var otherSections: [String] = []
-        for item in trackedItems {
+        trackedItems.forEach { (item) in
             if let sectionIdentifier = item.sectionIdentifier, !otherSections.contains(sectionIdentifier) {
                 otherSections.append(sectionIdentifier)
             }
         }
-        for sectionIdentifier in otherSections {
+        otherSections.forEach { (sectionIdentifier) in
             let choices = trackedItems.remove(where: { $0.sectionIdentifier == sectionIdentifier })
             let section = RSDTrackedSectionObject(identifier: sectionIdentifier)
             appendSection(choices: choices, section: section)

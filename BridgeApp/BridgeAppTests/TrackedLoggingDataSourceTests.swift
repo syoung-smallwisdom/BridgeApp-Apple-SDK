@@ -69,7 +69,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         let uuid = dataSource.itemGroup(at: IndexPath(row: 0, section: 0))?.uuid
         XCTAssertNotNil(uuid)
         
-        for (ii, itemIdentifier) in expectedItems.enumerated() {
+        expectedItems.enumerated().forEach { (ii, itemIdentifier) in
             
             let indexPath = IndexPath(row: ii, section: 0)
             
@@ -94,7 +94,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         
         if let tableItem = dataSource.tableItem(at: selectionIndexPath) as? RSDModalStepTableItem {
             XCTAssertEqual(tableItem.identifier, "addMore")
-            XCTAssertEqual(tableItem.action.buttonTitle, "Edit Items")
+            XCTAssertEqual(tableItem.action?.buttonTitle, "Edit Items")
         } else {
             XCTFail("item nil or not expected class at \(selectionIndexPath)")
         }
@@ -242,7 +242,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
                 return
         }
         
-        for identifier in expectedIdentifiers {
+        expectedIdentifiers.forEach { (identifier) in
             let itemResult = collectionResult.findResult(with: identifier) as? SBATrackedLoggingResultObject
             XCTAssertNotNil(itemResult)
             if previouslyLogged.contains(identifier) {

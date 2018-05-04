@@ -48,7 +48,88 @@ open class SBASymptomLoggingStepViewController: RSDTableStepViewController {
         }
     }
     private var _registeredIdentifiers = Set<String>()
+    
+    override open func configure(cell: UITableViewCell, in tableView: UITableView, at indexPath: IndexPath) {
+        super.configure(cell: cell, in: tableView, at: indexPath)
+        if let symptomCell = cell as? SBASymptomLoggingCell {
+            symptomCell.delegate = self
+            symptomCell.prepareForInsertion(into: tableView)
+            symptomCell.inlineTimePicker.isOpen = (indexPath == _activeIndexPath)
+        }
+    }
+    
+    private var _activeIndexPath: IndexPath?
+    
+    open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        _endTimeEditingIfNeeded()
+        super.tableView(tableView, didSelectRowAt: indexPath)
+    }
+    
+    open func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        _endTimeEditingIfNeeded()
+        return indexPath.section == 0 ? nil : indexPath
+    }
+    
+    open override func goForward() {
+        _endTimeEditingIfNeeded(false)
+        super.goForward()
+    }
+}
 
+extension SBASymptomLoggingStepViewController : SBASymptomLoggingCellDelegate {
+
+    public func didChangeSeverity(for cell: SBASymptomLoggingCell, selected: Int) {
+        _endTimeEditingIfNeeded()
+        guard let dataSource = self.tableData as? SBASymptomLoggingDataSource,
+            let tableItem = cell.tableItem as? SBASymptomTableItem
+            else {
+                assertionFailure("Failed to change severity. Could not get table source or table item.")
+                return
+        }
+        tableItem.severity = SBASymptomSeverityLevel(rawValue: selected)
+        dataSource.updateResults(with: tableItem)
+    }
+    
+    public func didChangeMedicationTiming(for cell: SBASymptomLoggingCell, selected: Int) {
+        _endTimeEditingIfNeeded()
+        guard let dataSource = self.tableData as? SBASymptomLoggingDataSource,
+            let tableItem = cell.tableItem as? SBASymptomTableItem
+            else {
+                assertionFailure("Failed to change severity. Could not get table source or table item.")
+                return
+        }
+        tableItem.medicationTiming = SBASymptomMedicationTiming(intValue: selected)
+        dataSource.updateResults(with: tableItem)
+    }
+    
+    public func didTapTime(for cell: SBASymptomLoggingCell) {
+        _endTimeEditingIfNeeded()
+        _activeIndexPath = cell.indexPath
+        self.tableView.reloadRows(at: [cell.indexPath], with: .none)
+    }
+    
+    private func _endTimeEditingIfNeeded(_ shouldCollapse: Bool = true) {
+        guard let indexPath = _activeIndexPath,
+            let loggingItem = self.tableData?.tableItem(at: indexPath) as? SBASymptomTableItem,
+            let dataSource = self.tableData as? SBASymptomLoggingDataSource,
+            let cell = tableView.cellForRow(at: indexPath) as? SBASymptomLoggingCell
+            else {
+                return
+        }
+        let time = cell.timePicker.date
+        loggingItem.time = time
+        dataSource.updateResults(with: loggingItem)
+        _activeIndexPath = nil
+        if shouldCollapse {
+            self.tableView.reloadRows(at: [cell.indexPath], with: .none)
+        }
+    }
+    
+    public func didTapAddDuration(for cell: SBASymptomLoggingCell) {
+        _endTimeEditingIfNeeded()
+        guard let loggingItem = cell.tableItem as? SBASymptomTableItem else { return }
+        didSelectModalItem(loggingItem, at: cell.indexPath)
+    }
 }
 
 public protocol SBASymptomLoggingCellDelegate : class, NSObjectProtocol {
@@ -58,8 +139,8 @@ public protocol SBASymptomLoggingCellDelegate : class, NSObjectProtocol {
     func didTapTime(for cell: SBASymptomLoggingCell)
     
     func didTapAddDuration(for cell: SBASymptomLoggingCell)
-
     
+    func didChangeMedicationTiming(for cell: SBASymptomLoggingCell, selected: Int)
 }
 
 /// Table view cell for logging symptoms.
@@ -77,13 +158,15 @@ open class SBASymptomLoggingCell: RSDTableViewCell {
     @IBOutlet open var titleLabel: UILabel!
     @IBOutlet open var subtitleLabel: UILabel!
     @IBOutlet open var severityButtons: [SBASeverityButton]!
+    @IBOutlet open var timeButton: RSDUnderlinedButton!
+    @IBOutlet open var durationButton: RSDUnderlinedButton!
+    @IBOutlet open var timePicker: UIDatePicker!
+    @IBOutlet open var medicationTimingButtons: [RSDCheckboxButton]!
+    
     @IBOutlet open var separatorLines: [UIView]!
     @IBOutlet open var labels: [UILabel]!
-    @IBOutlet open var timeButton: RSDUnderlinedButton?
-    @IBOutlet open var durationButton: RSDUnderlinedButton?
-    @IBOutlet open var detailDisclosureButton: UIButton?
-    @IBOutlet open var medicationTimingButtons: [UIButton]?
-    @IBOutlet open var notesTextView: UITextView?
+    @IBOutlet var detailsListStackView: UIStackView!
+    @IBOutlet var inlineTimePicker: RSDToggleConstraintView!
     
     /// Override to set the content view background color to the color of the table background.
     override open var tableBackgroundColor: UIColor! {
@@ -113,13 +196,13 @@ open class SBASymptomLoggingCell: RSDTableViewCell {
             titleLabel.text = loggingItem.loggedResult.text
             subtitleLabel.text = loggingItem.loggedResult.detail
             let severity = loggingItem.severity?.rawValue ?? -1
-            for button in self.severityButtons {
-                button.isSelected = (severity == button.tag)
-            }
+            severityButtons.forEach { $0.isSelected = (severity == $0.tag) }
             timeButton?.setTitle(DateFormatter.localizedString(from: loggingItem.time, dateStyle: .none, timeStyle: .short), for: .normal)
-            let durationTitle = loggingItem.duration ?? Localization.localizedString("ADD_DURATION_BUTTON")
+            timePicker.date = loggingItem.time
+            let durationTitle = loggingItem.duration?.text ?? Localization.localizedString("ADD_DURATION_BUTTON")
             durationButton?.setTitle(durationTitle, for: .normal)
-            notesTextView?.text = loggingItem.notes
+            let medicationTiming = loggingItem.medicationTiming?.intValue ?? -1
+            medicationTimingButtons.forEach { $0.isSelected = (medicationTiming == $0.tag) }
         }
     }
     
@@ -129,9 +212,7 @@ open class SBASymptomLoggingCell: RSDTableViewCell {
             self.delegate?.didChangeSeverity(for: self, selected: -1)
         }
         else {
-            for button in self.severityButtons {
-                button.isSelected = (sender.tag == button.tag)
-            }
+            self.severityButtons.forEach { $0.isSelected = (sender.tag == $0.tag) }
             self.delegate?.didChangeSeverity(for: self, selected: sender.tag)
         }
     }
@@ -142,6 +223,26 @@ open class SBASymptomLoggingCell: RSDTableViewCell {
     
     @IBAction func addDurationTapped(_ sender: Any) {
         self.delegate?.didTapAddDuration(for: self)
+    }
+    
+    @IBAction func medicationTimingTapped(_ sender: RSDCheckboxButton) {
+        if sender.isSelected {
+            sender.setSelected(false, animated: true)
+            self.delegate?.didChangeMedicationTiming(for: self, selected: -1)
+        }
+        else {
+            self.medicationTimingButtons.forEach {
+                $0.setSelected((sender.tag == $0.tag), animated: true)
+            }
+            self.delegate?.didChangeMedicationTiming(for: self, selected: sender.tag)
+        }
+    }
+    
+    open func prepareForInsertion(into tableView: UITableView) {
+        if detailsListStackView.axis == .horizontal,
+            tableView.bounds.width <= 320 {
+            detailsListStackView.axis = .vertical
+        }
     }
 }
 
@@ -188,194 +289,5 @@ open class SBASeverityButton : UIButton {
         layer.cornerRadius = 3.0
         layer.borderWidth = 1.0
         _updateBackgroundColor()
-    }
-}
-
-/// A simple button that draws a open/closed chevron that can be used to indicate whether or not
-/// the details are expanded.
-@IBDesignable
-public final class RSDDetailsChevronButton : UIButton {
-    
-    public override var isSelected: Bool {
-        didSet {
-            chevron.setOpen(isSelected, animated: false)
-        }
-    }
-    private var _animating: Bool = false
-    
-    /// Set selected with animation
-    public func setSelected(_ isSelected: Bool, animated: Bool) {
-        chevron.setOpen(isSelected, animated: animated)
-        self.isSelected = isSelected
-    }
-    
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
-    }
-    
-    private var chevron: ChevronFlipView!
-    
-    private func commonInit() {
-        let bounds = CGRect(x: 0, y: 0, width: 20, height: 12)
-        chevron = ChevronFlipView(frame: bounds)
-        self.addSubview(chevron)
-        chevron.rsd_alignToSuperview([.bottom, .trailing], padding: 2)
-        chevron.rsd_makeWidth(.equal, bounds.width)
-        chevron.rsd_makeHeight(.equal, bounds.height)
-    }
-}
-
-@IBDesignable
-fileprivate class ChevronFlipView : UIView {
-    
-    var viewDown: ChevronView!
-    var viewUp: ChevronView!
-    
-    public private(set) var isOpen: Bool = false
-    
-    public func setOpen(_ isOpen: Bool, animated: Bool) {
-        guard isOpen != self.isOpen else { return }
-        self.isOpen = isOpen
-        if isOpen {
-            flipOpen(animated: animated)
-        } else {
-            flipClosed(animated: animated)
-        }
-    }
-    
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        viewDown = ChevronView(frame: self.bounds, isFlipped: false)
-        self.addSubview(viewDown)
-        viewDown.rsd_alignAllToSuperview(padding: 0)
-        
-        viewUp = ChevronView(frame: self.bounds, isFlipped: true)
-        self.addSubview(viewDown)
-        viewDown.rsd_alignAllToSuperview(padding: 0)
-        viewUp.isHidden = true
-    }
-    
-    private func flipClosed(animated: Bool) {
-        guard animated else {
-            viewUp.isHidden = true
-            viewDown.isHidden = false
-            return
-        }
-        
-        let transitionOptions: UIViewAnimationOptions = [.transitionFlipFromBottom, .showHideTransitionViews]
-        
-        UIView.transition(with: viewUp, duration: 1.0, options: transitionOptions, animations: {
-            self.viewUp.isHidden = false
-        })
-        
-        UIView.transition(with: viewDown, duration: 1.0, options: transitionOptions, animations: {
-            self.viewDown.isHidden = true
-        })
-    }
-    
-    private func flipOpen(animated: Bool) {
-        guard animated else {
-            viewUp.isHidden = false
-            viewDown.isHidden = true
-            return
-        }
-        
-        let transitionOptions: UIViewAnimationOptions = [.transitionFlipFromTop, .showHideTransitionViews]
-        
-        UIView.transition(with: viewUp, duration: 1.0, options: transitionOptions, animations: {
-            self.viewUp.isHidden = true
-        })
-        
-        UIView.transition(with: viewDown, duration: 1.0, options: transitionOptions, animations: {
-            self.viewDown.isHidden = false
-        })
-    }
-}
-
-@IBDesignable
-fileprivate class ChevronView : UIView {
-
-    public private(set) var isFlipped: Bool = false
-    
-    private func currentTransform() -> CATransform3D {
-        return isFlipped ? CATransform3DMakeScale(-1, 1, 1) : CATransform3DIdentity
-    }
-    
-    fileprivate var _shapeLayer: CAShapeLayer!
-    fileprivate var _rectSize: CGSize!
-    
-    public init(frame: CGRect, isFlipped: Bool) {
-        super.init(frame: frame)
-        self.isFlipped = isFlipped
-        commonInit()
-    }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
-    }
-    
-    fileprivate func commonInit() {
-        _rectSize = self.bounds.size
-        updateShapeLayer()
-    }
-    
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-        
-        let rectSize = self.bounds.size
-        if rectSize != _rectSize {
-            _rectSize = rectSize
-            updateShapeLayer()
-        }
-        _shapeLayer.frame = self.layer.bounds
-    }
-    
-    override public func tintColorDidChange() {
-        super.tintColorDidChange()
-        _shapeLayer.strokeColor = self.tintColor.cgColor
-    }
-    
-    private func updateShapeLayer() {
-        
-        self.layer.removeAllAnimations()
-        _shapeLayer?.removeFromSuperlayer()
-        
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: 0, y: 0))
-        path.addLine(to: CGPoint(x: _rectSize.width / 2, y: _rectSize.height))
-        path.addLine(to: CGPoint(x: _rectSize.width, y: 0))
-        path.lineCapStyle = .round
-        path.lineJoinStyle = .miter
-        path.lineWidth = 2
-        
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = path.cgPath
-        shapeLayer.lineWidth = path.lineWidth
-        shapeLayer.lineCap = kCALineCapRound
-        shapeLayer.lineJoin = kCALineJoinMiter
-        shapeLayer.frame = self.layer.bounds
-        shapeLayer.strokeColor = self.tintColor.cgColor
-        shapeLayer.backgroundColor = UIColor.clear.cgColor
-        shapeLayer.fillColor = nil
-        shapeLayer.strokeEnd = 1
-        shapeLayer.transform = currentTransform()
-        self.layer.addSublayer(shapeLayer)
-        _shapeLayer = shapeLayer
     }
 }
