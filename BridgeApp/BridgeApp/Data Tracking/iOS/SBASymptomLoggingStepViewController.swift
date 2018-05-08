@@ -227,12 +227,12 @@ open class SBASymptomLoggingCell: RSDTableViewCell {
     
     @IBAction func medicationTimingTapped(_ sender: RSDCheckboxButton) {
         if sender.isSelected {
-            sender.setSelected(false, animated: true)
+            sender.isSelected = false
             self.delegate?.didChangeMedicationTiming(for: self, selected: -1)
         }
         else {
             self.medicationTimingButtons.forEach {
-                $0.setSelected((sender.tag == $0.tag), animated: true)
+                $0.isSelected = (sender.tag == $0.tag)
             }
             self.delegate?.didChangeMedicationTiming(for: self, selected: sender.tag)
         }
