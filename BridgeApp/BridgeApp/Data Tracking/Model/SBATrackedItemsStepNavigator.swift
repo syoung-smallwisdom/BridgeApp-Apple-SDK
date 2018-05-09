@@ -47,6 +47,10 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
         case selection, review, addDetails, logging
     }
     
+    public enum RequiredStepCodingKeys : String, CodingKey {
+        case identifier, type
+    }
+    
     /// The list of medications.
     public var items: [SBATrackedItem] {
         return self.selectionStep.items
@@ -100,41 +104,20 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
     public required init(from decoder: Decoder) throws {
         let (items, sections) = try type(of: self).decodeItems(from: decoder)
         
+        // Build the details template.
         let container = try decoder.container(keyedBy: StepIdentifiers.self)
-        
-        let selectionStep = type(of: self).buildSelectionStep(items: items, sections: sections)
-        if let step = selectionStep as? RSDDecodableReplacement, container.contains(.selection)  {
-            let nestedDecoder = try container.superDecoder(forKey: .selection)
-            try step.decode(from: nestedDecoder)
-        }
-        
-        let reviewStep = type(of: self).buildReviewStep(items: items, sections: sections)
-        if let step = reviewStep as? RSDDecodableReplacement, container.contains(.review)  {
-            let nestedDecoder = try container.superDecoder(forKey: .review)
-            try step.decode(from: nestedDecoder)
-        }
-        
         let detailStepTemplates = type(of: self).buildDetailSteps(items: items, sections: sections)
         if let step = detailStepTemplates?.first as? RSDDecodableReplacement, container.contains(.addDetails) {
             let nestedDecoder = try container.superDecoder(forKey: .addDetails)
             try step.decode(from: nestedDecoder)
         }
         
-        var loggingStep = type(of: self).buildLoggingStep(items: items, sections: sections)
-        if container.contains(.logging) {
-            /// If there isn't a class override, but the decoder includes a logging step, then include one here.
-            let step: RSDDecodableReplacement
-            if let dStep = loggingStep as? RSDDecodableReplacement {
-                step = dStep
-            } else {
-                loggingStep = SBATrackedItemsLoggingStepObject(identifier: StepIdentifiers.logging.stringValue, items: items, sections: sections, type: .logging)
-                step = loggingStep as! RSDDecodableReplacement
-            }
-            let nestedDecoder = try container.superDecoder(forKey: .logging)
-            try step.decode(from: nestedDecoder)
-        }
+        // Build the tracking steps.
+        let selectionStep = try type(of: self).decodeStep(from: decoder, for: .selection, items: items, sections: sections)
+        let reviewStep = try type(of: self).decodeStep(from: decoder, for: .review, items: items, sections: sections)
+        let loggingStep = try type(of: self).decodeStep(from: decoder, for: .logging, items: items, sections: sections)
         
-        self.selectionStep = selectionStep
+        self.selectionStep = selectionStep!
         self.reviewStep = reviewStep
         self.detailStepTemplates = detailStepTemplates
         self.loggingStep = loggingStep
@@ -183,6 +166,54 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
     /// Build the logging step for this tracked data collection. Override to customize the step.
     open class func buildLoggingStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep? {
         return nil
+    }
+    
+    private class func decodeStep(from decoder: Decoder, for identifier: StepIdentifiers, items: [SBATrackedItem], sections: [SBATrackedSection]?) throws -> SBATrackedItemsStep? {
+        
+        // Check if the decoder contains a step keyed by the identifier otherwise exit early.
+        let container = try decoder.container(keyedBy: StepIdentifiers.self)
+        guard container.contains(identifier) else {
+            return buildStep(identifier: identifier, items: items, sections: sections)
+        }
+        
+        // Look to see if this should be decoded using the factory.
+        let nestedDecoder = try container.superDecoder(forKey: identifier)
+        if let _ =  try decoder.factory.typeName(from: nestedDecoder) {
+            let step = try decoder.factory.decodeStep(from: nestedDecoder)
+            if let trackingStep = step as? SBATrackedItemsStep {
+                // If the decoded step is of the expected type then set the items and sections and
+                // return the step decoded by the decoder.
+                trackingStep.items = items
+                trackingStep.sections = sections
+                return trackingStep
+            }
+            else {
+                let context = DecodingError.Context(codingPath: nestedDecoder.codingPath, debugDescription: "Failed to cast the decoded step to a `SBATrackedItemsStep`")
+                throw DecodingError.typeMismatch(SBATrackedItemsStep.self, context)
+            }
+        }
+        else {
+            // Build the step and decode into it if possible (if cannot decode the step from the factory)
+            let step = buildStep(identifier: identifier, items: items, sections: sections)
+            if let dStep = step as? RSDDecodableReplacement {
+                try dStep.decode(from: nestedDecoder)
+            }
+            return step
+        }
+    }
+    
+    private class func buildStep(identifier: StepIdentifiers, items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep? {
+        switch identifier {
+        case .selection:
+            return buildSelectionStep(items: items, sections: sections)
+        case .logging:
+            return buildLoggingStep(items: items, sections: sections) ??
+                SBATrackedItemsLoggingStepObject(identifier: identifier.stringValue, items: items, sections: sections, type: .logging)
+        case .review:
+            return buildReviewStep(items: items, sections: sections)
+        default:
+            return nil
+        }
     }
     
     // MARK: Result management

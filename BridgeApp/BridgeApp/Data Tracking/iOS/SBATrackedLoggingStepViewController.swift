@@ -58,7 +58,7 @@ open class SBATrackedLoggingStepViewController: RSDTableStepViewController {
 /// Table cell for logging tracked data.
 open class SBATrackedLoggingCell: RSDButtonCell {
     
-    /// The nib to use with this cell. Default will instantiate a `RSDBasicTrackedLoggingCell`.
+    /// The nib to use with this cell. Default will instantiate a `SBATrackedLoggingCell`.
     open class var nib: UINib {
         let bundle = Bundle(for: SBATrackedLoggingCell.self)
         let nibName = String(describing: SBATrackedLoggingCell.self)

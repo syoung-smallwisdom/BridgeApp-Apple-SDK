@@ -66,6 +66,11 @@
 		F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */; };
 		F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */; };
 		F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */; };
+		F8C7D3D020927065007490BC /* Symptoms.json in Resources */ = {isa = PBXBuildFile; fileRef = F8C7D3BC20927065007490BC /* Symptoms.json */; };
+		F8C7D3F6209285A8007490BC /* SBASymptomLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */; };
+		F8C7D40D20929AFF007490BC /* SBASymptomLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D40C20929AFF007490BC /* SBASymptomLoggingStepViewController.swift */; };
+		F8C7D4132092A1F5007490BC /* SBASymptomLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F8C7D4112092A1F5007490BC /* SBASymptomLoggingCell.xib */; };
+		F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D4152092CF36007490BC /* UIColor+BridgeKeyNames.swift */; };
 		F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7241D203D007800AC0E5B /* SurveyTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -273,6 +278,11 @@
 		F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurveyElement+RSDStep.swift"; sourceTree = "<group>"; };
 		F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASurveyConfiguration.swift; sourceTree = "<group>"; };
 		F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAModuleIdentifier.swift; sourceTree = "<group>"; };
+		F8C7D3BC20927065007490BC /* Symptoms.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Symptoms.json; sourceTree = "<group>"; };
+		F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASymptomLoggingStepObject.swift; sourceTree = "<group>"; };
+		F8C7D40C20929AFF007490BC /* SBASymptomLoggingStepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASymptomLoggingStepViewController.swift; sourceTree = "<group>"; };
+		F8C7D4112092A1F5007490BC /* SBASymptomLoggingCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SBASymptomLoggingCell.xib; sourceTree = "<group>"; };
+		F8C7D4152092CF36007490BC /* UIColor+BridgeKeyNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+BridgeKeyNames.swift"; sourceTree = "<group>"; };
 		F8F7241D203D007800AC0E5B /* SurveyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -343,6 +353,7 @@
 		F83906E420325C53005FC0BA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F8C7D3BC20927065007490BC /* Symptoms.json */,
 				F847952D207FEE090024A230 /* Medication.json */,
 				F825BA59207FD48300D29F60 /* Triggers.json */,
 				F83906FC20325E53005FC0BA /* Certificates */,
@@ -409,6 +420,7 @@
 				F825BA5B207FD49D00D29F60 /* Data Tracking */,
 				F886FD2B203523D400EF2248 /* Extensions */,
 				F886FD322036042E00EF2248 /* Localization */,
+				F8C7D4142092CEF3007490BC /* StyleGuide */,
 			);
 			path = BridgeApp;
 			sourceTree = "<group>";
@@ -486,6 +498,7 @@
 			children = (
 				F825BA5D207FD64200D29F60 /* SBATrackedItem.swift */,
 				F825BA67207FD83200D29F60 /* SBAMedicationTrackingStepNavigator.swift */,
+				F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */,
 				F825BA6A207FD83300D29F60 /* SBATrackedItemDetailsStepObject.swift */,
 				F825BA6C207FD83300D29F60 /* SBATrackedItemsLoggingStepObject.swift */,
 				F825BA68207FD83200D29F60 /* SBATrackedItemsReviewStepObject.swift */,
@@ -503,6 +516,7 @@
 			children = (
 				F847952F207FF0C90024A230 /* Default Nibs and Storyboards */,
 				F8479518207FEA4C0024A230 /* SBATrackedLoggingStepViewController.swift */,
+				F8C7D40C20929AFF007490BC /* SBASymptomLoggingStepViewController.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -510,6 +524,7 @@
 		F847952F207FF0C90024A230 /* Default Nibs and Storyboards */ = {
 			isa = PBXGroup;
 			children = (
+				F8C7D4112092A1F5007490BC /* SBASymptomLoggingCell.xib */,
 				F8479530207FF0DF0024A230 /* SBATrackedLoggingCell.xib */,
 			);
 			path = "Default Nibs and Storyboards";
@@ -565,6 +580,14 @@
 				F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */,
 			);
 			path = "Research Model";
+			sourceTree = "<group>";
+		};
+		F8C7D4142092CEF3007490BC /* StyleGuide */ = {
+			isa = PBXGroup;
+			children = (
+				F8C7D4152092CF36007490BC /* UIColor+BridgeKeyNames.swift */,
+			);
+			path = StyleGuide;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -806,6 +829,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8C7D4132092A1F5007490BC /* SBASymptomLoggingCell.xib in Resources */,
 				F85AABE920800D120059F019 /* SBATrackedLoggingCell.xib in Resources */,
 				F818E2412032B07E00C538ED /* README.md in Resources */,
 				F886FD342036067300EF2248 /* BridgeApp.strings in Resources */,
@@ -824,6 +848,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F83B450F20324A33002825AE /* LaunchScreen.storyboard in Resources */,
+				F8C7D3D020927065007490BC /* Symptoms.json in Resources */,
 				F83B450C20324A33002825AE /* Assets.xcassets in Resources */,
 				F83B450A20324A33002825AE /* Main.storyboard in Resources */,
 				F83906FB20325D13005FC0BA /* BridgeInfo.plist in Resources */,
@@ -843,6 +868,7 @@
 				F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */,
 				F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */,
 				F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */,
+				F8C7D3F6209285A8007490BC /* SBASymptomLoggingStepObject.swift in Sources */,
 				F8479521207FEA9D0024A230 /* SBATrackedItemsLoggingStepObject.swift in Sources */,
 				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,
 				F8479527207FEA9D0024A230 /* SBATrackingDataSource.swift in Sources */,
@@ -853,6 +879,7 @@
 				F886FD2D2035244F00EF2248 /* NSPredicate+Utilities.swift in Sources */,
 				F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */,
 				F8479525207FEA9D0024A230 /* SBATrackedSelectionDataSource.swift in Sources */,
+				F8C7D40D20929AFF007490BC /* SBASymptomLoggingStepViewController.swift in Sources */,
 				F8479520207FEA9D0024A230 /* SBATrackedItemDetailsStepObject.swift in Sources */,
 				F8479524207FEA9D0024A230 /* SBATrackedSelectionStepObject.swift in Sources */,
 				F886FD31203524C600EF2248 /* Date+Utilities.swift in Sources */,
@@ -863,6 +890,7 @@
 				F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */,
 				F886FD2F2035248600EF2248 /* SBBScheduledActivity+Filters.swift in Sources */,
 				F886FD1320351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift in Sources */,
+				F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */,
 				F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */,
 				F847951F207FEA9D0024A230 /* SBAMedicationTrackingStepNavigator.swift in Sources */,
 			);

@@ -301,7 +301,7 @@ public struct RSDTrackedItemsResultObject : SBATrackedItemsResult, Codable {
     /// The end date timestamp for the result.
     public var endDate: Date = Date()
     
-    /// The list of medications that are currently selected.
+    /// The list of items that are currently selected.
     public var items: [RSDIdentifier] = []
     
     /// Return the list of identifiers.

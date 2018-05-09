@@ -78,6 +78,7 @@ open class SBATrackedItemsLoggingStepObject : SBATrackedSelectionStepObject {
 extension RSDResultType {
     public static let loggingItem: RSDResultType = "loggingItem"
     public static let loggingCollection: RSDResultType = "loggingCollection"
+    public static let symptom: RSDResultType = "symptom"
 }
 
 /// Extend the collection result to handle tracking logged items.
@@ -192,7 +193,14 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
 extension SBATrackedLoggingResultObject : SBATrackedItemAnswer {
     
     public var hasRequiredValues: Bool {
-        return self.loggedDate != nil
+        if self.type == .symptom {
+            // For a symptom result, need to have a severity.
+            return (self.findAnswerResult(with: SBASymptomTableItem.ResultIdentifier.severity.stringValue)?.value != nil)
+        }
+        else {
+            // otherwise, just marking the logged date is enough.
+            return self.loggedDate != nil
+        }
     }
     
     public var answerValue: Codable? {

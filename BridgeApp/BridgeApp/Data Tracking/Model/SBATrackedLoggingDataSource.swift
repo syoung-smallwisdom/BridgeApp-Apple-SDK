@@ -64,9 +64,9 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         }
         
         let inputField = RSDChoiceInputFieldObject(identifier: step.identifier, choices: result.selectedAnswers, dataType: .collection(.multipleChoice, .string), uiHint: .logging)
-        let trackedItems = result.selectedAnswers.enumerated().map { (idx, item) -> SBATrackedLoggingTableItem in
+        let trackedItems = result.selectedAnswers.enumerated().map { (idx, item) -> RSDTableItem in
             let choice: RSDChoice = step.items.first(where: { $0.identifier == item.identifier }) ?? item
-            return SBATrackedLoggingTableItem(rowIndex: idx, inputField: inputField, uiHint: .logging, choice: choice)
+            return self.instantiateTableItem(at: idx, inputField: inputField, itemAnswer: item, choice: choice)
         }
         
         var itemGroups: [RSDTableItemGroup] = [RSDTableItemGroup(beginningRowIndex: 0, items: trackedItems)]
@@ -74,12 +74,23 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         
         let actionType: RSDUIActionType = .addMore
         if let uiStep = step as? RSDUIActionHandler, let action = uiStep.action(for: actionType, on: step) {
-            let tableItem = RSDModalStepTableItem(identifier: actionType.stringValue, rowIndex: 0, reuseIdentifier: RSDFormUIHint.modalButton.stringValue, action: action)
+            let tableItem = SBAModalSelectionTableItem(identifier: actionType.stringValue, rowIndex: 0, reuseIdentifier: RSDFormUIHint.modalButton.stringValue, action: action)
             itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: [tableItem]))
             sections.append(RSDTableSection(identifier: "addMore", sectionIndex: 1, tableItems: [tableItem]))
         }
         
         return (sections, itemGroups)
+    }
+    
+    /// Instantiate an appropriate table item for the given row.
+    /// - parameters:
+    ///     - rowIndex: The row index for the table item.
+    ///     - inputField: The input field associated with the table item.
+    ///     - itemAnswer: The tracked item answer currently set for this row.
+    ///     - choice: The choice for this row.
+    /// - returns: New instance of a table item appropriate to this row.
+    open class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
+        return SBATrackedLoggingTableItem(rowIndex: rowIndex, inputField: inputField, uiHint: .logging, choice: choice)
     }
     
     /// Override to mark the item as logged.
@@ -141,24 +152,31 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
             return
         }
         
-        // Set up the path and the task controller for the current step. For this case, we what a new task path that uses the task
+        // Set up the path and the task controller for the current step. For this case, we want a new task path that uses the task
         // from *this* taskPath as it's source, but which does not directly edit this task path.
         let path = RSDTaskPath(task: task)
+        setupModal(stepController, path: path, tableItem: tableItem)
+    }
+    
+    internal func setupModal(_ stepController: RSDStepController, path: RSDTaskPath, tableItem: RSDModalStepTableItem) {
         path.currentStep = stepController.step
         let taskController = RSDModalStepTaskController()
         _currentTaskController = taskController
+        _currentTableItem = tableItem
         taskController.taskPath = path
         taskController.stepController = stepController
         taskController.delegate = self
         stepController.taskController = taskController
     }
     
-    private var _currentTaskController: RSDModalStepTaskController?
+    internal var _currentTaskController: RSDModalStepTaskController?
+    internal var _currentTableItem: RSDModalStepTableItem?
     
     // MARK: RSDModalStepTaskControllerDelegate
     
     open func goForward(with taskController: RSDModalStepTaskController) {
-        if let result = taskController.taskPath.result.findResult(for: taskController.stepController.step) as? SBATrackedItemsResult {
+        if let _ = _currentTableItem as? SBAModalSelectionTableItem,
+            let result = taskController.taskPath.result.findResult(for: taskController.stepController.step) as? SBATrackedItemsResult {
 
             // Let the delegate know that things are changing.
             self.delegate?.tableDataSourceWillBeginUpdate(self)
@@ -174,13 +192,19 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         }
         self.delegate?.tableDataSource(self, didFinishWith: taskController.stepController)
         _currentTaskController = nil
+        _currentTableItem = nil
     }
     
     /// Default behavior is to dismiss the view controller without changes.
     open func goBack(with taskController: RSDModalStepTaskController) {
         self.delegate?.tableDataSource(self, didFinishWith: taskController.stepController)
         _currentTaskController = nil
+        _currentTableItem = nil
     }
+}
+
+/// Subclass the modal step table item to use casting as the type.
+open class SBAModalSelectionTableItem : RSDModalStepTableItem {
 }
 
 /// Custom table group for handling marking items as selected with a timestamp.

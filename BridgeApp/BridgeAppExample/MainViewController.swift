@@ -39,10 +39,16 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
     let taskGroups: [RSDTaskGroup] = {
         
         let trackingTaskGroup : RSDTaskGroup = {
-            var taskInfo = RSDTaskInfoObject(with: "Triggers")
-            taskInfo.title = "Triggers"
-            taskInfo.resourceTransformer = RSDResourceTransformerObject(resourceName: "Triggers")
-            return RSDTaskGroupObject(with: "Tracking", tasks: [taskInfo])
+            
+            var triggersInfo = RSDTaskInfoObject(with: "Triggers")
+            triggersInfo.title = "Triggers"
+            triggersInfo.resourceTransformer = RSDResourceTransformerObject(resourceName: "Triggers")
+            
+            var symptomsInfo = RSDTaskInfoObject(with: "Symptoms")
+            symptomsInfo.title = "Symptoms"
+            symptomsInfo.resourceTransformer = RSDResourceTransformerObject(resourceName: "Symptoms")
+            
+            return RSDTaskGroupObject(with: "Tracking", tasks: [triggersInfo, symptomsInfo])
         }()
         
         return [trackingTaskGroup]

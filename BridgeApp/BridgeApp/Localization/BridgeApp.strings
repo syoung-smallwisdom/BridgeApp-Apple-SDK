@@ -34,3 +34,19 @@
 
 "TIME_NOW" = "Now"; // Time if now
 
+/* Symptom Duration */
+"ADD_DURATION_BUTTON" = "Add duration"; // The title for the "Add duration" button of the symptoms tracking.
+"DURATION_CHOICE_NOW" = "Currently occurring";
+"DURATION_CHOICE_SHORT_PERIOD" = "A short period of time";
+"DURATION_CHOICE_A_WHILE" = "A little while";
+"DURATION_CHOICE_MORNING" = "All morning";
+"DURATION_CHOICE_AFTERNOON" = "All afternoon";
+"DURATION_CHOICE_EVENING" = "All evening";
+"DURATION_CHOICE_HALF_DAY" = "Half the day";
+"DURATION_CHOICE_ALL_DAY" = "All day long";
+"DURATION_CHOICE_HALF_NIGHT" = "Half the night";
+"DURATION_CHOICE_ALL_NIGHT" = "All night";
+"DURATION_SELECTION_TITLE" = "How long did this symptom last?";
+"DURATION_SELECTION_DETAIL" = "Select one";
+
+
