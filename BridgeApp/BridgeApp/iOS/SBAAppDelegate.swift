@@ -76,14 +76,31 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
         return window?.rootViewController as? SBARootViewController
     }
     
+    /// Current "state" of the app.
+    public var currentState: SBAApplicationState {
+        return rootViewController?.state ?? _currentState ?? .launch
+    }
+    private var _currentState: SBAApplicationState?
+    
     /// Convenience method for transitioning to the given view controller as the main window
     /// rootViewController.
     /// - parameters:
     ///     - viewController: View controller to transition to.
     ///     - state: State of the app.
     ///     - animated: Should the transition be animated?
-    open func transition(to viewController: UIViewController, state: SBARootViewController.State, animated: Bool) {
-        guard let window = self.window, rootViewController?.state != state else { return }
+    open func transition(to viewController: UIViewController, state: SBAApplicationState, animated: Bool) {
+        // Do not continue if this is called before the app has finished launching.
+        guard let window = self.window, currentState != state else { return }
+        
+        // Do not continue if there is a catastrophic error and this is **not** transitioning to that state.
+        guard !hasCatastrophicError || (state == .catastrophicError) else {
+            if currentState != .catastrophicError {
+                showCatastrophicStartupErrorViewController(animated: animated)
+            }
+            return
+        }
+        _currentState = state
+        
         if let root = self.rootViewController {
             root.set(viewController: viewController, state: state, animated: animated)
         }

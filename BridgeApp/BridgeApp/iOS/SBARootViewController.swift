@@ -33,42 +33,48 @@
 
 import UIKit
 
+/// The "state" of the application. This can be used to track what view controller is currently being
+/// displayed.
+public enum SBAApplicationState : Equatable {
+    
+    /// Initial launch view.
+    case launch
+    
+    /// Main view showing activities, etc. for the signed in user.
+    case main
+    
+    /// Study overview (onboarding) for the user who is *not* signed in.
+    case onboarding
+    
+    /// Unrecoverable error state. Displayed when the app must be updated or has reached end-of-life.
+    case catastrophicError
+    
+    /// A custom state that is defined by a specific application.
+    case custom(String)
+    
+    /// The string for the custom root view controller state.
+    public var customState: String? {
+        if case .custom(let str) = self {
+            return str
+        } else {
+            return nil
+        }
+    }
+}
+
+extension SBAApplicationState : ExpressibleByStringLiteral {
+    public init(stringLiteral value: String) {
+        self = .custom(value)
+    }
+}
+
 /// `SBARootViewController` is a root view controller implementation that allows the current "root"
 /// to be transitioned while there is a modal view controller displayed on top of the root. For
 /// example, when displaying a passcode or during onboarding.
 open class SBARootViewController: UIViewController {
     
-    /// The "state" of the application. This can be used to track what view controller is currently being
-    /// displayed.
-    public enum State : Equatable {
-        
-        /// Initial launch view.
-        case launch
-        
-        /// Main view showing activities, etc. for the signed in user.
-        case main
-        
-        /// Study overview (onboarding) for the user who is *not* signed in.
-        case onboarding
-        
-        /// Unrecoverable error state. Displayed when the app must be updated or has reached end-of-life.
-        case catastrophicError
-        
-        /// A custom state that is defined by a specific application.
-        case custom(String)
-        
-        /// The string for the custom root view controller state.
-        public var customState: String? {
-            if case .custom(let str) = self {
-                return str
-            } else {
-                return nil
-            }
-        }
-    }
-    
     /// The current state of the app.
-    public private(set) var state: State = .launch
+    public private(set) var state: SBAApplicationState = .launch
     
     /// Should the content of the app be hidden when in the background?
     public var contentHidden = false {
@@ -143,7 +149,7 @@ open class SBARootViewController: UIViewController {
     
     /// Set the new root view controller. This will use a crossfade animation to transition between the
     /// two root view controllers.
-    public func set(viewController: UIViewController, state: State, animated: Bool) {
+    public func set(viewController: UIViewController, state: SBAApplicationState, animated: Bool) {
         
         guard isViewLoaded else {
             _unloadedRootViewController = viewController
