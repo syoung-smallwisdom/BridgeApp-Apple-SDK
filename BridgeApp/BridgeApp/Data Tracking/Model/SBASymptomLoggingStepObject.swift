@@ -135,7 +135,7 @@ public enum SBASymptomSeverityLevel : Int, Codable {
     case none = 0, mild, moderate, severe
 }
 
-/// The medication timing for the symptom being logged
+/// The medication timing for the symptom being logged.
 public enum SBASymptomMedicationTiming : String, Codable {
     case preMedication = "pre-medication"
     case postMedication = "post-medication"
@@ -309,7 +309,7 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         }
     }
     
-    /// The duration window describing how long the symptoms occured.
+    /// The duration window describing how long the symptoms occurred.
     public var duration: SBASymptomDurationLevel? {
         get {
             guard let result = loggedResult.findAnswerResult(with: ResultIdentifier.duration.rawValue) else { return nil }
@@ -322,7 +322,7 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         }
     }
     
-    /// The duration window describing how long the symptoms occured.
+    /// The medication timing for when the symptom occurred.
     public var medicationTiming: SBASymptomMedicationTiming? {
         get {
             guard let rawValue = loggedResult.findAnswerResult(with: ResultIdentifier.medicationTiming.rawValue)?.value as? String
@@ -337,7 +337,7 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         }
     }
     
-    /// The duration window describing how long the symptoms occured.
+    /// Notes added by the participant.
     public var notes: String? {
         get {
             return loggedResult.findAnswerResult(with: ResultIdentifier.notes.rawValue)?.value as? String

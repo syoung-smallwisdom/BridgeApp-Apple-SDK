@@ -36,7 +36,7 @@
 
 /* Symptom Duration */
 "ADD_DURATION_BUTTON" = "Add duration"; // The title for the "Add duration" button of the symptoms tracking.
-"DURATION_CHOICE_NOW" = "Currently occuring";
+"DURATION_CHOICE_NOW" = "Currently occurring";
 "DURATION_CHOICE_SHORT_PERIOD" = "A short period of time";
 "DURATION_CHOICE_A_WHILE" = "A little while";
 "DURATION_CHOICE_MORNING" = "All morning";

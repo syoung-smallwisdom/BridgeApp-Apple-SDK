@@ -193,7 +193,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
             }
         }
         else {
-            /// Build the step and decode into it if possible (if cannot decode the step from the factory)
+            // Build the step and decode into it if possible (if cannot decode the step from the factory)
             let step = buildStep(identifier: identifier, items: items, sections: sections)
             if let dStep = step as? RSDDecodableReplacement {
                 try dStep.decode(from: nestedDecoder)
