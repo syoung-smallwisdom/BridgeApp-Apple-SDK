@@ -65,6 +65,10 @@
 		F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F67692032789800B5CC4B /* StepProtocolTests.swift */; };
 		F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */; };
 		F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */; };
+		F8A5CE4A20A2AE7100E9FD75 /* SBARootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4920A2AE7100E9FD75 /* SBARootViewController.swift */; };
+		F8A5CE4C20A2B5C400E9FD75 /* SBAAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4B20A2B5C400E9FD75 /* SBAAppDelegate.swift */; };
+		F8A5CE4F20A2BBEF00E9FD75 /* CatastrophicError.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8A5CE4D20A2BBEF00E9FD75 /* CatastrophicError.storyboard */; };
+		F8A5CE5020A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4E20A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift */; };
 		F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */; };
 		F8C7D3D020927065007490BC /* Symptoms.json in Resources */ = {isa = PBXBuildFile; fileRef = F8C7D3BC20927065007490BC /* Symptoms.json */; };
 		F8C7D3F6209285A8007490BC /* SBASymptomLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */; };
@@ -277,6 +281,10 @@
 		F89F67692032789800B5CC4B /* StepProtocolTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepProtocolTests.swift; sourceTree = "<group>"; };
 		F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurveyElement+RSDStep.swift"; sourceTree = "<group>"; };
 		F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASurveyConfiguration.swift; sourceTree = "<group>"; };
+		F8A5CE4920A2AE7100E9FD75 /* SBARootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBARootViewController.swift; sourceTree = "<group>"; };
+		F8A5CE4B20A2B5C400E9FD75 /* SBAAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAAppDelegate.swift; sourceTree = "<group>"; };
+		F8A5CE4D20A2BBEF00E9FD75 /* CatastrophicError.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CatastrophicError.storyboard; sourceTree = "<group>"; };
+		F8A5CE4E20A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBACatastrophicErrorViewController.swift; sourceTree = "<group>"; };
 		F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAModuleIdentifier.swift; sourceTree = "<group>"; };
 		F8C7D3BC20927065007490BC /* Symptoms.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Symptoms.json; sourceTree = "<group>"; };
 		F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASymptomLoggingStepObject.swift; sourceTree = "<group>"; };
@@ -418,6 +426,7 @@
 				F825BA5C207FD4E000D29F60 /* App Configuration */,
 				F89F67602032774800B5CC4B /* Research Model */,
 				F825BA5B207FD49D00D29F60 /* Data Tracking */,
+				F8A5CE3520A2ADFF00E9FD75 /* iOS */,
 				F886FD2B203523D400EF2248 /* Extensions */,
 				F886FD322036042E00EF2248 /* Localization */,
 				F8C7D4142092CEF3007490BC /* StyleGuide */,
@@ -580,6 +589,17 @@
 				F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */,
 			);
 			path = "Research Model";
+			sourceTree = "<group>";
+		};
+		F8A5CE3520A2ADFF00E9FD75 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				F8A5CE4B20A2B5C400E9FD75 /* SBAAppDelegate.swift */,
+				F8A5CE4920A2AE7100E9FD75 /* SBARootViewController.swift */,
+				F8A5CE4D20A2BBEF00E9FD75 /* CatastrophicError.storyboard */,
+				F8A5CE4E20A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift */,
+			);
+			path = iOS;
 			sourceTree = "<group>";
 		};
 		F8C7D4142092CEF3007490BC /* StyleGuide */ = {
@@ -829,6 +849,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8A5CE4F20A2BBEF00E9FD75 /* CatastrophicError.storyboard in Resources */,
 				F8C7D4132092A1F5007490BC /* SBASymptomLoggingCell.xib in Resources */,
 				F85AABE920800D120059F019 /* SBATrackedLoggingCell.xib in Resources */,
 				F818E2412032B07E00C538ED /* README.md in Resources */,
@@ -875,6 +896,8 @@
 				F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */,
 				F847951E207FEA9D0024A230 /* SBATrackedItem.swift in Sources */,
 				F80F17A32033CB1B00352C3E /* SBBSurvey+RSDTask.swift in Sources */,
+				F8A5CE4A20A2AE7100E9FD75 /* SBARootViewController.swift in Sources */,
+				F8A5CE4C20A2B5C400E9FD75 /* SBAAppDelegate.swift in Sources */,
 				F8479523207FEA9D0024A230 /* SBATrackedItemsStepNavigator.swift in Sources */,
 				F886FD2D2035244F00EF2248 /* NSPredicate+Utilities.swift in Sources */,
 				F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */,
@@ -884,6 +907,7 @@
 				F8479524207FEA9D0024A230 /* SBATrackedSelectionStepObject.swift in Sources */,
 				F886FD31203524C600EF2248 /* Date+Utilities.swift in Sources */,
 				F8479526207FEA9D0024A230 /* SBATrackedLoggingDataSource.swift in Sources */,
+				F8A5CE5020A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift in Sources */,
 				F847951D207FEA8C0024A230 /* SBATrackedLoggingStepViewController.swift in Sources */,
 				F82B1A892036305200FEA16D /* SBBImage+Utilities.swift in Sources */,
 				F8479522207FEA9D0024A230 /* SBATrackedItemsReviewStepObject.swift in Sources */,
