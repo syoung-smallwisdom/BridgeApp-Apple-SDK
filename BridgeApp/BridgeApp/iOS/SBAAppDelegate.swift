@@ -43,7 +43,8 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization before application launch.
         
-        // Setup bridge.
+        // Set up bridge.
+        BridgeSDK.setErrorUIDelegate(self)
         SBABridgeConfiguration.shared.setupBridge(with: SBAFactory())
         
         // Set the tint color.
@@ -67,10 +68,10 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
     // MARK: RootViewController management
     // ------------------------------------------------
     
-    /// The root view controller for this app. By default, this is setup in `willFinishLaunchingWithOptions`
-    /// as the key window root view controller. This container view controller allows presenting
-    /// onboarding flow and/or a passcode modally while transitioning the underlying view controller
-    /// for the appropriate app state.
+    /// The root view controller for this app. By default, this is set up in `willFinishLaunchingWithOptions`
+    /// as the root view controller for the key window. This container view controller allows presenting
+    /// onboarding flow or a passcode modally while transitioning the underlying view controller for the
+    /// appropriate app state.
     open var rootViewController: SBARootViewController? {
         return window?.rootViewController as? SBARootViewController
     }
@@ -134,7 +135,7 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
     /// this will display a screen that blocks all activity. The user is then asked to
     /// update their app.
     ///
-    /// - parameter animated:  Should the transition be animated.
+    /// - parameter animated:  Should the transition be animated?
     open func showCatastrophicStartupErrorViewController(animated: Bool) {
         
         guard self.rootViewController?.state != .catastrophicError else { return }
@@ -149,7 +150,7 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
         transition(to: vc, state: .catastrophicError, animated: animated)
     }
     
-    /// Is there a catastrophic error.
+    /// Is there a catastrophic error?
     public final var hasCatastrophicError: Bool {
         return (catastrophicStartupError != nil)
     }
