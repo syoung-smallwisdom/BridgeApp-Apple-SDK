@@ -49,4 +49,11 @@
 "DURATION_SELECTION_TITLE" = "How long did this symptom last?";
 "DURATION_SELECTION_DETAIL" = "Select one";
 
+/* Failure messages */
+"NETWORK_FAILURE_TITLE" = "Could Not Complete"; // Title for a step or alert indicating a network failure
+"NETWORK_FAILURE_MESSAGE" = "Please try again later."; // Message for a step or alert indicating a network failure
+"CATASTROPHIC_FAILURE_MESSAGE" = "We're sorry. Something went wrong. Please check for an updated version of the app."; // Generic message for a catastrophic failure
+"UPDATE_APP_BUTTON" = "Update %@"; // Default text for action button to update the application where %@ is the app name
+
+
 
