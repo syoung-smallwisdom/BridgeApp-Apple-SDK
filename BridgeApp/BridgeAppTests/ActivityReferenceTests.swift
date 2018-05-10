@@ -72,6 +72,54 @@ class ActivityReferenceTests: XCTestCase {
     
     // MARK: Codable tests
     
+    func testAppConfig_Setup() {
+        
+        let schemaRef: [String : Any] =  ["id" : "foo",
+                                          "activityDescription" : "This is the activity description",
+                                          "revision" : NSNumber(value: 3)]
+        let clientData: [String : Any] = [
+            "studyDuration" : ["month":3],
+            "groups": [
+                [
+                    "identifier" : "group1",
+                    "activityIdentifiers": ["taskA", "taskB", "taskC"]
+                ],
+                [
+                    "identifier" : "group2",
+                    "activityIdentifiers": ["taskC", "taskD", "taskE"]
+                ],
+                ],
+            "activityList": [  ["identifier" : "taskA"],
+                               ["identifier" : "taskB"],
+                               ["identifier" : "taskC"],
+                               ["identifier" : "taskD"],
+                               ["identifier" : "taskE"]],
+            "tasks": [ ["identifier" : "taskA", "steps":[] ]]
+        ]
+        
+        let appConfig = SBBAppConfig(dictionaryRepresentation:
+            ["schemaReferences": [schemaRef],
+             "clientData": clientData
+            ])!
+
+        let config = SBABridgeConfiguration()
+        config.setup(with: appConfig)
+        
+        let expectedGroupIds = ["group1", "group2"]
+        let groupIds = config.activityGroups.map { $0.identifier }
+        XCTAssertEqual(groupIds, expectedGroupIds)
+        
+        let expectedActivityIds = Set(["taskA", "taskB", "taskC", "taskD", "taskE"])
+        let activityIds = Set(config.activityInfoMap.map { $0.key } )
+        XCTAssertEqual(activityIds, expectedActivityIds)
+        
+        let expectedTaskIds = Set(["taskA"])
+        let taskIds = Set(config.taskMap.map { $0.key } )
+        XCTAssertEqual(taskIds, expectedTaskIds)
+        
+        XCTAssertEqual(config.studyDuration.month, 3)
+    }
+    
     func testActivityInfo_Codable_ModuleId() {
         
         let json = """
@@ -221,7 +269,8 @@ class ActivityReferenceTests: XCTestCase {
                                 {"identifier" : "taskB"},
                                 {"identifier" : "taskC"},
                                 {"identifier" : "taskD"},
-                                {"identifier" : "taskE"}]
+                                {"identifier" : "taskE"}],
+            "tasks": [ {"identifier" : "taskA", "steps":[] }]
         }
         """.data(using: .utf8)! // our data in native (JSON) format
     
@@ -233,15 +282,12 @@ class ActivityReferenceTests: XCTestCase {
             XCTAssertEqual(groupIds, expectedGroupIds)
             
             let expectedActivityIds = ["taskA", "taskB", "taskC", "taskD", "taskE"]
-            let activityIds = object.activityList.map { $0.identifier }
+            let activityIds = object.activityList?.map { $0.identifier } ?? []
             XCTAssertEqual(activityIds, expectedActivityIds)
             
-            // Check that the task info objects get mapped appropriately
-            let config = SBABridgeConfiguration.shared
-            config.setupMapping(groups: object.groups, activityList: object.activityList)
-            
-            XCTAssertTrue(config.activityGroups.contains(where: { $0.identifier == "group1"}))
-            XCTAssertEqual(config.activityInfoMap["taskA"]?.identifier, "taskA")
+            let expectedTaskIds = ["taskA"]
+            let taskIds = object.tasks?.map { $0.identifier } ?? []
+            XCTAssertEqual(taskIds, expectedTaskIds)
             
         } catch let err {
             XCTFail("Failed to decode/encode object: \(err)")

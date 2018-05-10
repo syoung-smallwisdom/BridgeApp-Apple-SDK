@@ -31,7 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-import UIKit
+import Foundation
 
 public enum SBATimeRange : Int, Codable {
     case morning, afternoon, evening, night
@@ -44,6 +44,11 @@ extension Date {
         let unitFlags: NSCalendar.Unit = [.day, .month, .year]
         let components = (calendar as NSCalendar).components(unitFlags, from: self)
         return calendar.date(from: components) ?? self
+    }
+    
+    /// returns Date with a time of the last second of the day.
+    public func endOfDay() -> Date {
+        return self.startOfDay().addingNumberOfDays(1).addingTimeInterval(-1)
     }
     
     public var isToday: Bool {
@@ -62,6 +67,11 @@ extension Date {
     public func addingNumberOfYears(_ years: Int) -> Date {
         let calendar = Calendar.current
         return calendar.date(byAdding: .year, value: years, to: self, wrappingComponents: false)!
+    }
+    
+    public func addingDateComponents(_ dateComponents: DateComponents) -> Date {
+        let calendar = dateComponents.calendar ?? Calendar.current
+        return calendar.date(byAdding: dateComponents, to: self) ?? self
     }
     
     public func dateOnly() -> DateComponents {

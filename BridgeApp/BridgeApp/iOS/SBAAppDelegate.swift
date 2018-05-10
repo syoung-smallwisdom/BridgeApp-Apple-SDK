@@ -38,6 +38,10 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
     
     open var window: UIWindow?
     
+    public final class var shared: SBAAppDelegate? {
+        return UIApplication.shared.delegate as? SBAAppDelegate
+    }
+    
     // MARK: UIApplicationDelegate
     
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {

@@ -1,6 +1,6 @@
 //
-//  SBBScheduledActivity+Utilities.swift
-//  BridgeApp
+//  JSONDecoder+Utilities.swift
+//  BridgeApp (iOS)
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
@@ -33,29 +33,17 @@
 
 import Foundation
 
-extension SBBScheduledActivity {
+extension JSONDecoder {
     
-    /// Localized string for the currently scheduled time. This can be used to display the time window
-    /// during which a schedule is available.
-    public var scheduledTime: String {
-        if isCompleted {
-            return ""
-        } else if self.isAvailableNow {
-            return Localization.localizedString("TIME_NOW")
-        } else {
-            return DateFormatter.localizedString(from: scheduledOn, dateStyle: .none, timeStyle: .short)
-        }
-    }
-    
-    /// Localized string for the expiration time. This can be used to display the time window during
-    /// which a schedule is available (if the task expires today) or else to show the date and time when
-    /// the schedule expires.
-    public var expiresTime: String? {
-        guard let expireDate = self.expiresOn else { return nil }
-        if expireDate.isToday {
-            return DateFormatter.localizedString(from: expireDate, dateStyle: .none, timeStyle: .short)
-        } else {
-            return DateFormatter.localizedString(from: expireDate, dateStyle: .long, timeStyle: .short)
-        }
+    /// Decodes a top-level value of the given type from the given JSON representation.
+    ///
+    /// - parameter type: The type of the value to decode.
+    /// - parameter clientData: The data to decode from. This should be an array or dictionary.
+    /// - returns: A value of the requested type.
+    /// - throws: `DecodingError.dataCorrupted` if values requested from the payload are corrupted, or if the given data is not valid JSON.
+    /// - throws: An error if any value throws an error during decoding.
+    open func decode<T>(_ type: T.Type, from clientData: SBBJSONValue) throws -> T where T : Decodable {
+        let data = try JSONSerialization.data(withJSONObject: clientData, options: [])
+        return try self.decode(type, from: data)
     }
 }

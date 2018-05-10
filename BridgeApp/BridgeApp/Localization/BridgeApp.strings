@@ -33,6 +33,7 @@
 */
 
 "TIME_NOW" = "Now"; // Time if now
+"TIME_EXPIRED" = "Expired"; // Time if expired
 
 /* Symptom Duration */
 "ADD_DURATION_BUTTON" = "Add duration"; // The title for the "Add duration" button of the symptoms tracking.
@@ -56,4 +57,12 @@
 "UPDATE_APP_BUTTON" = "Update %@"; // Default text for action button to update the application where %@ is the app name
 
 
+/* Activity section titles */
+"ACTIVITY_TODAY" = "Today"; // Title of activity section for today's tasks
+"ACTIVITY_TOMORROW" = "Tomorrow"; // Title of activity section for tomorrow's tasks
+"ACTIVITY_SCHEDULE_MESSAGE_%@" = "This activity is not available until %@"; // Message for when a participant tries to do an activity ahead of schedule
+"ACTIVITY_SCHEDULE_AVAILABLE_ON_%@" = "Available on %@"; // Detail for a scheduled activity where %@ is the date when the activity becomes available
+"ACTIVITY_SCHEDULE_AVAILABLE_TOMORROW" = "Available tomorrow"; // Detail for a scheduled activity that is scheduled for tomorrow
+"ACTIVITY_SCHEDULE_COMPLETE_%@" = "Completed: %@"; // Detail for a scheduled activity where %@ is the timestamp when completed
+"ACTIVITY_SCHEDULE_EXPIRED_%@" = "Expired: %@"; // Detail for a scheduled activity where %@ is the timestamp when expired
 
