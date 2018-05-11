@@ -370,12 +370,16 @@ open class SBAScheduleManager: NSObject {
         return self.scheduledActivities.filter { predicate.evaluate(with: $0) }
     }
     
-    /// Instantiate a task path appropriate to the given task info. This method will attempt to map the task
-    /// info to a schedule, but if called, it is assumed that even if there is no schedule associated with
-    /// this task, that the task path should be instantiated.
+    /// Instantiate a task path appropriate to the given task info. This method will attempt to map the
+    /// task info to a schedule, but if called, it is assumed that even if there is no schedule associated
+    /// with this task, that the task path should be instantiated.
     ///
     /// The returned result includes the instantiated task path, the reference schedule (if found), and the
     /// clientData from the most recent finished run of the schedule (if found).
+    ///
+    /// - note: This method should not be used to instantiate child task paths that are used to track the
+    /// task state for a subtask. Instead, it is intended for starting a new task and will set up any state
+    /// handling (such as tracking data groups) that must be managed globally.
     ///
     /// - parameters:
     ///     - taskInfo: The task info object to use to create the task path.
@@ -448,7 +452,23 @@ open class SBAScheduleManager: NSObject {
         // Assign values to the task path from the schedule.
         taskPath.scheduleIdentifier = schedule?.scheduleIdentifier
         
+        // Set up the data groups tracking rule.
+        if let participant = SBAParticipantManager.shared.studyParticipant {
+            // If there is an existing tracking rule then there was a task that wasn't
+            // saved. So these changes should **not** be commited. Throw them out.
+            SBAFactory.shared.trackingRules.remove(where: { $0 is DataGroupsTrackingRule})
+            let rule = DataGroupsTrackingRule(initialCohorts: participant.dataGroups ?? [])
+            SBAFactory.shared.trackingRules.append(rule)
+        } else {
+            debugPrint("WARNING: Missing a study particpant. Cannot get the data groups.")
+        }
+        
         return (taskPath, schedule, clientData)
+    }
+    
+    /// subclass the cohorts tracking rule so that we can use casting to check for an existing
+    /// tracking rule.
+    class DataGroupsTrackingRule : RSDCohortTrackingRule {
     }
     
     // TODO: syoung 05/10/2018 - Implement handling for uploading archives and marking the schedule as finished.

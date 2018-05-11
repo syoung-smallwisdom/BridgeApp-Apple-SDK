@@ -43,6 +43,7 @@ class SBAScheduleManagerTests: XCTestCase {
         
         SBABridgeConfiguration.shared = SBABridgeConfiguration()
         scheduleManager = SBAScheduleManager()
+        
     }
     
     override func tearDown() {
@@ -227,9 +228,6 @@ class SBAScheduleManagerTests: XCTestCase {
     }
     
     func testScheduledActivitiesForActivityGroup_Yesterday_NoSchedulePlanGUID() {
-        
-        let taskGroupAlpha = ["taskA", "taskB", "taskC"]
-        let taskGroupBeta = ["taskD", "taskE"]
         
         let group1 = createTaskGroup("group1", ["taskA", "taskB", "taskC"], nil)
         let group3 = createTaskGroup("group3", ["taskD", "taskE"], nil)
