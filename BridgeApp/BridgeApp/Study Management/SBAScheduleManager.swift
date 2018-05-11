@@ -331,7 +331,7 @@ open class SBAScheduleManager: NSObject {
     /// - returns: The message to display in an alert for a schedule that is not currently available.
     open func messageForUnavailableSchedule(_ schedule: SBBScheduledActivity) -> String {
         var scheduledTime: String!
-        if schedule.scheduledOn < Date().endOfDay() {
+        if schedule.scheduledOn < Date().startOfDay().addingNumberOfDays(1) {
             scheduledTime = schedule.scheduledTime
         }
         else {

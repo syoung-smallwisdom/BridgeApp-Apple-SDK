@@ -61,7 +61,7 @@ class SBAScheduleManagerTests: XCTestCase {
         // the schedule. syoung 05/10/2018
         let finishedOn = Date()
         let scheduledOn = finishedOn.startOfDay()
-        let expiresOn = scheduledOn.endOfDay()
+        let expiresOn = scheduledOn.addingNumberOfDays(1)
         let clientData : [String : Any] = ["foo" : "bar"]
         let scheduleGuid = UUID().uuidString
         let schedule = createSchedule(with: "foo", scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData as NSDictionary, schedulePlanGuid: scheduleGuid)

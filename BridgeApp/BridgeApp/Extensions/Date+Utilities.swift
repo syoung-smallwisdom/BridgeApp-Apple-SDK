@@ -46,17 +46,12 @@ extension Date {
         return calendar.date(from: components) ?? self
     }
     
-    /// returns Date with a time of the last second of the day.
-    public func endOfDay() -> Date {
-        return self.startOfDay().addingNumberOfDays(1).addingTimeInterval(-1)
-    }
-    
     public var isToday: Bool {
-        return self.startOfDay() == Date().startOfDay()
+        return Calendar.current.isDateInToday(self)
     }
     
     public var isTomorrow: Bool {
-        return self.startOfDay() == Date().startOfDay().addingNumberOfDays(1)
+        return Calendar.current.isDateInTomorrow(self)
     }
     
     public func addingNumberOfDays(_ days: Int) -> Date {
