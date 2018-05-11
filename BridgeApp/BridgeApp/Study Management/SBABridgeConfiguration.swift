@@ -51,7 +51,7 @@ open class SBABridgeConfiguration {
     /// A mapping of schema references.
     open var schemaReferenceMap : [String : SBBSchemaReference] = [:]
     
-    /// A mapping of tasks to a identifier.
+    /// A mapping of tasks to an identifier.
     open var taskMap : [String : RSDTask] = [:]
     
     /// A mapping of schema identifiers to task identifiers.

@@ -46,6 +46,12 @@ open class SBAParticipantManager : NSObject {
     /// The "first" day that the participant performed an activity for the study.
     open var dayOne: Date?
     
+    /// The date when the user started the study. By default, this will check the `dayOne` value and use
+    /// `today` if that is not set.
+    open var startStudy: Date {
+        return Calendar.current.startOfDay(for: dayOne ?? studyParticipant?.createdOn ?? Date())
+    }
+    
     public override init() {
         super.init()
         
@@ -66,7 +72,9 @@ open class SBAParticipantManager : NSObject {
     /// Fetch the study participant if needed.
     public final func fetchParticipantIfNeeded() {
         guard self.studyParticipant == nil else { return }
-        _fetchParticipant()
+        DispatchQueue.main.async {
+            self._fetchParticipant()
+        }
     }
     
     private func _fetchParticipant() {

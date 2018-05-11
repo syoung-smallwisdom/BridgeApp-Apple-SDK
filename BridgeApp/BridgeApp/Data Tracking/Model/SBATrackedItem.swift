@@ -94,7 +94,7 @@ public protocol SBATrackedSection {
 /// this participant.
 public protocol SBATrackedItemAnswer : Codable, RSDChoice {
     
-    /// A identifier that maps to the associated `RSDTrackedItem`.
+    /// n that maps to the associated `RSDTrackedItem`.
     var identifier: String { get }
     
     /// Does the tracked answer have the required answers?

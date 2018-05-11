@@ -226,7 +226,7 @@ public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
         case identifier, dosage, scheduleItems, isContinuousInjection = "injection"
     }
     
-    /// A identifier that maps to the associated `RSDMedicationItem`.
+    /// An identifier that maps to the associated `RSDMedicationItem`.
     public let identifier: String
     
     /// A string answer value for the dosage.
