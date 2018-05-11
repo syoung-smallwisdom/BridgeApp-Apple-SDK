@@ -35,7 +35,7 @@ import Foundation
 
 extension SBBScheduledActivity {
     
-    public static func finishedOnDatePredicate(on date:Date) -> NSPredicate {
+    public static func finishedOnDatePredicate(on date: Date) -> NSPredicate {
         return NSPredicate(day: date, dateKey: #keyPath(finishedOn))
     }
     
@@ -43,15 +43,15 @@ extension SBBScheduledActivity {
         return NSPredicate(format: "%K != nil", #keyPath(finishedOn))
     }
     
-    public static func scheduledOnDatePredicate(on date:Date) -> NSPredicate {
+    public static func scheduledOnDatePredicate(on date: Date) -> NSPredicate {
         return NSPredicate(day: date, dateKey: #keyPath(scheduledOn))
     }
 
-    public static func expiredOnDatePredicate(on date:Date) -> NSPredicate {
+    public static func expiredOnDatePredicate(on date: Date) -> NSPredicate {
         return NSPredicate(day: date, dateKey: #keyPath(expiresOn))
     }
     
-    public static func scheduledPredicate(on date:Date) -> NSPredicate {
+    public static func availableOnPredicate(on date: Date) -> NSPredicate {
         let startOfDay = date.startOfDay()
         let startOfNextDay = startOfDay.addingNumberOfDays(1)
         
@@ -86,12 +86,17 @@ extension SBBScheduledActivity {
     }
     
     public static func availableTodayPredicate() -> NSPredicate {
-        return scheduledPredicate(on: Date())
+        return availableOnPredicate(on: Date())
     }
     
-    public static func includeTasksPredicate(with identifiers:[String]) -> NSPredicate {
+    public static func includeTasksPredicate(with identifiers: [String]) -> NSPredicate {
         let array = identifiers as NSArray
         let key = #keyPath(activityIdentifier) as NSString
         return NSPredicate(format: "(%K != nil) AND (%K IN %@)", key, key, array)
+    }
+    
+    public static func schedulePlanPredicate(with guid: String) -> NSPredicate {
+        let key = #keyPath(schedulePlanGuid) as NSString
+        return NSPredicate(format: "(%K == %@)", key, guid)
     }
 }

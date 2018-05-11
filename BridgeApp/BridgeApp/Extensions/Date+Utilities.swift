@@ -31,7 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-import UIKit
+import Foundation
 
 public enum SBATimeRange : Int, Codable {
     case morning, afternoon, evening, night
@@ -47,11 +47,11 @@ extension Date {
     }
     
     public var isToday: Bool {
-        return self.startOfDay() == Date().startOfDay()
+        return Calendar.current.isDateInToday(self)
     }
     
     public var isTomorrow: Bool {
-        return self.startOfDay() == Date().startOfDay().addingNumberOfDays(1)
+        return Calendar.current.isDateInTomorrow(self)
     }
     
     public func addingNumberOfDays(_ days: Int) -> Date {
@@ -62,6 +62,11 @@ extension Date {
     public func addingNumberOfYears(_ years: Int) -> Date {
         let calendar = Calendar.current
         return calendar.date(byAdding: .year, value: years, to: self, wrappingComponents: false)!
+    }
+    
+    public func addingDateComponents(_ dateComponents: DateComponents) -> Date {
+        let calendar = dateComponents.calendar ?? Calendar.current
+        return calendar.date(byAdding: dateComponents, to: self) ?? self
     }
     
     public func dateOnly() -> DateComponents {

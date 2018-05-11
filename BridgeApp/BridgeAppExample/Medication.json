@@ -1,6 +1,6 @@
 {
     "identifier": "Medication",
-    "type" : "tracking",
+    "type" : "medicationTracking",
     "items" : [
                {
                "sectionIdentifier" : "Amantadine",
