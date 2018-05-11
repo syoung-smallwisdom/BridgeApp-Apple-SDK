@@ -35,7 +35,7 @@ import Foundation
 
 /// The participant manager is used to wrap the study participant to ensure that the participant in
 /// memory is up-to-date with what has been sent to the server.
-open class SBAParticipantManager : NSObject {
+public final class SBAParticipantManager : NSObject {
     
     /// A singleton instance of the manager.
     static public var shared = SBAParticipantManager()
@@ -44,11 +44,11 @@ open class SBAParticipantManager : NSObject {
     public private(set) var studyParticipant: SBBStudyParticipant?
     
     /// The "first" day that the participant performed an activity for the study.
-    open var dayOne: Date?
+    public internal(set) var dayOne: Date?
     
     /// The date when the user started the study. By default, this will check the `dayOne` value and use
     /// `today` if that is not set.
-    open var startStudy: Date {
+    public var startStudy: Date {
         return Calendar.current.startOfDay(for: dayOne ?? studyParticipant?.createdOn ?? Date())
     }
     
@@ -56,42 +56,11 @@ open class SBAParticipantManager : NSObject {
         super.init()
         
         // Add an observer for changes to the study participant.
-        self.observer = NotificationCenter.default.addObserver(forName: .sbbUserSessionUpdated, object: nil, queue: .main) { (notification) in
+        NotificationCenter.default.addObserver(forName: .sbbUserSessionUpdated, object: nil, queue: .main) { (notification) in
             guard let info = notification.userInfo?[kSBBUserSessionInfoKey] as? SBBUserSessionInfo else {
-                self._fetchParticipant()
-                return
+                fatalError("Expecting a non-nil user session info")
             }
-            self.isFetching = false
             self.studyParticipant = info.studyParticipant
-        }
-    }
-    
-    private var observer: AnyObject!
-    private var isFetching: Bool = false
-    
-    /// Fetch the study participant if needed.
-    public final func fetchParticipantIfNeeded() {
-        guard self.studyParticipant == nil else { return }
-        DispatchQueue.main.async {
-            self._fetchParticipant()
-        }
-    }
-    
-    private func _fetchParticipant() {
-        guard !isFetching else { return }
-        isFetching = true
-        
-        BridgeSDK.participantManager.getParticipantRecord { (record, error) in
-            guard self.isFetching else { return }
-            DispatchQueue.main.async {
-                self.isFetching = false
-                if let err = error {
-                    debugPrint("Failed to get the study participant: \(err)")
-                }
-                else if let participant = record as? SBBStudyParticipant {
-                    self.studyParticipant = participant
-                }
-            }
         }
     }
 }

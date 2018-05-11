@@ -60,9 +60,6 @@ open class SBAScheduleManager: NSObject {
         case previousActivities
     }
     
-    /// A singleton instance of the manager.
-    static public var shared = SBAScheduleManager()
-    
     public override init() {
         super.init()
         
@@ -82,7 +79,7 @@ open class SBAScheduleManager: NSObject {
     
     /// This is an array of the activities fetched by the call to the server in `reloadData`. By default,
     /// this list includes the activities filtered using the `scheduleFilterPredicate`.
-    open var scheduledActivities: [SBBScheduledActivity] = []
+    @objc open var scheduledActivities: [SBBScheduledActivity] = []
     
     
     // MARK: Schedule loading
@@ -124,7 +121,8 @@ open class SBAScheduleManager: NSObject {
     
     /// Reload the data by fetching changes to the scheduled activities.
     open func reloadData() {
-        loadScheduledActivities(from: fromDate, to: toDate)
+        guard shouldContinueLoading() else { return }
+        self.loadScheduledActivities(from: self.fromDate, to: self.toDate)
     }
     
     /// Flush the loading state and data stored in memory.
@@ -144,20 +142,21 @@ open class SBAScheduleManager: NSObject {
         self.loadScheduledActivities(from: fromDate, to: self.toDate)
     }
     
-    /// Load a given range of schedules.
-    public final func loadScheduledActivities(from fromDate: Date, to toDate: Date) {
-        
-        // Exit early if already reloading activities. This can happen if the user flips quickly back and forth
-        // from this tab to another tab.
+    /// Exit early if already reloading activities. This can happen if the user flips quickly back and forth
+    /// from this tab to another tab.
+    private func shouldContinueLoading() -> Bool {
         if (isReloading) {
             _loadingBlocked = true
-            return
+            return false
         }
         _loadingBlocked = false
         isReloading = true
-        
-        // Fetch the study participant if needed.
-        SBAParticipantManager.shared.fetchParticipantIfNeeded()
+        return true
+    }
+    
+    /// Load a given range of schedules.
+    public final func loadScheduledActivities(from fromDate: Date, to toDate: Date) {
+        guard shouldContinueLoading() else { return }
         
         if loadingState == .firstLoad {
             // If launching, then load from cache *first* before looking to the server. This will ensure
@@ -210,7 +209,7 @@ open class SBAScheduleManager: NSObject {
         
         DispatchQueue.main.async {
             if let scheduledActivities = self.sortActivities(scheduledActivities) {
-                self.update(scheduledActivities: scheduledActivities)
+                self.update(fetchedActivities: scheduledActivities, from: fromDate, to: toDate)
             }
             if self.loadingState == .fromServerForFullDateRange {
                 // If the loading state is for the full range, then we are done.
@@ -242,9 +241,23 @@ open class SBAScheduleManager: NSObject {
     /// schedules are loaded using a staggered method of first checking the cache, then loading the future
     /// from the server, and finally loading the full range of requested schedules.
     ///
-    /// - parameter scheduledActivities:  The list of activities returned by the service.
-    open func update(scheduledActivities: [SBBScheduledActivity]) {
-        let schedules = filterSchedules(scheduledActivities)
+    /// - parameters:
+    ///     - scheduledActivities: The list of activities returned by the service.
+    ///     - fromDate: The `fromDate` parameter included in the call to the server.
+    ///     - toDate: The `toDate` parameter included in the call to the server.
+    open func update(fetchedActivities: [SBBScheduledActivity], from fromDate: Date, to toDate: Date) {
+        
+        // Mark the start of the participant's engagement in the study.
+        let previousDayOne = SBAParticipantManager.shared.dayOne
+        if (previousDayOne == nil) || (fromDate < previousDayOne!) {
+            let dayOne = fetchedActivities.compactMap{ $0.finishedOn }.sorted().first
+            if (dayOne != nil) && ((previousDayOne == nil) || (dayOne! < previousDayOne!)) {
+                SBAParticipantManager.shared.dayOne = dayOne
+            }
+        }
+        
+        // Filter and update the schedules.
+        let schedules = filterSchedules(fetchedActivities, from: fromDate, to: toDate)
         let hasChanges = (schedules != self.scheduledActivities)
         let previous = self.scheduledActivities
         self.scheduledActivities = schedules
@@ -257,13 +270,6 @@ open class SBAScheduleManager: NSObject {
     ///
     /// - parameter previousActivities: The schedules that were previously being stored in memory.
     open func didUpdateScheduledActivities(from previousActivities: [SBBScheduledActivity]) {
-        
-        // Mark the start of the participant's engagement in the study.
-        let dayOne = self.scheduledActivities.compactMap{ $0.finishedOn }.sorted().first
-        let previousDayOne = SBAParticipantManager.shared.dayOne
-        if (dayOne != nil) && ((previousDayOne == nil) || (dayOne! < previousDayOne!)) {
-            SBAParticipantManager.shared.dayOne = dayOne
-        }
         
         // Post notification that the schedules were updated.
         NotificationCenter.default.post(name: .SBAUpdatedScheduledActivities,
@@ -291,34 +297,20 @@ open class SBAScheduleManager: NSObject {
     /// Filter the scheduled activities to only include those that *this* version of the app is designed
     /// to be able to handle.
     ///
-    /// - parameter scheduledActivities: The list of activities returned by the service.
+    /// - parameters:
+    ///     - scheduledActivities: The list of activities returned by the service.
+    ///     - fromDate: The `fromDate` parameter included in the call to the server.
+    ///     - toDate: The `toDate` parameter included in the call to the server.
     /// - returns: The filtered list of activities.
-    open func filterSchedules(_ schedules: [SBBScheduledActivity]) -> [SBBScheduledActivity] {
-        if loadingState == .fromServerWithFutureOnly {
-            // The future only will be in a state where we already have the cached data,
-            // And we will probably just be appending new data onto the cached data
-            var activities = self.scheduledActivities
-            schedules.forEach { (schedule) in
-                if self.scheduleFilterPredicate.evaluate(with: schedule) {
-                    if let idx = activities.index(where: { $0.guid == schedule.guid }) {
-                        let previous = activities[idx]
-                        if previous.finishedOn != nil && schedule.finishedOn == nil {
-                            schedule.finishedOn = previous.finishedOn
-                            schedule.startedOn = previous.startedOn
-                            schedule.clientData = previous.clientData
-                        }
-                        activities.remove(at: idx)
-                        activities.insert(schedule, at: idx)
-                    } else {
-                        activities.append(schedule)
-                    }
-                }
-            }
-            return activities
+    open func filterSchedules(_ schedules: [SBBScheduledActivity], from fromDate: Date, to toDate: Date) -> [SBBScheduledActivity] {
+        let outsideRange = NSCompoundPredicate(orPredicateWithSubpredicates: [
+            SBBScheduledActivity.availableBeforePredicate(fromDate),
+            SBBScheduledActivity.availableAfterPredicate(toDate)])
+        var activities = self.scheduledActivities.filter { (schedule) in
+            outsideRange.evaluate(with: schedule) && !schedules.contains(where: { $0.guid == schedule.guid })
         }
-        else {
-            return schedules.filter { self.scheduleFilterPredicate.evaluate(with: $0) }
-        }
+        activities.append(contentsOf: schedules)
+        return activities
     }
     
     
@@ -361,15 +353,9 @@ open class SBAScheduleManager: NSObject {
     ///     - availableOn: The date for the day when the activities are "available".
     /// - returns: The schedule associated with this task view controller (if available).
     open func scheduledActivities(for activityGroup: SBAActivityGroup, availableOn: Date) -> [SBBScheduledActivity] {
-        var predicate: NSPredicate = SBBScheduledActivity.availableOnPredicate(on: availableOn)
-        if let guid = activityGroup.schedulePlanGuid {
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates:
-                [predicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
-        }
-        else {
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates:
-                [predicate, SBBScheduledActivity.includeTasksPredicate(with: activityGroup.activityIdentifiers.map { $0.stringValue })])
-        }
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates:
+            [SBBScheduledActivity.availableOnPredicate(on: availableOn),
+             SBBScheduledActivity.activityGroupPredicate(for: activityGroup)])
         return self.scheduledActivities.filter { predicate.evaluate(with: $0) }
     }
     
@@ -397,8 +383,8 @@ open class SBAScheduleManager: NSObject {
     open func instantiateTaskPath(for taskInfo: RSDTaskInfo, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?, clientData: SBBJSONValue?) {
         
         // Set up predicates.
-        var taskPredicate = SBBScheduledActivity.includeTasksPredicate(with: [taskInfo.identifier])
-        if let guid = activityGroup?.schedulePlanGuid {
+        var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
+        if let guid = activityGroup?.schedulePlanGuid(for: taskInfo.identifier) {
             taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                 taskPredicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
         }
@@ -409,13 +395,14 @@ open class SBAScheduleManager: NSObject {
         }
         let schedule = todaySchedules.rsd_last(where: { $0.isCompleted == false }) ?? todaySchedules.last
         
-        // Get the clientData from the most recent finished schedule.
+        // Get the clientData from the most recent finished schedule with the same activity identifier.
         var clientData: SBBJSONValue?
         var currentFinishedOn = Date.distantPast
+        let activityPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
         self.scheduledActivities.forEach { (schedule) in
             if let data = schedule.clientData,
                 let finishedOn = schedule.finishedOn, finishedOn > currentFinishedOn,
-                taskPredicate.evaluate(with: schedule) {
+                activityPredicate.evaluate(with: schedule) {
                 clientData = data
                 currentFinishedOn = finishedOn
             }
