@@ -108,7 +108,7 @@ open class SBAScheduleManager: NSObject {
         }
     }
     
-    /// Some (but possibly not all) of the requested schedules whave been fetched. Handle adding them and
+    /// Some (but possibly not all) of the requested schedules have been fetched. Handle adding them and
     /// fetch more of the range if needed.
     open func handleLoadedActivities(_ scheduledActivities: [SBBScheduledActivity]?, from fromDate: Date, to toDate: Date) {
         DispatchQueue.main.async {
