@@ -47,14 +47,6 @@ extension Notification.Name {
 ///
 open class SBAScheduleManager: NSObject {
     
-    /// Tracking of the loading state.
-    public enum LoadState {
-        case firstLoad
-        case cachedLoad
-        case fromServerWithFutureOnly
-        case fromServerForFullDateRange
-    }
-    
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
         case previousActivities
@@ -64,18 +56,12 @@ open class SBAScheduleManager: NSObject {
         super.init()
         
         // Add an observer the app entering the foreground to check for whether or not "today" is still valid.
-        self.observer = NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) { (notification) in
-            self.reloadTodayAndFuture()
+        NotificationCenter.default.addObserver(forName: .SBAFinishedUpdatingScheduleCache, object: nil, queue: .main) { (notification) in
+            self.reloadData()
         }
     }
     
-    private var observer: AnyObject!
-    
-    
     // MARK: Data source
-    
-    /// The start of "today". This is used to filter the activities to those that are relevant for today.
-    public private(set) var today = Date().startOfDay()
     
     /// This is an array of the activities fetched by the call to the server in `reloadData`. By default,
     /// this list includes the activities filtered using the `scheduleFilterPredicate`.
@@ -104,127 +90,39 @@ open class SBAScheduleManager: NSObject {
         return startStudy.addingDateComponents(SBABridgeConfiguration.shared.studyDuration)
     }
     
-    /// When loading schedules, should the manager *first* load all the future schedules? If true, this
-    /// will result in a staged call to the server, where first, the future is loaded and then the server
-    /// request is made to load past schedules. This will result in a faster loading but may result in
-    /// undesired behavior for a manager that relies upon the past results to build the displayed
-    /// activities.
-    open private(set) var shouldLoadFutureFirst = true
-    
-    /// State management for what the current loading state is. This is used to pre-load from cache before
-    /// going to the server for updates.
-    public private(set) var loadingState: LoadState = .firstLoad
-    
     /// State management for whether or not the schedules are reloading.
     public private(set) var isReloading: Bool = false
-    fileprivate var _loadingBlocked: Bool = false
     
     /// Reload the data by fetching changes to the scheduled activities.
     open func reloadData() {
-        guard shouldContinueLoading() else { return }
-        self.loadScheduledActivities(from: self.fromDate, to: self.toDate)
-    }
-    
-    /// Flush the loading state and data stored in memory.
-    open func resetData() {
-        loadingState = .firstLoad
-        _loadingBlocked = false
-        self.scheduledActivities.removeAll()
-    }
-    
-    /// Reload the schedule from `self.today` until `self.toDate`. This will also reset `today` to ensure
-    /// that it is marking the current day. This will *only* reload the future schedules from the server
-    /// (if online) and will not start by loading from cache.
-    open func reloadTodayAndFuture() {
-        // Reload from the server.
-        let fromDate = self.today
-        self.today = Date().startOfDay()
-        self.loadScheduledActivities(from: fromDate, to: self.toDate)
-    }
-    
-    /// Exit early if already reloading activities. This can happen if the user flips quickly back and forth
-    /// from this tab to another tab.
-    private func shouldContinueLoading() -> Bool {
-        if (isReloading) {
-            _loadingBlocked = true
-            return false
-        }
-        _loadingBlocked = false
-        isReloading = true
-        return true
+        loadScheduledActivities(from: fromDate, to: toDate)
     }
     
     /// Load a given range of schedules.
     public final func loadScheduledActivities(from fromDate: Date, to toDate: Date) {
-        guard shouldContinueLoading() else { return }
+        if isReloading { return }
+        isReloading = true
         
-        if loadingState == .firstLoad {
-            // If launching, then load from cache *first* before looking to the server. This will ensure
-            // that the schedule loads quickly (if not first time) and will still load from server to get
-            // anything that may have changed due to added schedules or whatnot. syoung 07/17/2017
-            loadingState = .cachedLoad
-            fetchScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .cachedOnly) { [weak self] (schedules, error) in
-                self?.handleLoadedActivities(schedules, from: fromDate, to: toDate)
-            }
-        }
-        else {
-            self.loadFromServer(from: fromDate, to: toDate)
-        }
-    }
-    
-    /// Load the schedules from the server. By default, this will check if it should first load the future
-    /// schedules before loading the whole range.
-    fileprivate func loadFromServer(from fromDate: Date, to toDate: Date) {
-        
-        var loadStart = fromDate
-        
-        // First load the future and *then* look to the server for the past schedules.
-        // This will result in a faster loading for someone who is logging in.
-        let todayStart = Date().startOfDay()
-        if shouldLoadFutureFirst && fromDate < todayStart && loadingState == .cachedLoad {
-            loadingState = .fromServerWithFutureOnly
-            loadStart = todayStart
-        }
-        else {
-            loadingState = .fromServerForFullDateRange
-        }
-        
-        fetchScheduledActivities(from: loadStart, to: toDate, cachingPolicy: .fallBackToCached) { [weak self] (activities, _) in
-            self?.handleLoadedActivities(activities, from: fromDate, to: toDate)
+        fetchScheduledActivities(from: fromDate, to: toDate) { [weak self] (schedules, error) in
+            self?.handleLoadedActivities(schedules, from: fromDate, to: toDate)
         }
     }
     
     /// Some (but possibly not all) of the requested schedules whave been fetched. Handle adding them and
     /// fetch more of the range if needed.
-    fileprivate func handleLoadedActivities(_ scheduledActivities: [SBBScheduledActivity]?, from fromDate: Date, to toDate: Date) {
-        
-        if loadingState == .firstLoad {
-            // If the loading state is first load then that means the data has been reset so we should ignore the response.
-            isReloading = false
-            if _loadingBlocked {
-                loadScheduledActivities(from: fromDate, to: toDate)
-            }
-            return
-        }
-        
+    open func handleLoadedActivities(_ scheduledActivities: [SBBScheduledActivity]?, from fromDate: Date, to toDate: Date) {
         DispatchQueue.main.async {
             if let scheduledActivities = self.sortActivities(scheduledActivities) {
                 self.update(fetchedActivities: scheduledActivities, from: fromDate, to: toDate)
-            }
-            if self.loadingState == .fromServerForFullDateRange {
-                // If the loading state is for the full range, then we are done.
-                self.isReloading = false
-            }
-            else {
-                // Otherwise, load more range from the server
-                self.loadFromServer(from: fromDate, to: toDate)
             }
         }
     }
     
     /// Convenience method for wrapping the call to BridgeSDK.
-    fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date, cachingPolicy policy: SBBCachingPolicy, completion: @escaping ([SBBScheduledActivity]?, Error?) -> Swift.Void) {
-        BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: policy) { (obj, error) in
+    fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date, completion: @escaping ([SBBScheduledActivity]?, Error?) -> Swift.Void) {
+        // TODO: syoung 05/11/2018 Refactor to include a SQL query to use when fetching from cache to only
+        // fetch the schedules of interest to this manager.
+        BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .cachedOnly) { (obj, error) in
                 completion(obj as? [SBBScheduledActivity], error)
         }
     }
@@ -235,27 +133,13 @@ open class SBAScheduleManager: NSObject {
     /// Called once the response from the server returns the scheduled activities.
     ///
     /// By default, this method will filter the scheduled activities to only include those that *this*
-    /// version of the app is designed to be able to handle.
-    ///
-    /// - note: This method is called more than once while loading the schedules. This is because the
-    /// schedules are loaded using a staggered method of first checking the cache, then loading the future
-    /// from the server, and finally loading the full range of requested schedules.
+    /// schedule manager is designed to be able to handle.
     ///
     /// - parameters:
     ///     - scheduledActivities: The list of activities returned by the service.
     ///     - fromDate: The `fromDate` parameter included in the call to the server.
     ///     - toDate: The `toDate` parameter included in the call to the server.
     open func update(fetchedActivities: [SBBScheduledActivity], from fromDate: Date, to toDate: Date) {
-        
-        // Mark the start of the participant's engagement in the study.
-        let previousDayOne = SBAParticipantManager.shared.dayOne
-        if (previousDayOne == nil) || (fromDate < previousDayOne!) {
-            let dayOne = fetchedActivities.compactMap{ $0.finishedOn }.sorted().first
-            if (dayOne != nil) && ((previousDayOne == nil) || (dayOne! < previousDayOne!)) {
-                SBAParticipantManager.shared.dayOne = dayOne
-            }
-        }
-        
         // Filter and update the schedules.
         let schedules = filterSchedules(fetchedActivities, from: fromDate, to: toDate)
         let hasChanges = (schedules != self.scheduledActivities)
@@ -275,15 +159,6 @@ open class SBAScheduleManager: NSObject {
         NotificationCenter.default.post(name: .SBAUpdatedScheduledActivities,
                                         object: self,
                                         userInfo: [NotificationKey.previousActivities: previousActivities])
-        
-        // preload all the surveys so that they can be accessed offline.
-        if loadingState == .fromServerForFullDateRange {
-            scheduledActivities.forEach {
-                if let survey = $0.activity.survey {
-                    BridgeSDK.surveyManager.getSurveyByRef(survey.href, cachingPolicy: .checkCacheFirst) { (_, _) in }
-                }
-            }
-        }
     }
     
     /// Sort the scheduled activities. By default this will sort by comparing the `scheduledOn` property.

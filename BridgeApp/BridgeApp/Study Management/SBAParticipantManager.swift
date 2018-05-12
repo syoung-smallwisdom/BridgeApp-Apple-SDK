@@ -33,6 +33,17 @@
 
 import Foundation
 
+extension Notification.Name {
+    
+    /// Notification name posted by the `SBAParticipantManager` when this manager has finished fetching the
+    /// updated schedules into the shared BridgeSDK cache.
+    ///
+    /// - note: This message is sent whether or not the user is offline and the server was not reached.
+    /// However, if that is the case then the manager will set a timer to try again.
+    public static let SBAFinishedUpdatingScheduleCache = Notification.Name(rawValue: "SBAFinishedUpdatingScheduleCache")
+}
+
+
 /// The participant manager is used to wrap the study participant to ensure that the participant in
 /// memory is up-to-date with what has been sent to the server.
 public final class SBAParticipantManager : NSObject {
@@ -43,8 +54,11 @@ public final class SBAParticipantManager : NSObject {
     /// The study participant.
     public private(set) var studyParticipant: SBBStudyParticipant?
     
+    /// Is the participant authenticated?
+    public private(set) var isAuthenticated: Bool = false
+    
     /// The "first" day that the participant performed an activity for the study.
-    public internal(set) var dayOne: Date?
+    public private(set) var dayOne: Date?
     
     /// The date when the user started the study. By default, this will check the `dayOne` value and use
     /// `today` if that is not set.
@@ -60,7 +74,126 @@ public final class SBAParticipantManager : NSObject {
             guard let info = notification.userInfo?[kSBBUserSessionInfoKey] as? SBBUserSessionInfo else {
                 fatalError("Expecting a non-nil user session info")
             }
+            let authenticated = info.authenticated?.boolValue ?? false
+            let hasChanges = (authenticated && !self.isAuthenticated) || !RSDObjectEquality(info.studyParticipant.dataGroups, self.studyParticipant?.dataGroups)
             self.studyParticipant = info.studyParticipant
+            self.isAuthenticated = authenticated
+            if hasChanges {
+                self.reloadSchedules()
+            }
+        }
+        
+        // Add an observer the app entering the foreground to check for whether or not "today" is still valid.
+        NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) { (notification) in
+            self.reloadSchedules()
+        }
+    }
+    
+    // MARK: Shared schedule cache management.
+    
+    /// Marks the start of today's date. This value is updated on a reload to update the current day.
+    public private(set) var today = Date().startOfDay()
+    
+    /// Tracking of the loading state.
+    public enum LoadState {
+        case firstLoad
+        case cachedLoad
+        case fromServer
+    }
+    
+    /// State management for what the current loading state is. This is used to pre-load from cache before
+    /// going to the server for updates.
+    public private(set) var loadingState: LoadState = .firstLoad
+    
+    /// State management for whether or not the schedules are reloading.
+    public private(set) var isReloading: Bool = false
+    fileprivate var _loadingBlocked: Bool = false
+
+    /// Exit early if already reloading activities. This can happen if the user flips quickly back and forth
+    /// from this tab to another tab.
+    private func shouldContinueLoading() -> Bool {
+        if (isReloading) {
+            _loadingBlocked = true
+            return false
+        }
+        _loadingBlocked = false
+        isReloading = true
+        return true
+    }
+    
+    /// Reload the schedules. This is triggered automatically by a change to data groups and when returning
+    /// from the background.
+    public func reloadSchedules() {
+        guard shouldContinueLoading() else { return }
+
+        var toDate = self.startStudy.addingDateComponents(SBABridgeConfiguration.shared.studyDuration)
+        let tomorrow = Date().addingNumberOfDays(1).startOfDay()
+        if toDate < tomorrow {
+            toDate = tomorrow
+        }
+        
+        var fromDate = self.today
+        var cachingPolicy: SBBCachingPolicy = .fallBackToCached
+        self.today = Date().startOfDay()
+        if loadingState == .firstLoad {
+            fromDate = startStudy
+            cachingPolicy = .cachedOnly
+            loadingState = .cachedLoad
+        }
+        
+        fetchScheduledActivities(from: fromDate, to: toDate, cachingPolicy: cachingPolicy) { (activities, error) in
+            self.handleLoadedActivities(activities, from: fromDate, to: toDate, error: error)
+        }
+    }
+
+    /// Some (but possibly not all) of the requested schedules whave been fetched. Handle adding them and
+    /// fetch more of the range if needed.
+    fileprivate func handleLoadedActivities(_ scheduledActivities: [SBBScheduledActivity]?, from fromDate: Date, to toDate: Date, error: Error?) {
+        DispatchQueue.main.async {
+            
+            // Mark the start of the participant's engagement in the study.
+            if let scheduledActivities = scheduledActivities {
+                
+                // Set the dayOne value.
+                if (self.dayOne == nil) || (fromDate < self.dayOne!) {
+                    let dayOne = scheduledActivities.compactMap{ $0.finishedOn }.sorted().first
+                    if (dayOne != nil) && ((self.dayOne == nil) || (dayOne! < self.dayOne!)) {
+                        SBAParticipantManager.shared.dayOne = dayOne
+                    }
+                }
+            
+                // Preload all the surveys so that they can be accessed offline.
+                var surveys: [String] = []
+                scheduledActivities.forEach {
+                    if let survey = $0.activity.survey, !surveys.contains(survey.href) {
+                        surveys.append(survey.href)
+                        BridgeSDK.surveyManager.getSurveyByRef(survey.href, cachingPolicy: .checkCacheFirst) { (_, _) in }
+                    }
+                }
+            }
+            
+            if self.loadingState == .fromServer {
+                // If the loading state is for the full range, then we are done.
+                self.isReloading = false
+                
+                // Post notification that the schedules were updated.
+                NotificationCenter.default.post(name: .SBAFinishedUpdatingScheduleCache,
+                                                object: self)
+            }
+            else {
+                // Otherwise, load more range from the server
+                self.loadingState = .fromServer
+                self.fetchScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .fallBackToCached) { (activities, error) in
+                    self.handleLoadedActivities(activities, from: fromDate, to: toDate, error: error)
+                }
+            }
+        }
+    }
+    
+    /// Convenience method for wrapping the call to BridgeSDK.
+    fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date, cachingPolicy policy: SBBCachingPolicy, completion: @escaping ([SBBScheduledActivity]?, Error?) -> Swift.Void) {
+        BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: policy) { (obj, error) in
+            completion(obj as? [SBBScheduledActivity], error)
         }
     }
 }
