@@ -90,6 +90,37 @@ class SBAScheduleManagerTests: XCTestCase {
         XCTAssertEqual(schedule.activityIdentifier, "foo")
     }
     
+    func testScheduledActivitiesForActivityGroup_Today_WithUniqueSchedulePlanGUID() {
+        
+        let taskGroupAlpha = ["taskA", "taskB", "taskC"]
+        let taskGroupBeta = ["taskD", "taskE"]
+        
+        let group1 = createTaskGroup("group1", taskGroupAlpha, UUID().uuidString, ["taskC" : UUID().uuidString])
+        let group2 = createTaskGroup("group2", taskGroupAlpha, UUID().uuidString)
+        let group3 = createTaskGroup("group3", taskGroupBeta, UUID().uuidString)
+        
+        let now = Date()
+        let todayStart = now.startOfDay()
+        let lastWeek = todayStart.addingNumberOfDays(-7)
+        let nextWeek = todayStart.addingNumberOfDays(7)
+        let twoWeeks = nextWeek.addingNumberOfDays(7)
+        
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        
+        let expectedSchedules = createSchedules(for: group1, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = createSchedules(for: group2, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = createSchedules(for: group3, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
+        
+        // check assumptions
+        XCTAssertEqual(scheduleManager.scheduledActivities.count, 24)
+        
+        let schedules = scheduleManager.scheduledActivities(for: group1, availableOn: now)
+        
+        XCTAssertEqual(schedules, expectedSchedules)
+    }
+    
     func testScheduledActivitiesForActivityGroup_Today_WithSchedulePlanGUID() {
         
         let taskGroupAlpha = ["taskA", "taskB", "taskC"]
@@ -105,13 +136,13 @@ class SBAScheduleManagerTests: XCTestCase {
         let nextWeek = todayStart.addingNumberOfDays(7)
         let twoWeeks = nextWeek.addingNumberOfDays(7)
         
-        setupSchedules(for: [group1, group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
         
         let expectedSchedules = createSchedules(for: group1, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
         let _ = createSchedules(for: group2, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
         let _ = createSchedules(for: group3, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
-
-        setupSchedules(for: [group1, group2, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
+        
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
         
         // check assumptions
         XCTAssertEqual(scheduleManager.scheduledActivities.count, 24)
@@ -135,12 +166,12 @@ class SBAScheduleManagerTests: XCTestCase {
         let nextWeek = todayStart.addingNumberOfDays(7)
         let twoWeeks = nextWeek.addingNumberOfDays(7)
         
-        setupSchedules(for: [group1, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
         
         let expectedSchedules = createSchedules(for: group1, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
         let _ = createSchedules(for: group3, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
         
-        setupSchedules(for: [group1, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
         
         let schedules = scheduleManager.scheduledActivities(for: group1, availableOn: now)
         
@@ -162,8 +193,8 @@ class SBAScheduleManagerTests: XCTestCase {
         let nextWeek = todayStart.addingNumberOfDays(7)
         let twoWeeks = nextWeek.addingNumberOfDays(7)
         
-        setupSchedules(for: [group1, group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
-        setupSchedules(for: [group1, group2, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
         
         let expectedSchedules = createSchedules(for: group1, scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
         let _ = createSchedules(for: group2, scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
@@ -188,8 +219,8 @@ class SBAScheduleManagerTests: XCTestCase {
         let nextWeek = todayStart.addingNumberOfDays(7)
         let twoWeeks = nextWeek.addingNumberOfDays(7)
         
-        setupSchedules(for: [group1, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
-        setupSchedules(for: [group1, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
         
         let expectedSchedules = createSchedules(for: group1, scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
         let _ = createSchedules(for: group3, scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
@@ -213,10 +244,9 @@ class SBAScheduleManagerTests: XCTestCase {
         let lastWeek = todayStart.addingNumberOfDays(-7)
         let nextWeek = todayStart.addingNumberOfDays(7)
         let twoWeeks = nextWeek.addingNumberOfDays(7)
-        
 
-        setupSchedules(for: [group1, group2, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
-        setupSchedules(for: [group1, group2, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
         
         let expectedSchedules = createSchedules(for: group1, scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: now.addingNumberOfDays(-1), clientData: nil)
         let _ = createSchedules(for: group2, scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: now.addingNumberOfDays(-1), clientData: nil)
@@ -238,9 +268,8 @@ class SBAScheduleManagerTests: XCTestCase {
         let nextWeek = todayStart.addingNumberOfDays(7)
         let twoWeeks = nextWeek.addingNumberOfDays(7)
         
-        
-        setupSchedules(for: [group1, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
-        setupSchedules(for: [group1,group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group1,group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
         
         let expectedSchedules = createSchedules(for: group1, scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: now.addingNumberOfDays(-1), clientData: nil)
         let _ = createSchedules(for: group3, scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: now.addingNumberOfDays(-1), clientData: nil)
@@ -260,9 +289,9 @@ class SBAScheduleManagerTests: XCTestCase {
         
         let group1 = createTaskGroup("group1", ["taskA", "taskB", "taskC"], UUID().uuidString)
         let group3 = createTaskGroup("group3", ["taskD", "taskE"], UUID().uuidString)
-        setupSchedules(for: [group1, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
-        setupSchedules(for: [group1, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
-        setupSchedules(for: [group1, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
 
         let expectedClientData : [String : Any] = ["foo" : "bar"]
         
@@ -299,9 +328,9 @@ class SBAScheduleManagerTests: XCTestCase {
         
         let group1 = createTaskGroup("group1", ["taskA", "taskB", "taskC"], UUID().uuidString)
         let group3 = createTaskGroup("group3", ["taskD", "taskE"], UUID().uuidString)
-        setupSchedules(for: [group1, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
-        setupSchedules(for: [group1, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
-        setupSchedules(for: [group1, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
         
         let previousClientData : [String : Any] = ["blue" : "goo"]
         let expectedClientData : [String : Any] = ["foo" : "bar"]
@@ -321,6 +350,52 @@ class SBAScheduleManagerTests: XCTestCase {
         SBABridgeConfiguration.shared.addMapping(with: task)
         
         let (taskPath, schedule, clientData) = scheduleManager.instantiateTaskPath(for: taskInfo)
+        
+        XCTAssertEqual(schedule, expectedSchedule)
+        XCTAssertNotNil(clientData)
+        XCTAssertEqual(clientData as? NSDictionary, expectedClientData as NSDictionary)
+        XCTAssertEqual(taskPath.taskInfo as? SBBTaskReference, expectedSchedule.activity.task)
+        XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.scheduleIdentifier)
+    }
+    
+    func testInstantiateTaskPath_ClientDataOnPreviousRun_DifferentGroup() {
+        
+        let now = Date()
+        let todayStart = now.startOfDay()
+        let lastWeek = todayStart.addingNumberOfDays(-7)
+        let nextWeek = todayStart.addingNumberOfDays(7)
+        let twoWeeks = nextWeek.addingNumberOfDays(7)
+        
+        let group1 = createTaskGroup("group1", ["taskA", "taskB", "taskC"], UUID().uuidString)
+        let group2 = createTaskGroup("group2", ["taskA", "taskB", "taskC"], UUID().uuidString)
+        let group3 = createTaskGroup("group3", ["taskD", "taskE"], UUID().uuidString)
+        let previousSchedules = setupSchedules(for: [group1, group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let todaySchedules = setupSchedules(for: [group1, group2, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
+        
+        let expectedClientData : [String : Any] = ["foo" : "bar"]
+        
+        let predicate1 = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            SBBScheduledActivity.schedulePlanPredicate(with: group2.schedulePlanGuid!),
+            SBBScheduledActivity.activityIdentifierPredicate(with: "taskC")])
+        let previousSchedule = previousSchedules.first(where: { predicate1.evaluate(with: $0) })!
+        previousSchedule.clientData = expectedClientData as NSDictionary
+        XCTAssertNotNil(previousSchedule.finishedOn)
+        
+        let predicate2 = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            SBBScheduledActivity.schedulePlanPredicate(with: group1.schedulePlanGuid!),
+            SBBScheduledActivity.activityIdentifierPredicate(with: "taskC")])
+        let expectedSchedule = todaySchedules.first(where: { predicate2.evaluate(with: $0) })!
+        
+        let taskInfo = RSDTaskInfoObject(with: "taskC")
+        let step = RSDUIStepObject(identifier: "introduction")
+        let task = RSDTaskObject(identifier: "taskC", stepNavigator: RSDConditionalStepNavigatorObject(with: [step]))
+        let schema = SBBSchemaReference(dictionaryRepresentation: ["id" : "taskC",
+                                                                   "revision" : NSNumber(value: 3)])!
+        SBABridgeConfiguration.shared.addMapping(with: schema)
+        SBABridgeConfiguration.shared.addMapping(with: task)
+        
+        let (taskPath, schedule, clientData) = scheduleManager.instantiateTaskPath(for: taskInfo, in: group1)
         
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
@@ -355,17 +430,69 @@ class SBAScheduleManagerTests: XCTestCase {
         XCTAssertEqual(taskPath.task?.schemaInfo?.schemaVersion, 3)
     }
     
+    func testFilterSchedules() {
+        
+        let taskGroupAlpha = ["taskA", "taskB", "taskC"]
+        let taskGroupBeta = ["taskD", "taskE"]
+        
+        let group1 = createTaskGroup("group1", taskGroupAlpha, UUID().uuidString, ["taskC" : UUID().uuidString])
+        let group2 = createTaskGroup("group2", taskGroupAlpha, UUID().uuidString)
+        let group3 = createTaskGroup("group3", taskGroupBeta, UUID().uuidString)
+        
+        let now = Date()
+        let todayStart = now.startOfDay()
+        let lastWeek = todayStart.addingNumberOfDays(-7)
+        let nextWeek = todayStart.addingNumberOfDays(7)
+        let twoWeeks = nextWeek.addingNumberOfDays(7)
+        
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let thisWeekSchedules = setupSchedules(for: [group1, group2, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let nextWeekSchedules = setupSchedules(for: [group1, group2, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
+        
+        // check assumptions
+        XCTAssertEqual(scheduleManager.scheduledActivities.count, 24)
+        let todaySchedules = scheduleManager.scheduledActivities(for: group2, availableOn: now)
+        todaySchedules.forEach { (schedule) in
+            XCTAssertNil(schedule.finishedOn, "\(schedule)")
+        }
+
+        let newFutureAndToday = [thisWeekSchedules, nextWeekSchedules].flatMap { $0 }.map { (schedule) -> SBBScheduledActivity in
+            let finishedOn: Date? = (schedule.schedulePlanGuid == group2.schedulePlanGuid) && (schedule.scheduledOn == todayStart) ? now : nil
+            let newValue = createSchedule(with: RSDIdentifier(rawValue: schedule.activityIdentifier!),
+                                      scheduledOn: schedule.scheduledOn,
+                                      expiresOn: schedule.expiresOn,
+                                      finishedOn: finishedOn,
+                                      clientData: nil,
+                                      schedulePlanGuid: schedule.schedulePlanGuid)
+            newValue.guid = schedule.guid
+            return newValue
+        }
+        
+        // check assumptions
+        XCTAssertEqual(newFutureAndToday.count, 16)
+        
+        // Update the schedules with a new set of **future** only schedules. (Past schedules remain unchanged).
+        scheduleManager.update(fetchedActivities: newFutureAndToday, from: todayStart, to: todayStart.addingNumberOfDays(30))
+
+        XCTAssertEqual(scheduleManager.scheduledActivities.count, 24)
+        let todaySchedules_after = scheduleManager.scheduledActivities(for: group2, availableOn: now)
+        todaySchedules_after.forEach { (schedule) in
+            XCTAssertNotNil(schedule.finishedOn, "\(schedule)")
+        }
+    }
+    
     
     // Helper methods
     
-    func createTaskGroup(_ identifier: String, _ activityIdentifiers: [String], _ schedulePlanGuid: String?) -> SBAActivityGroupObject {
+    func createTaskGroup(_ identifier: String, _ activityIdentifiers: [String], _ schedulePlanGuid: String? = nil,_ schedulePlanGuidMap: [String : String]? = nil) -> SBAActivityGroupObject {
         let group = SBAActivityGroupObject(identifier: identifier,
                                             title: nil,
                                             journeyTitle: nil,
                                             image: nil,
                                             activityIdentifiers: activityIdentifiers.map { RSDIdentifier(rawValue: $0) },
                                             notificationIdentifier: nil,
-                                            schedulePlanGuid: schedulePlanGuid)
+                                            schedulePlanGuid: schedulePlanGuid,
+                                            schedulePlanGuidMap: schedulePlanGuidMap)
         SBABridgeConfiguration.shared.addMapping(with: group)
         return group
     }
@@ -373,7 +500,12 @@ class SBAScheduleManagerTests: XCTestCase {
     func createSchedules(for taskGroup: SBAActivityGroupObject, scheduledOn: Date, expiresOn: Date?, finishedOn: Date?, clientData: SBBJSONValue?) -> [SBBScheduledActivity] {
         
         let schedules = taskGroup.activityIdentifiers.map {
-            createSchedule(with: $0, scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData, schedulePlanGuid: taskGroup.schedulePlanGuid)
+            createSchedule(with: $0,
+                           scheduledOn: scheduledOn,
+                           expiresOn: expiresOn,
+                           finishedOn: finishedOn,
+                           clientData: clientData,
+                           schedulePlanGuid: taskGroup.schedulePlanGuid(for: $0.identifier))
         }
         
         scheduleManager.scheduledActivities.append(contentsOf: schedules)
@@ -403,10 +535,8 @@ class SBAScheduleManagerTests: XCTestCase {
         return schedule
     }
     
-    func setupSchedules(for taskGroups: [SBAActivityGroupObject], scheduledOn: Date, expiresOn: Date?, finishedOn: Date?, clientData: SBBJSONValue?) {
-        taskGroups.forEach {
-            let _ = createSchedules(for: $0, scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData)
-        }
+    func setupSchedules(for taskGroups: [SBAActivityGroupObject], scheduledOn: Date, expiresOn: Date?, finishedOn: Date?, clientData: SBBJSONValue?) -> [SBBScheduledActivity] {
+        return taskGroups.flatMap { createSchedules(for: $0, scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData) }
     }
 
 }

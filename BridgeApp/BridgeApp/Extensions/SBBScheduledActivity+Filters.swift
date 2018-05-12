@@ -51,6 +51,22 @@ extension SBBScheduledActivity {
         return NSPredicate(day: date, dateKey: #keyPath(expiresOn))
     }
     
+    public static func availableBeforePredicate(_ date: Date) -> NSPredicate {
+        let expiredKey = #keyPath(expiresOn)
+        let expiredBefore = NSPredicate(format: "%K != nil AND %K < %@", expiredKey, expiredKey, date as CVarArg)
+        let finishedKey = #keyPath(finishedOn)
+        let finishedBefore = NSPredicate(format: "%K != nil AND %K < %@", finishedKey, finishedKey, date as CVarArg)
+        return NSCompoundPredicate(orPredicateWithSubpredicates: [expiredBefore, finishedBefore])
+    }
+    
+    public static func availableAfterPredicate(_ date: Date) -> NSPredicate {
+        let scheduledKey = #keyPath(scheduledOn)
+        let scheduleAfter = NSPredicate(format: "%K > %@", scheduledKey, date as CVarArg)
+        let finishedKey = #keyPath(finishedOn)
+        let finishedAfter = NSPredicate(format: "%K != nil AND %K > %@", finishedKey, finishedKey, date as CVarArg)
+        return NSCompoundPredicate(orPredicateWithSubpredicates: [scheduleAfter, finishedAfter])
+    }
+    
     public static func availableOnPredicate(on date: Date) -> NSPredicate {
         let startOfDay = date.startOfDay()
         let startOfNextDay = startOfDay.addingNumberOfDays(1)
@@ -98,5 +114,36 @@ extension SBBScheduledActivity {
     public static func schedulePlanPredicate(with guid: String) -> NSPredicate {
         let key = #keyPath(schedulePlanGuid) as NSString
         return NSPredicate(format: "(%K == %@)", key, guid)
+    }
+    
+    public static func activityIdentifierPredicate(with identifier: String) -> NSPredicate {
+        let key = #keyPath(activityIdentifier) as NSString
+        return NSPredicate(format: "(%K == %@)", key, identifier)
+    }
+    
+    public static func activityGroupPredicate(for activityGroup: SBAActivityGroup) -> NSPredicate {
+        let identifiers = activityGroup.activityIdentifiers.map { $0.stringValue }
+        if let _ = activityGroup.schedulePlanGuidMap {
+            let predicates = identifiers.map { (identifier) -> NSPredicate in
+                let taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: identifier)
+                if let guid = activityGroup.schedulePlanGuid(for: identifier) {
+                    let guidPredicate = SBBScheduledActivity.schedulePlanPredicate(with: guid)
+                    return NSCompoundPredicate(andPredicateWithSubpredicates: [guidPredicate, taskPredicate])
+                } else {
+                    return taskPredicate
+                }
+            }
+            return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+        }
+        else {
+            let taskPredicate = SBBScheduledActivity.includeTasksPredicate(with: identifiers)
+            if let guid = activityGroup.schedulePlanGuid {
+                let guidPredicate = SBBScheduledActivity.schedulePlanPredicate(with: guid)
+                return NSCompoundPredicate(andPredicateWithSubpredicates: [guidPredicate, taskPredicate])
+            }
+            else {
+                return taskPredicate
+            }
+        }
     }
 }

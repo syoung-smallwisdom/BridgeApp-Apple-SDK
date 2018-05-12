@@ -75,6 +75,7 @@ open class SBABridgeConfiguration {
         
         // Set the factory to this one by default.
         RSDFactory.shared = factory
+        let _ = SBAParticipantManager.shared
         
         BridgeSDK.setup()
         
@@ -132,8 +133,19 @@ open class SBABridgeConfiguration {
         self.schemaReferenceMap[schemaReference.identifier] = schemaReference
     }
     
-    /// Update the mapping by adding the given schema reference.
+    /// Update the mapping by adding the given task.
     public func addMapping(with task: RSDTask) {
+        if self.activityInfoMap[task.identifier] == nil {
+            let activityInfo = SBAActivityInfoObject(identifier: RSDIdentifier(rawValue: task.identifier),
+                                                     title: nil,
+                                                     subtitle: nil,
+                                                     detail: nil,
+                                                     estimatedMinutes: nil,
+                                                     iconImage: nil,
+                                                     resource: nil,
+                                                     moduleId: SBAModuleIdentifier(rawValue: task.identifier))
+            self.addMapping(with: activityInfo)
+        }
         self.taskMap[task.identifier] = task
     }
     
@@ -237,9 +249,20 @@ public protocol SBAActivityGroup : RSDTaskGroup {
     /// the appropriate group in the case where more than one group may contain
     /// the same tasks.
     var schedulePlanGuid : String? { get }
+    
+    /// The schedule plan guid map that can be used to map scheduled activities to
+    /// the appropriate group in the case where more than one group may contain
+    /// the same tasks **but** where the activities are not all grouped on the server
+    /// using the same schedule.
+    var schedulePlanGuidMap : [String : String]? { get }
 }
 
 extension SBAActivityGroup {
+    
+    /// Returns the schedule plan guid to use for a given activity identifier.
+    public func schedulePlanGuid(for identifier: String) -> String? {
+        return schedulePlanGuidMap?[identifier] ?? schedulePlanGuid
+    }
     
     /// Returns the configuration activity info objects mapped by activity identifier.
     public var tasks : [RSDTaskInfo] {
@@ -324,8 +347,14 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
     /// the same tasks.
     public let schedulePlanGuid : String?
     
+    /// The schedule plan guid map that can be used to map scheduled activities to
+    /// the appropriate group in the case where more than one group may contain
+    /// the same tasks **but** where the activities are not all grouped on the server
+    /// using the same schedule.
+    public let schedulePlanGuidMap : [String : String]?
+    
     private enum CodingKeys : String, CodingKey {
-        case identifier, title, detail, journeyTitle, imageSource, activityIdentifiers, notificationIdentifier, schedulePlanGuid
+        case identifier, title, detail, journeyTitle, imageSource, activityIdentifiers, notificationIdentifier, schedulePlanGuid, schedulePlanGuidMap
     }
     
     /// Default initializer.
@@ -335,7 +364,8 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
                 image : UIImage?,
                 activityIdentifiers : [RSDIdentifier],
                 notificationIdentifier : RSDIdentifier?,
-                schedulePlanGuid : String?) {
+                schedulePlanGuid : String?,
+                schedulePlanGuidMap : [String : String]?) {
         self.identifier = identifier
         self.title = title
         self.journeyTitle = journeyTitle
@@ -345,6 +375,7 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
         self.schedulePlanGuid = schedulePlanGuid
         self.detail = nil
         self.imageSource = nil
+        self.schedulePlanGuidMap = schedulePlanGuidMap
     }
     
     /// Returns nil. This task group is intended to allow using a shared codable configuration
