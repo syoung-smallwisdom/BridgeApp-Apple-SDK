@@ -40,11 +40,14 @@ public enum SBAApplicationState : Equatable {
     /// Initial launch view.
     case launch
     
-    /// Main view showing activities, etc. for the signed in user.
+    /// Main view showing activities, etc. for the signed in and consented user.
     case main
     
     /// Study overview (onboarding) for the user who is *not* signed in.
     case onboarding
+    
+    /// Consent flow for the user who is signed in but hasn't signed one or more required consents.
+    case consent
     
     /// Unrecoverable error state. Displayed when the app must be updated or has reached end-of-life.
     case catastrophicError
@@ -69,8 +72,8 @@ extension SBAApplicationState : ExpressibleByStringLiteral {
 }
 
 /// `SBARootViewController` is a root view controller implementation that allows the current "root"
-/// to be transitioned while there is a modal view controller displayed on top of the root. For
-/// example, when displaying a passcode or during onboarding.
+/// to be transitioned while there is a modal view controller displayed on top of the root (for
+/// example, when displaying a passcode or during onboarding or consent).
 open class SBARootViewController: UIViewController {
     
     /// The current state of the app.
