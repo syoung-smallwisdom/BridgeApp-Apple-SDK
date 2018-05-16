@@ -106,9 +106,8 @@ extension SBBScheduledActivity {
     }
     
     public static func includeTasksPredicate(with identifiers: [String]) -> NSPredicate {
-        let array = identifiers as NSArray
-        let key = #keyPath(activityIdentifier) as NSString
-        return NSPredicate(format: "(%K != nil) AND (%K IN %@)", key, key, array)
+        let predicates = identifiers.map { activityIdentifierPredicate(with: $0) }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
     }
     
     public static func schedulePlanPredicate(with guid: String) -> NSPredicate {
@@ -117,8 +116,10 @@ extension SBBScheduledActivity {
     }
     
     public static func activityIdentifierPredicate(with identifier: String) -> NSPredicate {
-        let key = #keyPath(activityIdentifier) as NSString
-        return NSPredicate(format: "(%K == %@)", key, identifier)
+        let taskRefPredicate = NSPredicate(format: "(activity.task != nil) AND (activity.task.identifier == %@)", identifier)
+        let surveyRefPredicate = NSPredicate(format: "(activity.survey != nil) AND (activity.survey.identifier == %@)", identifier)
+        let comboRefPredicate = NSPredicate(format: "(activity.compoundActivity != nil) AND (activity.compoundActivity.taskIdentifier == %@)", identifier)
+        return NSCompoundPredicate(orPredicateWithSubpredicates: [taskRefPredicate, surveyRefPredicate, comboRefPredicate])
     }
     
     public static func activityGroupPredicate(for activityGroup: SBAActivityGroup) -> NSPredicate {
@@ -145,5 +146,10 @@ extension SBBScheduledActivity {
                 return taskPredicate
             }
         }
+    }
+    
+    public static func finishedOnSortDescriptor(ascending: Bool) -> NSSortDescriptor {
+        let finishedKey = #keyPath(finishedOn)
+        return NSSortDescriptor(key: finishedKey, ascending: ascending)
     }
 }

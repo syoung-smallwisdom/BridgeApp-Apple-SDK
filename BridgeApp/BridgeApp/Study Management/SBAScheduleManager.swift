@@ -62,90 +62,169 @@ open class SBAScheduleManager: NSObject {
     }
     
     // MARK: Data source
-    
+
     /// This is an array of the activities fetched by the call to the server in `reloadData`. By default,
     /// this list includes the activities filtered using the `scheduleFilterPredicate`.
     @objc open var scheduledActivities: [SBBScheduledActivity] = []
     
     
-    // MARK: Schedule loading
+    // MARK: Schedule loading and filtering
     
-    /// A predicate that can be used to evaluate whether or not a schedule should be included in the
-    /// `scheduledActivities` array. This can include block predicates and is evaluated on each
-    /// `SBBScheduledActivity` object returned by the server.
-    open var scheduleFilterPredicate: NSPredicate = NSPredicate(value: true)
+    /// The activity group associated with this schedule manager. If non-nil, this will be used in setting up
+    /// the filtering predicates and finding the "most appropriate" schedule when creating a task path.
+    open var activityGroup : SBAActivityGroup?
     
-    /// Convenience method for accessing the `startStudy` date from the shared `SBAParticipantManager`.
-    public var startStudy: Date {
-        return SBAParticipantManager.shared.startStudy
+    /// Fetch request objects can be used to make compound fetch requests to retrieve schedules that match
+    /// different sets of parameters. For example, a task group might be set up to group a set of tasks
+    /// together where the schedule used to run a new task is different from the schedule used to mark it as
+    /// finished. This allows for that more complicated logic.
+    public struct FetchRequest {
+        
+        /// The predicate to use to filter the fetched results.
+        public let predicate: NSPredicate
+        
+        /// The sort descriptors to use to sort the results.
+        public let sortDescriptors: [NSSortDescriptor]?
+        
+        /// The maximum number of schedules to fetch in this request.
+        public let fetchLimit: UInt?
+        
+        public init(predicate: NSPredicate, sortDescriptors: [NSSortDescriptor]?, fetchLimit: UInt?) {
+            self.predicate = predicate
+            self.sortDescriptors = sortDescriptors
+            self.fetchLimit = fetchLimit
+        }
     }
     
-    /// The date to use when reloading data as the minimum date to fetch.
-    open var fromDate: Date {
-        return startStudy
+    /// The fetch requests to use to fetch the schedules associated with this manager. By default, if an
+    /// this schedule manager has an associated activity group, then this will return an array of the
+    /// predicate for those schedules available today and the most recently finished schedule for each
+    /// activity included in the group. Otherwise, a request will be created for all activities available
+    /// today.
+    open func fetchRequests() -> [FetchRequest] {
+        if let group = activityGroup {
+            
+            // Default filtering if there is an associated activity group is to return the current schedules
+            // (the ones that are valid *now*) and the most recent finished schedule (to allow for marking
+            // the activity as "completed".
+            
+            // Get today's schedules.
+            var requests: [FetchRequest] = []
+            let todayPredicate = NSCompoundPredicate(andPredicateWithSubpredicates:
+                    [self.availablePredicate(),
+                     SBBScheduledActivity.activityGroupPredicate(for: group)])
+            let todayRequest = FetchRequest(predicate: todayPredicate, sortDescriptors: nil, fetchLimit: nil)
+            requests.append(todayRequest)
+            
+            // Add a request **for each** identifier to get the most recently finished schedule even if that
+            // schedule is *not* part of this activity group.
+            group.activityIdentifiers.forEach {
+                let predicate = self.historyPredicate(for: $0)
+                let sortDescriptors = [SBBScheduledActivity.finishedOnSortDescriptor(ascending: false)]
+                requests.append(FetchRequest(predicate: predicate, sortDescriptors: sortDescriptors, fetchLimit: 1))
+            }
+            
+            return requests
+        }
+        else {
+            
+            // If there is no activity group associated with this schedule then return all activities that
+            // are valid today.
+            return [FetchRequest(predicate: self.availablePredicate(), sortDescriptors: nil, fetchLimit: nil)]
+        }
     }
     
-    /// The date to use when reloading data as the maximum date to fetch.
-    open var toDate: Date {
-        return startStudy.addingDateComponents(SBABridgeConfiguration.shared.studyDuration)
+    /// The predicate to use for filtering today's activities for those available today. If there is an
+    /// `activityGroup` associated with this schedule manager, the fetch request for today's activities will
+    /// be built using this predicate and the activity group predicate. Otherwise, only this predicate will
+    /// be used. Default is to return `SBBScheduledActivity.availableTodayPredicate()`.
+    open func availablePredicate() -> NSPredicate {
+        return SBBScheduledActivity.availableTodayPredicate()
+    }
+    
+    /// The predicate to use for filtering past activities. By default, this will return all activities where
+    /// the `finishedOn` property is non-nil and the activity identifier matches the given value.
+    /// - parameter activityIdentifier: The activity identifier for the schedule.
+    /// - returns: The predicate for this fetch request.
+    open func historyPredicate(for activityIdentifier: RSDIdentifier) -> NSPredicate {
+        return NSCompoundPredicate(andPredicateWithSubpredicates:
+            [SBBScheduledActivity.isFinishedPredicate(),
+             SBBScheduledActivity.activityIdentifierPredicate(with: activityIdentifier.stringValue)])
     }
     
     /// State management for whether or not the schedules are reloading.
     public private(set) var isReloading: Bool = false
     
+    /// A serial queue used to manage data crunching.
+    public let offMainQueue = DispatchQueue(label: "org.sagebionetworks.BridgeApp.SBAScheduleManager")
+    
     /// Reload the data by fetching changes to the scheduled activities.
     open func reloadData() {
-        loadScheduledActivities(from: fromDate, to: toDate)
+        loadScheduledActivities()
     }
     
-    /// Load a given range of schedules.
-    public final func loadScheduledActivities(from fromDate: Date, to toDate: Date) {
-        if isReloading { return }
-        isReloading = true
-        
-        fetchScheduledActivities(from: fromDate, to: toDate) { [weak self] (schedules, error) in
-            self?.handleLoadedActivities(schedules, from: fromDate, to: toDate)
-        }
-    }
-    
-    /// Some (but possibly not all) of the requested schedules have been fetched. Handle adding them and
-    /// fetch more of the range if needed.
-    open func handleLoadedActivities(_ scheduledActivities: [SBBScheduledActivity]?, from fromDate: Date, to toDate: Date) {
-        DispatchQueue.main.async {
-            if let scheduledActivities = self.sortActivities(scheduledActivities) {
-                self.update(fetchedActivities: scheduledActivities, from: fromDate, to: toDate)
+    /// Load the scheduled activities from cache using the `fetchRequests()` for this schedule manager.
+    public final func loadScheduledActivities() {
+        offMainQueue.async {
+            if self.isReloading { return }
+            self.isReloading = true
+            do {
+                
+                // Fetch the cached schedules.
+                let requests = self.fetchRequests()
+                var scheduleIdentifiers: [String] = []
+                var schedules: [SBBScheduledActivity] = []
+                
+                try requests.forEach {
+                    let fetchedSchedules = try self.getCachedSchedules(using: $0)
+                    if schedules.count == 0 {
+                        schedules = fetchedSchedules
+                    }
+                    else {
+                        fetchedSchedules.forEach {
+                            let guid = $0.scheduleIdentifier ?? $0.guid
+                            if !scheduleIdentifiers.contains(guid) {
+                                scheduleIdentifiers.append(guid)
+                                schedules.append($0)
+                            }
+                        }
+                    }
+                }
+
+                DispatchQueue.main.async {
+                    self.update(fetchedActivities: schedules)
+                }
+            }
+            catch let error {
+                DispatchQueue.main.async {
+                    self.updateFailed(error)
+                }
             }
         }
     }
     
-    /// Convenience method for wrapping the call to BridgeSDK.
-    fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date, completion: @escaping ([SBBScheduledActivity]?, Error?) -> Swift.Void) {
-        // TODO: syoung 05/11/2018 Refactor to include a SQL query to use when fetching from cache to only
-        // fetch the schedules of interest to this manager.
-        BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .cachedOnly) { (obj, error) in
-                completion(obj as? [SBBScheduledActivity], error)
-        }
+    /// Add internal method for testing.
+    internal func getCachedSchedules(using fetchRequest: FetchRequest) throws -> [SBBScheduledActivity] {
+        return try BridgeSDK.activityManager.getCachedSchedules(using: fetchRequest.predicate,
+                                                                sortDescriptors: fetchRequest.sortDescriptors,
+                                                                fetchLimit: fetchRequest.fetchLimit ?? 0)
     }
 
     
     // MARK: Data handling
     
-    /// Called once the response from the server returns the scheduled activities.
+    /// Called on the main thread if updating the scheduled activities fails.
+    open func updateFailed(_ error: Error) {
+        debugPrint("WARNING: Failed to fetch cached schedules: \(error)")
+    }
+    
+    /// Called on the main thread once Bridge returns the requested scheduled activities.
     ///
-    /// By default, this method will filter the scheduled activities to only include those that *this*
-    /// schedule manager is designed to be able to handle.
-    ///
-    /// - parameters:
-    ///     - scheduledActivities: The list of activities returned by the service.
-    ///     - fromDate: The `fromDate` parameter included in the call to the server.
-    ///     - toDate: The `toDate` parameter included in the call to the server.
-    open func update(fetchedActivities: [SBBScheduledActivity], from fromDate: Date, to toDate: Date) {
-        // Filter and update the schedules.
-        let schedules = filterSchedules(fetchedActivities, from: fromDate, to: toDate)
-        let hasChanges = (schedules != self.scheduledActivities)
-        let previous = self.scheduledActivities
-        self.scheduledActivities = schedules
-        if hasChanges {
+    /// - parameter scheduledActivities: The list of activities returned by the service.
+    open func update(fetchedActivities: [SBBScheduledActivity]) {
+        if (fetchedActivities != self.scheduledActivities) {
+            self.scheduledActivities = fetchedActivities
+            let previous = self.scheduledActivities
             self.didUpdateScheduledActivities(from: previous)
         }
     }
@@ -167,25 +246,6 @@ open class SBAScheduleManager: NSObject {
         return scheduledActivities!.sorted(by: { (scheduleA, scheduleB) -> Bool in
             return scheduleA.scheduledOn.compare(scheduleB.scheduledOn) == .orderedAscending
         })
-    }
-    
-    /// Filter the scheduled activities to only include those that *this* version of the app is designed
-    /// to be able to handle.
-    ///
-    /// - parameters:
-    ///     - scheduledActivities: The list of activities returned by the service.
-    ///     - fromDate: The `fromDate` parameter included in the call to the server.
-    ///     - toDate: The `toDate` parameter included in the call to the server.
-    /// - returns: The filtered list of activities.
-    open func filterSchedules(_ schedules: [SBBScheduledActivity], from fromDate: Date, to toDate: Date) -> [SBBScheduledActivity] {
-        let outsideRange = NSCompoundPredicate(orPredicateWithSubpredicates: [
-            SBBScheduledActivity.availableBeforePredicate(fromDate),
-            SBBScheduledActivity.availableAfterPredicate(toDate)])
-        var activities = self.scheduledActivities.filter { (schedule) in
-            outsideRange.evaluate(with: schedule) && !schedules.contains(where: { $0.guid == schedule.guid })
-        }
-        activities.append(contentsOf: schedules)
-        return activities
     }
     
     
@@ -259,7 +319,7 @@ open class SBAScheduleManager: NSObject {
         
         // Set up predicates.
         var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
-        if let guid = activityGroup?.schedulePlanGuid(for: taskInfo.identifier) {
+        if let guid = (activityGroup ?? self.activityGroup)?.schedulePlanGuid(for: taskInfo.identifier) {
             taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                 taskPredicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
         }
