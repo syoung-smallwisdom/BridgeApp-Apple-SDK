@@ -62,6 +62,11 @@ open class SBAScheduleManager: NSObject {
     }
     
     // MARK: Data source
+    
+    /// Add an identifier that can be used for mapping this schedule manager to the displayed schedules.
+    lazy public var identifier : String = {
+       return self.activityGroup?.identifier ?? "Today"
+    }()
 
     /// This is an array of the activities fetched by the call to the server in `reloadData`. By default,
     /// this list includes the activities filtered using the `scheduleFilterPredicate`.
