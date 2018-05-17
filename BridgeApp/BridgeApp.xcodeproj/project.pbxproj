@@ -506,16 +506,16 @@
 			isa = PBXGroup;
 			children = (
 				F825BA5D207FD64200D29F60 /* SBATrackedItem.swift */,
-				F825BA67207FD83200D29F60 /* SBAMedicationTrackingStepNavigator.swift */,
-				F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */,
+				F825BA74207FD96100D29F60 /* SBATrackingDataSource.swift */,
 				F825BA6A207FD83300D29F60 /* SBATrackedItemDetailsStepObject.swift */,
 				F825BA6C207FD83300D29F60 /* SBATrackedItemsLoggingStepObject.swift */,
 				F825BA68207FD83200D29F60 /* SBATrackedItemsReviewStepObject.swift */,
 				F825BA69207FD83300D29F60 /* SBATrackedItemsStepNavigator.swift */,
+				F825BA75207FD96100D29F60 /* SBATrackedLoggingDataSource.swift */,
 				F825BA6B207FD83300D29F60 /* SBATrackedSelectionStepObject.swift */,
 				F825BA73207FD96100D29F60 /* SBATrackedSelectionDataSource.swift */,
-				F825BA75207FD96100D29F60 /* SBATrackedLoggingDataSource.swift */,
-				F825BA74207FD96100D29F60 /* SBATrackingDataSource.swift */,
+				F825BA67207FD83200D29F60 /* SBAMedicationTrackingStepNavigator.swift */,
+				F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";

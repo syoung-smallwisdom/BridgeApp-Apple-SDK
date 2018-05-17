@@ -34,16 +34,27 @@
 import XCTest
 @testable import BridgeApp
 
+class TestBridgeInfo: NSObject, SBBBridgeInfoProtocol {
+    var studyIdentifier: String = "bridgeApp-test"
+    var certificateName: String? = "bridgeApp-test"
+    var cacheDaysAhead: Int = 365
+    var cacheDaysBehind: Int = 365
+    var environment: SBBEnvironment = .dev
+    var usesStandardUserDefaults: Bool = true
+    var userDefaultsSuiteName: String? = nil
+    var appGroupIdentifier: String? = nil
+}
+
 class SBAScheduleManagerTests: XCTestCase {
     
-    var scheduleManager: SBAScheduleManager!
+    var scheduleManager: TestScheduleManager!
     
     override func setUp() {
         super.setUp()
         
+        BridgeSDK.setup(withBridgeInfo: TestBridgeInfo())
         SBABridgeConfiguration.shared = SBABridgeConfiguration()
-        scheduleManager = SBAScheduleManager()
-        
+        scheduleManager = TestScheduleManager()
     }
     
     override func tearDown() {
@@ -402,6 +413,7 @@ class SBAScheduleManagerTests: XCTestCase {
         XCTAssertEqual(clientData as? NSDictionary, expectedClientData as NSDictionary)
         XCTAssertEqual(taskPath.taskInfo as? SBBTaskReference, expectedSchedule.activity.task)
         XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.scheduleIdentifier)
+        
     }
     
     func testInstantiateTaskPath_NoSchedule() {
@@ -430,14 +442,56 @@ class SBAScheduleManagerTests: XCTestCase {
         XCTAssertEqual(taskPath.task?.schemaInfo?.schemaVersion, 3)
     }
     
-    func testFilterSchedules() {
+    func testFetchRequestsSQL_NoGroup() {
         
-        let taskGroupAlpha = ["taskA", "taskB", "taskC"]
-        let taskGroupBeta = ["taskD", "taskE"]
+        let expect = expectation(description: "Update finished called.")
+        scheduleManager.updateFinishedBlock = {
+            expect.fulfill()
+        }
+        scheduleManager.loadScheduledActivities()
+        waitForExpectations(timeout: 2) { (err) in
+            print(String(describing: err))
+        }
         
-        let group1 = createTaskGroup("group1", taskGroupAlpha, UUID().uuidString, ["taskC" : UUID().uuidString])
-        let group2 = createTaskGroup("group2", taskGroupAlpha, UUID().uuidString)
-        let group3 = createTaskGroup("group3", taskGroupBeta, UUID().uuidString)
+        XCTAssertNil(scheduleManager.updateFailed_error)
+        XCTAssertNotNil(scheduleManager.update_fetchedActivities)
+    }
+    
+    func testFetchRequestsSQL_WithScheduledPlanGuid() {
+        
+        scheduleManager.activityGroup = createTaskGroup("group1", ["taskA", "taskB", "taskC"], UUID().uuidString)
+        
+        let expect = expectation(description: "Update finished called.")
+        scheduleManager.updateFinishedBlock = {
+            expect.fulfill()
+        }
+        scheduleManager.loadScheduledActivities()
+        waitForExpectations(timeout: 2) { (err) in
+            print(String(describing: err))
+        }
+        
+        XCTAssertNil(scheduleManager.updateFailed_error)
+        XCTAssertNotNil(scheduleManager.update_fetchedActivities)
+    }
+    
+    func testFetchRequestsSQL_NoScheduledPlanGuid() {
+        
+        scheduleManager.activityGroup = createTaskGroup("group1", ["taskA", "taskB", "taskC"], nil)
+        
+        let expect = expectation(description: "Update finished called.")
+        scheduleManager.updateFinishedBlock = {
+            expect.fulfill()
+        }
+        scheduleManager.loadScheduledActivities()
+        waitForExpectations(timeout: 2) { (err) in
+            print(String(describing: err))
+        }
+        
+        XCTAssertNil(scheduleManager.updateFailed_error)
+        XCTAssertNotNil(scheduleManager.update_fetchedActivities)
+    }
+    
+    func testLoadActivities_FinishedOnPreviousRun_DifferentGroup() {
         
         let now = Date()
         let todayStart = now.startOfDay()
@@ -445,39 +499,49 @@ class SBAScheduleManagerTests: XCTestCase {
         let nextWeek = todayStart.addingNumberOfDays(7)
         let twoWeeks = nextWeek.addingNumberOfDays(7)
         
-        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
-        let thisWeekSchedules = setupSchedules(for: [group1, group2, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
-        let nextWeekSchedules = setupSchedules(for: [group1, group2, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil)
+        let expectedTaskIdentifiers = ["taskA", "taskB", "taskC"]
+        let group1 = createTaskGroup("group1", expectedTaskIdentifiers, UUID().uuidString)
+        let group2 = createTaskGroup("group2", expectedTaskIdentifiers, UUID().uuidString)
+        let group3 = createTaskGroup("group3", ["taskD", "taskE"], UUID().uuidString)
+        let _ = setupSchedules(for: [group1], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
+        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn:nil, clientData: nil)
         
-        // check assumptions
-        XCTAssertEqual(scheduleManager.scheduledActivities.count, 24)
-        let todaySchedules = scheduleManager.scheduledActivities(for: group2, availableOn: now)
-        todaySchedules.forEach { (schedule) in
-            XCTAssertNil(schedule.finishedOn, "\(schedule)")
+        // take all the created schedules and remove them.
+        scheduleManager.activityGroup = group1
+        scheduleManager.cachedSchedules = scheduleManager.scheduledActivities
+        scheduleManager.scheduledActivities = []
+        
+        let expect = expectation(description: "Update finished called.")
+        scheduleManager.updateFinishedBlock = {
+            expect.fulfill()
         }
-
-        let newFutureAndToday = [thisWeekSchedules, nextWeekSchedules].flatMap { $0 }.map { (schedule) -> SBBScheduledActivity in
-            let finishedOn: Date? = (schedule.schedulePlanGuid == group2.schedulePlanGuid) && (schedule.scheduledOn == todayStart) ? now : nil
-            let newValue = createSchedule(with: RSDIdentifier(rawValue: schedule.activityIdentifier!),
-                                      scheduledOn: schedule.scheduledOn,
-                                      expiresOn: schedule.expiresOn,
-                                      finishedOn: finishedOn,
-                                      clientData: nil,
-                                      schedulePlanGuid: schedule.schedulePlanGuid)
-            newValue.guid = schedule.guid
-            return newValue
+        scheduleManager.loadScheduledActivities()
+        waitForExpectations(timeout: 2) { (err) in
+            print(String(describing: err))
         }
         
-        // check assumptions
-        XCTAssertEqual(newFutureAndToday.count, 16)
+        XCTAssertNil(scheduleManager.updateFailed_error)
+        XCTAssertNotNil(scheduleManager.update_fetchedActivities)
         
-        // Update the schedules with a new set of **future** only schedules. (Past schedules remain unchanged).
-        scheduleManager.update(fetchedActivities: newFutureAndToday, from: todayStart, to: todayStart.addingNumberOfDays(30))
-
-        XCTAssertEqual(scheduleManager.scheduledActivities.count, 24)
-        let todaySchedules_after = scheduleManager.scheduledActivities(for: group2, availableOn: now)
-        todaySchedules_after.forEach { (schedule) in
-            XCTAssertNotNil(schedule.finishedOn, "\(schedule)")
+        guard let filteredActivities = scheduleManager.update_fetchedActivities else {
+            XCTFail("Failed to filter out any activities.")
+            return
+        }
+        
+        XCTAssertEqual(filteredActivities.count, 6, "\(filteredActivities)")
+        let finishedActivities = filteredActivities.filter { $0.isCompleted }
+        XCTAssertEqual(finishedActivities.count, 3)
+        finishedActivities.forEach {
+            XCTAssertEqual($0.schedulePlanGuid, group2.schedulePlanGuid)
+        }
+        
+        let todayActivities = filteredActivities.filter { !$0.isCompleted }
+        XCTAssertEqual(todayActivities.count, 3)
+        todayActivities.forEach {
+            XCTAssertEqual($0.schedulePlanGuid, group1.schedulePlanGuid, "\($0)")
+            XCTAssertTrue($0.isAvailableNow, "\($0)")
         }
     }
     
@@ -539,4 +603,59 @@ class SBAScheduleManagerTests: XCTestCase {
         return taskGroups.flatMap { createSchedules(for: $0, scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData) }
     }
 
+}
+
+class TestScheduleManager : SBAScheduleManager {
+    
+    var updateFinishedBlock: (() -> Void)?
+    var updateFailed_error: Error?
+    var update_fetchedActivities:[SBBScheduledActivity]?
+    
+    override func updateFailed(_ error: Error) {
+        updateFailed_error = error
+        super.updateFailed(error)
+        updateFinishedBlock?()
+    }
+    
+    override func update(fetchedActivities: [SBBScheduledActivity]) {
+        update_fetchedActivities = fetchedActivities
+        super.update(fetchedActivities: fetchedActivities)
+        updateFinishedBlock?()
+    }
+    
+    var cachedSchedules: [SBBScheduledActivity]?
+    var getCachedSchedules_results: [SBAScheduleManager.FetchRequest : [SBBScheduledActivity]] = [:]
+    
+    
+    override func getCachedSchedules(using fetchRequest: SBAScheduleManager.FetchRequest) throws -> [SBBScheduledActivity] {
+        guard let schedules = cachedSchedules else {
+            return try super.getCachedSchedules(using: fetchRequest)
+        }
+        
+        var results = schedules.filter { fetchRequest.predicate.evaluate(with: $0) }
+        if let sortDescriptors = fetchRequest.sortDescriptors {
+            results = (results as NSArray).sortedArray(using: sortDescriptors) as! [SBBScheduledActivity]
+        }
+        
+        let ret: [SBBScheduledActivity] = {
+            if let limit = fetchRequest.fetchLimit {
+                return Array(results[..<Int(limit)])
+            }
+            else {
+                return results
+            }
+        }()
+        getCachedSchedules_results[fetchRequest] = ret
+        return ret
+    }
+}
+
+extension SBAScheduleManager.FetchRequest : Hashable {
+    public var hashValue: Int {
+        return self.predicate.hash
+    }
+    
+    public static func == (lhs: SBAScheduleManager.FetchRequest, rhs: SBAScheduleManager.FetchRequest) -> Bool {
+        return lhs.predicate == rhs.predicate
+    }
 }

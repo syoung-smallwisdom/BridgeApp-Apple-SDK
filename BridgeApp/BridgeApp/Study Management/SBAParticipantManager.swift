@@ -127,9 +127,9 @@ public final class SBAParticipantManager : NSObject {
         guard shouldContinueLoading() else { return }
 
         var toDate = self.startStudy.addingDateComponents(SBABridgeConfiguration.shared.studyDuration)
-        let tomorrow = Date().addingNumberOfDays(1).startOfDay()
-        if toDate < tomorrow {
-            toDate = tomorrow
+        let nextWeek = Date().addingNumberOfDays(7).startOfDay()
+        if toDate < nextWeek {
+            toDate = nextWeek
         }
         
         var fromDate = self.today
