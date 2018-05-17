@@ -415,5 +415,20 @@ open class SBAScheduleManager: NSObject {
     }
     
     // TODO: syoung 05/10/2018 - Implement handling for uploading archives and marking the schedule as finished.
+
+    // MARK: RSDTaskViewControllerDelegate
+    
+    /// - note: This method does not dismiss the task.
+    open func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
+        // TODO: Implement any cleanup of the task. syoung 05/17/2018
+    }
+    
+    open func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
+        // TODO: Implement saving the task. syoung 05/17/2018
+    }
+    
+    open func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
+        return nil
+    }
 }
 
