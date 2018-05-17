@@ -263,12 +263,6 @@ extension SBAActivityGroup {
     public func schedulePlanGuid(for identifier: String) -> String? {
         return schedulePlanGuidMap?[identifier] ?? schedulePlanGuid
     }
-    
-    /// Returns the configuration activity info objects mapped by activity identifier.
-    public var tasks : [RSDTaskInfo] {
-        let map = SBABridgeConfiguration.shared.activityInfoMap
-        return self.activityIdentifiers.compactMap { map[$0.stringValue] }
-    }
 }
 
 /// Extend the task info protocol to include optional pointers for use by an `SBBTaskReference`
@@ -382,6 +376,12 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
     /// and does not directly implement instantiating a task path.
     public func instantiateTaskPath(for taskInfo: RSDTaskInfo) -> RSDTaskPath? {
         return nil
+    }
+    
+    /// Returns the configuration activity info objects mapped by activity identifier.
+    public var tasks : [RSDTaskInfo] {
+        let map = SBABridgeConfiguration.shared.activityInfoMap
+        return self.activityIdentifiers.compactMap { map[$0.stringValue] }
     }
 }
 

@@ -62,6 +62,11 @@ open class SBAScheduleManager: NSObject {
     }
     
     // MARK: Data source
+    
+    /// Add an identifier that can be used for mapping this schedule manager to the displayed schedules.
+    lazy public var identifier : String = {
+       return self.activityGroup?.identifier ?? "Today"
+    }()
 
     /// This is an array of the activities fetched by the call to the server in `reloadData`. By default,
     /// this list includes the activities filtered using the `scheduleFilterPredicate`.
@@ -281,6 +286,14 @@ open class SBAScheduleManager: NSObject {
         return self.scheduledActivities.first(where: { $0.scheduleIdentifier == scheduleIdentifier })
     }
     
+    /// Is the given task info completed for the given date?
+    open func isCompleted(for taskInfo: RSDTaskInfo, on date: Date) -> Bool {
+        let taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
+        let finishedPredicate = SBBScheduledActivity.finishedOnDatePredicate(on: date)
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [taskPredicate, finishedPredicate])
+        return self.scheduledActivities.first(where: { predicate.evaluate(with: $0) }) != nil
+    }
+    
     /// Get the scheduled activities associated with a given group that are available on a given day.
     /// The criteria for determining availablity is dependent upon the timing of the activity. For a
     /// day in the past, the criteria includes when the task was finished, expired, and scheduled. For
@@ -402,5 +415,20 @@ open class SBAScheduleManager: NSObject {
     }
     
     // TODO: syoung 05/10/2018 - Implement handling for uploading archives and marking the schedule as finished.
+
+    // MARK: RSDTaskViewControllerDelegate
+    
+    /// - note: This method does not dismiss the task.
+    open func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
+        // TODO: Implement any cleanup of the task. syoung 05/17/2018
+    }
+    
+    open func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
+        // TODO: Implement saving the task. syoung 05/17/2018
+    }
+    
+    open func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
+        return nil
+    }
 }
 
