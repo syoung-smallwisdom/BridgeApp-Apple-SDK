@@ -286,6 +286,14 @@ open class SBAScheduleManager: NSObject {
         return self.scheduledActivities.first(where: { $0.scheduleIdentifier == scheduleIdentifier })
     }
     
+    /// Is the given task info completed for the given date?
+    open func isCompleted(for taskInfo: RSDTaskInfo, on date: Date) -> Bool {
+        let taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
+        let finishedPredicate = SBBScheduledActivity.finishedOnDatePredicate(on: date)
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [taskPredicate, finishedPredicate])
+        return self.scheduledActivities.first(where: { predicate.evaluate(with: $0) }) != nil
+    }
+    
     /// Get the scheduled activities associated with a given group that are available on a given day.
     /// The criteria for determining availablity is dependent upon the timing of the activity. For a
     /// day in the past, the criteria includes when the task was finished, expired, and scheduled. For
