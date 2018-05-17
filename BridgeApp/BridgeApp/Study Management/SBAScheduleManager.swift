@@ -96,9 +96,9 @@ open class SBAScheduleManager: NSObject {
         }
     }
     
-    /// The fetch requests to use to fetch the schedules associated with this manager. By default, if an
+    /// The fetch requests to use to fetch the schedules associated with this manager. By default, if
     /// this schedule manager has an associated activity group, then this will return an array of the
-    /// predicate for those schedules available today and the most recently finished schedule for each
+    /// fetch requests for those schedules available today and the most recently finished schedule for each
     /// activity included in the group. Otherwise, a request will be created for all activities available
     /// today.
     open func fetchRequests() -> [FetchRequest] {
@@ -165,39 +165,44 @@ open class SBAScheduleManager: NSObject {
     
     /// Load the scheduled activities from cache using the `fetchRequests()` for this schedule manager.
     public final func loadScheduledActivities() {
-        offMainQueue.async {
+        DispatchQueue.main.async {
             if self.isReloading { return }
             self.isReloading = true
-            do {
-                
-                // Fetch the cached schedules.
-                let requests = self.fetchRequests()
-                var scheduleIdentifiers: [String] = []
-                var schedules: [SBBScheduledActivity] = []
-                
-                try requests.forEach {
-                    let fetchedSchedules = try self.getCachedSchedules(using: $0)
-                    if schedules.count == 0 {
-                        schedules = fetchedSchedules
-                    }
-                    else {
-                        fetchedSchedules.forEach {
-                            let guid = $0.scheduleIdentifier ?? $0.guid
-                            if !scheduleIdentifiers.contains(guid) {
-                                scheduleIdentifiers.append(guid)
-                                schedules.append($0)
+            
+            self.offMainQueue.async {
+                do {
+                    
+                    // Fetch the cached schedules.
+                    let requests = self.fetchRequests()
+                    var scheduleIdentifiers: [String] = []
+                    var schedules: [SBBScheduledActivity] = []
+                    
+                    try requests.forEach {
+                        let fetchedSchedules = try self.getCachedSchedules(using: $0)
+                        if schedules.count == 0 {
+                            schedules = fetchedSchedules
+                        }
+                        else {
+                            fetchedSchedules.forEach {
+                                let guid = $0.scheduleIdentifier ?? $0.guid
+                                if !scheduleIdentifiers.contains(guid) {
+                                    scheduleIdentifiers.append(guid)
+                                    schedules.append($0)
+                                }
                             }
                         }
                     }
-                }
 
-                DispatchQueue.main.async {
-                    self.update(fetchedActivities: schedules)
+                    DispatchQueue.main.async {
+                        self.update(fetchedActivities: schedules)
+                        self.isReloading = false
+                    }
                 }
-            }
-            catch let error {
-                DispatchQueue.main.async {
-                    self.updateFailed(error)
+                catch let error {
+                    DispatchQueue.main.async {
+                        self.updateFailed(error)
+                        self.isReloading = false
+                    }
                 }
             }
         }
