@@ -283,7 +283,11 @@ open class SBAScheduleManager: NSObject {
     /// - returns: The schedule associated with this task view controller (if available).
     open func scheduledActivity(with scheduleIdentifier: String?) -> SBBScheduledActivity? {
         guard let scheduleIdentifier = scheduleIdentifier else { return nil }
-        return self.scheduledActivities.first(where: { $0.scheduleIdentifier == scheduleIdentifier })
+        let todayPredicate = SBBScheduledActivity.availableTodayPredicate()
+        return self.scheduledActivities.rsd_last(where: {
+            $0.scheduleIdentifier == scheduleIdentifier &&
+            todayPredicate.evaluate(with: $0)
+        })
     }
     
     /// Is the given task info completed for the given date?
@@ -424,11 +428,34 @@ open class SBAScheduleManager: NSObject {
     }
     
     open func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
-        // TODO: Implement saving the task. syoung 05/17/2018
+        guard let scheduleIdentifier = taskPath.scheduleIdentifier,
+            let schedule = self.scheduledActivity(with: scheduleIdentifier)
+            else {
+                return
+        }
+        
+        // TODO: syoung 05/18/2018 Archive and upload result
+        
+        // Mark the schedule as finished.
+        schedule.startedOn = taskPath.result.startDate
+        schedule.finishedOn = taskPath.result.endDate
+        self.sendUpdated(for: [schedule])
     }
     
     open func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
         return nil
+    }
+    
+    // MARK: Upload to server
+    
+    /// Send message to Bridge server to update the given schedules. This includes both the task
+    /// that was completed and any tasks that were performed as a requirement of completion of the
+    /// primary task (such as a required one-time survey).
+    open func sendUpdated(for schedules: [SBBScheduledActivity]) {
+        BridgeSDK.activityManager.updateScheduledActivities(schedules) { (_, _) in
+            // Post notification that the schedules were updated.
+            NotificationCenter.default.post(name: .SBAFinishedUpdatingScheduleCache, object: self)
+        }
     }
 }
 

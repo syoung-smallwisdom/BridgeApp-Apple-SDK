@@ -126,12 +126,7 @@ public final class SBAParticipantManager : NSObject {
     public func reloadSchedules() {
         guard shouldContinueLoading() else { return }
 
-        var toDate = self.startStudy.addingDateComponents(SBABridgeConfiguration.shared.studyDuration)
-        let nextWeek = Date().addingNumberOfDays(7).startOfDay()
-        if toDate < nextWeek {
-            toDate = nextWeek
-        }
-        
+        let toDate = Date().addingNumberOfDays(BridgeSDK.bridgeInfo.cacheDaysAhead + 1).startOfDay()
         var fromDate = self.today
         var cachingPolicy: SBBCachingPolicy = .fallBackToCached
         self.today = Date().startOfDay()
@@ -183,8 +178,11 @@ public final class SBAParticipantManager : NSObject {
             else {
                 // Otherwise, load more range from the server
                 self.loadingState = .fromServer
-                self.fetchScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .fallBackToCached) { (activities, error) in
-                    self.handleLoadedActivities(activities, from: fromDate, to: toDate, error: error)
+                
+                let nextFromDate = (scheduledActivities?.count ?? 0 > 0) ? Date() : fromDate
+                
+                self.fetchScheduledActivities(from: nextFromDate, to: toDate, cachingPolicy: .fallBackToCached) { (activities, error) in
+                    self.handleLoadedActivities(activities, from: nextFromDate, to: toDate, error: error)
                 }
             }
         }
