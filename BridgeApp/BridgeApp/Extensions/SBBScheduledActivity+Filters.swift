@@ -67,6 +67,11 @@ extension SBBScheduledActivity {
         return NSCompoundPredicate(orPredicateWithSubpredicates: [scheduleAfter, finishedAfter])
     }
     
+    public static func finishedOnOrAfterPredicate(_ date: Date) -> NSPredicate {
+        let finishedKey = #keyPath(finishedOn)
+        return NSPredicate(format: "%K != nil AND %K >= %@", finishedKey, finishedKey, date as CVarArg)
+    }
+    
     public static func availableOnPredicate(on date: Date) -> NSPredicate {
         let startOfDay = date.startOfDay()
         let startOfNextDay = startOfDay.addingNumberOfDays(1)
