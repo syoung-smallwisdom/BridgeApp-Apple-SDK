@@ -85,7 +85,7 @@ public final class SBAParticipantManager : NSObject {
         
         // Add an observer the app entering the foreground to check for whether or not "today" is still valid.
         NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) { (notification) in
-            self.reloadSchedules()
+            self.reloadIfTodayChanged()
         }
     }
     
@@ -124,9 +124,26 @@ public final class SBAParticipantManager : NSObject {
     /// Reload the schedules. This is triggered automatically by a change to data groups and when returning
     /// from the background.
     public func reloadSchedules() {
-        guard shouldContinueLoading() else { return }
-
-        let toDate = Date().addingNumberOfDays(BridgeSDK.bridgeInfo.cacheDaysAhead + 1).startOfDay()
+        DispatchQueue.main.async {
+            self.reload(allFuture: true)
+        }
+    }
+    
+    private func reloadIfTodayChanged() {
+        DispatchQueue.main.async {
+            self.reload(allFuture: false)
+        }
+    }
+    
+    private func reload(allFuture: Bool) {
+        guard (allFuture || Calendar.current.isDateInToday(self.today)),
+            shouldContinueLoading()
+            else {
+                return
+        }
+        
+        let daysIntoFuture = allFuture ? BridgeSDK.bridgeInfo.cacheDaysAhead + 1 : 1
+        let toDate = Date().addingNumberOfDays(daysIntoFuture).startOfDay()
         var fromDate = self.today
         var cachingPolicy: SBBCachingPolicy = .fallBackToCached
         self.today = Date().startOfDay()
