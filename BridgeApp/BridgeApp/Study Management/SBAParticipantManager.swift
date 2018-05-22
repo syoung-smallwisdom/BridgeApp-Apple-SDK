@@ -83,6 +83,12 @@ public final class SBAParticipantManager : NSObject {
             }
         }
         
+        // Add an observer that a schedule manager has updated the scheduled activities. Often updating the
+        // schedules will change the available "next" schedule.
+        NotificationCenter.default.addObserver(forName: .SBADidSendUpdatedScheduledActivities, object: nil, queue: .main) { (notification) in
+            self.reloadSchedules()
+        }
+        
         // Add an observer the app entering the foreground to check for whether or not "today" is still valid.
         NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) { (notification) in
             self.reloadIfTodayChanged()

@@ -35,8 +35,12 @@ import Foundation
 
 extension Notification.Name {
     
-    /// Notification name posted by the `SBASchduleManager` when the activities have been updated.
+    /// Notification name posted by the `SBAScheduleManager` when the activities have been updated.
     public static let SBAUpdatedScheduledActivities = Notification.Name(rawValue: "SBAUpdatedScheduledActivities")
+    
+    /// Notification name posted by the `SBAScheduleManager` when the activities did send an update
+    /// of the scheduled activities to Bridge.
+    public static let SBADidSendUpdatedScheduledActivities = Notification.Name(rawValue: "SBADidSendUpdatedScheduledActivities")
 }
 
 /// Default data source handler for scheduled activities. This manager is used to get `SBBScheduledActivity`
@@ -49,16 +53,43 @@ open class SBAScheduleManager: NSObject {
     
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
-        case previousActivities
+        case previousActivities, updatedActivities
     }
     
     public override init() {
         super.init()
         
-        // Add an observer the app entering the foreground to check for whether or not "today" is still valid.
+        // Add an observer that the schedules have been updated from the server.
         NotificationCenter.default.addObserver(forName: .SBAFinishedUpdatingScheduleCache, object: nil, queue: .main) { (notification) in
             self.reloadData()
         }
+        
+        // Add an observer that a schedule manager has updated the scheduled activities. Often updating the
+        // schedules will change the available "next" schedule.
+        NotificationCenter.default.addObserver(forName: .SBADidSendUpdatedScheduledActivities, object: nil, queue: .main) { (notification) in
+            if let schedules = notification.userInfo?[SBAScheduleManager.NotificationKey.updatedActivities] as? [SBBScheduledActivity],
+                self.shouldReload(schedules: schedules) {
+                self.reloadData()
+            }
+        }
+        
+        // load the activities from cache on init.
+        self.loadScheduledActivities()
+    }
+    
+    /// Should the schedules associated with this schedule manager be changed when a given schedule updates?
+    /// By default this will return `true` if at least one of the schedules has been marked as completed
+    /// and if there is an associated activity group, if at least one of the schedules is in this group.
+    open func shouldReload(schedules: [SBBScheduledActivity]) -> Bool {
+        guard let group = self.activityGroup else {
+            return schedules.first(where: { $0.isCompleted }) != nil
+        }
+        let identifiers = group.activityIdentifiers.map { $0.stringValue }
+        return schedules.first(where: {
+            $0.activityIdentifier != nil &&
+                identifiers.contains($0.activityIdentifier!) &&
+                $0.isCompleted
+        }) != nil
     }
     
     // MARK: Data source
@@ -452,9 +483,15 @@ open class SBAScheduleManager: NSObject {
     /// that was completed and any tasks that were performed as a requirement of completion of the
     /// primary task (such as a required one-time survey).
     open func sendUpdated(for schedules: [SBBScheduledActivity]) {
+        
+        // Post message to self that the scheduled activities were updated.
+        self.didUpdateScheduledActivities(from: self.scheduledActivities)
+        
         BridgeSDK.activityManager.updateScheduledActivities(schedules) { (_, _) in
             // Post notification that the schedules were updated.
-            NotificationCenter.default.post(name: .SBAFinishedUpdatingScheduleCache, object: self)
+            NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
+                                            object: self,
+                                            userInfo: [NotificationKey.updatedActivities : schedules])
         }
     }
 }

@@ -53,10 +53,10 @@ extension SBBScheduledActivity {
     
     public static func availablePredicate(from scheduledFrom: Date, to scheduledTo: Date) -> NSPredicate {
         let finishedKey = #keyPath(finishedOn)
-        let finishedPredicate = NSPredicate(format: "%K == nil OR ((%K >= %@) OR (%K < %@))", finishedKey, finishedKey, scheduledFrom as CVarArg, finishedKey, scheduledTo as CVarArg)
+        let finishedPredicate = NSPredicate(format: "%K == nil OR ((%K >= %@) AND (%K < %@))", finishedKey, finishedKey, scheduledFrom as CVarArg, finishedKey, scheduledTo as CVarArg)
         
         let expiredKey = #keyPath(expiresOn)
-        let expiredPredicate = NSPredicate(format: "%K == nil OR ((%K >= %@) OR (%K < %@))", expiredKey, expiredKey, scheduledFrom as CVarArg, expiredKey, scheduledTo as CVarArg)
+        let expiredPredicate = NSPredicate(format: "%K == nil OR ((%K >= %@) AND (%K < %@))", expiredKey, expiredKey, scheduledFrom as CVarArg, expiredKey, scheduledTo as CVarArg)
         
         let scheduledKey = #keyPath(scheduledOn)
         let schedulePredicate = NSPredicate(format: "%K < %@", scheduledKey, scheduledTo as CVarArg)
@@ -75,7 +75,7 @@ extension SBBScheduledActivity {
         
         // Scheduled for this date or prior
         let scheduledKey = #keyPath(scheduledOn)
-        let scheduledThisDayOrBefore = NSPredicate(format: "%K == nil OR %K < %@", scheduledKey, scheduledKey, startOfNextDay as CVarArg)
+        let scheduledThisDayOrBefore = NSPredicate(format: "%K < %@", scheduledKey, startOfNextDay as CVarArg)
         let unfinished = NSCompoundPredicate(notPredicateWithSubpredicate: isFinishedPredicate())
         let finishedOnThisDay = finishedOnDatePredicate(on: date)
         
