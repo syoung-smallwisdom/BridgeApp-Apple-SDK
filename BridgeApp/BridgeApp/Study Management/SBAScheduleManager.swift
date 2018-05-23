@@ -95,20 +95,30 @@ open class SBAScheduleManager: NSObject {
     // MARK: Data source
     
     /// Add an identifier that can be used for mapping this schedule manager to the displayed schedules.
-    lazy public var identifier : String = {
-       return self.activityGroup?.identifier ?? "Today"
-    }()
+    open var identifier : String = "Today"
 
     /// This is an array of the activities fetched by the call to the server in `reloadData`. By default,
     /// this list includes the activities filtered using the `scheduleFilterPredicate`.
     @objc open var scheduledActivities: [SBBScheduledActivity] = []
     
-    
     // MARK: Schedule loading and filtering
     
     /// The activity group associated with this schedule manager. If non-nil, this will be used in setting up
     /// the filtering predicates and finding the "most appropriate" schedule when creating a task path.
-    open var activityGroup : SBAActivityGroup?
+    /// This will get the activity group by getting the currently registered activity group from the shared
+    /// configuration using `self.identifier` as the group identifier.
+    open var activityGroup : SBAActivityGroup? {
+        get {
+            return SBABridgeConfiguration.shared.activityGroup(with: self.identifier)
+        }
+        set {
+            guard let newGroup = newValue else { return }
+            if SBABridgeConfiguration.shared.activityGroup(with: newGroup.identifier) == nil {
+                SBABridgeConfiguration.shared.addMapping(with: newGroup)
+            }
+            self.identifier = newGroup.identifier
+        }
+    }
     
     /// Fetch request objects can be used to make compound fetch requests to retrieve schedules that match
     /// different sets of parameters. For example, a task group might be set up to group a set of tasks
@@ -207,10 +217,10 @@ open class SBAScheduleManager: NSObject {
             
             self.offMainQueue.async {
                 do {
-                    
+                
                     // Fetch the cached schedules.
                     let requests = self.fetchRequests()
-                    var scheduleIdentifiers: [String] = []
+                    var scheduleGuids: [String] = []
                     var schedules: [SBBScheduledActivity] = []
                     
                     try requests.forEach {
@@ -220,9 +230,8 @@ open class SBAScheduleManager: NSObject {
                         }
                         else {
                             fetchedSchedules.forEach {
-                                let guid = $0.scheduleIdentifier ?? $0.guid
-                                if !scheduleIdentifiers.contains(guid) {
-                                    scheduleIdentifiers.append(guid)
+                                if !scheduleGuids.contains($0.guid) {
+                                    scheduleGuids.append($0.guid)
                                     schedules.append($0)
                                 }
                             }

@@ -109,9 +109,15 @@ open class SBABridgeConfiguration {
             do {
                 let decoder = RSDFactory.shared.createJSONDecoder()
                 let mappingObject = try decoder.decode(SBAActivityMappingObject.self, from: clientData)
-                mappingObject.tasks?.forEach { self.taskMap[$0.identifier] = $0 }
-                self.activityGroups = mappingObject.groups ?? []
-                mappingObject.activityList?.forEach { self.activityInfoMap[$0.identifier] = $0 }
+                mappingObject.groups?.forEach {
+                    self.addMapping(with: $0)
+                }
+                mappingObject.activityList?.forEach {
+                    self.addMapping(with: $0)
+                }
+                mappingObject.tasks?.forEach {
+                    self.addMapping(with: $0)
+                }
                 if let studyDuration = mappingObject.studyDuration {
                     self.studyDuration = studyDuration
                 }
@@ -120,6 +126,10 @@ open class SBABridgeConfiguration {
                 debugPrint("Failed to decode the clientData object: \(err)")
             }
         }
+    }
+    
+    public func activityGroup(with identifier: String) -> SBAActivityGroup? {
+        return activityGroups.first(where: { $0.identifier == identifier })
     }
     
     /// Update the mapping by adding the given activity info.
