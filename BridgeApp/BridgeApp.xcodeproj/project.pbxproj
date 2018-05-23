@@ -72,6 +72,7 @@
 		F8A5CE6F20A36B0700E9FD75 /* SBAScheduleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE6E20A36B0700E9FD75 /* SBAScheduleManager.swift */; };
 		F8A5CE9020A3837100E9FD75 /* SBAParticipantManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE8F20A3837100E9FD75 /* SBAParticipantManager.swift */; };
 		F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */; };
+		F8BF02A620B60F730016C343 /* MockActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8BF02A520B60F730016C343 /* MockActivityManager.swift */; };
 		F8C7D3D020927065007490BC /* Symptoms.json in Resources */ = {isa = PBXBuildFile; fileRef = F8C7D3BC20927065007490BC /* Symptoms.json */; };
 		F8C7D3F6209285A8007490BC /* SBASymptomLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */; };
 		F8C7D40D20929AFF007490BC /* SBASymptomLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D40C20929AFF007490BC /* SBASymptomLoggingStepViewController.swift */; };
@@ -209,6 +210,13 @@
 			remoteGlobalIDString = F875575620807E2300235078;
 			remoteInfo = "Research-UnitTest";
 		};
+		F8BF02B320B60F740016C343 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F83B44C12032473D002825AE /* BridgeSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F81BE77820B4951F00EE57D3;
+			remoteInfo = "BridgeSDK-Test";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -292,6 +300,7 @@
 		F8A5CE6E20A36B0700E9FD75 /* SBAScheduleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAScheduleManager.swift; sourceTree = "<group>"; };
 		F8A5CE8F20A3837100E9FD75 /* SBAParticipantManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAParticipantManager.swift; sourceTree = "<group>"; };
 		F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAModuleIdentifier.swift; sourceTree = "<group>"; };
+		F8BF02A520B60F730016C343 /* MockActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockActivityManager.swift; sourceTree = "<group>"; };
 		F8C7D3BC20927065007490BC /* Symptoms.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Symptoms.json; sourceTree = "<group>"; };
 		F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASymptomLoggingStepObject.swift; sourceTree = "<group>"; };
 		F8C7D40C20929AFF007490BC /* SBASymptomLoggingStepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASymptomLoggingStepViewController.swift; sourceTree = "<group>"; };
@@ -463,6 +472,7 @@
 				F83B44D62032473D002825AE /* BridgeSDKTests.xctest */,
 				F83B44D82032473D002825AE /* BridgeSDKIntegration.app */,
 				F83B44DA2032473D002825AE /* BridgeSDKIntegrationTests.xctest */,
+				F8BF02B420B60F740016C343 /* BridgeSDK_Test.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -553,6 +563,7 @@
 		F84B312B207FF9EB0006F2C7 /* Mock Objects */ = {
 			isa = PBXGroup;
 			children = (
+				F8BF02A520B60F730016C343 /* MockActivityManager.swift */,
 			);
 			name = "Mock Objects";
 			sourceTree = "<group>";
@@ -862,6 +873,13 @@
 			remoteRef = F875578B2080850900235078 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		F8BF02B420B60F740016C343 /* BridgeSDK_Test.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = BridgeSDK_Test.framework;
+			remoteRef = F8BF02B320B60F740016C343 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -956,6 +974,7 @@
 				F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */,
 				F8479512207FE3160024A230 /* TrackedSelectionDataSourceTests.swift in Sources */,
 				F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */,
+				F8BF02A620B60F730016C343 /* MockActivityManager.swift in Sources */,
 				F847950F207FE2E20024A230 /* MedicationTrackingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
