@@ -41,6 +41,9 @@ extension Notification.Name {
     /// - note: This message is sent whether or not the user is offline and the server was not reached.
     /// However, if that is the case then the manager will set a timer to try again.
     public static let SBAFinishedUpdatingScheduleCache = Notification.Name(rawValue: "SBAFinishedUpdatingScheduleCache")
+    
+    /// Notification name posted by the `SBAParticipantManager` when this manager has updated the study participant.
+    public static let SBAStudyParticipantUpdated = Notification.Name(rawValue: "SBAStudyParticipantUpdated")
 }
 
 
@@ -52,7 +55,11 @@ public final class SBAParticipantManager : NSObject {
     static public var shared = SBAParticipantManager()
     
     /// The study participant.
-    public private(set) var studyParticipant: SBBStudyParticipant?
+    public private(set) var studyParticipant: SBBStudyParticipant? {
+        didSet {
+            NotificationCenter.default.post(name: .SBAStudyParticipantUpdated, object: self)
+        }
+    }
     
     /// Is the participant authenticated?
     public private(set) var isAuthenticated: Bool = false

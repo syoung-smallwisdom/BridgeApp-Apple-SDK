@@ -65,7 +65,7 @@ open class SBABridgeConfiguration {
     }()
     
     /// Set up BridgeSDK including loading any cached configurations.
-    open func setupBridge(with factory: RSDFactory) {
+    open func setupBridge(with factory: RSDFactory, setupBlock: (()->Void)? = nil) {
         guard !_hasInitialized else { return }
         _hasInitialized = true
         
@@ -77,7 +77,11 @@ open class SBABridgeConfiguration {
         RSDFactory.shared = factory
         let _ = SBAParticipantManager.shared
         
-        BridgeSDK.setup()
+        if let block = setupBlock {
+            block()
+        } else {
+            BridgeSDK.setup()
+        }
         
         if let appConfig = BridgeSDK.appConfig() {
             setup(with: appConfig)
