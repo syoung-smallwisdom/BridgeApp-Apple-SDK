@@ -65,7 +65,7 @@ open class SBABridgeConfiguration {
     }()
     
     /// Set up BridgeSDK including loading any cached configurations.
-    open func setupBridge(with factory: RSDFactory) {
+    open func setupBridge(with factory: RSDFactory, setupBlock: (()->Void)? = nil) {
         guard !_hasInitialized else { return }
         _hasInitialized = true
         
@@ -77,7 +77,11 @@ open class SBABridgeConfiguration {
         RSDFactory.shared = factory
         let _ = SBAParticipantManager.shared
         
-        BridgeSDK.setup()
+        if let block = setupBlock {
+            block()
+        } else {
+            BridgeSDK.setup()
+        }
         
         if let appConfig = BridgeSDK.appConfig() {
             setup(with: appConfig)
@@ -105,9 +109,15 @@ open class SBABridgeConfiguration {
             do {
                 let decoder = RSDFactory.shared.createJSONDecoder()
                 let mappingObject = try decoder.decode(SBAActivityMappingObject.self, from: clientData)
-                mappingObject.tasks?.forEach { self.taskMap[$0.identifier] = $0 }
-                self.activityGroups = mappingObject.groups ?? []
-                mappingObject.activityList?.forEach { self.activityInfoMap[$0.identifier] = $0 }
+                mappingObject.groups?.forEach {
+                    self.addMapping(with: $0)
+                }
+                mappingObject.activityList?.forEach {
+                    self.addMapping(with: $0)
+                }
+                mappingObject.tasks?.forEach {
+                    self.addMapping(with: $0)
+                }
                 if let studyDuration = mappingObject.studyDuration {
                     self.studyDuration = studyDuration
                 }
@@ -116,6 +126,10 @@ open class SBABridgeConfiguration {
                 debugPrint("Failed to decode the clientData object: \(err)")
             }
         }
+    }
+    
+    public func activityGroup(with identifier: String) -> SBAActivityGroup? {
+        return activityGroups.first(where: { $0.identifier == identifier })
     }
     
     /// Update the mapping by adding the given activity info.

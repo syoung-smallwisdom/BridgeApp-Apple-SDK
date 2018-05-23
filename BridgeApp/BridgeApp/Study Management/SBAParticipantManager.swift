@@ -41,6 +41,9 @@ extension Notification.Name {
     /// - note: This message is sent whether or not the user is offline and the server was not reached.
     /// However, if that is the case then the manager will set a timer to try again.
     public static let SBAFinishedUpdatingScheduleCache = Notification.Name(rawValue: "SBAFinishedUpdatingScheduleCache")
+    
+    /// Notification name posted by the `SBAParticipantManager` when this manager has updated the study participant.
+    public static let SBAStudyParticipantUpdated = Notification.Name(rawValue: "SBAStudyParticipantUpdated")
 }
 
 
@@ -52,7 +55,11 @@ public final class SBAParticipantManager : NSObject {
     static public var shared = SBAParticipantManager()
     
     /// The study participant.
-    public private(set) var studyParticipant: SBBStudyParticipant?
+    public private(set) var studyParticipant: SBBStudyParticipant? {
+        didSet {
+            NotificationCenter.default.post(name: .SBAStudyParticipantUpdated, object: self)
+        }
+    }
     
     /// Is the participant authenticated?
     public private(set) var isAuthenticated: Bool = false
@@ -83,9 +90,15 @@ public final class SBAParticipantManager : NSObject {
             }
         }
         
+        // Add an observer that a schedule manager has updated the scheduled activities. Often updating the
+        // schedules will change the available "next" schedule.
+        NotificationCenter.default.addObserver(forName: .SBADidSendUpdatedScheduledActivities, object: nil, queue: .main) { (notification) in
+            self.reloadSchedules()
+        }
+        
         // Add an observer the app entering the foreground to check for whether or not "today" is still valid.
         NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) { (notification) in
-            self.reloadSchedules()
+            self.reloadIfTodayChanged()
         }
     }
     
@@ -124,9 +137,26 @@ public final class SBAParticipantManager : NSObject {
     /// Reload the schedules. This is triggered automatically by a change to data groups and when returning
     /// from the background.
     public func reloadSchedules() {
-        guard shouldContinueLoading() else { return }
-
-        let toDate = Date().addingNumberOfDays(BridgeSDK.bridgeInfo.cacheDaysAhead + 1).startOfDay()
+        DispatchQueue.main.async {
+            self.reload(allFuture: true)
+        }
+    }
+    
+    private func reloadIfTodayChanged() {
+        DispatchQueue.main.async {
+            self.reload(allFuture: false)
+        }
+    }
+    
+    private func reload(allFuture: Bool) {
+        guard (allFuture || Calendar.current.isDateInToday(self.today)),
+            shouldContinueLoading()
+            else {
+                return
+        }
+        
+        let daysIntoFuture = allFuture ? BridgeSDK.bridgeInfo.cacheDaysAhead + 1 : 1
+        let toDate = Date().addingNumberOfDays(daysIntoFuture).startOfDay()
         var fromDate = self.today
         var cachingPolicy: SBBCachingPolicy = .fallBackToCached
         self.today = Date().startOfDay()
