@@ -67,6 +67,11 @@ public final class SBAParticipantManager : NSObject {
     /// The "first" day that the participant performed an activity for the study.
     public private(set) var dayOne: Date?
     
+    /// Is this a test user?
+    internal var isTestUser: Bool {
+        return self.studyParticipant?.dataGroups?.contains("test_user") ?? false
+    }
+    
     /// The date when the user started the study. By default, this will check the `dayOne` value and use
     /// `today` if that is not set.
     public var startStudy: Date {
