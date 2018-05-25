@@ -49,8 +49,8 @@ extension Notification.Name {
 /// valid for today and the most recent finished activity (if any) for each activity identifier where the
 /// "activity identifier" refers to an `SBBActivity` object's associated `SBAActivityReference`.
 ///
-open class SBAScheduleManager: NSObject {
-    
+open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
+
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
         case previousActivities, updatedActivities
@@ -317,17 +317,66 @@ open class SBAScheduleManager: NSObject {
         return Localization.localizedStringWithFormatKey("ACTIVITY_SCHEDULE_MESSAGE_%@", scheduledTime)
     }
     
-    /// Get the scheduled activity that is associated with this schedule identifier.
+    /// Get the schema info associated with the given activity identifier. By default, this looks at the
+    /// shared bridge configuration's schema reference map.
+    open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
+        return SBABridgeConfiguration.shared.schemaReferenceMap[activityIdentifier]
+    }
+    
+    /// Get the task for this activity identifier. By default, this will query the bridge configuration.
+    open func task(for activityIdentifier: String) -> RSDTask? {
+        return SBABridgeConfiguration.shared.taskMap[activityIdentifier]
+    }
+    
+    /// Get the scheduled activity that is associated with this schedule identifier and task result.
     ///
-    /// - parameter scheduleIdentifier: The schedule identifier that was used to start the task.
-    /// - returns: The schedule associated with this task view controller (if available).
-    open func scheduledActivity(with scheduleIdentifier: String?) -> SBBScheduledActivity? {
-        guard let scheduleIdentifier = scheduleIdentifier else { return nil }
+    /// For the case where this is a combo task that includes multiple schemas (for example, medication
+    /// tracking and finger tapping) then we want to preference the schedule associated with the **schema**
+    /// over the schedule that was used to trigger the task. The default behavior of this method, therefore
+    /// is to look for a schema and return the schedule associated with that schema, if found.
+    ///
+    /// - parameters:
+    ///     - taskResult: The task result for this task, subtask, or section.
+    ///     - scheduleIdentifier: The schedule identifier that was used to start the task.
+    /// - returns: The schedule associated with this task view controller (if found).
+    open func scheduledActivity(for taskResult: RSDTaskResult, scheduleIdentifier: String?) -> SBBScheduledActivity? {
+        
         let todayPredicate = SBBScheduledActivity.availableTodayPredicate()
-        return self.scheduledActivities.rsd_last(where: {
-            $0.scheduleIdentifier == scheduleIdentifier &&
+        
+        // Look for a schedule that matches the given scheduleIdentifier.
+        let guidSchedule: SBBScheduledActivity? = {
+            guard let scheduleGuid = scheduleIdentifier else { return nil }
+            if let schedule = self.scheduledActivities.first(where: { $0.guid == scheduleGuid }) {
+                return schedule
+            }
+            else {
+                let activityGuid = SBBScheduledActivity.activityGuid(from: scheduleGuid)
+                return self.scheduledActivities.rsd_last(where: {
+                    $0.activity.guid == activityGuid && todayPredicate.evaluate(with: $0)
+                })
+            }
+        }()
+        
+        // We only care about task results that have a matching schema otherwise, return the guid schedule.
+        guard let schema = taskResult.schemaInfo ?? schemaInfo(for: taskResult.identifier),
+            let schemaIdentifier = schema.schemaIdentifier else {
+                return guidSchedule
+        }
+        
+        // Look for a schedule that matches the given schema identifier.
+        let schemaSchedule = self.scheduledActivities.rsd_last(where: {
+            $0.activityIdentifier == schemaIdentifier &&
             todayPredicate.evaluate(with: $0)
         })
+        
+        // If the found schema-based schedule has the same activity guid as the guid-based schedule,
+        // then return the guid schedule.
+        if schemaSchedule == nil || schemaSchedule!.activity.guid == guidSchedule?.activity.guid {
+            return guidSchedule
+        }
+        else {
+            return schemaSchedule
+        }
     }
     
     /// Is the given task info completed for the given date?
@@ -416,11 +465,12 @@ open class SBAScheduleManager: NSObject {
                 taskPath = RSDTaskPath(taskInfo: taskInfoStep)
             }
         }
-        else if let task = SBABridgeConfiguration.shared.taskMap[taskInfo.identifier] {
+        else if let task = self.task(for: taskInfo.identifier) {
             // Copy if option available.
             if let copyableTask = task as? RSDCopyTask,
-                let schema = SBABridgeConfiguration.shared.schemaReferenceMap[taskInfo.identifier] {
-                taskPath = RSDTaskPath(task: copyableTask.copy(with: taskInfo.identifier, schemaInfo: schema.schemaInfo))
+                task.schemaInfo == nil,
+                let schema = self.schemaInfo(for: taskInfo.identifier) {
+                taskPath = RSDTaskPath(task: copyableTask.copy(with: taskInfo.identifier, schemaInfo: schema))
             }
             else {
                 taskPath = RSDTaskPath(task: task)
@@ -437,7 +487,7 @@ open class SBAScheduleManager: NSObject {
         }
         
         // Assign values to the task path from the schedule.
-        taskPath.scheduleIdentifier = schedule?.scheduleIdentifier
+        taskPath.scheduleIdentifier = schedule?.guid
         
         // Set up the data groups tracking rule.
         if let participant = SBAParticipantManager.shared.studyParticipant {
@@ -453,40 +503,103 @@ open class SBAScheduleManager: NSObject {
         return (taskPath, schedule, clientData)
     }
     
-    /// subclass the cohorts tracking rule so that we can use casting to check for an existing
+    /// Subclass the cohorts tracking rule so that we can use casting to check for an existing
     /// tracking rule.
     class DataGroupsTrackingRule : RSDCohortTrackingRule {
     }
     
-    // TODO: syoung 05/10/2018 - Implement handling for uploading archives and marking the schedule as finished.
-
     // MARK: RSDTaskViewControllerDelegate
     
+    /// Call from the view controller that is used to display the task when the task is finished.
+    ///
     /// - note: This method does not dismiss the task.
     open func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
-        // TODO: Implement any cleanup of the task. syoung 05/17/2018
+        if reason != .completed {
+            // If the task finished with an error or discarded results, then delete the output directory.
+            taskController.taskPath.deleteOutputDirectory()
+            if let err = error {
+                print("WARNING! Task failed: \(err)")
+            }
+        }
     }
     
+    /// Call from the view controller that is used to display the task when the task is ready to save.
     open func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
-        guard let scheduleIdentifier = taskPath.scheduleIdentifier,
-            let schedule = self.scheduledActivity(with: scheduleIdentifier)
-            else {
-                return
+        
+        // Archive and upload results. This is run on a background queue.
+        taskPath.archiveResults(with: self) {
+            // TODO: Implement completion handling if any?? syoung 05/24/2018
         }
         
-        // TODO: syoung 05/18/2018 Archive and upload result
-        
-        // Mark the schedule as finished.
-        schedule.startedOn = taskPath.result.startDate
-        schedule.finishedOn = taskPath.result.endDate
-        self.sendUpdated(for: [schedule])
+        // Update the schedule on the server but only if the survey was not ended early
+        if !taskPath.didExitEarly {
+            self.offMainQueue.async {
+                self.updateDataGroups(for: taskPath)
+                self.updateSchedules(for: taskPath)
+            }
+        }
     }
     
+    /// Do nothing.
     open func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
         return nil
     }
     
     // MARK: Upload to server
+    
+    /// Update the data groups. By default, this will look for changes on the shared `DataGroupsTrackingRule`.
+    open func updateDataGroups(for taskPath: RSDTaskPath) {
+        let rules = SBAFactory.shared.trackingRules.remove(where: { $0 is DataGroupsTrackingRule})
+        guard let rule = rules.first as? DataGroupsTrackingRule,
+            rule.initialCohorts != rule.currentCohorts
+            else {
+                return
+        }
+        
+        BridgeSDK.participantManager.updateDataGroups(withGroups: rule.currentCohorts) { (_, error) in
+            if let err = error {
+                print("WARNING! Failed to update the data groups: \(err)")
+            }
+        }
+    }
+    
+    /// Update the values on the scheduled activity. By default, this will recurse through the task path
+    /// and its children, looking for a schedule associated with the subtask path.
+    open func updateSchedules(for taskPath: RSDTaskPath) {
+        guard taskPath.parentPath == nil else {
+            assertionFailure("This method should **only** be called for the top-level task path.")
+            return
+        }
+        
+        // Recursively get and update all the schedules in this task path.
+        var schedules = [SBBScheduledActivity]()
+        func appendSchedule(for path: RSDTaskPath) {
+            guard let schedule = self.getAndUpdateSchedule(for: path) else {
+                return
+            }
+            schedules.append(schedule)
+            path.childPaths.enumerated().forEach {
+                appendSchedule(for: $0.element.value)
+            }
+        }
+        appendSchedule(for: taskPath)
+
+        self.sendUpdated(for: schedules)
+    }
+    
+    /// For each schedule that this task modifies, mark it as completed.
+    ///
+    /// - note: Override this method to add custom `clientData` objects to the schedule.
+    open func getAndUpdateSchedule(for taskPath: RSDTaskPath) -> SBBScheduledActivity? {
+        guard let schedule = self.scheduledActivity(for: taskPath.result, scheduleIdentifier: taskPath.scheduleIdentifier)
+            else {
+                return nil
+        }
+        
+        schedule.startedOn = taskPath.result.startDate
+        schedule.finishedOn = taskPath.result.endDate
+        return schedule
+    }
     
     /// Send message to Bridge server to update the given schedules. This includes both the task
     /// that was completed and any tasks that were performed as a requirement of completion of the
@@ -503,5 +616,110 @@ open class SBAScheduleManager: NSObject {
                                             userInfo: [NotificationKey.updatedActivities : schedules])
         }
     }
+    
+    
+    // MARK: RSDDataArchiveManager
+    
+    /// Should the task result archiving be continued if there was an error adding data to the current
+    /// archive? Default behavior is to flush the archive and then return `false`.
+    ///
+    /// - parameters:
+    ///     - archive: The current archive being built.
+    ///     - error: The encoding error that was thrown.
+    /// - returns: Whether or not archiving should continue. Default = `false`.
+    open func shouldContinueOnFail(for archive: RSDDataArchive, error: Error) -> Bool {
+        debugPrint("ERROR! Failed to archive results: \(error)")
+        // Flush the archive.
+        (archive as? SBBDataArchive)?.remove()
+        return false
+    }
+    
+    /// When archiving a task result, it is possible that the results of a task need to be split into
+    /// multiple archives -- for example, when combining two or more activities within the same task. If the
+    /// task result components should be added to the current archive, then the manager should return
+    /// `currentArchive` as the response. If the task result *for this section* should be ignored, then the
+    /// manager should return `nil`. This allows the application to only upload data that is needed by the
+    /// study, and not include information that is ignored by *this* study, but may be of interest to other
+    /// researchers using the same task protocol.
+    open func dataArchiver(for taskResult: RSDTaskResult, scheduleIdentifier: String?, currentArchive: RSDDataArchive?) -> RSDDataArchive? {
+
+        // Look for a schema info associated with this portion of the task result. If not found, then
+        // return the current archive.
+        let schema = taskResult.schemaInfo ?? self.schemaInfo(for: taskResult.identifier)
+        guard (currentArchive == nil) || (schema != nil) else {
+            return currentArchive
+        }
+        
+        let schemaInfo = schema ?? RSDSchemaInfoObject(identifier: taskResult.identifier, revision: 1)
+        let archiveIdentifier = schemaInfo.schemaIdentifier ?? taskResult.identifier
+        let schedule = self.scheduledActivity(for: taskResult, scheduleIdentifier: scheduleIdentifier)
+        
+        if let inputArchive = currentArchive as? SBAScheduledActivityArchive,
+            ((inputArchive.identifier == archiveIdentifier) ||
+             (inputArchive.schedule?.activity.guid == schedule?.activity.guid)) {
+            // If the identifiers or activity guids are the same, then return the current archive.
+            return inputArchive
+        }
+        else {
+            // Create a new archive.
+            return SBAScheduledActivityArchive(identifier: archiveIdentifier, schemaInfo: schemaInfo, schedule: schedule)
+        }
+    }
+    
+    /// Finalize the upload of all the created archives.
+    public func encryptAndUpload(taskPath: RSDTaskPath, dataArchives: [RSDDataArchive], completion: @escaping (() -> Void)) {
+        #if DEBUG
+        dataArchives.forEach {
+            guard let archive = $0 as? SBAScheduledActivityArchive else { return }
+            self.copyTestArchive(archive: archive)
+        }
+        #endif
+        let archives = dataArchives.compactMap { $0 as? SBBDataArchive }
+        SBBDataArchive.encryptAndUploadArchives(archives)
+        completion()
+    }
+    
+    /// By default, if an archive fails, the error is printed and that's all that is done.
+    open func handleArchiveFailure(taskPath: RSDTaskPath, error: Error, completion: @escaping (() -> Void)) {
+        debugPrint("WARNING! Failed to archive \(taskPath.identifier). \(error)")
+        completion()
+    }
+    
+    #if DEBUG
+    private func copyTestArchive(archive: SBAScheduledActivityArchive) {
+        guard SBAParticipantManager.shared.isTestUser else { return }
+        do {
+            if !archive.isCompleted {
+                try archive.complete()
+            }
+            let fileManager = FileManager.default
+            
+            let outputDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let dirURL = outputDirectory.appendingPathComponent("archives", isDirectory: true)
+            try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true, attributes: nil)
+            
+            // Scrub non-alphanumeric characters from the identifer
+            var characterSet = CharacterSet.alphanumerics
+            characterSet.invert()
+            var filename = archive.identifier
+            while let range = filename.rangeOfCharacter(from: characterSet) {
+                filename.removeSubrange(range)
+            }
+            filename.append("-")
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HHmm"
+            let dateString = dateFormatter.string(from: Date())
+            filename.append(dateString)
+            let debugURL = dirURL.appendingPathComponent(filename, isDirectory: false).appendingPathExtension("zip")
+            try fileManager.copyItem(at: archive.unencryptedURL, to: debugURL)
+            debugPrint("Copied archive to \(debugURL)")
+            
+        } catch let err {
+            debugPrint("Failed to copy archive: \(err)")
+        }
+    }
+    #endif
 }
+
 

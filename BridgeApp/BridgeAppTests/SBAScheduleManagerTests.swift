@@ -326,7 +326,7 @@ class SBAScheduleManagerTests: XCTestCase {
         XCTAssertNotNil(clientData)
         XCTAssertEqual(clientData as? NSDictionary, expectedClientData as NSDictionary)
         XCTAssertEqual(taskPath.taskInfo as? SBBTaskReference, expectedSchedule.activity.task)
-        XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.scheduleIdentifier)
+        XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.guid)
     }
     
     func testInstantiateTaskPath_ClientDataOnCurrentRun_NoGroup() {
@@ -366,7 +366,7 @@ class SBAScheduleManagerTests: XCTestCase {
         XCTAssertNotNil(clientData)
         XCTAssertEqual(clientData as? NSDictionary, expectedClientData as NSDictionary)
         XCTAssertEqual(taskPath.taskInfo as? SBBTaskReference, expectedSchedule.activity.task)
-        XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.scheduleIdentifier)
+        XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.guid)
     }
     
     func testInstantiateTaskPath_ClientDataOnPreviousRun_DifferentGroup() {
@@ -412,7 +412,7 @@ class SBAScheduleManagerTests: XCTestCase {
         XCTAssertNotNil(clientData)
         XCTAssertEqual(clientData as? NSDictionary, expectedClientData as NSDictionary)
         XCTAssertEqual(taskPath.taskInfo as? SBBTaskReference, expectedSchedule.activity.task)
-        XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.scheduleIdentifier)
+        XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.guid)
         
     }
     
@@ -615,12 +615,14 @@ class TestScheduleManager : SBAScheduleManager {
         updateFailed_error = error
         super.updateFailed(error)
         updateFinishedBlock?()
+        updateFinishedBlock = nil
     }
     
     override func update(fetchedActivities: [SBBScheduledActivity]) {
         update_fetchedActivities = fetchedActivities
         super.update(fetchedActivities: fetchedActivities)
         updateFinishedBlock?()
+        updateFinishedBlock = nil
     }
     
     var cachedSchedules: [SBBScheduledActivity]?
