@@ -564,7 +564,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     }
     
     /// Update the values on the scheduled activity. By default, this will recurse through the task path
-    /// and it's children, looking for a schedule associated with the subtask path.
+    /// and its children, looking for a schedule associated with the subtask path.
     open func updateSchedules(for taskPath: RSDTaskPath) {
         guard taskPath.parentPath == nil else {
             assertionFailure("This method should **only** be called for the top-level task path.")
@@ -635,7 +635,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     }
     
     /// When archiving a task result, it is possible that the results of a task need to be split into
-    /// multiple archives; for example, when combining two or more activities within the same task. If the
+    /// multiple archives -- for example, when combining two or more activities within the same task. If the
     /// task result components should be added to the current archive, then the manager should return
     /// `currentArchive` as the response. If the task result *for this section* should be ignored, then the
     /// manager should return `nil`. This allows the application to only upload data that is needed by the
