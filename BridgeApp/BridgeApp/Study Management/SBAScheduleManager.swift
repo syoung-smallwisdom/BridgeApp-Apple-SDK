@@ -272,6 +272,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     ///
     /// - parameter scheduledActivities: The list of activities returned by the service.
     open func update(fetchedActivities: [SBBScheduledActivity]) {
+        //print("\n\n--- Update called for \(self.identifier) with:\n\(fetchedActivities)")
         if (fetchedActivities != self.scheduledActivities) {
             self.scheduledActivities = fetchedActivities
             let previous = self.scheduledActivities
@@ -518,7 +519,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
             // If the task finished with an error or discarded results, then delete the output directory.
             taskController.taskPath.deleteOutputDirectory()
             if let err = error {
-                print("WARNING! Task failed: \(err)")
+                debugPrint("WARNING! Task failed: \(err)")
             }
         }
     }
@@ -526,17 +527,17 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     /// Call from the view controller that is used to display the task when the task is ready to save.
     open func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
         
-        // Archive and upload results. This is run on a background queue.
-        taskPath.archiveResults(with: self) {
-            // TODO: Implement completion handling if any?? syoung 05/24/2018
-        }
-        
-        // Update the schedule on the server but only if the survey was not ended early
+        // Update the schedule on the server but only if the survey was not ended early. In that case, only
+        // send the archive but do not mark the task as finished or update the data groups.
         if !taskPath.didExitEarly {
             self.offMainQueue.async {
                 self.updateDataGroups(for: taskPath)
                 self.updateSchedules(for: taskPath)
+                self.archiveAndUpload(taskPath: taskPath)
             }
+        }
+        else {
+            self.archiveAndUpload(taskPath: taskPath)
         }
     }
     
@@ -558,7 +559,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         
         BridgeSDK.participantManager.updateDataGroups(withGroups: rule.currentCohorts) { (_, error) in
             if let err = error {
-                print("WARNING! Failed to update the data groups: \(err)")
+                debugPrint("WARNING! Failed to update the data groups: \(err)")
             }
         }
     }
@@ -584,7 +585,11 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         }
         appendSchedule(for: taskPath)
 
-        self.sendUpdated(for: schedules)
+        // Send message to server that the scheduled activites were updated.
+        self.sendUpdated(for: schedules, taskPath: taskPath)
+        
+        // Post message to self that the scheduled activities were updated.
+        self.didUpdateScheduledActivities(from: self.scheduledActivities)
     }
     
     /// For each schedule that this task modifies, mark it as completed.
@@ -604,12 +609,11 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     /// Send message to Bridge server to update the given schedules. This includes both the task
     /// that was completed and any tasks that were performed as a requirement of completion of the
     /// primary task (such as a required one-time survey).
-    open func sendUpdated(for schedules: [SBBScheduledActivity]) {
-        
-        // Post message to self that the scheduled activities were updated.
-        self.didUpdateScheduledActivities(from: self.scheduledActivities)
-        
+    open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
         BridgeSDK.activityManager.updateScheduledActivities(schedules) { (_, _) in
+            
+            //print("\n\n--- Finished updating schedules: \(schedules)")
+            
             // Post notification that the schedules were updated.
             NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
                                             object: self,
@@ -617,6 +621,17 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         }
     }
     
+    /// Archive and update the task results.
+    private func archiveAndUpload(taskPath: RSDTaskPath) {
+        // Archive and upload results.
+        let uuid = UUID()
+        self._retainedPaths[uuid] = taskPath
+        taskPath.archiveResults(with: self) {
+            self._retainedPaths[uuid] = nil
+        }
+    }
+    
+    private var _retainedPaths: [UUID : RSDTaskPath] = [:]
     
     // MARK: RSDDataArchiveManager
     
@@ -721,5 +736,3 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     }
     #endif
 }
-
-

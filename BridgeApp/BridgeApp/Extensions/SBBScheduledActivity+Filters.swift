@@ -51,6 +51,21 @@ extension SBBScheduledActivity {
         return NSPredicate(day: date, dateKey: #keyPath(expiresOn))
     }
     
+    public static func notFinishedAvailableNowPredicate() -> NSPredicate {
+        let now = Date()
+        
+        let finishedKey = #keyPath(finishedOn)
+        let notFinishedPredicate = NSPredicate(format: "%K == nil", finishedKey)
+        
+        let expiredKey = #keyPath(expiresOn)
+        let expiredPredicate = NSPredicate(format: "%K == nil OR (%K >= %@)", expiredKey, expiredKey, now as CVarArg)
+        
+        let scheduledKey = #keyPath(scheduledOn)
+        let schedulePredicate = NSPredicate(format: "%K < %@", scheduledKey, now as CVarArg)
+        
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [schedulePredicate, notFinishedPredicate, expiredPredicate])
+    }
+    
     public static func availablePredicate(from scheduledFrom: Date, to scheduledTo: Date) -> NSPredicate {
         let finishedKey = #keyPath(finishedOn)
         let finishedPredicate = NSPredicate(format: "%K == nil OR ((%K >= %@) AND (%K < %@))", finishedKey, finishedKey, scheduledFrom as CVarArg, finishedKey, scheduledTo as CVarArg)
@@ -151,7 +166,12 @@ extension SBBScheduledActivity {
     }
     
     public static func finishedOnSortDescriptor(ascending: Bool) -> NSSortDescriptor {
-        let finishedKey = #keyPath(finishedOn)
-        return NSSortDescriptor(key: finishedKey, ascending: ascending)
+        let key = #keyPath(finishedOn)
+        return NSSortDescriptor(key: key, ascending: ascending)
+    }
+    
+    public static func scheduledOnSortDescriptor(ascending: Bool) -> NSSortDescriptor {
+        let key = #keyPath(scheduledOn)
+        return NSSortDescriptor(key: key, ascending: ascending)
     }
 }
