@@ -431,9 +431,15 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         
         // Set up predicates.
         var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
-        if let guid = (activityGroup ?? self.activityGroup)?.schedulePlanGuid(for: taskInfo.identifier) {
-            taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                taskPredicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
+        if let group = (activityGroup ?? self.activityGroup) {
+            if let guid = group.schedulePlanGuid {
+                taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                    taskPredicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
+            }
+            else if let guid = group.activityGuidMap?[taskInfo.identifier] {
+                taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                    taskPredicate, SBBScheduledActivity.activityGuidPredicate(with: guid)])
+            }
         }
 
         // Get the schedule.

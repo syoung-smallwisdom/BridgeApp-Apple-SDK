@@ -81,6 +81,7 @@
 		F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D4152092CF36007490BC /* UIColor+BridgeKeyNames.swift */; };
 		F8E4A4EF20A420380046577B /* SBAScheduleManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4A4EE20A420380046577B /* SBAScheduleManagerTests.swift */; };
 		F8E4A4FB20A4D9F00046577B /* JSONDecoder+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4A4FA20A4D9F00046577B /* JSONDecoder+Utilities.swift */; };
+		F8F063C320BF45C700DB7D9C /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BF02B420B60F740016C343 /* BridgeSDK_Test.framework */; };
 		F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7241D203D007800AC0E5B /* SurveyTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -328,6 +329,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8F063C320BF45C700DB7D9C /* BridgeSDK_Test.framework in Frameworks */,
 				F83B44AF2032467D002825AE /* BridgeApp.framework in Frameworks */,
 				F875578D2080850900235078 /* Research_UnitTest.framework in Frameworks */,
 			);

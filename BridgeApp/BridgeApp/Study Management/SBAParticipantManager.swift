@@ -261,7 +261,7 @@ public final class SBAParticipantManager : NSObject {
     /// Convenience method for wrapping the call to BridgeSDK.
     fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date) {
         let pingDate = Date()
-        print("\n\n---Fetch schedules from:\(fromDate) to:\(toDate)")
+        //print("\n\n---Fetch schedules from:\(fromDate) to:\(toDate)")
         
         BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .fallBackToCached) { (obj, error) in
             print("\n\n---Fetch Results pingDate:\(pingDate) from:\(fromDate) to:\(toDate) schedules:\(String(describing: obj))")

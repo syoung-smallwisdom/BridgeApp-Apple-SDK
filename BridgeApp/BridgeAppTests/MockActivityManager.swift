@@ -36,7 +36,7 @@ import Foundation
 
 class MockActivityManager : NSObject, SBBActivityManagerProtocol {
     
-    var schedules = [SBBScheduledActivity]()
+    var schedules = Array<SBBScheduledActivity>()
     
     var finishedPersistentSchedules = [SBBScheduledActivity]()
     
@@ -48,11 +48,25 @@ class MockActivityManager : NSObject, SBBActivityManagerProtocol {
         let schedulePlanGuid : String
     }
     
+    func createTaskGroup(_ identifier: String, _ activityIdentifiers: [String], _ schedulePlanGuid: String? = nil,_ activityGuidMap: [String : String]? = nil) -> SBAActivityGroupObject {
+        let group = SBAActivityGroupObject(identifier: identifier,
+                                           title: nil,
+                                           journeyTitle: nil,
+                                           image: nil,
+                                           activityIdentifiers: activityIdentifiers.map { RSDIdentifier(rawValue: $0) },
+                                           notificationIdentifier: nil,
+                                           schedulePlanGuid: schedulePlanGuid,
+                                           activityGuidMap: activityGuidMap)
+        SBABridgeConfiguration.shared.addMapping(with: group)
+        return group
+    }
+    
     public func createTaskSchedule(with identifier: RSDIdentifier, scheduledOn: Date, expiresOn: Date?, finishedOn: Date?, clientData: SBBJSONValue?, schedulePlanGuid: String?, activityGuid: String?) -> SBBScheduledActivity {
         
         let schedule = self.createSchedule(with: identifier, scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData, schedulePlanGuid: schedulePlanGuid, activityGuid: activityGuid, activityType: "task")
         schedule.activity.task = SBBTaskReference(dictionaryRepresentation: [ "identifier" : identifier.stringValue ])
         
+        schedules.append(schedule)
         return schedule
     }
     
@@ -66,6 +80,7 @@ class MockActivityManager : NSObject, SBBActivityManagerProtocol {
             "guid" : guid,
             "href" : "http://example.org/\(guid)"])
         
+        schedules.append(schedule)
         return schedule
     }
     
@@ -80,6 +95,11 @@ class MockActivityManager : NSObject, SBBActivityManagerProtocol {
                 // Return the matching guid map or create if nil
                 return guids.first(where: { $0.activityGuid == guid }) ??
                     GuidMap(identifier: identifier, activityGuid: guid, schedulePlanGuid: UUID().uuidString)
+            }
+            else if let guid = schedulePlanGuid {
+                // Return the matching identifier map or create if nil
+                return guids.first(where: { $0.identifier == identifier && guid == $0.schedulePlanGuid }) ??
+                    GuidMap(identifier: identifier, activityGuid: UUID().uuidString, schedulePlanGuid: guid)
             }
             else {
                 // Return the matching identifier map or create if nil
@@ -127,6 +147,7 @@ class MockActivityManager : NSObject, SBBActivityManagerProtocol {
         newSchedule.activity.survey = schedule.activity.survey?.copy(with: activityId)
         newSchedule.activity.compoundActivity = schedule.activity.compoundActivity?.copy(with: activityId)
         
+        schedules.append(newSchedule)
         return newSchedule
     }
     
@@ -141,12 +162,11 @@ class MockActivityManager : NSObject, SBBActivityManagerProtocol {
         offMainQueue.async {
             
             // add a new schedule for the finished persistent schedules.
-            let newSchedules = self.finishedPersistentSchedules.compactMap { self.createPersistentSchedule(from: $0) }
-            self.schedules.append(contentsOf: newSchedules)
+            let _ = self.finishedPersistentSchedules.compactMap { self.createPersistentSchedule(from: $0) }
             self.finishedPersistentSchedules.removeAll()
             
             let predicate = SBBScheduledActivity.availablePredicate(from: scheduledFrom, to: scheduledTo)
-            let filtered = self.schedules.filter { predicate.evaluate(with: $0) }
+            let filtered = Array(self.schedules.filter { predicate.evaluate(with: $0) })
             completion(filtered, nil)
         }
         return URLSessionTask()

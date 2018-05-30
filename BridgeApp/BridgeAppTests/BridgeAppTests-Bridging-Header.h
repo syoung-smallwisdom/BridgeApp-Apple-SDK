@@ -32,3 +32,4 @@
 //
 
 @import Research_UnitTest;
+@import BridgeSDK_Test;

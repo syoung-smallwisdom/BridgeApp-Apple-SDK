@@ -238,6 +238,49 @@ class ActivityReferenceTests: XCTestCase {
         }
     }
     
+    func testActivityGroup2_Codable() {
+        
+    let json = """
+            {
+                "identifier": "foo",
+                "title": "Title",
+                "journeyTitle": "Journey title",
+                "detail": "A detail about the object",
+                "imageSource": "fooImage",
+                "activityIdentifiers": ["taskA", "taskB", "taskC"],
+                "notificationIdentifier": "scheduleFoo",
+                "activityGuidMap": {
+                                     "taskA":"ababab12-3456-7890",
+                                     "taskB":"cdcdcd12-3456-7890",
+                                     "taskC":"efefef12-3456-7890"
+                                     }
+            }
+            """.data(using: .utf8)! // our data in native (JSON) format
+        
+        do {
+            let object = try decoder.decode(SBAActivityGroupObject.self, from: json)
+            
+            XCTAssertEqual(object.identifier, "foo")
+            XCTAssertEqual(object.title, "Title")
+            XCTAssertEqual(object.journeyTitle, "Journey title")
+            XCTAssertEqual(object.detail, "A detail about the object")
+            XCTAssertEqual(object.imageSource?.imageName, "fooImage")
+            let expectedIdentifiers: [RSDIdentifier] = ["taskA", "taskB", "taskC"]
+            XCTAssertEqual(object.activityIdentifiers, expectedIdentifiers)
+            XCTAssertEqual(object.notificationIdentifier, "scheduleFoo")
+            let expectedMap = [
+                "taskA":"ababab12-3456-7890",
+                "taskB":"cdcdcd12-3456-7890",
+                "taskC":"efefef12-3456-7890"
+            ]
+            XCTAssertEqual(object.activityGuidMap, expectedMap)
+            
+        } catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
+    
     func testActivityGroup_Codable_Default() {
         
         // Test that decoding a default object without any nullable proprties doesn't fail.
