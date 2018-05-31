@@ -64,9 +64,6 @@ public final class SBAParticipantManager : NSObject {
     /// Is the participant authenticated?
     public private(set) var isAuthenticated: Bool = false
     
-    /// The "first" day that the participant performed an activity for the study.
-    public private(set) var dayOne: Date?
-    
     /// Is this a test user?
     internal var isTestUser: Bool {
         return self.studyParticipant?.dataGroups?.contains("test_user") ?? false
@@ -82,50 +79,76 @@ public final class SBAParticipantManager : NSObject {
         super.init()
         
         // Add an observer for changes to the study participant.
-        NotificationCenter.default.addObserver(forName: .sbbUserSessionUpdated, object: nil, queue: .main) { (notification) in
+        NotificationCenter.default.addObserver(forName: .sbbUserSessionUpdated, object: nil, queue: self.updateQueue) { (notification) in
             guard let info = notification.userInfo?[kSBBUserSessionInfoKey] as? SBBUserSessionInfo else {
                 fatalError("Expecting a non-nil user session info")
             }
             let authenticated = info.authenticated?.boolValue ?? false
-            let hasChanges = (authenticated && !self.isAuthenticated) || !RSDObjectEquality(info.studyParticipant.dataGroups, self.studyParticipant?.dataGroups)
+            let hasChanges = (authenticated && !self.isAuthenticated) ||
+                !RSDObjectEquality(info.studyParticipant.dataGroups, self.studyParticipant?.dataGroups)
             self.studyParticipant = info.studyParticipant
             self.isAuthenticated = authenticated
             if hasChanges {
-                self.reloadSchedules()
+                self.reload(allFuture: true)
             }
         }
         
         // Add an observer that a schedule manager has updated the scheduled activities. Often updating the
         // schedules will change the available "next" schedule.
-        NotificationCenter.default.addObserver(forName: .SBADidSendUpdatedScheduledActivities, object: nil, queue: .main) { (notification) in
-            self.reloadSchedules()
+        NotificationCenter.default.addObserver(forName: .SBADidSendUpdatedScheduledActivities, object: nil, queue: self.updateQueue) { (notification) in
+            self.reload(allFuture: true)
         }
         
         // Add an observer the app entering the foreground to check for whether or not "today" is still valid.
-        NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) { (notification) in
-            self.reloadIfTodayChanged()
+        NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: self.updateQueue) { (notification) in
+            self.reload(allFuture: false)
         }
     }
     
     // MARK: Shared schedule cache management.
     
+    private let userDefaultsQueue = DispatchQueue(label: "org.sagebionetworks.BridgeApp.SBAParticipantManager.UserDefaults")
+    private let updateQueue = OperationQueue()
+    
     /// Marks the start of today's date. This value is updated on a reload to update the current day.
     public private(set) var today = Date().startOfDay()
     
-    /// Tracking of the loading state.
-    public enum LoadState {
-        case firstLoad
-        case cachedLoad
-        case fromServer
+    /// Tracking for the last time the app pinged the server to update schedules.
+    public private(set) var lastPing: Date? {
+        get {
+            var ret: Date?
+            userDefaultsQueue.sync {
+                ret = UserDefaults.standard.object(forKey: "kSBALastPingTimestampKey") as? Date
+            }
+            return ret
+        }
+        set {
+            userDefaultsQueue.async {
+                UserDefaults.standard.set(newValue, forKey: "kSBALastPingTimestampKey")
+            }
+        }
     }
-    
-    /// State management for what the current loading state is. This is used to pre-load from cache before
-    /// going to the server for updates.
-    public private(set) var loadingState: LoadState = .firstLoad
+
+    /// The "first" day that the participant performed an activity for the study.
+    public private(set) var dayOne: Date? {
+        get {
+            var ret: Date?
+            userDefaultsQueue.sync {
+                ret = UserDefaults.standard.object(forKey: "kSBADayOneKey") as? Date
+            }
+            return ret
+        }
+        set {
+            userDefaultsQueue.async {
+                UserDefaults.standard.set(newValue, forKey: "kSBADayOneKey")
+            }
+        }
+    }
     
     /// State management for whether or not the schedules are reloading.
     public private(set) var isReloading: Bool = false
     fileprivate var _loadingBlocked: Bool = false
+    fileprivate var _timerReload: Bool = false
 
     /// Exit early if already reloading activities. This can happen if the user flips quickly back and forth
     /// from this tab to another tab.
@@ -141,92 +164,112 @@ public final class SBAParticipantManager : NSObject {
     
     /// Reload the schedules. This is triggered automatically by a change to data groups and when returning
     /// from the background.
-    public func reloadSchedules() {
-        DispatchQueue.main.async {
+    public func updateSchedules() {
+        self.updateQueue.addOperation {
             self.reload(allFuture: true)
         }
     }
     
-    private func reloadIfTodayChanged() {
-        DispatchQueue.main.async {
-            self.reload(allFuture: false)
-        }
-    }
-    
     private func reload(allFuture: Bool) {
-        guard (allFuture || Calendar.current.isDateInToday(self.today)),
+        guard self.isAuthenticated && (allFuture || !Calendar.current.isDateInToday(self.today)),
             shouldContinueLoading()
             else {
                 return
         }
         
-        let daysIntoFuture = allFuture ? BridgeSDK.bridgeInfo.cacheDaysAhead + 1 : 1
-        let toDate = Date().addingNumberOfDays(daysIntoFuture).startOfDay()
-        var fromDate = self.today
-        var cachingPolicy: SBBCachingPolicy = .fallBackToCached
-        self.today = Date().startOfDay()
-        if loadingState == .firstLoad {
-            fromDate = startStudy
-            cachingPolicy = .cachedOnly
-            loadingState = .cachedLoad
-        }
+        let daysIntoFuture = BridgeSDK.bridgeInfo.cacheDaysAhead + 1
+        var fromDate: Date = self.lastPing ?? self.startStudy
+        let toDate: Date = Date().addingNumberOfDays(daysIntoFuture).startOfDay()
         
-        fetchScheduledActivities(from: fromDate, to: toDate, cachingPolicy: cachingPolicy) { (activities, error) in
-            self.handleLoadedActivities(activities, from: fromDate, to: toDate, error: error)
+        if allFuture {
+            let predicate = SBBScheduledActivity.notFinishedAvailableNowPredicate()
+            let sortDescriptors = [SBBScheduledActivity.scheduledOnSortDescriptor(ascending: true)]
+            let schedules = try? BridgeSDK.activityManager.getCachedSchedules(using: predicate, sortDescriptors: sortDescriptors, fetchLimit: 1)
+            if let scheduledOn = schedules?.first?.scheduledOn, scheduledOn < fromDate {
+                // Found a schedule. Need to check if it is still valid.
+                fromDate = scheduledOn
+            }
         }
+
+        // Reset "today"
+        self.today = Date().startOfDay()
+        
+        fetchScheduledActivities(from: fromDate, to: toDate)
     }
 
     /// Some (but possibly not all) of the requested schedules have been fetched. Handle adding them and
     /// fetch more of the range if needed.
-    fileprivate func handleLoadedActivities(_ scheduledActivities: [SBBScheduledActivity]?, from fromDate: Date, to toDate: Date, error: Error?) {
-        DispatchQueue.main.async {
-            
-            // Mark the start of the participant's engagement in the study.
-            if let scheduledActivities = scheduledActivities {
-                
-                // Set the dayOne value.
-                if (self.dayOne == nil) || (fromDate < self.dayOne!) {
-                    let dayOne = scheduledActivities.compactMap{ $0.finishedOn }.sorted().first
-                    if (dayOne != nil) && ((self.dayOne == nil) || (dayOne! < self.dayOne!)) {
-                        SBAParticipantManager.shared.dayOne = dayOne
-                    }
-                }
-            
-                // Preload all the surveys so that they can be accessed offline.
-                var surveys: [String] = []
-                scheduledActivities.forEach {
-                    if let survey = $0.activity.survey, !surveys.contains(survey.href) {
-                        surveys.append(survey.href)
-                        BridgeSDK.surveyManager.getSurveyByRef(survey.href, cachingPolicy: .checkCacheFirst) { (_, _) in }
+    fileprivate func handleLoadedActivities(pingDate: Date, scheduledActivities: [SBBScheduledActivity]?, error: Error?) {
+        
+        self.isReloading = false
+        self._timerReload = false
+        
+        // Failed to ping server, try again in 5 minutes.
+        guard error == nil, let scheduledActivities = scheduledActivities else {
+            self._timerReload = true
+            let delay = DispatchTime.now() + .seconds(5 * 60)
+            DispatchQueue.main.asyncAfter(deadline: delay) {
+                self.updateQueue.addOperation {
+                    if !self.isReloading && self._timerReload {
+                        self.reload(allFuture: true)
                     }
                 }
             }
+            return
+        }
+        
+        // TODO: Remove debugging code once the caching thing is figured out.
+        //        #if DEBUG
+        //        do {
+        //            let schedules = try BridgeSDK.activityManager.getCachedSchedules(using: NSPredicate(value: true), sortDescriptors: nil, fetchLimit: 0)
+        //            print("\n---\nCached schedules AFTER server request:\n\(schedules)")
+        //        }
+        //        catch let err {
+        //            debugPrint("Error fetching cached results: \(err)")
+        //        }
+        //        #endif
+        
+        // Save the last ping date for a successful ping of the server.
+        self.lastPing = pingDate
             
-            if self.loadingState == .fromServer {
-                // If the loading state is for the full range, then we are done.
-                self.isReloading = false
-                
-                // Post notification that the schedules were updated.
-                NotificationCenter.default.post(name: .SBAFinishedUpdatingScheduleCache,
-                                                object: self)
+        // Set the dayOne value.
+        if (self.dayOne == nil) {
+            let dayOne = scheduledActivities.compactMap{ $0.finishedOn }.sorted().first
+            SBAParticipantManager.shared.dayOne = dayOne
+        }
+        
+        // Preload all the surveys so that they can be accessed offline.
+        var surveys: [String] = []
+        scheduledActivities.forEach {
+            if let survey = $0.activity.survey, !surveys.contains(survey.href) {
+                surveys.append(survey.href)
+                BridgeSDK.surveyManager.getSurveyByRef(survey.href, cachingPolicy: .checkCacheFirst) { (_, _) in }
             }
-            else {
-                // Otherwise, load more range from the server
-                self.loadingState = .fromServer
-                
-                let nextFromDate = (scheduledActivities?.count ?? 0 > 0) ? Date() : fromDate
-                
-                self.fetchScheduledActivities(from: nextFromDate, to: toDate, cachingPolicy: .fallBackToCached) { (activities, error) in
-                    self.handleLoadedActivities(activities, from: nextFromDate, to: toDate, error: error)
-                }
-            }
+        }
+
+        if self._loadingBlocked {
+            // If loading refresh was requested, but blocked, then reload again.
+            reload(allFuture: true)
+        }
+        else {
+            // We are done. Post notification that the schedules were updated.
+            NotificationCenter.default.post(name: .SBAFinishedUpdatingScheduleCache,
+                                            object: self)
         }
     }
     
     /// Convenience method for wrapping the call to BridgeSDK.
-    fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date, cachingPolicy policy: SBBCachingPolicy, completion: @escaping ([SBBScheduledActivity]?, Error?) -> Swift.Void) {
-        BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: policy) { (obj, error) in
-            completion(obj as? [SBBScheduledActivity], error)
+    fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date) {
+        let pingDate = Date()
+        //print("\n\n---Fetch schedules from:\(fromDate) to:\(toDate)")
+        
+        BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .fallBackToCached) { (obj, error) in
+            print("\n\n---Fetch Results pingDate:\(pingDate) from:\(fromDate) to:\(toDate) schedules:\(String(describing: obj))")
+            self.updateQueue.addOperation {
+                self.handleLoadedActivities(pingDate: pingDate,
+                                            scheduledActivities: obj as? [SBBScheduledActivity],
+                                            error: error)
+            }
         }
     }
 }

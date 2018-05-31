@@ -48,6 +48,7 @@ class TestBridgeInfo: NSObject, SBBBridgeInfoProtocol {
 class SBAScheduleManagerTests: XCTestCase {
     
     var scheduleManager: TestScheduleManager!
+    var mockActivityManager: MockActivityManager!
     
     override func setUp() {
         super.setUp()
@@ -55,6 +56,7 @@ class SBAScheduleManagerTests: XCTestCase {
         BridgeSDK.setup(withBridgeInfo: TestBridgeInfo())
         SBABridgeConfiguration.shared = SBABridgeConfiguration()
         scheduleManager = TestScheduleManager()
+        mockActivityManager = MockActivityManager()
     }
     
     override func tearDown() {
@@ -75,7 +77,9 @@ class SBAScheduleManagerTests: XCTestCase {
         let expiresOn = scheduledOn.addingNumberOfDays(1)
         let clientData : [String : Any] = ["foo" : "bar"]
         let scheduleGuid = UUID().uuidString
-        let schedule = createSchedule(with: "foo", scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData as NSDictionary, schedulePlanGuid: scheduleGuid)
+        let activityGuid = UUID().uuidString
+
+        let schedule = createSchedule(with: "foo", scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData as NSDictionary, schedulePlanGuid: scheduleGuid, activityGuid: activityGuid)
         
         XCTAssertNotNil(schedule.guid)
         XCTAssertNotNil(schedule.schedulePlanGuid)
@@ -106,7 +110,8 @@ class SBAScheduleManagerTests: XCTestCase {
         let taskGroupAlpha = ["taskA", "taskB", "taskC"]
         let taskGroupBeta = ["taskD", "taskE"]
         
-        let group1 = createTaskGroup("group1", taskGroupAlpha, UUID().uuidString, ["taskC" : UUID().uuidString])
+        let group1 = createTaskGroup("group1", taskGroupAlpha, UUID().uuidString,
+                                     [ "taskA" : UUID().uuidString, "taskB" : UUID().uuidString, "taskC" : UUID().uuidString])
         let group2 = createTaskGroup("group2", taskGroupAlpha, UUID().uuidString)
         let group3 = createTaskGroup("group3", taskGroupBeta, UUID().uuidString)
         
@@ -116,7 +121,7 @@ class SBAScheduleManagerTests: XCTestCase {
         let nextWeek = todayStart.addingNumberOfDays(7)
         let twoWeeks = nextWeek.addingNumberOfDays(7)
         
-        let _ = setupSchedules(for: [group1, group2, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
+        let _ = setupSchedules(for: [group2, group1, group3], scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: lastWeek.addingNumberOfDays(1), clientData: nil)
         
         let expectedSchedules = createSchedules(for: group1, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
         let _ = createSchedules(for: group2, scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil)
@@ -306,9 +311,10 @@ class SBAScheduleManagerTests: XCTestCase {
 
         let expectedClientData : [String : Any] = ["foo" : "bar"]
         
-        let previousSchedule = createSchedule(with: "test", scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: now.addingNumberOfDays(-1), clientData: expectedClientData as NSDictionary, schedulePlanGuid: nil)
-        let expectedSchedule = createSchedule(with: "test", scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil, schedulePlanGuid: previousSchedule.schedulePlanGuid)
-        let nextSchedule = createSchedule(with: "test", scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil, schedulePlanGuid: previousSchedule.schedulePlanGuid)
+        let activityGuid = UUID().uuidString
+        let previousSchedule = createSchedule(with: "test", scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: now.addingNumberOfDays(-1), clientData: expectedClientData as NSDictionary, schedulePlanGuid: nil, activityGuid: activityGuid)
+        let expectedSchedule = createSchedule(with: "test", scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: nil, clientData: nil, schedulePlanGuid: previousSchedule.schedulePlanGuid, activityGuid: activityGuid)
+        let nextSchedule = createSchedule(with: "test", scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil, schedulePlanGuid: previousSchedule.schedulePlanGuid, activityGuid: activityGuid)
         
         scheduleManager.scheduledActivities.append(contentsOf: [previousSchedule, expectedSchedule, nextSchedule])
         
@@ -346,9 +352,11 @@ class SBAScheduleManagerTests: XCTestCase {
         let previousClientData : [String : Any] = ["blue" : "goo"]
         let expectedClientData : [String : Any] = ["foo" : "bar"]
         
-        let previousSchedule = createSchedule(with: "test", scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: now.addingNumberOfDays(-1), clientData: previousClientData as NSDictionary, schedulePlanGuid: nil)
-        let expectedSchedule = createSchedule(with: "test", scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: now.addingTimeInterval(-10 * 60), clientData: expectedClientData as NSDictionary, schedulePlanGuid: previousSchedule.schedulePlanGuid)
-        let nextSchedule = createSchedule(with: "test", scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil, schedulePlanGuid: previousSchedule.schedulePlanGuid)
+        let activityGuid = UUID().uuidString
+
+        let previousSchedule = createSchedule(with: "test", scheduledOn: lastWeek, expiresOn: todayStart, finishedOn: now.addingNumberOfDays(-1), clientData: previousClientData as NSDictionary, schedulePlanGuid: nil, activityGuid: activityGuid)
+        let expectedSchedule = createSchedule(with: "test", scheduledOn: todayStart, expiresOn: nextWeek, finishedOn: now.addingTimeInterval(-10 * 60), clientData: expectedClientData as NSDictionary, schedulePlanGuid: previousSchedule.schedulePlanGuid, activityGuid: activityGuid)
+        let nextSchedule = createSchedule(with: "test", scheduledOn: nextWeek, expiresOn: twoWeeks, finishedOn: nil, clientData: nil, schedulePlanGuid: previousSchedule.schedulePlanGuid, activityGuid: activityGuid)
         
         scheduleManager.scheduledActivities.append(contentsOf: [previousSchedule, expectedSchedule, nextSchedule])
         
@@ -386,17 +394,21 @@ class SBAScheduleManagerTests: XCTestCase {
         
         let expectedClientData : [String : Any] = ["foo" : "bar"]
         
-        let predicate1 = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            SBBScheduledActivity.schedulePlanPredicate(with: group2.schedulePlanGuid!),
-            SBBScheduledActivity.activityIdentifierPredicate(with: "taskC")])
-        let previousSchedule = previousSchedules.first(where: { predicate1.evaluate(with: $0) })!
+        guard let previousSchedule = previousSchedules.first(where: {
+            $0.activityIdentifier == "taskC" && $0.schedulePlanGuid == group2.schedulePlanGuid!
+        }) else {
+            XCTFail("Failed to create expected schedule with schedulePlanGuid=\(group2.schedulePlanGuid!): \(previousSchedules)")
+            return
+        }
         previousSchedule.clientData = expectedClientData as NSDictionary
         XCTAssertNotNil(previousSchedule.finishedOn)
         
-        let predicate2 = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            SBBScheduledActivity.schedulePlanPredicate(with: group1.schedulePlanGuid!),
-            SBBScheduledActivity.activityIdentifierPredicate(with: "taskC")])
-        let expectedSchedule = todaySchedules.first(where: { predicate2.evaluate(with: $0) })!
+        guard let expectedSchedule = todaySchedules.first(where: {
+            $0.activityIdentifier == "taskC" && $0.schedulePlanGuid == group1.schedulePlanGuid!
+        }) else {
+            XCTFail("Failed to create expected schedule with schedulePlanGuid=\(group2.schedulePlanGuid!): \(previousSchedules)")
+            return
+        }
         
         let taskInfo = RSDTaskInfoObject(with: "taskC")
         let step = RSDUIStepObject(identifier: "introduction")
@@ -548,7 +560,7 @@ class SBAScheduleManagerTests: XCTestCase {
     
     // Helper methods
     
-    func createTaskGroup(_ identifier: String, _ activityIdentifiers: [String], _ schedulePlanGuid: String? = nil,_ schedulePlanGuidMap: [String : String]? = nil) -> SBAActivityGroupObject {
+    func createTaskGroup(_ identifier: String, _ activityIdentifiers: [String], _ schedulePlanGuid: String? = nil,_ activityGuidMap: [String : String]? = nil) -> SBAActivityGroupObject {
         let group = SBAActivityGroupObject(identifier: identifier,
                                             title: nil,
                                             journeyTitle: nil,
@@ -556,7 +568,7 @@ class SBAScheduleManagerTests: XCTestCase {
                                             activityIdentifiers: activityIdentifiers.map { RSDIdentifier(rawValue: $0) },
                                             notificationIdentifier: nil,
                                             schedulePlanGuid: schedulePlanGuid,
-                                            schedulePlanGuidMap: schedulePlanGuidMap)
+                                            activityGuidMap: activityGuidMap)
         SBABridgeConfiguration.shared.addMapping(with: group)
         return group
     }
@@ -564,12 +576,13 @@ class SBAScheduleManagerTests: XCTestCase {
     func createSchedules(for taskGroup: SBAActivityGroupObject, scheduledOn: Date, expiresOn: Date?, finishedOn: Date?, clientData: SBBJSONValue?) -> [SBBScheduledActivity] {
         
         let schedules = taskGroup.activityIdentifiers.map {
-            createSchedule(with: $0,
-                           scheduledOn: scheduledOn,
-                           expiresOn: expiresOn,
-                           finishedOn: finishedOn,
-                           clientData: clientData,
-                           schedulePlanGuid: taskGroup.schedulePlanGuid(for: $0.identifier))
+            self.mockActivityManager.createTaskSchedule(with: $0,
+                                                        scheduledOn: scheduledOn,
+                                                        expiresOn: expiresOn,
+                                                        finishedOn: finishedOn,
+                                                        clientData: clientData,
+                                                        schedulePlanGuid: taskGroup.schedulePlanGuid,
+                                                        activityGuid: taskGroup.activityGuidMap?[$0.stringValue])
         }
         
         scheduleManager.scheduledActivities.append(contentsOf: schedules)
@@ -577,30 +590,20 @@ class SBAScheduleManagerTests: XCTestCase {
         return schedules
     }
     
-    func createSchedule(with identifier: RSDIdentifier, scheduledOn: Date, expiresOn: Date?, finishedOn: Date?, clientData: SBBJSONValue?, schedulePlanGuid: String?) -> SBBScheduledActivity {
-
-        let schedule = SBBScheduledActivity(dictionaryRepresentation: [
-            "guid" : UUID().uuidString,
-            "schedulePlanGuid" : schedulePlanGuid ?? UUID().uuidString
-            ])!
-        schedule.scheduledOn = scheduledOn
-        schedule.expiresOn = expiresOn
-        schedule.startedOn = finishedOn
-        schedule.finishedOn = finishedOn
-        schedule.clientData = clientData
-        let activity = SBBActivity(dictionaryRepresentation: [
-            "activityType" : "task",
-            "guid" : UUID().uuidString,
-            "label" : identifier.stringValue
-            ])!
-        activity.task = SBBTaskReference(dictionaryRepresentation: [ "identifier" : identifier.stringValue ])
-        schedule.activity = activity
-
-        return schedule
+    func createSchedule(with identifier: RSDIdentifier, scheduledOn: Date, expiresOn: Date?, finishedOn: Date?, clientData: SBBJSONValue?, schedulePlanGuid: String?, activityGuid: String?) -> SBBScheduledActivity {
+        return self.mockActivityManager.createTaskSchedule(with: identifier,
+                                                           scheduledOn: scheduledOn,
+                                                           expiresOn: expiresOn,
+                                                           finishedOn: finishedOn,
+                                                           clientData: clientData,
+                                                           schedulePlanGuid: schedulePlanGuid,
+                                                           activityGuid: activityGuid)
     }
     
     func setupSchedules(for taskGroups: [SBAActivityGroupObject], scheduledOn: Date, expiresOn: Date?, finishedOn: Date?, clientData: SBBJSONValue?) -> [SBBScheduledActivity] {
-        return taskGroups.flatMap { createSchedules(for: $0, scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData) }
+        return taskGroups.flatMap {
+            createSchedules(for: $0, scheduledOn: scheduledOn, expiresOn: expiresOn, finishedOn: finishedOn, clientData: clientData)
+        }
     }
 
 }

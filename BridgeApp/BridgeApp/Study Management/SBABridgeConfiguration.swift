@@ -149,7 +149,7 @@ open class SBABridgeConfiguration {
     
     /// Update the mapping by adding the given task.
     public func addMapping(with task: RSDTask) {
-        if self.activityInfoMap[task.identifier] == nil {
+        if !self.activityInfoMap.contains(where: { $0.value.moduleId?.stringValue == task.identifier })  {
             let activityInfo = SBAActivityInfoObject(identifier: RSDIdentifier(rawValue: task.identifier),
                                                      title: nil,
                                                      subtitle: nil,
@@ -264,19 +264,12 @@ public protocol SBAActivityGroup : RSDTaskGroup {
     /// the same tasks.
     var schedulePlanGuid : String? { get }
     
-    /// The schedule plan guid map that can be used to map scheduled activities to
+    /// The activity guid map that can be used to map scheduled activities to
     /// the appropriate group in the case where more than one group may contain
     /// the same tasks **but** where the activities are not all grouped on the server
-    /// using the same schedule.
-    var schedulePlanGuidMap : [String : String]? { get }
-}
-
-extension SBAActivityGroup {
-    
-    /// Returns the schedule plan guid to use for a given activity identifier.
-    public func schedulePlanGuid(for identifier: String) -> String? {
-        return schedulePlanGuidMap?[identifier] ?? schedulePlanGuid
-    }
+    /// using the same schedule. This guid can be found in the Bridge Study Manager UI
+    /// by hovering your cursor over the copy icon and selecting "Copy GUID".
+    var activityGuidMap : [String : String]? { get }
 }
 
 /// Extend the task info protocol to include optional pointers for use by an `SBBTaskReference`
@@ -307,7 +300,7 @@ struct SBAActivityMappingObject : Decodable {
 ///
 /// - example:
 /// ````
-///    // Example activity group.
+///    // Example activity group using a shared `schedulePlanGuid`.
 ///    let json = """
 ///            {
 ///                "identifier": "foo",
@@ -317,9 +310,31 @@ struct SBAActivityMappingObject : Decodable {
 ///                "imageSource": "fooImage",
 ///                "activityIdentifiers": ["taskA", "taskB", "taskC"],
 ///                "notificationIdentifier": "scheduleFoo",
-///                "schedulePlanGuid": "abcdef12-3456-7890"
+///                "schedulePlanGuid": "abcdef12-3456-7890",
 ///            }
 ///            """.data(using: .utf8)! // our data in native (JSON) format
+///
+///    // Example activity group using the `activity.guid` identifiers to map schedules to tasks.
+///    let json = """
+///            {
+///                "identifier": "foo",
+///                "activityIdentifiers": ["taskA", "taskB", "taskC"],
+///                "activityGuidMap": {
+///                                     "taskA":"ababab12-3456-7890",
+///                                     "taskB":"cdcdcd12-3456-7890",
+///                                     "taskC":"efefef12-3456-7890"
+///                                     }
+///            }
+///            """.data(using: .utf8)! // our data in native (JSON) format
+///
+///    // Example activity group where the first schedule matching the given activity identifer is used.
+///    let json = """
+///            {
+///                "identifier": "foo",
+///                "activityIdentifiers": ["taskA", "taskB", "taskC"]
+///            }
+///            """.data(using: .utf8)! // our data in native (JSON) format
+
 /// ````
 public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAActivityGroup {
 
@@ -355,14 +370,15 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
     /// the same tasks.
     public let schedulePlanGuid : String?
     
-    /// The schedule plan guid map that can be used to map scheduled activities to
+    /// The activity guid map that can be used to map scheduled activities to
     /// the appropriate group in the case where more than one group may contain
     /// the same tasks **but** where the activities are not all grouped on the server
-    /// using the same schedule.
-    public let schedulePlanGuidMap : [String : String]?
+    /// using the same schedule. This guid can be found in the Bridge Study Manager UI
+    /// by hovering your cursor over the copy icon and selecting "Copy GUID".
+    public let activityGuidMap : [String : String]?
     
     private enum CodingKeys : String, CodingKey {
-        case identifier, title, detail, journeyTitle, imageSource, activityIdentifiers, notificationIdentifier, schedulePlanGuid, schedulePlanGuidMap
+        case identifier, title, detail, journeyTitle, imageSource, activityIdentifiers, notificationIdentifier, schedulePlanGuid, activityGuidMap
     }
     
     /// Default initializer.
@@ -373,7 +389,7 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
                 activityIdentifiers : [RSDIdentifier],
                 notificationIdentifier : RSDIdentifier?,
                 schedulePlanGuid : String?,
-                schedulePlanGuidMap : [String : String]?) {
+                activityGuidMap : [String : String]?) {
         self.identifier = identifier
         self.title = title
         self.journeyTitle = journeyTitle
@@ -383,7 +399,7 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
         self.schedulePlanGuid = schedulePlanGuid
         self.detail = nil
         self.imageSource = nil
-        self.schedulePlanGuidMap = schedulePlanGuidMap
+        self.activityGuidMap = activityGuidMap
     }
     
     /// Returns nil. This task group is intended to allow using a shared codable configuration
