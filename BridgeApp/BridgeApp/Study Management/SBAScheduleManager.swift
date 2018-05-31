@@ -627,16 +627,18 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         }
     }
     
-    /// Archive and update the task results.
-    private func archiveAndUpload(taskPath: RSDTaskPath) {
-        // Archive and upload results.
+    /// Archive and upload results.
+    ///
+    /// DO NOT MAKE OPEN. This method retains the task path until archiving is completed and because it
+    /// nils out the pointer to the task path with a strong reference to `self`, it will also retain the
+    /// schedule manager until the completion block is called. syoung 05/31/2018
+    private final func archiveAndUpload(taskPath: RSDTaskPath) {
         let uuid = UUID()
         self._retainedPaths[uuid] = taskPath
         taskPath.archiveResults(with: self) {
             self._retainedPaths[uuid] = nil
         }
     }
-    
     private var _retainedPaths: [UUID : RSDTaskPath] = [:]
     
     // MARK: RSDDataArchiveManager
