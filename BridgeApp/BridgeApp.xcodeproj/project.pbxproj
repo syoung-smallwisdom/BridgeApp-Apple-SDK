@@ -82,6 +82,8 @@
 		F8E4A4EF20A420380046577B /* SBAScheduleManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4A4EE20A420380046577B /* SBAScheduleManagerTests.swift */; };
 		F8E4A4FB20A4D9F00046577B /* JSONDecoder+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4A4FA20A4D9F00046577B /* JSONDecoder+Utilities.swift */; };
 		F8F063C320BF45C700DB7D9C /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BF02B420B60F740016C343 /* BridgeSDK_Test.framework */; };
+		F8F063DA20BF7E4C00DB7D9C /* SBAClientDataResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */; };
+		F8F063F220BFB51B00DB7D9C /* ArchivableTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */; };
 		F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7241D203D007800AC0E5B /* SurveyTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -311,6 +313,8 @@
 		F8C7D4152092CF36007490BC /* UIColor+BridgeKeyNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+BridgeKeyNames.swift"; sourceTree = "<group>"; };
 		F8E4A4EE20A420380046577B /* SBAScheduleManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAScheduleManagerTests.swift; sourceTree = "<group>"; };
 		F8E4A4FA20A4D9F00046577B /* JSONDecoder+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONDecoder+Utilities.swift"; sourceTree = "<group>"; };
+		F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAClientDataResult.swift; sourceTree = "<group>"; };
+		F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivableTrackingTests.swift; sourceTree = "<group>"; };
 		F8F7241D203D007800AC0E5B /* SurveyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -361,6 +365,7 @@
 		F825BA79207FD9AE00D29F60 /* Data Tracking Tests */ = {
 			isa = PBXGroup;
 			children = (
+				F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */,
 				F8479514207FE3720024A230 /* CodableTrackedDataTests.swift */,
 				F847950C207FE2CB0024A230 /* TrackingNavigatorTests.swift */,
 				F847950E207FE2E20024A230 /* MedicationTrackingTests.swift */,
@@ -597,6 +602,7 @@
 			children = (
 				F84794F7207FDEED0024A230 /* SBAFactory.swift */,
 				F87D69692037956B00409087 /* SBAActivityReference.swift */,
+				F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */,
 				F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */,
 				F82B1A882036305200FEA16D /* SBBImage+Utilities.swift */,
 				F886FD1220351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift */,
@@ -939,6 +945,7 @@
 				F8479527207FEA9D0024A230 /* SBATrackingDataSource.swift in Sources */,
 				F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */,
 				F847951E207FEA9D0024A230 /* SBATrackedItem.swift in Sources */,
+				F8F063DA20BF7E4C00DB7D9C /* SBAClientDataResult.swift in Sources */,
 				F80F17A32033CB1B00352C3E /* SBBSurvey+RSDTask.swift in Sources */,
 				F8A5CE4A20A2AE7100E9FD75 /* SBARootViewController.swift in Sources */,
 				F8A5CE4C20A2B5C400E9FD75 /* SBAAppDelegate.swift in Sources */,
@@ -982,6 +989,7 @@
 				F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */,
 				F8BF02A620B60F730016C343 /* MockActivityManager.swift in Sources */,
 				F847950F207FE2E20024A230 /* MedicationTrackingTests.swift in Sources */,
+				F8F063F220BFB51B00DB7D9C /* ArchivableTrackingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

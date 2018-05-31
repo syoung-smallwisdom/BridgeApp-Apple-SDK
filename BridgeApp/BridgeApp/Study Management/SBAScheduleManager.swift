@@ -598,9 +598,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         self.didUpdateScheduledActivities(from: self.scheduledActivities)
     }
     
-    /// For each schedule that this task modifies, mark it as completed.
-    ///
-    /// - note: Override this method to add custom `clientData` objects to the schedule.
+    /// For each schedule that this task modifies, mark it as completed and add the client data.
     open func getAndUpdateSchedule(for taskPath: RSDTaskPath) -> SBBScheduledActivity? {
         guard let schedule = self.scheduledActivity(for: taskPath.result, scheduleIdentifier: taskPath.scheduleIdentifier)
             else {
@@ -609,7 +607,32 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         
         schedule.startedOn = taskPath.result.startDate
         schedule.finishedOn = taskPath.result.endDate
+        self.appendClientData(from: taskPath, to: schedule)
+        
         return schedule
+    }
+    
+    /// Append the client data to the schedule.
+    open func appendClientData(from taskPath: RSDTaskPath, to schedule: SBBScheduledActivity) {
+        guard let clientData = self.clientData(from: taskPath, for: schedule) else { return }
+        // TODO: Implement syoung 05/30/2018
+//        if let existingClientData = schedule.clientData {
+//            var array: [Any] = (existingClientData as? [Any]) ?? [existingClientData]
+//            if let newArray = clientData as? [Any] {
+//                array.append(contentsOf: newArray)
+//            } else {
+//                array.append(clientData)
+//            }
+//            schedule.clientData = array as NSArray
+//        }
+//        else {
+//            schedule.clientData = clientData
+//        }
+    }
+    
+    /// Get the client data from the given task path.
+    open func clientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> SBBJSONValue? {
+        return nil
     }
     
     /// Send message to Bridge server to update the given schedules. This includes both the task
@@ -617,9 +640,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     /// primary task (such as a required one-time survey).
     open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
         BridgeSDK.activityManager.updateScheduledActivities(schedules) { (_, _) in
-            
-            //print("\n\n--- Finished updating schedules: \(schedules)")
-            
             // Post notification that the schedules were updated.
             NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
                                             object: self,

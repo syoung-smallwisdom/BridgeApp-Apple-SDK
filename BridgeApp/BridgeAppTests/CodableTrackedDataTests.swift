@@ -288,6 +288,7 @@ class CodableTrackedDataTests: XCTestCase {
         
         let json = """
         {
+            "identifier":"Test",
             "items": [
                         { "identifier": "itemA1", "sectionIdentifier" : "a" },
                         { "identifier": "itemA2", "sectionIdentifier" : "a" },
@@ -314,6 +315,7 @@ class CodableTrackedDataTests: XCTestCase {
         
         let json = """
         {
+            "identifier":"Test",
             "items": [
                         { "identifier": "itemA1", "sectionIdentifier" : "a" },
                         { "identifier": "itemA2", "sectionIdentifier" : "a" },

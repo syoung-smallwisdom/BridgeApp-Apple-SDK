@@ -138,6 +138,28 @@ extension SBATrackedItemsResult {
     }
 }
 
+public protocol SBATrackedItemsCollectionResult : SBATrackedItemsResult, SBAClientDataResult {
+}
+
+extension SBATrackedItemsCollectionResult {
+    
+    /// Build the archiveable or uploadable data for this result.
+    public func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
+        let data = try self.rsd_jsonEncodedData()
+        let manifest = RSDFileManifest(filename: self.identifier,
+                                       timestamp: self.endDate,
+                                       contentType: "application/json",
+                                       identifier: self.identifier,
+                                       stepPath: stepPath)
+        return (manifest, data)
+    }
+    
+    /// Build the client data for this result.
+    public func clientData() throws -> SBBJSONValue? {
+        return try self.rsd_jsonEncodedDictionary() as NSDictionary
+    }
+}
+
 /// `SBATrackedItemsStep` is customized for selecting a long list of items that are sorted into sections
 /// for display to the user.
 ///

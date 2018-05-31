@@ -282,10 +282,10 @@ extension SBAMedicationAnswer : SBAMedication {
 
 /// A medication tracking result which can be used to track the selected medications and details for each
 /// medication.
-public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsResult {
+public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionResult {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, type, startDate, endDate, medications
+        case identifier, type, startDate, endDate, medications = "items"
     }
     
     /// The identifier associated with the task, step, or asynchronous action.

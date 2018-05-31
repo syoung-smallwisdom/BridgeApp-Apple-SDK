@@ -140,7 +140,7 @@ class TrackedSelectionDataSourceTests: XCTestCase {
     
     func buildDataSource(usingSections: Bool = true) -> RSDTableDataSource? {
         let (items, sections) = buildMedicationItems()
-        let medTracker = SBAMedicationTrackingStepNavigator(items: items, sections: usingSections ? sections : nil)
+        let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: usingSections ? sections : nil)
         let task = RSDTaskObject(identifier: "medication", stepNavigator: medTracker)
         let taskPath = RSDTaskPath(task: task)
         

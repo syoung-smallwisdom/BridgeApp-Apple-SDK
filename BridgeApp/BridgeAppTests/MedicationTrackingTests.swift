@@ -50,7 +50,7 @@ class MedicationTrackingTests: XCTestCase {
         NSLocale.setCurrentTest(Locale(identifier: "en_US"))
 
         let (items, sections) = buildMedicationItems()
-        let medTracker = SBAMedicationTrackingStepNavigator(items: items, sections: sections)
+        let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: sections)
         XCTAssertEqual(medTracker.items.count, items.count)
         XCTAssertEqual(medTracker.sections?.count ?? 0, sections.count)
         
@@ -115,7 +115,7 @@ class MedicationTrackingTests: XCTestCase {
         NSLocale.setCurrentTest(Locale(identifier: "en_US"))
         
         let (items, sections) = buildMedicationItems()
-        let medTracker = SBAMedicationTrackingStepNavigator(items: items, sections: sections)
+        let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: sections)
     
         var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "medication")
         
@@ -224,7 +224,7 @@ class MedicationTrackingTests: XCTestCase {
         NSLocale.setCurrentTest(Locale(identifier: "en_US"))
         
         let (items, sections) = buildMedicationItems()
-        let medTracker = SBAMedicationTrackingStepNavigator(items: items, sections: sections)
+        let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: sections)
         
         var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "medication")
         
@@ -308,7 +308,7 @@ class MedicationTrackingTests: XCTestCase {
         NSLocale.setCurrentTest(Locale(identifier: "en_US"))
         
         let (items, sections) = buildMedicationItems()
-        let medTracker = SBAMedicationTrackingStepNavigator(items: items, sections: sections)
+        let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: sections)
         
         var initialResult = SBAMedicationTrackingResult(identifier: medTracker.reviewStep!.identifier)
         var medA3 = SBAMedicationAnswer(identifier: "medA3")

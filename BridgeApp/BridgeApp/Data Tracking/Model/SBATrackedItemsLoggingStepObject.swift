@@ -69,7 +69,7 @@ open class SBATrackedItemsLoggingStepObject : SBATrackedSelectionStepObject {
     
     /// Override to return a collection result that is pre-populated with the a new set of logging objects.
     override open func instantiateStepResult() -> RSDResult {
-        var collectionResult = RSDCollectionResultObject(identifier: self.identifier)
+        var collectionResult = SBATrackedLoggingCollectionResultObject(identifier: self.identifier)
         collectionResult.updateSelected(to: self.result?.selectedAnswers.map { $0.identifier }, with: self.items)
         return collectionResult
     }
@@ -81,24 +81,72 @@ extension RSDResultType {
     public static let symptom: RSDResultType = "symptom"
 }
 
-/// Extend the collection result to handle tracking logged items.
-extension RSDCollectionResultObject : SBATrackedItemsResult {
+/// `SBATrackedLoggingCollectionResultObject` is used include multiple logged items in a single logging result.
+public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Codable, SBATrackedItemsCollectionResult {
+    
+    /// The identifier associated with the task, step, or asynchronous action.
+    public let identifier: String
+    
+    /// A String that indicates the type of the result. This is used to decode the result using a `RSDFactory`.
+    public var type: RSDResultType
+    
+    /// The start date timestamp for the result.
+    public var startDate: Date = Date()
+    
+    /// The end date timestamp for the result.
+    public var endDate: Date = Date()
+    
+    /// The list of logging results associated with this result.
+    public var loggingItems: [SBATrackedLoggingResultObject]
+    
+    // The input results are the logging items.
+    public var inputResults: [RSDResult] {
+        get {
+            return loggingItems
+        }
+        set {
+            loggingItems = newValue.compactMap { $0 as? SBATrackedLoggingResultObject }
+        }
+    }
+    
+    /// Default initializer for this object.
+    ///
+    /// - parameters:
+    ///     - identifier: The identifier string.
+    public init(identifier: String) {
+        self.identifier = identifier
+        self.type = .loggingCollection
+        self.loggingItems = []
+    }
+    
+    private enum CodingKeys : String, CodingKey {
+        case identifier, type, startDate, endDate, loggingItems = "items"
+    }
+
+    public func copy(with identifier: String) -> SBATrackedLoggingCollectionResultObject {
+        var copy = SBATrackedLoggingCollectionResultObject(identifier: identifier)
+        copy.startDate = self.startDate
+        copy.endDate = self.endDate
+        copy.type = self.type
+        copy.loggingItems = self.loggingItems
+        return copy
+    }
     
     /// Returns the subset of selected answers that conform to the tracked item answer.
     public var selectedAnswers: [SBATrackedItemAnswer] {
-        return self.inputResults.compactMap { $0 as? SBATrackedItemAnswer }
+        return self.loggingItems
     }
     
     /// Adds a `SBATrackedLoggingResultObject` for each identifier.
     public mutating func updateSelected(to selectedIdentifiers: [String]?, with items: [SBATrackedItem]) {
-        let results = sort(selectedIdentifiers, with: items).map { (identifier) -> RSDResult in
-            if let result = self.inputResults.first(where: { $0.identifier == identifier }) {
+        let results = sort(selectedIdentifiers, with: items).map { (identifier) -> SBATrackedLoggingResultObject in
+            if let result = self.loggingItems.first(where: { $0.identifier == identifier }) {
                 return result
             }
             let item = items.first(where: { $0.identifier == identifier })
             return SBATrackedLoggingResultObject(identifier: identifier, text: item?.text, detail: item?.detail)
         }
-        self.inputResults = results
+        self.loggingItems = results
     }
     
     /// Update the details to the new value. This is only valid for a new value that is an `RSDResult`.
@@ -164,6 +212,7 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         self.identifier = try container.decode(String.self, forKey: .identifier)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.detail = try container.decodeIfPresent(String.self, forKey: .detail)
+        // TODO: syoung 05/30/2018 Decode the answers.
         self.inputResults = []
     }
     
@@ -175,7 +224,7 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         try container.encode(identifier, forKey: AnyCodingKey(stringValue: CodingKeys.identifier.stringValue)!)
         try container.encodeIfPresent(text, forKey: AnyCodingKey(stringValue: CodingKeys.text.stringValue)!)
         try container.encodeIfPresent(detail, forKey: AnyCodingKey(stringValue: CodingKeys.detail.stringValue)!)
-        try container.encode(loggedDate, forKey: AnyCodingKey(stringValue: CodingKeys.loggedDate.stringValue)!)
+        try container.encodeIfPresent(loggedDate, forKey: AnyCodingKey(stringValue: CodingKeys.loggedDate.stringValue)!)
 
         for result in inputResults {
             let key = AnyCodingKey(stringValue: result.identifier)!
