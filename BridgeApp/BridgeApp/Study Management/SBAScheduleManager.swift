@@ -360,23 +360,24 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         
         // We only care about task results that have a matching schema otherwise, return the guid schedule.
         guard let schema = taskResult.schemaInfo ?? schemaInfo(for: taskResult.identifier),
-            let schemaIdentifier = schema.schemaIdentifier else {
+            let _ = schema.schemaIdentifier else {
                 return guidSchedule
         }
         
         // Look for a schedule that matches the given schema identifier.
-        let schemaSchedule = self.scheduledActivities.rsd_last(where: {
-            $0.activityIdentifier == schemaIdentifier &&
+        let taskIdentifier = taskResult.identifier
+        let taskSchedule = self.scheduledActivities.rsd_last(where: {
+            $0.activityIdentifier == taskIdentifier &&
             todayPredicate.evaluate(with: $0)
         })
         
         // If the found schema-based schedule has the same activity guid as the guid-based schedule,
         // then return the guid schedule.
-        if schemaSchedule == nil || schemaSchedule!.activity.guid == guidSchedule?.activity.guid {
+        if taskSchedule == nil || taskSchedule!.activity.guid == guidSchedule?.activity.guid {
             return guidSchedule
         }
         else {
-            return schemaSchedule
+            return taskSchedule
         }
     }
     
@@ -572,7 +573,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     
     /// Update the values on the scheduled activity. By default, this will recurse through the task path
     /// and its children, looking for a schedule associated with the subtask path.
-    open func updateSchedules(for taskPath: RSDTaskPath) {
+    public func updateSchedules(for taskPath: RSDTaskPath) {
         guard taskPath.parentPath == nil else {
             assertionFailure("This method should **only** be called for the top-level task path.")
             return
@@ -598,9 +599,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         self.didUpdateScheduledActivities(from: self.scheduledActivities)
     }
     
-    /// For each schedule that this task modifies, mark it as completed.
-    ///
-    /// - note: Override this method to add custom `clientData` objects to the schedule.
+    /// For each schedule that this task modifies, mark it as completed and add the client data.
     open func getAndUpdateSchedule(for taskPath: RSDTaskPath) -> SBBScheduledActivity? {
         guard let schedule = self.scheduledActivity(for: taskPath.result, scheduleIdentifier: taskPath.scheduleIdentifier)
             else {
@@ -609,7 +608,89 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         
         schedule.startedOn = taskPath.result.startDate
         schedule.finishedOn = taskPath.result.endDate
+        self.appendClientData(from: taskPath, to: schedule)
+        
         return schedule
+    }
+    
+    /// Append the client data to the schedule.
+    open func appendClientData(from taskPath: RSDTaskPath, to schedule: SBBScheduledActivity) {
+        guard let clientData = self.clientData(from: taskPath, for: schedule) else { return }
+        if let existingClientData = schedule.clientData {
+            var array: [Any] = (existingClientData as? [Any]) ?? [existingClientData]
+            if let newArray = clientData as? [Any] {
+                array.append(contentsOf: newArray)
+            } else {
+                array.append(clientData)
+            }
+            schedule.clientData = array as NSArray
+        }
+        else {
+            schedule.clientData = (clientData as? NSArray) ?? ([clientData] as NSArray)
+        }
+    }
+    
+    /// Get the client data from the given task path.
+    open func clientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> SBBJSONValue? {
+        do {
+            return try recursiveGetClientData(from: taskPath.result, isTopLevel: true)
+        }
+        catch let err {
+            assertionFailure("Failed to encode client data: \(err)")
+            return nil
+        }
+    }
+    
+    private func recursiveGetClientData(from taskResult: RSDTaskResult, isTopLevel: Bool) throws  -> SBBJSONValue? {
+        // Verify that this task result is not associated with a different schema.
+        guard isTopLevel || (taskResult.schemaInfo ?? self.schemaInfo(for: taskResult.identifier) == nil)
+            else {
+                return nil
+        }
+        
+        var dataResults: [SBBJSONValue] = []
+        if let data = try recursiveGetClientData(from: taskResult.stepHistory) {
+            dataResults.append(data)
+        }
+        if let asyncResults = taskResult.asyncResults,
+            let data = try recursiveGetClientData(from: asyncResults) {
+            dataResults.append(data)
+        }
+        return dataResults.count <= 1 ? dataResults.first : (dataResults as NSArray)
+    }
+    
+    private func recursiveGetClientData(from results: [RSDResult]) throws  -> SBBJSONValue? {
+        
+        func getClientData(_ result: RSDResult) throws -> SBBJSONValue? {
+            if let clientResult = result as? SBAClientDataResult {
+                return try clientResult.clientData()
+            }
+            else if let taskResult = result as? RSDTaskResult {
+                return try self.recursiveGetClientData(from: taskResult, isTopLevel: false)
+            }
+            else if let collectionResult = result as? RSDCollectionResult {
+                return try self.recursiveGetClientData(from: collectionResult.inputResults)
+            }
+            else {
+                return nil
+            }
+        }
+        
+        let dictionary = try results.rsd_filteredDictionary { (result) throws -> (String, SBBJSONValue)? in
+            guard let data = try getClientData(result) else { return nil }
+            return (result.identifier, data)
+        }
+        
+        // Return the "most appropriate" value for the combined results.
+        if dictionary.count == 0 {
+            return nil
+        }
+        else if dictionary.count == 1 {
+            return dictionary.first!.value
+        }
+        else {
+            return dictionary as NSDictionary
+        }
     }
     
     /// Send message to Bridge server to update the given schedules. This includes both the task
@@ -617,9 +698,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     /// primary task (such as a required one-time survey).
     open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
         BridgeSDK.activityManager.updateScheduledActivities(schedules) { (_, _) in
-            
-            //print("\n\n--- Finished updating schedules: \(schedules)")
-            
             // Post notification that the schedules were updated.
             NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
                                             object: self,
@@ -677,16 +755,15 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         let archiveIdentifier = schemaInfo.schemaIdentifier ?? taskResult.identifier
         let schedule = self.scheduledActivity(for: taskResult, scheduleIdentifier: scheduleIdentifier)
         
-        if let inputArchive = currentArchive as? SBAScheduledActivityArchive,
-            ((inputArchive.identifier == archiveIdentifier) ||
-             (inputArchive.schedule?.activity.guid == schedule?.activity.guid)) {
-            // If the identifiers or activity guids are the same, then return the current archive.
+        // If there is a top-level archive then return the exisiting if and only if the identifiers are the
+        // same or the schema is nil.
+        if let inputArchive = currentArchive,
+            ((inputArchive.identifier == archiveIdentifier) || (schema == nil)) {
             return inputArchive
         }
-        else {
-            // Create a new archive.
-            return SBAScheduledActivityArchive(identifier: archiveIdentifier, schemaInfo: schemaInfo, schedule: schedule)
-        }
+        
+        // Otherwise, return the current archive or
+        return SBAScheduledActivityArchive(identifier: archiveIdentifier, schemaInfo: schemaInfo, schedule: schedule)
     }
     
     /// Finalize the upload of all the created archives.

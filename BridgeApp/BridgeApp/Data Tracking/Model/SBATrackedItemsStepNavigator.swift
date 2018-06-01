@@ -51,6 +51,13 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
         case identifier, type
     }
     
+    private enum TaskCodingKeys : String, CodingKey {
+        case activityIdentifier = "identifier"
+    }
+    
+    /// The activity identifier associated with this tracked items.
+    public let activityIdentifier: RSDIdentifier
+    
     /// The list of medications.
     public var items: [SBATrackedItem] {
         return self.selectionStep.items
@@ -88,7 +95,8 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
     /// - parameters:
     ///     - items: The list of medications.
     ///     - sections: The section items for mapping each medication.
-    public required init(items: [SBATrackedItem], sections: [SBATrackedSection]? = nil) {
+    public required init(identifier: String, items: [SBATrackedItem], sections: [SBATrackedSection]? = nil) {
+        self.activityIdentifier = RSDIdentifier(rawValue: identifier)
         self.selectionStep = type(of: self).buildSelectionStep(items: items, sections: sections)
         self.reviewStep = type(of: self).buildReviewStep(items: items, sections: sections)
         self.detailStepTemplates = type(of: self).buildDetailSteps(items: items, sections: sections)
@@ -102,6 +110,9 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
     /// properties found in the decoder. Currently, this assumes that the steps inherit from
     /// `RSDUIStepObject`
     public required init(from decoder: Decoder) throws {
+        let taskContainer = try decoder.container(keyedBy: TaskCodingKeys.self)
+        self.activityIdentifier = try taskContainer.decode(RSDIdentifier.self, forKey: .activityIdentifier)
+        
         let (items, sections) = try type(of: self).decodeItems(from: decoder)
         
         // Build the details template.
