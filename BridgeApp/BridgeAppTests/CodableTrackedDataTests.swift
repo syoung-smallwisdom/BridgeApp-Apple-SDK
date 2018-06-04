@@ -59,7 +59,7 @@ class CodableTrackedDataTests: XCTestCase {
         """.data(using: .utf8)! // our data in native (JSON) format
         
         do {
-            let object = try decoder.decode(RSDTrackedSectionObject.self, from: json)
+            let object = try decoder.decode(SBATrackedSectionObject.self, from: json)
             
             XCTAssertEqual(object.identifier, "foo")
             XCTAssertEqual(object.text, "Text")
@@ -96,7 +96,7 @@ class CodableTrackedDataTests: XCTestCase {
         """.data(using: .utf8)! // our data in native (JSON) format
         
         do {
-            let object = try decoder.decode(RSDTrackedItemObject.self, from: json)
+            let object = try decoder.decode(SBATrackedItemObject.self, from: json)
             
             XCTAssertEqual(object.identifier, "advil-ibuprofen")
             XCTAssertEqual(object.sectionIdentifier, "pain")
@@ -135,7 +135,7 @@ class CodableTrackedDataTests: XCTestCase {
         """.data(using: .utf8)! // our data in native (JSON) format
         
         do {
-            let object = try decoder.decode(RSDTrackedItemObject.self, from: json)
+            let object = try decoder.decode(SBATrackedItemObject.self, from: json)
             
             XCTAssertEqual(object.identifier, "Ibuprofen")
             XCTAssertEqual(object.text, "Ibuprofen")

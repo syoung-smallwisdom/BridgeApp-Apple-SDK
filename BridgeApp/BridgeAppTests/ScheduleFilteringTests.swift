@@ -305,8 +305,9 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: schema)
         SBABridgeConfiguration.shared.addMapping(with: task)
         
-        let (taskPath, schedule, clientData) = scheduleManager.instantiateTaskPath(for: taskInfo)
-        
+        let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo)
+        let clientData = taskPath.userInfo
+
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
         XCTAssertEqual(clientData as? NSDictionary, expectedClientData as NSDictionary)
@@ -347,8 +348,9 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: schema)
         SBABridgeConfiguration.shared.addMapping(with: task)
         
-        let (taskPath, schedule, clientData) = scheduleManager.instantiateTaskPath(for: taskInfo)
-        
+        let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo)
+        let clientData = taskPath.userInfo
+
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
         XCTAssertEqual(clientData as? NSDictionary, expectedClientData as NSDictionary)
@@ -397,8 +399,9 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: schema)
         SBABridgeConfiguration.shared.addMapping(with: task)
         
-        let (taskPath, schedule, clientData) = scheduleManager.instantiateTaskPath(for: taskInfo, in: group1)
-        
+        let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo, in: group1)
+        let clientData = taskPath.userInfo
+
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
         XCTAssertEqual(clientData as? NSDictionary, expectedClientData as NSDictionary)
@@ -417,7 +420,8 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: schema)
         SBABridgeConfiguration.shared.addMapping(with: task)
         
-        let (taskPath, schedule, clientData) = scheduleManager.instantiateTaskPath(for: taskInfo)
+        let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo)
+        let clientData = taskPath.userInfo
         
         XCTAssertNil(schedule)
         XCTAssertNil(clientData)

@@ -276,9 +276,10 @@ class TrackedLoggingDataSourceTests: XCTestCase {
     func buildDataSource() -> RSDTableDataSource? {
         let (items, sections) = buildMedicationItems()
         let tracker = SBATrackedItemsStepNavigator(identifier: "Test", items: items, sections: sections)
-        var result = RSDTrackedItemsResultObject(identifier: "selection")
-        result.items = ["medA2", "medB1", "medC1"].map { RSDIdentifier(rawValue: $0) }
-        tracker.previousResult = result
+        var result = SBATrackedLoggingCollectionResultObject(identifier: "selection")
+        result.updateSelected(to: ["medA2", "medB1", "medC1"], with: items)
+        let clientData = try! result.clientData()
+        tracker.previousClientData = clientData
         
         let task = RSDTaskObject(identifier: "loggingTest", stepNavigator: tracker)
         let taskPath = RSDTaskPath(task: task)

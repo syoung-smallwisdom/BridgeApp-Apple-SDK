@@ -151,11 +151,28 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     
     /// Update the details to the new value. This is only valid for a new value that is an `RSDResult`.
     public mutating func updateDetails(to newValue: SBATrackedItemAnswer) {
-        guard let result = newValue as? RSDResult else {
+        guard let result = newValue as? SBATrackedLoggingResultObject else {
             assertionFailure("This is not a valid tracked item answer type. Cannot map to a result.")
             return
         }
         self.appendInputResults(with: result)
+    }
+    
+    /// Build the client data for this result.
+    public func clientData() throws -> SBBJSONValue? {
+        return try self.rsd_jsonEncodedDictionary() as NSDictionary
+    }
+    
+    /// Update the selection from the client data.
+    mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
+        let decoder = SBAFactory.shared.createJSONDecoder()
+        let result = try decoder.decode(SBATrackedLoggingCollectionResultObject.self, from: clientData)
+        self.loggingItems = result.loggingItems.map {
+            var loggedResult = $0
+            loggedResult.loggedDate = nil
+            loggedResult.inputResults = []
+            return loggedResult
+        }
     }
 }
 
@@ -212,6 +229,7 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         self.identifier = try container.decode(String.self, forKey: .identifier)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.detail = try container.decodeIfPresent(String.self, forKey: .detail)
+        self.loggedDate = try container.decodeIfPresent(Date.self, forKey: .loggedDate)
         // TODO: syoung 05/30/2018 Decode the answers.
         self.inputResults = []
     }

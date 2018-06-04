@@ -428,18 +428,18 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     ///     - taskPath: The instantiated task path.
     ///     - referenceSchedule: The schedule to reference for uploading the task path results (if any).
     ///     - clientData: The client data from the most recent finished run of the schedule (if any).
-    open func instantiateTaskPath(for taskInfo: RSDTaskInfo, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?, clientData: SBBJSONValue?) {
+    open func instantiateTaskPath(for taskInfo: RSDTaskInfo, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?) {
         
         // Set up predicates.
         var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
         if let group = (activityGroup ?? self.activityGroup) {
-            if let guid = group.schedulePlanGuid {
-                taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                    taskPredicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
-            }
-            else if let guid = group.activityGuidMap?[taskInfo.identifier] {
+            if let guid = group.activityGuidMap?[taskInfo.identifier] {
                 taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                     taskPredicate, SBBScheduledActivity.activityGuidPredicate(with: guid)])
+            }
+            else if let guid = group.schedulePlanGuid {
+                taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                    taskPredicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
             }
         }
 
@@ -448,19 +448,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
             taskPredicate.evaluate(with: $0) && (($0.scheduledOn.timeIntervalSinceNow < 0) && !$0.isExpired)
         }
         let schedule = todaySchedules.rsd_last(where: { $0.isCompleted == false }) ?? todaySchedules.last
-        
-        // Get the clientData from the most recent finished schedule with the same activity identifier.
-        var clientData: SBBJSONValue?
-        var currentFinishedOn = Date.distantPast
-        let activityPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
-        self.scheduledActivities.forEach { (schedule) in
-            if let data = schedule.clientData,
-                let finishedOn = schedule.finishedOn, finishedOn > currentFinishedOn,
-                activityPredicate.evaluate(with: schedule) {
-                clientData = data
-                currentFinishedOn = finishedOn
-            }
-        }
         
         // Create the task path, by looking for a valid task transformer.
         let taskPath: RSDTaskPath
@@ -496,6 +483,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         
         // Assign values to the task path from the schedule.
         taskPath.scheduleIdentifier = schedule?.guid
+        taskPath.userInfo = clientData(with: taskInfo.identifier)
         
         // Set up the data groups tracking rule.
         if let participant = SBAParticipantManager.shared.studyParticipant {
@@ -508,7 +496,27 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
             debugPrint("WARNING: Missing a study particpant. Cannot get the data groups.")
         }
         
-        return (taskPath, schedule, clientData)
+        return (taskPath, schedule)
+    }
+    
+    /// Find the most recent client data appended to any schedule for this activity identifier.
+    ///
+    /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
+    /// - returns: The client data JSON (if any) associated with this activity identifier.
+    open func clientData(with activityIdentifier: String) -> SBBJSONValue? {
+        // Get the clientData from the most recent finished schedule with the same activity identifier.
+        var clientData: SBBJSONValue?
+        var currentFinishedOn = Date.distantPast
+        let activityPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: activityIdentifier)
+        self.scheduledActivities.forEach { (schedule) in
+            if let data = schedule.clientData,
+                let finishedOn = schedule.finishedOn, finishedOn > currentFinishedOn,
+                activityPredicate.evaluate(with: schedule) {
+                clientData = data
+                currentFinishedOn = finishedOn
+            }
+        }
+        return clientData
     }
     
     /// Subclass the cohorts tracking rule so that we can use casting to check for an existing
@@ -556,6 +564,8 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     // MARK: Upload to server
     
     /// Update the data groups. By default, this will look for changes on the shared `DataGroupsTrackingRule`.
+    ///
+    /// - parameter taskPath: The task path for the task which has just run.
     open func updateDataGroups(for taskPath: RSDTaskPath) {
         let rules = SBAFactory.shared.trackingRules.remove(where: { $0 is DataGroupsTrackingRule})
         guard let rule = rules.first as? DataGroupsTrackingRule,
@@ -573,6 +583,8 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     
     /// Update the values on the scheduled activity. By default, this will recurse through the task path
     /// and its children, looking for a schedule associated with the subtask path.
+    ///
+    /// - parameter taskPath: The task path for the task which has just run.
     public func updateSchedules(for taskPath: RSDTaskPath) {
         guard taskPath.parentPath == nil else {
             assertionFailure("This method should **only** be called for the top-level task path.")
@@ -600,6 +612,8 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     }
     
     /// For each schedule that this task modifies, mark it as completed and add the client data.
+    ///
+    /// - parameter taskPath: The task path for the task which has just run.
     open func getAndUpdateSchedule(for taskPath: RSDTaskPath) -> SBBScheduledActivity? {
         guard let schedule = self.scheduledActivity(for: taskPath.result, scheduleIdentifier: taskPath.scheduleIdentifier)
             else {
@@ -614,8 +628,12 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     }
     
     /// Append the client data to the schedule.
+    ///
+    /// - parameters:
+    ///     - taskPath: The task path for the task which has just run.
+    ///     - schedule: The schedule associated with this task segment.
     open func appendClientData(from taskPath: RSDTaskPath, to schedule: SBBScheduledActivity) {
-        guard let clientData = self.clientData(from: taskPath, for: schedule) else { return }
+        guard let clientData = self.buildClientData(from: taskPath, for: schedule) else { return }
         if let existingClientData = schedule.clientData {
             var array: [Any] = (existingClientData as? [Any]) ?? [existingClientData]
             if let newArray = clientData as? [Any] {
@@ -630,8 +648,13 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         }
     }
     
-    /// Get the client data from the given task path.
-    open func clientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> SBBJSONValue? {
+    /// Build the client data from the given task path.
+    ///
+    /// - parameters:
+    ///     - taskPath: The task path for the task which has just run.
+    ///     - schedule: The schedule associated with this task segment.
+    /// - returns: The client data built for this task path (if any).
+    open func buildClientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> SBBJSONValue? {
         do {
             return try recursiveGetClientData(from: taskPath.result, isTopLevel: true)
         }
@@ -696,6 +719,10 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     /// Send message to Bridge server to update the given schedules. This includes both the task
     /// that was completed and any tasks that were performed as a requirement of completion of the
     /// primary task (such as a required one-time survey).
+    ///
+    /// - parameters:
+    ///     - schedules: The schedules for which to send updates.
+    ///     - taskPath: The task path (if available) for the task run that triggered this update.
     open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
         BridgeSDK.activityManager.updateScheduledActivities(schedules) { (_, _) in
             // Post notification that the schedules were updated.

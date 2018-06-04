@@ -109,9 +109,10 @@ class TrackingNavigatorTests: XCTestCase {
                 return
         }
         
-        var initialResult = RSDTrackedItemsResultObject(identifier: taskPath.task!.identifier)
+        var initialResult = SBATrackedLoggingCollectionResultObject(identifier: taskPath.task!.identifier)
         initialResult.updateSelected(to: ["itemA2", "itemB1", "itemC3"], with: tracker.items)
-        tracker.previousResult = initialResult
+        let clientData = try! initialResult.clientData()
+        tracker.previousClientData = clientData
         
         let (firstStep, _) = tracker.step(after: nil, with: &taskPath.result)
         XCTAssertNotNil(firstStep)
