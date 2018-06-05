@@ -131,12 +131,6 @@ open class SBAMedicationDetailsStepObject : SBATrackedItemDetailsStepObject {
     // "MEDICATION_DAYS_OF_WEEK_TITLE_%1$@_at_%2$@" = "Which days do you take %1$@ at %2$@?";
 }
 
-/// The medication logging step is used to log information about each item that is being tracked.
-open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject {
-    
-    // TODO: syoung 02/28/2018 Implement model for this step.
-}
-
 /// A medication item includes details for displaying a given medication.
 ///
 /// - example:

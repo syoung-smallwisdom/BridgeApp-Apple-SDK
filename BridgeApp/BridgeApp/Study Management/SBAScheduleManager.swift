@@ -709,7 +709,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     
     private func recursiveGetClientData(from results: [RSDResult]) throws -> (SBBJSONValue, Bool)? {
         
-        
         func getClientData(_ result: RSDResult) throws -> (SBBJSONValue, Bool)? {
             if let clientResult = result as? SBAClientDataResult,
                 let clientData = try clientResult.clientData() {
@@ -737,11 +736,11 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         if dictionary.count == 0 {
             return nil
         }
-        else if dictionary.count == 1 {
+        else if dictionary.sba_uniqueCount() == 1 || shouldReplacePrevious {
             return (dictionary.first!.value, shouldReplacePrevious)
         }
         else {
-            return (dictionary as NSDictionary, shouldReplacePrevious)
+            return (dictionary as NSDictionary, false)
         }
     }
     
