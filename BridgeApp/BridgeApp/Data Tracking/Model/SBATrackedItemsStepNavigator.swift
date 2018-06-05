@@ -82,7 +82,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     }
     
     /// A previous result that can be used to pre-populate the data set.
-    public private(set) var previousClientData: SBBJSONValue? {
+    public internal(set) var previousClientData: SBBJSONValue? {
         didSet {
             // If the previous result is set to a non-nil value then use that as the in-memory result.
             if let clientData = previousClientData {
