@@ -35,22 +35,22 @@ import Foundation
 
 extension RSDStepNavigatorType {
     
-    /// Defaults to creating a `RSDMedicationTrackingStepNavigator`.
+    /// Defaults to creating a `SBAMedicationTrackingStepNavigator`.
     public static let medicationTracking: RSDStepNavigatorType = "medicationTracking"
     
-    /// Defaults to creating a `RSDTrackedItemsStepNavigator`.
+    /// Defaults to creating a `SBATrackedItemsStepNavigator`.
     public static let tracking: RSDStepNavigatorType = "tracking"
 }
 
 extension RSDStepType {
     
-    /// Defaults to creating a `RSDTrackedItemsLoggingStepObject`.
+    /// Defaults to creating a `SBATrackedItemsLoggingStepObject`.
     public static let logging: RSDStepType = "logging"
     
-    /// Defaults to creating a `RSDTrackedItemsReviewStepObject`.
+    /// Defaults to creating a `SBATrackedItemsReviewStepObject`.
     public static let review: RSDStepType = "review"
     
-    /// Defaults to creating a `RSDTrackedSelectionStepObject`.
+    /// Defaults to creating a `SBATrackedSelectionStepObject`.
     public static let selection: RSDStepType = "selection"
     
     /// Defaults to creating a `SBASymptomLoggingStepObject`.

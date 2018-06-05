@@ -52,7 +52,7 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
 
     /// Overridable class function for building the sections of the table.
     /// - parameters:
-    ///     - step: The RSDTrackedSelectionStep for this data source.
+    ///     - step: The `SBATrackedItemsStep` for this data source.
     ///     - initialResult: The initial result (if any).
     /// - returns:
     ///     - sections: The built table sections.

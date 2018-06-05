@@ -64,7 +64,7 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     
     /// Initialize a new `RSDFormStepDataSourceObject`.
     /// - parameters:
-    ///     - step:             The RSDTrackedSelectionStep for this data source.
+    ///     - step:             The `SBATrackedItemsStep` for this data source.
     ///     - taskPath:         The current task path for this data source.
     public init(step: SBATrackedItemsStep, taskPath: RSDTaskPath) {
         self.trackedStep = step
@@ -106,7 +106,7 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     
     /// Overridable class function for building the sections of the table.
     /// - parameters:
-    ///     - step: The RSDTrackedSelectionStep for this data source.
+    ///     - step: The `SBATrackedItemsStep` for this data source.
     ///     - initialResult: The initial result (if any).
     /// - returns:
     ///     - sections: The built table sections.
@@ -132,12 +132,12 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     }
     
     /// Instantiate a tracking result of the appropriate object type for this data source.
-    /// The default implementation returns a new instance of `RSDTrackedItemsResultObject`.
+    /// The default implementation returns a new instance of `SBATrackedItemsResultObject`.
     ///
     /// - returns: The appropriate tracking result.
     open func instantiateTrackingResult() -> SBATrackedItemsResult {
         return self.step.instantiateStepResult() as? SBATrackedItemsResult ??
-            RSDTrackedItemsResultObject(identifier: step.identifier)
+            SBATrackedItemsResultObject(identifier: step.identifier)
     }
     
     // MARK: RSDTableDataSource implementation

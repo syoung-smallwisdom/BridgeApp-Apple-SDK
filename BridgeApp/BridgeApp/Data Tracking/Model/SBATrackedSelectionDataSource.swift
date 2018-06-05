@@ -39,7 +39,7 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
 
     /// Overridable class function for building the sections of the table.
     /// - parameters:
-    ///     - step: The RSDTrackedSelectionStep for this data source.
+    ///     - step: The `SBATrackedItemsStep` for this data source.
     ///     - initialResult: The initial result (if any).
     /// - returns:
     ///     - sections: The built table sections.
@@ -93,7 +93,7 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
         }
         otherSections.forEach { (sectionIdentifier) in
             let choices = trackedItems.remove(where: { $0.sectionIdentifier == sectionIdentifier })
-            let section = RSDTrackedSectionObject(identifier: sectionIdentifier)
+            let section = SBATrackedSectionObject(identifier: sectionIdentifier)
             appendSection(choices: choices, section: section)
         }
         

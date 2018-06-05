@@ -170,7 +170,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
                 return
         }
         
-        let topClientData = self.scheduleManager.clientData(from: taskPath, for: topSchedule)
+        let topClientData = self.scheduleManager.buildClientData(from: taskPath, for: topSchedule)
         XCTAssertNotNil(topClientData)
         if let dictionary = topClientData as? NSDictionary {
             let expectedDictionary : NSDictionary = [
@@ -187,7 +187,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             XCTFail("\(String(describing: topClientData)) is not a Dictionary.")
         }
         
-        let insertedClientData = self.scheduleManager.clientData(from: subtaskPath, for: subtaskSchedule)
+        let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath, for: subtaskSchedule)
         XCTAssertNotNil(insertedClientData)
         if let stringValue = insertedClientData as? String {
             XCTAssertEqual(stringValue, "insertStep")

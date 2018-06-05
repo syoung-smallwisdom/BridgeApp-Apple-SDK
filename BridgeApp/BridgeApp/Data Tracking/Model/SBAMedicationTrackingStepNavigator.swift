@@ -38,7 +38,7 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     override open class func decodeItems(from decoder: Decoder) throws -> (items: [SBATrackedItem], sections: [SBATrackedSection]?) {
         let container = try decoder.container(keyedBy: ItemsCodingKeys.self)
         let items = try container.decode([SBAMedicationItem].self, forKey: .items)
-        let sections = try container.decodeIfPresent([RSDTrackedSectionObject].self, forKey: .sections)
+        let sections = try container.decodeIfPresent([SBATrackedSectionObject].self, forKey: .sections)
         return (items, sections)
     }
     
@@ -72,11 +72,11 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         return [SBAMedicationDetailsStepObject(identifier: StepIdentifiers.addDetails.stringValue)]
     }
     
-    override open class func buildLoggingStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep? {
+    override open class func buildLoggingStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep {
         return SBAMedicationLoggingStepObject(identifier: StepIdentifiers.logging.stringValue, items: items, sections: sections)
     }
     
-    override open func instantiateReviewResult() -> SBATrackedItemsResult {
+    override open func instantiateLoggingResult() -> SBATrackedItemsCollectionResult {
         return SBAMedicationTrackingResult(identifier: self.reviewStep!.identifier)
     }
 }
@@ -223,7 +223,7 @@ public struct SBAMedicationItem : Codable, SBAMedication, RSDEmbeddedIconVendor 
 public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
     
     private enum CodingKeys : String, CodingKey {
-        case identifier, dosage, scheduleItems, isContinuousInjection = "injection"
+        case identifier, dosage, scheduleItems, isContinuousInjection = "injection", loggedDate
     }
     
     /// An identifier that maps to the associated `RSDMedicationItem`.
@@ -238,6 +238,9 @@ public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
     /// Is the medication delivered via continuous injection? If this is the case, then questions about
     /// schedule timing and dosage should be skipped.
     public var isContinuousInjection: Bool?
+    
+    /// The timestamp to use to mark the medication as "taken".
+    public var loggedDate: Date?
     
     /// Required items for a medication are dosage and schedule unless this is a continuous injection.
     public var hasRequiredValues: Bool {
@@ -352,5 +355,20 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         }
         self.medications.remove(at: idx)
         self.medications.insert(newMedication, at: idx)
+    }
+    
+    public func clientData() throws -> SBBJSONValue? {
+        let dictionary = try self.rsd_jsonEncodedDictionary()
+        return dictionary[CodingKeys.medications.stringValue] as? SBBJSONValue
+    }
+    
+    mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
+        let decoder = SBAFactory.shared.createJSONDecoder()
+        let meds = try decoder.decode([SBAMedicationAnswer].self, from: clientData)
+        self.medications = meds.map {
+            var med = $0
+            med.loggedDate = nil
+            return med
+        }
     }
 }

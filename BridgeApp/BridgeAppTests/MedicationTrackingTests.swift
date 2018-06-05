@@ -318,7 +318,9 @@ class MedicationTrackingTests: XCTestCase {
         medC3.dosage = "1"
         medC3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: [.sunday, .thursday])]
         initialResult.medications = [medA3, medC3]
-        medTracker.previousResult = initialResult
+        let clientData = try! initialResult.clientData()
+        
+        medTracker.previousClientData = clientData
 
         var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "logMedications")
         
@@ -505,10 +507,10 @@ func buildMedicationItems() -> (items: [SBAMedicationItem], sections: [SBATracke
                     SBAMedicationItem(identifier: "medFooSection2", sectionIdentifier: "Foo"),
                     ]
     
-    let sections = [    RSDTrackedSectionObject(identifier: "section1"),
-                        RSDTrackedSectionObject(identifier: "section2"),
-                        RSDTrackedSectionObject(identifier: "section3"),
-                        RSDTrackedSectionObject(identifier: "section4"),
+    let sections = [    SBATrackedSectionObject(identifier: "section1"),
+                        SBATrackedSectionObject(identifier: "section2"),
+                        SBATrackedSectionObject(identifier: "section3"),
+                        SBATrackedSectionObject(identifier: "section4"),
                         ]
     
     return (items, sections)
