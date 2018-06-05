@@ -155,6 +155,8 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     }
     
     func testGetClientData_CompoundTask() {
+        shouldReplacePrevious = false
+
         let taskPath = createCompoundTaskController().taskPath!
         guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
             XCTFail("Fails assumption. Could not retrieve child task path.")
@@ -170,7 +172,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
                 return
         }
         
-        let topClientData = self.scheduleManager.buildClientData(from: taskPath, for: topSchedule)
+        let topClientData = self.scheduleManager.buildClientData(from: taskPath, for: topSchedule)?.clientData
         XCTAssertNotNil(topClientData)
         if let dictionary = topClientData as? NSDictionary {
             let expectedDictionary : NSDictionary = [
@@ -187,7 +189,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             XCTFail("\(String(describing: topClientData)) is not a Dictionary.")
         }
         
-        let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath, for: subtaskSchedule)
+        let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath, for: subtaskSchedule)?.clientData
         XCTAssertNotNil(insertedClientData)
         if let stringValue = insertedClientData as? String {
             XCTAssertEqual(stringValue, "insertStep")
@@ -197,7 +199,8 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         }
     }
     
-    func testAppendClientData() {
+    func testAppendClientData_ShouldReplaceIsFalse() {
+        shouldReplacePrevious = false
         
         let taskPath = createCompoundTaskController().taskPath!
         guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
@@ -218,6 +221,30 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         self.scheduleManager.appendClientData(from: subtaskPath, to: schedule)
         XCTAssertEqual(schedule.clientData as? [String], ["insertStep", "insertStep"])
+    }
+    
+    func testAppendClientData_ShouldReplaceIsTrue() {
+        shouldReplacePrevious = true
+        
+        let taskPath = createCompoundTaskController().taskPath!
+        guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
+            XCTFail("Fails assumption. Could not retrieve child task path.")
+            return
+        }
+        
+        // Create an associated schedule for the inserted task and the top level task
+        let schedules = self.createSchedules(identifiers: [mainTaskIdentifier, insertTaskIdentifier],
+                                             clientData: nil)
+        guard let schedule = schedules[insertTaskIdentifier] else {
+            XCTFail("Fails assumption. Did not create expected schedules.")
+            return
+        }
+        
+        self.scheduleManager.appendClientData(from: subtaskPath, to: schedule)
+        XCTAssertEqual(schedule.clientData as? [String], ["insertStep"])
+        
+        self.scheduleManager.appendClientData(from: subtaskPath, to: schedule)
+        XCTAssertEqual(schedule.clientData as? [String], ["insertStep"])
     }
     
     func testUpdateSchedules() {
@@ -286,11 +313,17 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     }
 }
 
+var shouldReplacePrevious = false
+
 extension RSDAnswerResultObject : SBAClientDataResult {
     
     public func clientData() throws -> SBBJSONValue? {
         guard self.answerType == .string else { return nil }
         return self.value as? NSString
+    }
+    
+    public func shouldReplacePreviousClientData() -> Bool {
+        return shouldReplacePrevious
     }
     
     public func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
