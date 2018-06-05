@@ -306,7 +306,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: task)
         
         let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo)
-        let clientData = taskPath.userInfo
+        let clientData = scheduleManager.clientData(with: taskInfo.identifier)
 
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
@@ -349,7 +349,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: task)
         
         let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo)
-        let clientData = taskPath.userInfo
+        let clientData = scheduleManager.clientData(with: taskInfo.identifier)
 
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
@@ -400,7 +400,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: task)
         
         let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo, in: group1)
-        let clientData = taskPath.userInfo
+        let clientData = scheduleManager.clientData(with: taskInfo.identifier)
 
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
@@ -421,10 +421,9 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: task)
         
         let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo)
-        let clientData = taskPath.userInfo
-        
+        let clientData = scheduleManager.clientData(with: taskInfo.identifier)
+
         XCTAssertNil(schedule)
-        XCTAssertNil(clientData)
         XCTAssertNil(clientData)
         XCTAssertEqual(taskPath.task?.identifier, task.identifier)
         if let navigator = taskPath.task?.stepNavigator as? RSDConditionalStepNavigator, let step = navigator.steps.first {

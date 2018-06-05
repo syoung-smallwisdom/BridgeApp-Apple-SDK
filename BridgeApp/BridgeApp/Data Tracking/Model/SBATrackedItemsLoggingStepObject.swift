@@ -165,8 +165,13 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     
     /// Update the selection from the client data.
     mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
+        guard let dictionary = (clientData as? NSDictionary) ?? (clientData as? [NSDictionary])?.last
+            else {
+                assertionFailure("This is not a valid client data object.")
+                return
+        }
         let decoder = SBAFactory.shared.createJSONDecoder()
-        let result = try decoder.decode(SBATrackedLoggingCollectionResultObject.self, from: clientData)
+        let result = try decoder.decode(SBATrackedLoggingCollectionResultObject.self, from: dictionary)
         self.loggingItems = result.loggingItems.map {
             var loggedResult = $0
             loggedResult.loggedDate = nil

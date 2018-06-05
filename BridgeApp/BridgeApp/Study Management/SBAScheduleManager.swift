@@ -49,7 +49,7 @@ extension Notification.Name {
 /// valid for today and the most recent finished activity (if any) for each activity identifier where the
 /// "activity identifier" refers to an `SBBActivity` object's associated `SBAActivityReference`.
 ///
-open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
+open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDelegate {
 
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
@@ -483,7 +483,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         
         // Assign values to the task path from the schedule.
         taskPath.scheduleIdentifier = schedule?.guid
-        taskPath.userInfo = clientData(with: taskInfo.identifier)
+        taskPath.trackingDelegate = self
         
         // Set up the data groups tracking rule.
         if let participant = SBAParticipantManager.shared.studyParticipant {

@@ -35,8 +35,8 @@ import Foundation
 
 /// `SBATrackedItemsStepNavigator` is a general-purpose navigator designed to be used for selecting tracked
 /// data such as medication, triggers, or symptoms.
-open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
-    
+open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
+
     /// Publicly accessible coding keys for the default structure for decoding items and sections.
     public enum ItemsCodingKeys : String, CodingKey {
         case items, sections
@@ -82,13 +82,23 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
     }
     
     /// A previous result that can be used to pre-populate the data set.
-    public var previousClientData: SBBJSONValue? {
+    var previousClientData: SBBJSONValue? {
         didSet {
             // If the previous result is set to a non-nil value then use that as the in-memory result.
             if let clientData = previousClientData {
                 try? _inMemoryResult.updateSelected(from: clientData, with: self.items)
             }
         }
+    }
+    
+    /// Setup data tracking for this task.
+    open func setupTracking(with taskPath: RSDTaskPath) {
+        guard let scheduleManager = taskPath.trackingDelegate as? SBAScheduleManager,
+            let clientData = scheduleManager.clientData(with: self.activityIdentifier.stringValue)
+            else {
+                return
+        }
+        self.previousClientData = clientData
     }
     
     /// Default initializer.
