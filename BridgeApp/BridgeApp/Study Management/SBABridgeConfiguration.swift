@@ -334,7 +334,6 @@ struct SBAActivityMappingObject : Decodable {
 ///                "activityIdentifiers": ["taskA", "taskB", "taskC"]
 ///            }
 ///            """.data(using: .utf8)! // our data in native (JSON) format
-
 /// ````
 public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAActivityGroup {
 
