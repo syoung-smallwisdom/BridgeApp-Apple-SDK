@@ -378,10 +378,10 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     
     /// Returns `true` unless this is a logging step or review step with all information completed.
     open func hasStep(after step: RSDStep?, with result: RSDTaskResult) -> Bool {
-        /// There is always a first step. If nil, then return `true`.
+        // There is always a first step. If nil, then return `true`.
         guard let identifier = step?.identifier else { return true }
         
-        /// Logging is always the last step.
+        // Logging is always the last step.
         if identifier == self.loggingStep.identifier { return false }
         
         // If this is not a review step then there will always be a step after b/c the
