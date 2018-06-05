@@ -160,7 +160,17 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     
     /// Build the client data for this result.
     public func clientData() throws -> SBBJSONValue? {
+        // Only include the client data for the logging result and not the selection result.
+        guard identifier == SBATrackedItemsStepNavigator.StepIdentifiers.logging.stringValue
+            else {
+                return nil
+        }
         return try self.rsd_jsonEncodedDictionary() as NSDictionary
+    }
+    
+    /// Returns `false` to save the results of previous runs.
+    public func shouldReplacePreviousClientData() -> Bool {
+        return false
     }
     
     /// Update the selection from the client data.

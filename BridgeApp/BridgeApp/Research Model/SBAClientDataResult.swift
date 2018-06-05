@@ -39,4 +39,7 @@ public protocol SBAClientDataResult : RSDResult, RSDArchivable {
     
     /// Build the client data object appropriate to this result.
     func clientData() throws -> SBBJSONValue?
+    
+    /// Should the previous client data object be replaced with this one?
+    func shouldReplacePreviousClientData() -> Bool
 }

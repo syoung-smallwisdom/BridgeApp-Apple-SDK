@@ -223,7 +223,7 @@ public struct SBAMedicationItem : Codable, SBAMedication, RSDEmbeddedIconVendor 
 public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
     
     private enum CodingKeys : String, CodingKey {
-        case identifier, dosage, scheduleItems, isContinuousInjection = "injection", loggedDate
+        case identifier, dosage, scheduleItems, isContinuousInjection = "injection", timestamps
     }
     
     /// An identifier that maps to the associated `RSDMedicationItem`.
@@ -239,8 +239,8 @@ public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
     /// schedule timing and dosage should be skipped.
     public var isContinuousInjection: Bool?
     
-    /// The timestamp to use to mark the medication as "taken".
-    public var loggedDate: Date?
+    /// The timestamps to use to mark the medication as "taken".
+    public var timestamps: [Date]?
     
     /// Required items for a medication are dosage and schedule unless this is a continuous injection.
     public var hasRequiredValues: Bool {
@@ -362,12 +362,17 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         return dictionary[CodingKeys.medications.stringValue] as? SBBJSONValue
     }
     
+    /// Returns `true` to replace the results of a previous run.
+    public func shouldReplacePreviousClientData() -> Bool {
+        return true
+    }
+    
     mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
         let decoder = SBAFactory.shared.createJSONDecoder()
         let meds = try decoder.decode([SBAMedicationAnswer].self, from: clientData)
-        self.medications = meds.map {
-            var med = $0
-            med.loggedDate = nil
+        self.medications = meds.map { (input) in
+            var med = input
+            med.timestamps = med.timestamps?.filter { Calendar.current.isDateInToday($0) }
             return med
         }
     }

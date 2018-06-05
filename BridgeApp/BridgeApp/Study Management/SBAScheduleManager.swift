@@ -633,8 +633,10 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     ///     - taskPath: The task path for the task which has just run.
     ///     - schedule: The schedule associated with this task segment.
     open func appendClientData(from taskPath: RSDTaskPath, to schedule: SBBScheduledActivity) {
-        guard let clientData = self.buildClientData(from: taskPath, for: schedule) else { return }
-        if let existingClientData = schedule.clientData {
+        guard let (clientData, shouldReplace) = self.buildClientData(from: taskPath, for: schedule) else { return }
+        if !shouldReplace, let existingClientData = schedule.clientData {
+            
+            // If there is previous client data, then append this to that object.
             var array: [Any] = (existingClientData as? [Any]) ?? [existingClientData]
             if let newArray = clientData as? [Any] {
                 array.append(contentsOf: newArray)
@@ -644,7 +646,20 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             schedule.clientData = array as NSArray
         }
         else {
-            schedule.clientData = (clientData as? NSArray) ?? ([clientData] as NSArray)
+
+            // If there isn't previous client data or the previous data should be replaced, then set the
+            // client data to either an array or dictionary (the allowed top-level JSON objects).
+            schedule.clientData = {
+                if let array = clientData as? NSArray {
+                    return array
+                }
+                else if shouldReplace, let dictionary = clientData as? NSDictionary {
+                    return dictionary
+                }
+                else {
+                    return [clientData] as NSArray
+                }
+            }()
         }
     }
     
@@ -654,7 +669,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     ///     - taskPath: The task path for the task which has just run.
     ///     - schedule: The schedule associated with this task segment.
     /// - returns: The client data built for this task path (if any).
-    open func buildClientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> SBBJSONValue? {
+    open func buildClientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> (clientData: SBBJSONValue, shouldReplacePrevious: Bool)? {
         do {
             return try recursiveGetClientData(from: taskPath.result, isTopLevel: true)
         }
@@ -664,7 +679,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         }
     }
     
-    private func recursiveGetClientData(from taskResult: RSDTaskResult, isTopLevel: Bool) throws  -> SBBJSONValue? {
+    private func recursiveGetClientData(from taskResult: RSDTaskResult, isTopLevel: Bool) throws  -> (SBBJSONValue, Bool)? {
         // Verify that this task result is not associated with a different schema.
         guard isTopLevel || (taskResult.schemaInfo ?? self.schemaInfo(for: taskResult.identifier) == nil)
             else {
@@ -672,21 +687,33 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         }
         
         var dataResults: [SBBJSONValue] = []
-        if let data = try recursiveGetClientData(from: taskResult.stepHistory) {
+        var shouldReplacePrevious = false
+        if let (data, shouldReplace) = try recursiveGetClientData(from: taskResult.stepHistory) {
             dataResults.append(data)
+            shouldReplacePrevious = shouldReplace || shouldReplacePrevious
         }
         if let asyncResults = taskResult.asyncResults,
-            let data = try recursiveGetClientData(from: asyncResults) {
+            let (data, shouldReplace) = try recursiveGetClientData(from: asyncResults) {
             dataResults.append(data)
+            shouldReplacePrevious = shouldReplace || shouldReplacePrevious
+
         }
-        return dataResults.count <= 1 ? dataResults.first : (dataResults as NSArray)
+        
+        if let clientData = dataResults.count <= 1 ? dataResults.first : (dataResults as NSArray) {
+            return (clientData, shouldReplacePrevious)
+        }
+        else {
+            return nil
+        }
     }
     
-    private func recursiveGetClientData(from results: [RSDResult]) throws  -> SBBJSONValue? {
+    private func recursiveGetClientData(from results: [RSDResult]) throws -> (SBBJSONValue, Bool)? {
         
-        func getClientData(_ result: RSDResult) throws -> SBBJSONValue? {
-            if let clientResult = result as? SBAClientDataResult {
-                return try clientResult.clientData()
+        
+        func getClientData(_ result: RSDResult) throws -> (SBBJSONValue, Bool)? {
+            if let clientResult = result as? SBAClientDataResult,
+                let clientData = try clientResult.clientData() {
+                return (clientData, clientResult.shouldReplacePreviousClientData())
             }
             else if let taskResult = result as? RSDTaskResult {
                 return try self.recursiveGetClientData(from: taskResult, isTopLevel: false)
@@ -699,8 +726,10 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             }
         }
         
+        var shouldReplacePrevious: Bool = false
         let dictionary = try results.rsd_filteredDictionary { (result) throws -> (String, SBBJSONValue)? in
-            guard let data = try getClientData(result) else { return nil }
+            guard let (data, shouldReplace) = try getClientData(result) else { return nil }
+            shouldReplacePrevious = shouldReplace || shouldReplacePrevious
             return (result.identifier, data)
         }
         
@@ -709,10 +738,10 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             return nil
         }
         else if dictionary.count == 1 {
-            return dictionary.first!.value
+            return (dictionary.first!.value, shouldReplacePrevious)
         }
         else {
-            return dictionary as NSDictionary
+            return (dictionary as NSDictionary, shouldReplacePrevious)
         }
     }
     
