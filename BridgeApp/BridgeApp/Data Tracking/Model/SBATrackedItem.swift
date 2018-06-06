@@ -148,6 +148,10 @@ extension SBATrackedItemsCollectionResult {
     
     /// Build the archiveable or uploadable data for this result.
     public func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
+        guard let stepId = SBATrackedItemsStepNavigator.StepIdentifiers(rawValue: self.identifier),
+            (stepId == .logging || stepId == .review) else {
+                return nil
+        }
         let data = try self.rsd_jsonEncodedData()
         let manifest = RSDFileManifest(filename: self.identifier,
                                        timestamp: self.endDate,

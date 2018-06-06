@@ -63,14 +63,9 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
             return ([], [])
         }
         
-        let inputField = RSDChoiceInputFieldObject(identifier: step.identifier, choices: result.selectedAnswers, dataType: .collection(.multipleChoice, .string), uiHint: .logging)
-        let trackedItems = result.selectedAnswers.enumerated().map { (idx, item) -> RSDTableItem in
-            let choice: RSDChoice = step.items.first(where: { $0.identifier == item.identifier }) ?? item
-            return self.instantiateTableItem(at: idx, inputField: inputField, itemAnswer: item, choice: choice)
-        }
-        
-        var itemGroups: [RSDTableItemGroup] = [RSDTableItemGroup(beginningRowIndex: 0, items: trackedItems)]
-        var sections: [RSDTableSection] = [RSDTableSection(identifier: "logging", sectionIndex: 0, tableItems: trackedItems)]
+        let logging = buildLoggingSections(step: step, result: result)
+        var itemGroups = logging.itemGroups
+        var sections = logging.sections
         
         let actionType: RSDUIActionType = .addMore
         if let uiStep = step as? RSDUIActionHandler, let action = uiStep.action(for: actionType, on: step) {
@@ -78,6 +73,22 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
             itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: [tableItem]))
             sections.append(RSDTableSection(identifier: "addMore", sectionIndex: 1, tableItems: [tableItem]))
         }
+        
+        return (sections, itemGroups)
+    }
+    
+    /// Build the logging sections of the table. This is called by `buildSections(step:initialResult)` to get
+    /// the logging sections of the table. That method will then append an `.addMore` section if appropriate.
+    open class func buildLoggingSections(step: SBATrackedItemsStep, result: SBATrackedItemsResult) -> (sections: [RSDTableSection], itemGroups: [RSDTableItemGroup]) {
+        
+        let inputField = RSDChoiceInputFieldObject(identifier: step.identifier, choices: result.selectedAnswers, dataType: .collection(.multipleChoice, .string), uiHint: .logging)
+        let trackedItems = result.selectedAnswers.enumerated().map { (idx, item) -> RSDTableItem in
+            let choice: RSDChoice = step.items.first(where: { $0.identifier == item.identifier }) ?? item
+            return self.instantiateTableItem(at: idx, inputField: inputField, itemAnswer: item, choice: choice)
+        }
+        
+        let itemGroups: [RSDTableItemGroup] = [RSDTableItemGroup(beginningRowIndex: 0, items: trackedItems)]
+        let sections: [RSDTableSection] = [RSDTableSection(identifier: "logging", sectionIndex: 0, tableItems: trackedItems)]
         
         return (sections, itemGroups)
     }
@@ -90,7 +101,9 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
     ///     - choice: The choice for this row.
     /// - returns: New instance of a table item appropriate to this row.
     open class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
-        return SBATrackedLoggingTableItem(rowIndex: rowIndex, inputField: inputField, uiHint: .logging, choice: choice)
+        let timestamp = (choice as? SBATimestamp) ??
+            SBATimestamp(identifier: itemAnswer.identifier, timeOfDayString: nil, loggedDate: nil, detail: nil)
+        return SBATrackedLoggingTableItem(rowIndex: rowIndex, inputField: inputField, uiHint: .logging, choice: choice, timestamp: timestamp)
     }
     
     /// Override to mark the item as logged.
@@ -104,13 +117,15 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         guard let loggingItem = item as? SBATrackedLoggingTableItem else {
             return (false, false)
         }
-        
-        // update logged date for this item.
-        loggingItem.loggedDate = Date()
-        var loggedResult = SBATrackedLoggingResultObject(identifier: loggingItem.identifier, text: loggingItem.choice.text, detail: loggingItem.choice.detail)
-        loggedResult.loggedDate = loggingItem.loggedDate
+        loggingItem.logTimestamp()
+        return updateLoggingDetails(for: loggingItem, at: indexPath)
+    }
+    
+    /// Mark the item as logged.
+    open func updateLoggingDetails(for loggingItem: SBATrackedLoggingTableItem, at indexPath: IndexPath) -> (isSelected: Bool, reloadSection: Bool) {
         
         // Update the answers
+        let loggedResult = buildAnswer(for: loggingItem)
         var stepResult = self.trackingResult()
         stepResult.updateDetails(to: loggedResult)
         self.taskPath.appendStepHistory(with: stepResult)
@@ -119,6 +134,13 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         delegate?.tableDataSource(self, didChangeAnswersIn: indexPath.section)
         
         return (true, false)
+    }
+    
+    /// Build the answer object appropriate to this tracked logging item.
+    open func buildAnswer(for loggingItem: SBATrackedLoggingTableItem) -> SBATrackedItemAnswer {
+        var loggedResult = SBATrackedLoggingResultObject(identifier: loggingItem.identifier, text: loggingItem.choice.text, detail: loggingItem.choice.detail)
+        loggedResult.loggedDate = loggingItem.loggedDate
+        return loggedResult
     }
     
     /// Override to return valid if at least one answer is marked as logged.
@@ -211,7 +233,12 @@ open class SBAModalSelectionTableItem : RSDModalStepTableItem {
 open class SBATrackedLoggingTableItem : RSDChoiceTableItem {
     
     /// The date when the event was logged.
-    open var loggedDate: Date?
+    public var loggedDate: Date? {
+        return timestamp.loggedDate
+    }
+    
+    /// The timestamp object used to track the logged date.
+    public internal(set) var timestamp: SBATimestamp
 
     /// Override the answer to return the timestamp.
     open override var answer: Any? {
@@ -220,10 +247,113 @@ open class SBATrackedLoggingTableItem : RSDChoiceTableItem {
     
     /// Override the selected state to mark an item as selected using a timestamp.
     override open var selected : Bool {
-        get { return loggedDate != nil }
+        get {
+            return loggedDate != nil
+        }
         set {
-            guard loggedDate == nil else { return }
-            loggedDate = Date()
+            if !newValue {
+                timestamp.loggedDate = nil
+            } else {
+                timestamp.logTimestamp()
+            }
         }
     }
+    
+    public init(rowIndex: Int, inputField: RSDInputField, uiHint: RSDFormUIHint, choice: RSDChoice, timestamp: SBATimestamp) {
+        self.timestamp = timestamp
+        super.init(rowIndex: rowIndex, inputField: inputField, uiHint: uiHint, choice: choice)
+    }
+    
+    /// Mark the logging timestamp.
+    open func logTimestamp() {
+        timestamp.logTimestamp()
+    }
+    
+    /// Undo marking the timestamp.
+    open func undo() {
+        timestamp.loggedDate = nil
+    }
+    
+
 }
+
+public struct SBATimestamp : Codable, RSDSchedule {
+    
+    /// The identifier used to track the schedule or item associated with this timestamp.
+    public let identifier : String
+    
+    /// The time of day string encodes the hour and minute for the time of day.
+    public var timeOfDayString: String?
+    
+    /// The logged date.
+    /// - note: This date might be different from the scheduled time.
+    public var loggedDate : Date?
+    
+    /// The detail string (if any).
+    public var detail: String?
+    
+    /// The marked timestamp date (either the `loggedDate` or the date from the schedule's `timeComponents`.
+    var timestampDate : Date? {
+        return self.loggedDate ?? self.timeOfDay
+    }
+    
+    /// Mark the timestamp with a logged date.
+    mutating func logTimestamp() {
+        let newDate: Date = self.timestampDate ?? Date()
+        self.loggedDate = newDate
+        if self.timeOfDayString == nil {
+            self.setTime(from: newDate)
+        }
+    }
+    
+    /// Notification triggers are ignored.
+    public func notificationTriggers() -> [DateComponents] {
+        return []
+    }
+}
+
+extension SBATimestamp : RSDComparable {
+    
+    /// Returns `timeOfDayString`.
+    public var matchingAnswer: Any? {
+        return self.timeOfDayString
+    }
+}
+
+extension SBATimestamp : RSDChoice {
+    
+    /// Returns `timeOfDayString`.
+    public var answerValue: Codable? {
+        return self.timeOfDayString
+    }
+    
+    /// The text is the time string (or nil if undefined).
+    public var text: String? {
+        guard let time = self.timestampDate else {
+            return nil
+        }
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateStyle = .none
+        timeFormatter.timeStyle = .short
+        return timeFormatter.string(from: time)
+    }
+    
+    /// Returns `false`.
+    public var isExclusive: Bool {
+        return false
+    }
+    
+    /// Returns `nil`.
+    public var imageVendor: RSDImageVendor? {
+        return nil
+    }
+}
+
+extension SBATimestamp : SBATrackedItemAnswer {
+    
+    /// Returns `true` if the `loggedDate` is non-nil.
+    public var hasRequiredValues: Bool {
+        return loggedDate != nil
+    }
+}
+

@@ -36,7 +36,35 @@ import Foundation
 /// The medication logging step is used to log information about each item that is being tracked.
 open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject {
     
-    // TODO: syoung 02/28/2018 Implement model for this step.
 }
 
+open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
+    
+    /// Build the logging sections of the table. This is called by `buildSections(step:initialResult)` to get
+    /// the logging sections of the table. That method will then append an `.addMore` section if appropriate.
+    override open class func buildLoggingSections(step: SBATrackedItemsStep, result: SBATrackedItemsResult) -> (sections: [RSDTableSection], itemGroups: [RSDTableItemGroup]) {
+        guard let medicationResult = result as? SBAMedicationTrackingResult else {
+            assertionFailure("The initial result is not of the expected type.")
+            return ([], [])
+        }
+        
+        // TODO: syoung 06/05/2018 Build tests and implement parsing.
+
+//        let inputField = RSDChoiceInputFieldObject(identifier: step.identifier, choices: result.selectedAnswers, dataType: .collection(.multipleChoice, .string), uiHint: .logging)
+//        let trackedItems = result.selectedAnswers.enumerated().map { (idx, item) -> RSDTableItem in
+//            let choice: RSDChoice = step.items.first(where: { $0.identifier == item.identifier }) ?? item
+//            return self.instantiateTableItem(at: idx, inputField: inputField, itemAnswer: item, choice: choice)
+//        }
+//
+//        let itemGroups: [RSDTableItemGroup] = [RSDTableItemGroup(beginningRowIndex: 0, items: trackedItems)]
+//        let sections: [RSDTableSection] = [RSDTableSection(identifier: "logging", sectionIndex: 0, tableItems: trackedItems)]
+//
+        return ([], [])
+    }
+    
+    /// Build the answer object appropriate to this tracked logging item.
+    override open func buildAnswer(for loggingItem: SBATrackedLoggingTableItem) -> SBATrackedItemAnswer {
+        return loggingItem.timestamp
+    }
+}
 
