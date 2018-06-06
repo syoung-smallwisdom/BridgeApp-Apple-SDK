@@ -82,7 +82,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     }
     
     /// A previous result that can be used to pre-populate the data set.
-    var previousClientData: SBBJSONValue? {
+    public internal(set) var previousClientData: SBBJSONValue? {
         didSet {
             // If the previous result is set to a non-nil value then use that as the in-memory result.
             if let clientData = previousClientData {
@@ -91,8 +91,12 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
         }
     }
     
+    /// The task path associated with the current run of the task.
+    public private(set) weak var taskPath: RSDTaskPath?
+    
     /// Setup data tracking for this task.
     open func setupTracking(with taskPath: RSDTaskPath) {
+        self.taskPath = taskPath
         guard let scheduleManager = taskPath.trackingDelegate as? SBAScheduleManager,
             let clientData = scheduleManager.clientData(with: self.activityIdentifier.stringValue)
             else {
@@ -355,6 +359,21 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     
     // MARK: RSDStepNavigator
     
+    /// Should the given step be skipped?
+    ///
+    /// By default, the step should be skipped if and only if this is a task that is included as a subtask
+    /// of another task (such as including medication logging in a tapping test) **and** the skip rule
+    /// on the step returns true or there are no selected answers.
+    open func shouldSkip(step: RSDStep?, with result: RSDTaskResult) -> Bool {
+        if self.taskPath?.parentPath != nil,
+            let navigableStep = step as? RSDNavigationSkipRule {
+            return navigableStep.shouldSkipStep(with: result, conditionalRule: nil, isPeeking: false)
+        }
+        else {
+            return false
+        }
+    }
+    
     /// If this is a selection or review identifier, those steps are returned, otherwise
     /// will return the appropriate detail step for the given item identifier (if any).
     open func step(with identifier: String) -> RSDStep? {
@@ -405,7 +424,11 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     
     /// The next step in the series depends upon what information is remaining to be entered.
     open func step(after step: RSDStep?, with result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection) {
-        return (_step(after: step, with: result), .forward)
+        var nextStep = _step(after: step, with: result)
+        if shouldSkip(step: nextStep, with: result) {
+            nextStep = nil
+        }
+        return (nextStep, .forward)
     }
     
     private func _step(after step: RSDStep?, with result: RSDTaskResult) -> RSDStep? {

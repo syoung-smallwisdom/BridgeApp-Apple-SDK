@@ -131,12 +131,6 @@ open class SBAMedicationDetailsStepObject : SBATrackedItemDetailsStepObject {
     // "MEDICATION_DAYS_OF_WEEK_TITLE_%1$@_at_%2$@" = "Which days do you take %1$@ at %2$@?";
 }
 
-/// The medication logging step is used to log information about each item that is being tracked.
-open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject {
-    
-    // TODO: syoung 02/28/2018 Implement model for this step.
-}
-
 /// A medication item includes details for displaying a given medication.
 ///
 /// - example:
@@ -240,7 +234,7 @@ public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
     public var isContinuousInjection: Bool?
     
     /// The timestamps to use to mark the medication as "taken".
-    public var timestamps: [Date]?
+    public var timestamps: [String : Date]?
     
     /// Required items for a medication are dosage and schedule unless this is a continuous injection.
     public var hasRequiredValues: Bool {
@@ -349,12 +343,27 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating public func updateDetails(to newValue: SBATrackedItemAnswer) {
-        guard let idx = medications.index(where: { $0.identifier == newValue.identifier }),
-            let newMedication = newValue as? SBAMedicationAnswer else {
-                return
+        guard let idx = medications.index(where: { $0.identifier == newValue.identifier }) else {
+            return
         }
-        self.medications.remove(at: idx)
-        self.medications.insert(newMedication, at: idx)
+        if let newMedication = newValue as? SBAMedicationAnswer {
+            // If this is a medication answer, then replace the existing one with a new one.
+            var medication = newMedication
+            if (newMedication.timestamps?.count ?? 0) == 0 {
+                medication.timestamps = self.medications[idx].timestamps
+            }
+            self.medications.remove(at: idx)
+            self.medications.insert(medication, at: idx)
+        }
+        else if let timestamp = newValue as? SBATimestamp, let timeOfDay = timestamp.timeOfDayString {
+            // If this is a timestamp logging then add/remove timestamp.
+            var medication = self.medications[idx]
+            var timestamps: [String : Date] = medication.timestamps ?? [:]
+            timestamps[timeOfDay] = timestamp.loggedDate
+            medication.timestamps = timestamps
+            self.medications.remove(at: idx)
+            self.medications.insert(medication, at: idx)
+        }
     }
     
     public func clientData() throws -> SBBJSONValue? {
@@ -372,7 +381,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         let meds = try decoder.decode([SBAMedicationAnswer].self, from: clientData)
         self.medications = meds.map { (input) in
             var med = input
-            med.timestamps = med.timestamps?.filter { Calendar.current.isDateInToday($0) }
+            med.timestamps = med.timestamps?.filter { Calendar.current.isDateInToday($0.value) }
             return med
         }
     }
