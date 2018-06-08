@@ -125,13 +125,13 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
     /// Mark the item as logged.
     open func updateLoggingDetails(for loggingItem: SBATrackedLoggingTableItem, at indexPath: IndexPath) -> (isSelected: Bool, reloadSection: Bool) {
         
-        // Update the answers
+        // Update the answers.
         let loggedResult = buildAnswer(for: loggingItem)
         var stepResult = self.trackingResult()
         stepResult.updateDetails(to: loggedResult)
         self.taskPath.appendStepHistory(with: stepResult)
         
-        // inform delegate that answers have changed
+        // Inform delegate that answers have changed.
         delegate?.tableDataSource(self, didChangeAnswersIn: indexPath.section)
         
         return (true, false)
@@ -177,8 +177,9 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
             return
         }
         
-        // Set up the path and the task controller for the current step. For this case, we want a new task path that uses the task
-        // from *this* taskPath as it's source, but which does not directly edit this task path.
+        // Set up the path and the task controller for the current step. For this case, we want a new task
+        // path that uses the task from *this* taskPath as it's source, but which does not directly edit this
+        // task path.
         let path = RSDTaskPath(task: task)
         setupModal(stepController, path: path, tableItem: tableItem)
     }
@@ -233,7 +234,7 @@ open class SBAModalSelectionTableItem : RSDModalStepTableItem {
 }
 
 /// Custom table group for handling marking items as selected with a timestamp.
-open class SBATrackedLoggingTableItem : RSDTableItem {
+open class SBATrackedLoggingTableItem : RSDTableItem, RSDScheduleTime {
     
     /// The identifier of the tracked item.
     public let itemIdentifier: String
@@ -241,7 +242,7 @@ open class SBATrackedLoggingTableItem : RSDTableItem {
     /// The timing identifier to map to a schedule.
     public let timingIdentifier: String
     
-    /// The title of the tracking item.
+    /// The title of the tracked item.
     open var title : String?
     
     /// The time to display for the table item.
@@ -256,11 +257,11 @@ open class SBATrackedLoggingTableItem : RSDTableItem {
     /// The date when the event was logged.
     open var loggedDate: Date?
     
-    /// The index position of the item within it's subgrouping (for schedules that are grouped).
+    /// The index position of the item within its subgrouping (for schedules that are grouped).
     public let groupIndex: Int
     
     /// Used to create a read/write object that can be mutated.
-    private var schedule: LoggingSchedule
+    public let timeOfDayString : String?
     
     public init(rowIndex: Int, itemIdentifier: String, timingIdentifier: String? = nil, timeOfDayString: String? = nil, uiHint: RSDFormUIHint = .logging) {
         var identifier = itemIdentifier
@@ -273,20 +274,19 @@ open class SBATrackedLoggingTableItem : RSDTableItem {
         }
         self.itemIdentifier = itemIdentifier
         self.groupIndex = rowIndex
-        self.schedule = LoggingSchedule(timeOfDayString: timeOfDayString)
+        self.timeOfDayString = timeOfDayString
         super.init(identifier: identifier, rowIndex: rowIndex, reuseIdentifier: uiHint.rawValue)
     }
     
     /// The display date (either the `loggedDate` or the date from the schedule's `timeComponents`).
     public var displayDate : Date? {
-        return self.loggedDate ?? self.schedule.timeOfDay(on: Date())
+        return self.loggedDate ?? self.timeOfDay(on: Date())
     }
     
     /// Mark the logging timestamp.
     open func logTimestamp() {
         let newDate: Date = self.displayDate ?? Date()
         self.loggedDate = newDate
-        self.schedule.setTime(from: newDate)
     }
     
     /// Undo marking the timestamp.
@@ -294,13 +294,3 @@ open class SBATrackedLoggingTableItem : RSDTableItem {
         self.loggedDate = nil
     }
 }
-
-struct LoggingSchedule : RSDSchedule {
-    
-    var timeOfDayString : String?
-    
-    func notificationTriggers() -> [DateComponents] {
-        return []
-    }
-}
-

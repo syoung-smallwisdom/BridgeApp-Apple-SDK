@@ -114,7 +114,7 @@ struct MedicationTiming {
 
 extension SBAMedicationAnswer {
     
-    /// The long title is the title and the dosage
+    /// The long title is the title and the dosage.
     public var longTitle : String? {
         guard let title = self.text, let dosage = self.dosage
             else {
