@@ -34,7 +34,7 @@
 import XCTest
 @testable import BridgeApp
 
-class MedicationTrackingTests: XCTestCase {
+class MedicationTrackingNavigationTests: XCTestCase {
     
     override func setUp() {
         super.setUp()

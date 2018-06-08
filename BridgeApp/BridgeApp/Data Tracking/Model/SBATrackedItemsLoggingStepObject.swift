@@ -201,6 +201,12 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
     /// The identifier associated with the task, step, or asynchronous action.
     public let identifier: String
     
+    /// The identifier that maps to the `SBATrackedItem`. 
+    public var itemIdentifier: String?
+    
+    /// The timing identifier to map to a schedule.
+    public var timingIdentifier: String?
+    
     /// The title for the tracked item.
     public var text: String?
     

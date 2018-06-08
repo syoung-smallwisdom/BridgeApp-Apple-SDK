@@ -50,6 +50,12 @@
 "DURATION_SELECTION_TITLE" = "How long did this symptom last?";
 "DURATION_SELECTION_DETAIL" = "Select one";
 
+/* Medication Logging */
+"MORNING_MEDICATION_SECTION_TITLE" = "Morning medications";
+"AFTERNOON_MEDICATION_SECTION_TITLE" = "Afternoon medications";
+"EVENING_MEDICATION_SECTION_TITLE" = "Evening medications";
+"MISSED_MEDICATION_SECTION_TITLE" = "Missed medications";
+
 /* Failure messages */
 "NETWORK_FAILURE_TITLE" = "Could Not Complete"; // Title for a step or alert indicating a network failure
 "NETWORK_FAILURE_MESSAGE" = "Please try again later."; // Message for a step or alert indicating a network failure

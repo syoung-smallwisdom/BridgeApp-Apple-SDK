@@ -101,9 +101,10 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
     ///     - choice: The choice for this row.
     /// - returns: New instance of a table item appropriate to this row.
     open class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
-        let timestamp = (choice as? SBATimestamp) ??
-            SBATimestamp(identifier: itemAnswer.identifier, timeOfDayString: nil, loggedDate: nil, detail: nil)
-        return SBATrackedLoggingTableItem(rowIndex: rowIndex, inputField: inputField, uiHint: .logging, choice: choice, timestamp: timestamp)
+        let tableItem = SBATrackedLoggingTableItem(rowIndex: rowIndex, itemIdentifier: itemAnswer.identifier)
+        tableItem.title = choice.text
+        tableItem.detail = choice.detail
+        return tableItem
     }
     
     /// Override to mark the item as logged.
@@ -113,7 +114,7 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
     ///     - reloadSection: `true` if the section needs to be reloaded b/c other answers have changed,
     ///                      otherwise returns `false`.
     /// - throws: `RSDInputFieldError` if the selection is invalid.
-    override open func selectAnswer(item: RSDChoiceTableItem, at indexPath: IndexPath) throws -> (isSelected: Bool, reloadSection: Bool) {
+    override open func selectAnswer(item: RSDTableItem, at indexPath: IndexPath) throws -> (isSelected: Bool, reloadSection: Bool) {
         guard let loggingItem = item as? SBATrackedLoggingTableItem else {
             return (false, false)
         }
@@ -138,7 +139,9 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
     
     /// Build the answer object appropriate to this tracked logging item.
     open func buildAnswer(for loggingItem: SBATrackedLoggingTableItem) -> SBATrackedItemAnswer {
-        var loggedResult = SBATrackedLoggingResultObject(identifier: loggingItem.identifier, text: loggingItem.choice.text, detail: loggingItem.choice.detail)
+        var loggedResult = SBATrackedLoggingResultObject(identifier: loggingItem.identifier, text: loggingItem.title, detail: loggingItem.detail)
+        loggedResult.itemIdentifier = loggingItem.itemIdentifier
+        loggedResult.timingIdentifier = loggingItem.timingIdentifier
         loggedResult.loggedDate = loggingItem.loggedDate
         return loggedResult
     }
@@ -230,130 +233,74 @@ open class SBAModalSelectionTableItem : RSDModalStepTableItem {
 }
 
 /// Custom table group for handling marking items as selected with a timestamp.
-open class SBATrackedLoggingTableItem : RSDChoiceTableItem {
+open class SBATrackedLoggingTableItem : RSDTableItem {
+    
+    /// The identifier of the tracked item.
+    public let itemIdentifier: String
+    
+    /// The timing identifier to map to a schedule.
+    public let timingIdentifier: String
+    
+    /// The title of the tracking item.
+    open var title : String?
+    
+    /// The time to display for the table item.
+    open var timeText : String? {
+        guard let time = self.displayDate else { return nil }
+        return DateFormatter.localizedString(from: time, dateStyle: .none, timeStyle: .short)
+    }
+    
+    /// The detail for the tracked item.
+    open var detail : String?
     
     /// The date when the event was logged.
-    public var loggedDate: Date? {
-        return timestamp.loggedDate
-    }
+    open var loggedDate: Date?
     
-    /// The timestamp object used to track the logged date.
-    public internal(set) var timestamp: SBATimestamp
-
-    /// Override the answer to return the timestamp.
-    open override var answer: Any? {
-        return loggedDate
-    }
+    /// The index position of the item within it's subgrouping (for schedules that are grouped).
+    public let groupIndex: Int
     
-    /// Override the selected state to mark an item as selected using a timestamp.
-    override open var selected : Bool {
-        get {
-            return loggedDate != nil
+    /// Used to create a read/write object that can be mutated.
+    private var schedule: LoggingSchedule
+    
+    public init(rowIndex: Int, itemIdentifier: String, schedule: RSDSchedule? = nil, timeRange: SBATimeRange? = nil, uiHint: RSDFormUIHint = .logging) {
+        var identifier = itemIdentifier
+        if let timingIdentifier = schedule?.timeOfDayString ?? timeRange?.rawValue {
+            self.timingIdentifier = timingIdentifier
+            identifier.append(":\(timingIdentifier)")
         }
-        set {
-            if !newValue {
-                timestamp.loggedDate = nil
-            } else {
-                timestamp.logTimestamp()
-            }
+        else {
+            self.timingIdentifier = ""
         }
+        self.itemIdentifier = itemIdentifier
+        self.groupIndex = rowIndex
+        self.schedule = LoggingSchedule(timeOfDayString: schedule?.timeOfDayString)
+        super.init(identifier: identifier, rowIndex: rowIndex, reuseIdentifier: uiHint.rawValue)
     }
     
-    public init(rowIndex: Int, inputField: RSDInputField, uiHint: RSDFormUIHint, choice: RSDChoice, timestamp: SBATimestamp) {
-        self.timestamp = timestamp
-        super.init(rowIndex: rowIndex, inputField: inputField, uiHint: uiHint, choice: choice)
+    /// The display date (either the `loggedDate` or the date from the schedule's `timeComponents`).
+    public var displayDate : Date? {
+        return self.loggedDate ?? self.schedule.timeOfDay
     }
     
     /// Mark the logging timestamp.
     open func logTimestamp() {
-        timestamp.logTimestamp()
+        let newDate: Date = self.displayDate ?? Date()
+        self.loggedDate = newDate
+        self.schedule.setTime(from: newDate)
     }
     
     /// Undo marking the timestamp.
     open func undo() {
-        timestamp.loggedDate = nil
+        self.loggedDate = nil
     }
-    
-
 }
 
-public struct SBATimestamp : Codable, RSDSchedule {
+struct LoggingSchedule : RSDSchedule {
     
-    /// The identifier used to track the schedule or item associated with this timestamp.
-    public let identifier : String
+    var timeOfDayString : String?
     
-    /// The time of day string encodes the hour and minute for the time of day.
-    public var timeOfDayString: String?
-    
-    /// The logged date.
-    /// - note: This date might be different from the scheduled time.
-    public var loggedDate : Date?
-    
-    /// The detail string (if any).
-    public var detail: String?
-    
-    /// The marked timestamp date (either the `loggedDate` or the date from the schedule's `timeComponents`.
-    var timestampDate : Date? {
-        return self.loggedDate ?? self.timeOfDay
-    }
-    
-    /// Mark the timestamp with a logged date.
-    mutating func logTimestamp() {
-        let newDate: Date = self.timestampDate ?? Date()
-        self.loggedDate = newDate
-        if self.timeOfDayString == nil {
-            self.setTime(from: newDate)
-        }
-    }
-    
-    /// Notification triggers are ignored.
-    public func notificationTriggers() -> [DateComponents] {
+    func notificationTriggers() -> [DateComponents] {
         return []
-    }
-}
-
-extension SBATimestamp : RSDComparable {
-    
-    /// Returns `timeOfDayString`.
-    public var matchingAnswer: Any? {
-        return self.timeOfDayString
-    }
-}
-
-extension SBATimestamp : RSDChoice {
-    
-    /// Returns `timeOfDayString`.
-    public var answerValue: Codable? {
-        return self.timeOfDayString
-    }
-    
-    /// The text is the time string (or nil if undefined).
-    public var text: String? {
-        guard let time = self.timestampDate else {
-            return nil
-        }
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateStyle = .none
-        timeFormatter.timeStyle = .short
-        return timeFormatter.string(from: time)
-    }
-    
-    /// Returns `false`.
-    public var isExclusive: Bool {
-        return false
-    }
-    
-    /// Returns `nil`.
-    public var imageVendor: RSDImageVendor? {
-        return nil
-    }
-}
-
-extension SBATimestamp : SBATrackedItemAnswer {
-    
-    /// Returns `true` if the `loggedDate` is non-nil.
-    public var hasRequiredValues: Bool {
-        return loggedDate != nil
     }
 }
 
