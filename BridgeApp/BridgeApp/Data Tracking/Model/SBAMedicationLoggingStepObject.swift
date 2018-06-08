@@ -34,8 +34,25 @@
 import Foundation
 
 /// The medication logging step is used to log information about each item that is being tracked.
-open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject {
+open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RSDNavigationSkipRule {
     
+    /// Override to return a `SBAMedicationLoggingDataSource`.
+    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
+        return SBAMedicationLoggingDataSource(step: self, taskPath: taskPath)
+    }
+    
+    // MARK: RSDNavigationSkipRule
+    
+    public func shouldSkipStep(with result: RSDTaskResult?, conditionalRule: RSDConditionalRule?, isPeeking: Bool) -> Bool {
+        // If this does not have a medication tracking result then it should be skipped.
+        guard let medicationResult = self.result as? SBAMedicationTrackingResult
+            else {
+             return true
+        }
+        let timeOfDay = Date()
+        let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay, includeLogged: false) }
+        return medTimings.count > 0
+    }
 }
 
 open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
@@ -55,70 +72,16 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
             return ([], [])
         }
         
-        let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay) }
-        
-
-        let inputField = RSDChoiceInputFieldObject(identifier: step.identifier, choices: result.selectedAnswers, dataType: .collection(.multipleChoice, .string), uiHint: .logging)
-        var trackedItems = [SBATrackedLoggingTableItem]()
-        var missedItems = [SBATrackedLoggingTableItem]()
         let timeRange = timeOfDay.timeRange()
-        
-//        let formatter = RSDWeeklyScheduleFormatter()
-//        formatter.style = .short
-//
-//
-//        let dayOfWeek = RSDWeekday(date: timeOfDay)
-//
-//        medicationResult.medications.forEach { (medAnswer) in
-//            guard let dosage = medAnswer.dosage,
-//                let scheduleItems = medAnswer.scheduleItems, scheduleItems.count > 0
-//                else {
-//                    return
-//            }
-//            let title: String = "\(medAnswer.title ?? medAnswer.identifier) \(dosage)"
-//            var hasFirstTrackedSection = false
-//            var hasFirstMissingSection = false
-//
-//            scheduleItems.forEach { (schedule) in
-//                // Only include if the day of the week is valid.
-//                guard schedule.daysOfWeek.contains(dayOfWeek) else { return }
-//
-//                // Only include if the schedule time is either "anytime" or before now.
-//                let scheduleTime = schedule.timeOfDay
-//                guard scheduleTime == nil || scheduleTime! <= timeOfDay else { return }
-//
-//                let includeFirstSection = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
-//                let rowIndex = includeFirstSection ? trackedItems.count : missedItems.count
-//                let timingDetail = formatter.string(from: schedule)
-//                let timestamp = SBALoggingTimestamp(identifier: medAnswer.identifier,
-//                                             timeOfDayString: schedule.timeOfDayString,
-//                                             loggedDate: nil,
-//                                             detail: timingDetail)
-//
-//                let tableItem = SBATrackedLoggingTableItem(rowIndex: rowIndex,
-//                                                           inputField: inputField,
-//                                                           uiHint: .logging,
-//                                                           choice: timestamp,
-//                                                           timestamp: timestamp)
-//                if includeFirstSection {
-//                    if !hasFirstTrackedSection { tableItem.title = title }
-//                    hasFirstTrackedSection = true
-//                    trackedItems.append(tableItem)
-//                }
-//                else {
-//                    if !hasFirstMissingSection { tableItem.title = title }
-//                    hasFirstMissingSection = true
-//                    missedItems.append(tableItem)
-//                }
-//            }
-//        }
+        let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay) }
+        let currentItems = medTimings.flatMap { $0.currentItems }
+        let missedItems = medTimings.flatMap { $0.missedItems }
         
         var itemGroups = [RSDTableItemGroup]()
         var sections = [RSDTableSection]()
         
-        if trackedItems.count > 0 {
-            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: trackedItems))
-            let section = RSDTableSection(identifier: "logging", sectionIndex: 0, tableItems: trackedItems)
+        if currentItems.count > 0 {
+            let section = RSDTableSection(identifier: "logging", sectionIndex: 0, tableItems: currentItems)
             switch timeRange {
             case .morning, .night:
                 section.title = Localization.localizedString("MORNING_MEDICATION_SECTION_TITLE")
@@ -126,16 +89,16 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
                 section.title = Localization.localizedString("AFTERNOON_MEDICATION_SECTION_TITLE")
             case .evening:
                 section.title = Localization.localizedString("EVENING_MEDICATION_SECTION_TITLE")
-
             }
             sections.append(section)
+            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: currentItems))
         }
         
         if missedItems.count > 0 {
-            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: missedItems))
             let section = RSDTableSection(identifier: "missed", sectionIndex: sections.count, tableItems: missedItems)
             section.title = Localization.localizedString("MISSED_MEDICATION_SECTION_TITLE")
             sections.append(section)
+            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: missedItems))
         }
 
         return (sections, itemGroups)
@@ -151,10 +114,19 @@ struct MedicationTiming {
 
 extension SBAMedicationAnswer {
     
+    /// The long title is the title and the dosage
+    public var longTitle : String? {
+        guard let title = self.text, let dosage = self.dosage
+            else {
+                return nil
+        }
+        return String.localizedStringWithFormat("%@ %@", title, dosage)
+    }
+    
     /// Filter the medications based on what medications have *not* been marked as taken *or* are within range
     /// for the the time of day (morning/afternoon/evening).
     func availableMedications(at timeOfDay: Date, includeLogged: Bool = true) -> MedicationTiming? {
-        guard let scheduleItems = self.scheduleItems, scheduleItems.count > 0
+        guard let scheduleItems = self.scheduleItems?.sorted(), scheduleItems.count > 0
             else {
                 return nil
         }
@@ -168,36 +140,45 @@ extension SBAMedicationAnswer {
         var currentItems = [SBATrackedLoggingTableItem]()
         var missedItems = [SBATrackedLoggingTableItem]()
         
-//        scheduleItems.forEach { (schedule) in
-//            // Only include if the day of the week is valid.
-//            guard schedule.daysOfWeek.contains(dayOfWeek) else { return }
-//            
-//            // Only include if the schedule time is either "anytime" or before now.
-//            let scheduleTime = schedule.timeOfDay
-//            guard scheduleTime == nil || scheduleTime! <= timeOfDay else { return }
-//            
-//            // Only include the schedule if either it has not been marked *or* the marked timestamp is within
-//            // the time of day of the input date.
-//            let loggedDate: Date? = {
-//                guard let timeString = schedule.timeOfDayString else { return nil }
-//                return self.timestamps?[timeString]
-//            }()
-//            guard loggedDate == nil || (includeLogged && loggedDate!.timeRange() == timeRange) else {
-//                return
-//            }
-//        
-//            let timingDetail = formatter.string(from: schedule.daysOfWeek)
-//            let timestamp = SBALoggingTimestamp(itemIdentifier: self.identifier,
-//                                timeOfDayString: schedule.timeOfDayString,
-//                                loggedDate: loggedDate,
-//                                detail: timingDetail)
-//            if scheduleTime == nil || scheduleTime!.timeRange() == timeRange {
-//                currentTimes.append(timestamp)
-//            }
-//            else {
-//                missedTimes.append(timestamp)
-//            }
-//        }
+        scheduleItems.forEach { (schedule) in
+            // Only include if the day of the week is valid.
+            guard schedule.daysOfWeek.contains(dayOfWeek)
+                else {
+                    return
+            }
+            
+            // Only include if the schedule time is either "anytime" or before now.
+            let scheduleTime = schedule.timeOfDay(on: timeOfDay)
+            guard scheduleTime == nil || scheduleTime! <= timeOfDay
+                else {
+                    return
+            }
+            
+            let timingIdentifier = schedule.timeOfDayString ?? timeRange.rawValue
+            let loggedDate = self.timestamps?.first(where: { $0.timingIdentifier == timingIdentifier })?.loggedDate
+            let isCurrent = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
+            
+            // Only include the schedule if either it has not been marked *or* the marked timestamp is within
+            // the time range.
+            guard loggedDate == nil || (includeLogged && isCurrent)
+                else {
+                    return
+            }
+            
+            let rowIndex = isCurrent ? currentItems.count : missedItems.count
+            let tableItem = SBATrackedLoggingTableItem(rowIndex: rowIndex, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString)
+            tableItem.title = self.longTitle
+            tableItem.detail = (scheduleTime == nil) ?
+                Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
+            tableItem.loggedDate = loggedDate
+            
+            if isCurrent {
+                currentItems.append(tableItem)
+            }
+            else {
+                missedItems.append(tableItem)
+            }
+        }
         
         // Only return available times if there are any in either the window or missed times.
         guard currentItems.count > 0 || missedItems.count > 0 else {

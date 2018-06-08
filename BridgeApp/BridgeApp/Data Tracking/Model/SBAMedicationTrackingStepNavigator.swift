@@ -401,7 +401,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
 /// A timestamp object is a light-weight Codable that can be used to record the timestamp for a logging event.
 /// This object includes a `timingIdentifier` that maps to either an `SBATimeRange` or an
 /// `RSDSchedule.timeOfDayString`.
-public struct SBATimestamp : Codable, Hashable {
+public struct SBATimestamp : Codable, Hashable, RSDScheduleTime {
     private enum CodingKeys : String, CodingKey {
         case timingIdentifier = "timeOfDay", loggedDate
     }

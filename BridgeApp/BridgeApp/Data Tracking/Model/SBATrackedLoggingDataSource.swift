@@ -262,9 +262,9 @@ open class SBATrackedLoggingTableItem : RSDTableItem {
     /// Used to create a read/write object that can be mutated.
     private var schedule: LoggingSchedule
     
-    public init(rowIndex: Int, itemIdentifier: String, schedule: RSDSchedule? = nil, timeRange: SBATimeRange? = nil, uiHint: RSDFormUIHint = .logging) {
+    public init(rowIndex: Int, itemIdentifier: String, timingIdentifier: String? = nil, timeOfDayString: String? = nil, uiHint: RSDFormUIHint = .logging) {
         var identifier = itemIdentifier
-        if let timingIdentifier = schedule?.timeOfDayString ?? timeRange?.rawValue {
+        if let timingIdentifier = timingIdentifier {
             self.timingIdentifier = timingIdentifier
             identifier.append(":\(timingIdentifier)")
         }
@@ -273,13 +273,13 @@ open class SBATrackedLoggingTableItem : RSDTableItem {
         }
         self.itemIdentifier = itemIdentifier
         self.groupIndex = rowIndex
-        self.schedule = LoggingSchedule(timeOfDayString: schedule?.timeOfDayString)
+        self.schedule = LoggingSchedule(timeOfDayString: timeOfDayString)
         super.init(identifier: identifier, rowIndex: rowIndex, reuseIdentifier: uiHint.rawValue)
     }
     
     /// The display date (either the `loggedDate` or the date from the schedule's `timeComponents`).
     public var displayDate : Date? {
-        return self.loggedDate ?? self.schedule.timeOfDay
+        return self.loggedDate ?? self.schedule.timeOfDay(on: Date())
     }
     
     /// Mark the logging timestamp.
