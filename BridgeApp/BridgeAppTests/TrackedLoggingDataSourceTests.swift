@@ -109,12 +109,13 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         }
 
         let indexPath = IndexPath(row: 2, section: 0)
-        guard let choiceItem = dataSource.tableItem(at: indexPath) as? RSDChoiceTableItem else {
+        guard let choiceItem = dataSource.tableItem(at: indexPath) as? SBATrackedLoggingTableItem else {
             XCTFail("Failed to get expected table item. Exiting.")
             return
         }
         
-        XCTAssertEqual(choiceItem.choice.answerValue as? String, "medC1")
+        XCTAssertEqual(choiceItem.identifier, "medC1")
+        XCTAssertEqual(choiceItem.itemIdentifier, "medC1")
         XCTAssertEqual(choiceItem.reuseIdentifier, "logging")
         
         /// Loop through twice. Item should remain selected.
@@ -258,7 +259,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
     
     func select(indexPath: IndexPath, with dataSource: RSDTableDataSource) {
         
-        guard let choiceItem = dataSource.tableItem(at: indexPath) as? RSDChoiceTableItem else {
+        guard let choiceItem = dataSource.tableItem(at: indexPath) as? SBATrackedLoggingTableItem else {
             XCTFail("Failed to get expected table item. Exiting.")
             return
         }

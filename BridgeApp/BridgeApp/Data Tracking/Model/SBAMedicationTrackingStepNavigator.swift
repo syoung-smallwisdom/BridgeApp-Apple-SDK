@@ -234,7 +234,7 @@ public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
     public var isContinuousInjection: Bool?
     
     /// The timestamps to use to mark the medication as "taken".
-    public var timestamps: [String : Date]?
+    public var timestamps: [SBATimestamp]?
     
     /// Required items for a medication are dosage and schedule unless this is a continuous injection.
     public var hasRequiredValues: Bool {
@@ -343,10 +343,11 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating public func updateDetails(to newValue: SBATrackedItemAnswer) {
-        guard let idx = medications.index(where: { $0.identifier == newValue.identifier }) else {
-            return
-        }
         if let newMedication = newValue as? SBAMedicationAnswer {
+            guard let idx = medications.index(where: { $0.identifier == newValue.identifier }) else {
+                return
+            }
+    
             // If this is a medication answer, then replace the existing one with a new one.
             var medication = newMedication
             if (newMedication.timestamps?.count ?? 0) == 0 {
@@ -355,11 +356,21 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
             self.medications.remove(at: idx)
             self.medications.insert(medication, at: idx)
         }
-        else if let timestamp = newValue as? SBATimestamp, let timeOfDay = timestamp.timeOfDayString {
+        else if let loggingResult = newValue as? SBATrackedLoggingResultObject,
+            let itemIdentifier = loggingResult.itemIdentifier,
+            let timingIdentifier = loggingResult.timingIdentifier {
+            guard let idx = medications.index(where: { $0.identifier == itemIdentifier }) else {
+                return
+            }
+            
             // If this is a timestamp logging then add/remove timestamp.
             var medication = self.medications[idx]
-            var timestamps: [String : Date] = medication.timestamps ?? [:]
-            timestamps[timeOfDay] = timestamp.loggedDate
+            var timestamps: [SBATimestamp] = medication.timestamps ?? []
+            timestamps.remove(where: { $0.timingIdentifier == timingIdentifier })
+            if let loggedDate = loggingResult.loggedDate {
+                let newTimestamp = SBATimestamp(timingIdentifier: timingIdentifier, loggedDate: loggedDate)
+                timestamps.append(newTimestamp)
+            }
             medication.timestamps = timestamps
             self.medications.remove(at: idx)
             self.medications.insert(medication, at: idx)
@@ -381,8 +392,43 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         let meds = try decoder.decode([SBAMedicationAnswer].self, from: clientData)
         self.medications = meds.map { (input) in
             var med = input
-            med.timestamps = med.timestamps?.filter { Calendar.current.isDateInToday($0.value) }
+            med.timestamps = med.timestamps?.filter { Calendar.current.isDateInToday($0.loggedDate) }
             return med
         }
     }
 }
+
+/// A timestamp object is a light-weight Codable that can be used to record the timestamp for a logging event.
+/// This object includes a `timingIdentifier` that maps to either an `SBATimeRange` or an
+/// `RSDSchedule.timeOfDayString`.
+public struct SBATimestamp : Codable, Hashable, RSDScheduleTime {
+    private enum CodingKeys : String, CodingKey {
+        case timingIdentifier = "timeOfDay", loggedDate
+    }
+    
+    /// When the logged event is scheduled to occur.
+    public let timingIdentifier: String
+    
+    /// The time/date for when the event was logged as *actually* occuring.
+    public let loggedDate: Date
+    
+    public var hashValue: Int {
+        return timingIdentifier.hashValue ^ loggedDate.hashValue
+    }
+    
+    /// The time range for this timestamp.
+    public var timeRange: SBATimeRange {
+        return SBATimeRange(rawValue: timingIdentifier) ?? loggedDate.timeRange()
+    }
+    
+    /// The time of day from the `RSDSchedule` that can be used to identify this schedule.
+    public var timeOfDayString : String? {
+        if SBATimeRange(rawValue: timingIdentifier) == nil {
+            return timingIdentifier
+        }
+        else {
+            return nil
+        }
+    }
+}
+

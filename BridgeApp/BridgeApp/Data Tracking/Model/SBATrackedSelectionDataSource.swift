@@ -116,13 +116,15 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
     ///     - reloadSection: `true` if the section needs to be reloaded b/c other answers have changed,
     ///                      otherwise returns `false`.
     /// - throws: `RSDInputFieldError` if the selection is invalid.
-    override open func selectAnswer(item: RSDChoiceTableItem, at indexPath: IndexPath) throws -> (isSelected: Bool, reloadSection: Bool) {
-        guard let itemGroup = self.itemGroup(at: indexPath) as? RSDChoicePickerTableItemGroup else {
-            return (false, false)
+    override open func selectAnswer(item: RSDTableItem, at indexPath: IndexPath) throws -> (isSelected: Bool, reloadSection: Bool) {
+        guard let itemGroup = self.itemGroup(at: indexPath) as? RSDChoicePickerTableItemGroup,
+            let choiceItem = item as? RSDChoiceTableItem
+            else {
+                return (false, false)
         }
         
         // update selection for this group
-        let ret = try itemGroup.select(item, indexPath: indexPath)
+        let ret = try itemGroup.select(choiceItem, indexPath: indexPath)
         let choiceGroups = self.itemGroups.filter { $0 is RSDChoicePickerTableItemGroup } as! [RSDChoicePickerTableItemGroup]
         let selectedIdentifiers = choiceGroups.compactMap({ $0.answer as? [String] }).flatMap{$0}
         let items = (self.step as? SBATrackedItemsStep)?.items ?? []

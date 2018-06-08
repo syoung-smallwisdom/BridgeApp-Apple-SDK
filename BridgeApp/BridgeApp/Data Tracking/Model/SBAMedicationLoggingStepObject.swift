@@ -34,8 +34,25 @@
 import Foundation
 
 /// The medication logging step is used to log information about each item that is being tracked.
-open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject {
+open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RSDNavigationSkipRule {
     
+    /// Override to return a `SBAMedicationLoggingDataSource`.
+    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
+        return SBAMedicationLoggingDataSource(step: self, taskPath: taskPath)
+    }
+    
+    // MARK: RSDNavigationSkipRule
+    
+    public func shouldSkipStep(with result: RSDTaskResult?, conditionalRule: RSDConditionalRule?, isPeeking: Bool) -> Bool {
+        // If this does not have a medication tracking result then it should be skipped.
+        guard let medicationResult = self.result as? SBAMedicationTrackingResult
+            else {
+             return true
+        }
+        let timeOfDay = Date()
+        let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay, includeLogged: false) }
+        return medTimings.count > 0
+    }
 }
 
 open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
@@ -43,28 +60,132 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
     /// Build the logging sections of the table. This is called by `buildSections(step:initialResult)` to get
     /// the logging sections of the table. That method will then append an `.addMore` section if appropriate.
     override open class func buildLoggingSections(step: SBATrackedItemsStep, result: SBATrackedItemsResult) -> (sections: [RSDTableSection], itemGroups: [RSDTableItemGroup]) {
+        return buildLoggingSections(step: step, result: result, timeOfDay: Date())
+    }
+    
+    /// Build the logging sections for a given time of day. The time of day is used to determine which
+    /// schedules to include in the table. By default, these are grouped by time range for the time of day
+    /// (morning, afternoon, evening) with the "missed" medications in a separate section.
+    open class func buildLoggingSections(step: SBATrackedItemsStep, result: SBATrackedItemsResult, timeOfDay: Date) -> (sections: [RSDTableSection], itemGroups: [RSDTableItemGroup]) {
         guard let medicationResult = result as? SBAMedicationTrackingResult else {
             assertionFailure("The initial result is not of the expected type.")
             return ([], [])
         }
         
-        // TODO: syoung 06/05/2018 Build tests and implement parsing.
+        let timeRange = timeOfDay.timeRange()
+        let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay) }
+        let currentItems = medTimings.flatMap { $0.currentItems }
+        let missedItems = medTimings.flatMap { $0.missedItems }
+        
+        var itemGroups = [RSDTableItemGroup]()
+        var sections = [RSDTableSection]()
+        
+        if currentItems.count > 0 {
+            let section = RSDTableSection(identifier: "logging", sectionIndex: 0, tableItems: currentItems)
+            switch timeRange {
+            case .morning, .night:
+                section.title = Localization.localizedString("MORNING_MEDICATION_SECTION_TITLE")
+            case .afternoon:
+                section.title = Localization.localizedString("AFTERNOON_MEDICATION_SECTION_TITLE")
+            case .evening:
+                section.title = Localization.localizedString("EVENING_MEDICATION_SECTION_TITLE")
+            }
+            sections.append(section)
+            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: currentItems))
+        }
+        
+        if missedItems.count > 0 {
+            let section = RSDTableSection(identifier: "missed", sectionIndex: sections.count, tableItems: missedItems)
+            section.title = Localization.localizedString("MISSED_MEDICATION_SECTION_TITLE")
+            sections.append(section)
+            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: missedItems))
+        }
 
-//        let inputField = RSDChoiceInputFieldObject(identifier: step.identifier, choices: result.selectedAnswers, dataType: .collection(.multipleChoice, .string), uiHint: .logging)
-//        let trackedItems = result.selectedAnswers.enumerated().map { (idx, item) -> RSDTableItem in
-//            let choice: RSDChoice = step.items.first(where: { $0.identifier == item.identifier }) ?? item
-//            return self.instantiateTableItem(at: idx, inputField: inputField, itemAnswer: item, choice: choice)
-//        }
-//
-//        let itemGroups: [RSDTableItemGroup] = [RSDTableItemGroup(beginningRowIndex: 0, items: trackedItems)]
-//        let sections: [RSDTableSection] = [RSDTableSection(identifier: "logging", sectionIndex: 0, tableItems: trackedItems)]
-//
-        return ([], [])
+        return (sections, itemGroups)
+    }
+}
+
+struct MedicationTiming {
+    let medication : SBAMedicationAnswer
+    let timeOfDay: Date
+    let currentItems : [SBATrackedLoggingTableItem]
+    let missedItems : [SBATrackedLoggingTableItem]
+}
+
+extension SBAMedicationAnswer {
+    
+    /// The long title is the title and the dosage.
+    public var longTitle : String? {
+        guard let title = self.text, let dosage = self.dosage
+            else {
+                return nil
+        }
+        return String.localizedStringWithFormat("%@ %@", title, dosage)
     }
     
-    /// Build the answer object appropriate to this tracked logging item.
-    override open func buildAnswer(for loggingItem: SBATrackedLoggingTableItem) -> SBATrackedItemAnswer {
-        return loggingItem.timestamp
+    /// Filter the medications based on what medications have *not* been marked as taken *or* are within range
+    /// for the the time of day (morning/afternoon/evening).
+    func availableMedications(at timeOfDay: Date, includeLogged: Bool = true) -> MedicationTiming? {
+        guard let scheduleItems = self.scheduleItems?.sorted(), scheduleItems.count > 0
+            else {
+                return nil
+        }
+        
+        let timeRange = timeOfDay.timeRange()
+        let dayOfWeek = RSDWeekday(date: timeOfDay)
+        
+        let formatter = RSDWeeklyScheduleFormatter()
+        formatter.style = .short
+        
+        var currentItems = [SBATrackedLoggingTableItem]()
+        var missedItems = [SBATrackedLoggingTableItem]()
+        
+        scheduleItems.forEach { (schedule) in
+            // Only include if the day of the week is valid.
+            guard schedule.daysOfWeek.contains(dayOfWeek)
+                else {
+                    return
+            }
+            
+            // Only include if the schedule time is either "anytime" or before now.
+            let scheduleTime = schedule.timeOfDay(on: timeOfDay)
+            guard scheduleTime == nil || scheduleTime! <= timeOfDay
+                else {
+                    return
+            }
+            
+            let timingIdentifier = schedule.timeOfDayString ?? timeRange.rawValue
+            let loggedDate = self.timestamps?.first(where: { $0.timingIdentifier == timingIdentifier })?.loggedDate
+            let isCurrent = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
+            
+            // Only include the schedule if either it has not been marked *or* the marked timestamp is within
+            // the time range.
+            guard loggedDate == nil || (includeLogged && isCurrent)
+                else {
+                    return
+            }
+            
+            let rowIndex = isCurrent ? currentItems.count : missedItems.count
+            let tableItem = SBATrackedLoggingTableItem(rowIndex: rowIndex, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString)
+            tableItem.title = self.longTitle
+            tableItem.detail = (scheduleTime == nil) ?
+                Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
+            tableItem.loggedDate = loggedDate
+            
+            if isCurrent {
+                currentItems.append(tableItem)
+            }
+            else {
+                missedItems.append(tableItem)
+            }
+        }
+        
+        // Only return available times if there are any in either the window or missed times.
+        guard currentItems.count > 0 || missedItems.count > 0 else {
+            return nil
+        }
+    
+        return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: currentItems, missedItems: missedItems)
     }
 }
 

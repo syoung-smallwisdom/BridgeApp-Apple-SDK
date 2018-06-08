@@ -33,7 +33,7 @@
 
 import Foundation
 
-public enum SBATimeRange : Int, Codable {
+public enum SBATimeRange : String, Codable {
     case morning, afternoon, evening, night
 }
 
