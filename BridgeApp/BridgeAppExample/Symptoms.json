@@ -16,7 +16,7 @@
         "identifier": "logging",
         "type": "symptomLogging",
         "title": "Today’s symptoms",
-        "actions": { "addMore": { "buttonTitle" : "Edit symptoms" }},
+        "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit symptoms" }},
         "colorTheme" : {
             "colorStyle" : {
                 "header" : "darkBackground",

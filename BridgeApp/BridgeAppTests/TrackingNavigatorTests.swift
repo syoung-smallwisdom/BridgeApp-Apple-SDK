@@ -158,7 +158,7 @@ class TrackingNavigatorTests: XCTestCase {
                 "selection": { "title": "What items would you like to track?",
                                 "detail": "Select all that apply"},
                 "logging": { "title": "Your logged items",
-                             "actions": { "addMore": { "buttonTitle" : "Edit Logged Items" }}
+                             "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit Logged Items" }}
                             }
             }
         """.data(using: .utf8)! // our data in native (JSON) format
