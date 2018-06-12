@@ -112,9 +112,15 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
     
     /// Close the archive.
     open func completeArchive(with metadata: RSDTaskMetadata) throws {
+        let metadataDictionary = try metadata.rsd_jsonEncodedDictionary()
+        try completeArchive(createdOn: metadata.startDate, with: metadataDictionary)
+    }
+    
+    /// Close the archive with optional metadata from a task result.
+    open func completeArchive(createdOn: Date, with metadata: [String : Any]? = nil) throws {
         
         // Set up the activity metadata.
-        var metadataDictionary = try metadata.rsd_jsonEncodedDictionary()
+        var metadataDictionary: [String : Any] = metadata ?? [:]
         
         // Add metadata values from the schedule.
         if let schedule = self.schedule {
@@ -130,8 +136,8 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
         }
         
         // insert the dictionary.
-        insertDictionary(intoArchive: metadataDictionary, filename: kMetadataFilename, createdOn: metadata.startDate)
-
+        insertDictionary(intoArchive: metadataDictionary, filename: kMetadataFilename, createdOn: createdOn)
+        
         // complete the archive.
         try complete()
     }
