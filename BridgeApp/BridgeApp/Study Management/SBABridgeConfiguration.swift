@@ -130,11 +130,6 @@ open class SBABridgeConfiguration {
         }
     }
     
-    /// Get the activity group with the given identifier.
-    open func activityGroup(with identifier: String) -> SBAActivityGroup? {
-        return activityGroupMap[identifier]
-    }
-    
     /// Update the mapping by adding the given activity info.
     open func addMapping(with activityInfo: SBAActivityInfo) {
         self.activityInfoMap[activityInfo.identifier] = activityInfo
@@ -248,6 +243,16 @@ open class SBABridgeConfiguration {
         } else {
             return storedTask
         }
+    }
+    
+    /// Listing of all the installed activity groups.
+    open var installedGroups: [SBAActivityGroup] {
+        return self.activityGroupMap.values.map { $0 }
+    }
+    
+    /// Get the activity group with the given identifier.
+    open func activityGroup(with identifier: String) -> SBAActivityGroup? {
+        return activityGroupMap[identifier]
     }
     
     /// Look for a task info object in the mapping tables for the given activity reference.

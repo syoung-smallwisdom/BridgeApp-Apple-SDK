@@ -57,7 +57,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     }
     
     /// Pointer to the shared configuration to use.
-    internal var configuration: SBABridgeConfiguration {
+    public var configuration: SBABridgeConfiguration {
         return SBABridgeConfiguration.shared
     }
     
