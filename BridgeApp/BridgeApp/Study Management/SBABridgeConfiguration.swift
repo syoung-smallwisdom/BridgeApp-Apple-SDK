@@ -42,20 +42,20 @@ open class SBABridgeConfiguration {
     /// The shared singleton.
     public static var shared = SBABridgeConfiguration()
     
-    /// A mapping of the activity groups defined for this application.
-    open var activityGroups : [SBAActivityGroup] = []
+    /// A mapping of identifiers to activity groups defined for this application.
+    fileprivate var activityGroupMap : [String : SBAActivityGroup] = [:]
     
-    /// A mapping of the activity infos defined for this application.
-    open var activityInfoMap : [String : SBAActivityInfo] = [:]
+    /// A mapping of activity identifiers to activity infos defined for this application.
+    fileprivate var activityInfoMap : [String : SBAActivityInfo] = [:]
     
-    /// A mapping of schema references.
-    open var schemaReferenceMap : [String : SBBSchemaReference] = [:]
+    /// A mapping of schema identifier to schema references.
+    fileprivate var schemaReferenceMap: [String : SBBSchemaReference] = [:]
     
-    /// A mapping of tasks to an identifier.
-    open var taskMap : [String : RSDTask] = [:]
+    /// A mapping of activity identifiers to tasks.
+    fileprivate var taskMap : [String : RSDTask] = [:]
     
-    /// A mapping of schema identifiers to task identifiers.
-    open var schemaIdentifierMap : [String : SBAModuleIdentifier] = [:]
+    /// A mapping of task identifier to schema identifier.
+    fileprivate var taskToSchemaIdentifierMap : [String : String] = [:]
     
     /// The duration of the study. Default = 1 year.
     open var studyDuration : DateComponents = {
@@ -100,15 +100,18 @@ open class SBABridgeConfiguration {
     
     /// Decode the `clientData`, schemas, and surveys for this application.
     open func setup(with appConfig: SBBAppConfig) {
-        if let schemas = appConfig.schemaReferences as? [SBBSchemaReference] {
-            // Map the schemas
-            schemas.forEach { self.schemaReferenceMap[$0.identifier] = $0 }
+        // Map the schemas
+        appConfig.schemaReferences?.forEach {
+            self.addMapping(with: $0 as! SBBSchemaReference)
         }
         if let clientData = appConfig.clientData {
             // If there is a clientData object, need to serialize it back into data before decoding it.
             do {
                 let decoder = RSDFactory.shared.createJSONDecoder()
                 let mappingObject = try decoder.decode(SBAActivityMappingObject.self, from: clientData)
+                if let studyDuration = mappingObject.studyDuration {
+                    self.studyDuration = studyDuration
+                }
                 mappingObject.groups?.forEach {
                     self.addMapping(with: $0)
                 }
@@ -118,37 +121,32 @@ open class SBABridgeConfiguration {
                 mappingObject.tasks?.forEach {
                     self.addMapping(with: $0)
                 }
-                if let studyDuration = mappingObject.studyDuration {
-                    self.studyDuration = studyDuration
+                mappingObject.taskToSchemaIdentifierMap?.forEach {
+                    self.addMapping(from: $0.key, to: $0.value)
                 }
-                self.schemaIdentifierMap = mappingObject.schemaIdentifierMap ?? [:]
             } catch let err {
                 debugPrint("Failed to decode the clientData object: \(err)")
             }
         }
     }
     
-    public func activityGroup(with identifier: String) -> SBAActivityGroup? {
-        return activityGroups.first(where: { $0.identifier == identifier })
-    }
-    
     /// Update the mapping by adding the given activity info.
-    public func addMapping(with activityInfo: SBAActivityInfo) {
+    open func addMapping(with activityInfo: SBAActivityInfo) {
         self.activityInfoMap[activityInfo.identifier] = activityInfo
     }
     
     /// Update the mapping by adding the given activity group.
-    public func addMapping(with activityGroup: SBAActivityGroup) {
-        self.activityGroups.append(activityGroup)
+    open func addMapping(with activityGroup: SBAActivityGroup) {
+        self.activityGroupMap[activityGroup.identifier] = activityGroup
     }
     
     /// Update the mapping by adding the given schema reference.
-    public func addMapping(with schemaReference: SBBSchemaReference) {
+    open func addMapping(with schemaReference: SBBSchemaReference) {
         self.schemaReferenceMap[schemaReference.identifier] = schemaReference
     }
     
     /// Update the mapping by adding the given task.
-    public func addMapping(with task: RSDTask) {
+    open func addMapping(with task: RSDTask) {
         if !self.activityInfoMap.contains(where: { $0.value.moduleId?.stringValue == task.identifier })  {
             let activityInfo = SBAActivityInfoObject(identifier: RSDIdentifier(rawValue: task.identifier),
                                                      title: nil,
@@ -161,6 +159,38 @@ open class SBABridgeConfiguration {
             self.addMapping(with: activityInfo)
         }
         self.taskMap[task.identifier] = task
+    }
+    
+    /// Update the mapping from the activity identifier to the matching schema identifier.
+    open func addMapping(from activityIdentifier: String, to schemaIdentifier: String) {
+        self.taskToSchemaIdentifierMap[activityIdentifier] = schemaIdentifier
+    }
+    
+    /// Instantiate a new instance of a task path for the given task info and schedule.
+    open func instantiateTaskPath(for taskInfo: RSDTaskInfo, using schedule: SBBScheduledActivity?) -> RSDTaskPath {
+        let taskPath: RSDTaskPath
+        if let activityReference = schedule?.activity.activityReference {
+            if let taskInfoStep = activityReference as? RSDTaskInfoStep {
+                taskPath = RSDTaskPath(taskInfo: taskInfoStep)
+            }
+            else {
+                let taskInfoStep = RSDTaskInfoStepObject(with: activityReference)
+                taskPath = RSDTaskPath(taskInfo: taskInfoStep)
+            }
+        }
+        else if let task = self.task(for: taskInfo.identifier) {
+            taskPath = RSDTaskPath(task: task)
+        }
+        else if let _ = taskInfo.resourceTransformer {
+            let taskInfoStep = RSDTaskInfoStepObject(with: taskInfo)
+            taskPath = RSDTaskPath(taskInfo: taskInfoStep)
+        }
+        else {
+            assertionFailure("Failed to instantiate the task for this task info.")
+            let task = RSDTaskObject(identifier: taskInfo.identifier, stepNavigator: RSDConditionalStepNavigatorObject(with: []))
+            taskPath = RSDTaskPath(task: task)
+        }
+        return taskPath
     }
     
     /// Return the task transformer for the given activity reference.
@@ -179,7 +209,7 @@ open class SBABridgeConfiguration {
         }
         
         // Finally return a task from the task map (if found).
-        if let task = self.task(for: activityReference) {
+        if let task = self.task(for: activityReference.identifier) {
             return SBAConfigurationTaskTransformer(task: task)
         }
         
@@ -190,33 +220,51 @@ open class SBABridgeConfiguration {
     /// to be able to run active tasks such as "tapping" or "tremor" where the task module is described
     /// in another github repository.
     open func instantiateTaskTransformer(for moduleId: SBAModuleIdentifier) -> RSDTaskTransformer? {
-        return moduleId.taskTransformer()
+        if let transformer = moduleId.taskTransformer() {
+            return transformer
+        }
+        else if let task = self.task(for: moduleId.rawValue) {
+            return SBAConfigurationTaskTransformer(task: task)
+        }
+        else {
+            return nil
+        }
     }
     
-    /// Override this method to return a task for a given activity reference. By default, this method will
-    /// look in its task map for a task with a matching identifier.
-    open func task(for activityReference: SBASingleActivityReference) -> RSDTask? {
+    fileprivate func task(for activityIdentifier: String) -> RSDTask? {
 
         // Look for a mapped task identifier.
-        let storedTask: RSDTask? = {
-            if let task = self.taskMap[activityReference.identifier] {
-                return task
-            }
-            else if let moduleId = activityReference.activityInfo?.moduleId ?? self.schemaIdentifierMap[activityReference.identifier],
-                let task = self.taskMap[moduleId.stringValue] {
-                return task
-            }
-            else {
-                return nil
-            }
-        }()
+        let storedTask = self.taskMap[activityIdentifier]
+        let schemaInfo = self.schemaInfo(for: activityIdentifier)
         
         // Copy if option available.
         if let copyableTask = storedTask as? RSDCopyTask {
-            return copyableTask.copy(with: activityReference.identifier, schemaInfo: activityReference.schemaInfo)
+            return copyableTask.copy(with: activityIdentifier, schemaInfo: schemaInfo)
         } else {
             return storedTask
         }
+    }
+    
+    /// Listing of all the installed activity groups.
+    open var installedGroups: [SBAActivityGroup] {
+        return self.activityGroupMap.values.map { $0 }
+    }
+    
+    /// Get the activity group with the given identifier.
+    open func activityGroup(with identifier: String) -> SBAActivityGroup? {
+        return activityGroupMap[identifier]
+    }
+    
+    /// Look for a task info object in the mapping tables for the given activity reference.
+    open func activityInfo(for activityIdentifier: String) -> SBAActivityInfo? {
+        return self.activityInfoMap[activityIdentifier]
+    }
+    
+    /// Get the schema info associated with the given activity identifier. By default, this looks at the
+    /// shared bridge configuration's schema reference map.
+    open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
+        let schemaIdentifier = self.taskToSchemaIdentifierMap[activityIdentifier] ?? activityIdentifier
+        return self.schemaReferenceMap[schemaIdentifier]
     }
 }
 
@@ -293,7 +341,7 @@ struct SBAActivityMappingObject : Decodable {
     let groups : [SBAActivityGroupObject]?
     let activityList : [SBAActivityInfoObject]?
     let tasks : [RSDTaskObject]?
-    let schemaIdentifierMap : [String : SBAModuleIdentifier]?
+    let taskToSchemaIdentifierMap : [String : String]?
 }
 
 /// `SBAActivityGroupObject` is a `Decodable` implementation of a `SBAActivityGroup`.

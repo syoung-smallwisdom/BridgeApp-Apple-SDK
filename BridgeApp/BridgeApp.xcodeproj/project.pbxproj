@@ -63,6 +63,7 @@
 		F886FD2F2035248600EF2248 /* SBBScheduledActivity+Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */; };
 		F886FD31203524C600EF2248 /* Date+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F886FD30203524C600EF2248 /* Date+Utilities.swift */; };
 		F886FD342036067300EF2248 /* BridgeApp.strings in Resources */ = {isa = PBXBuildFile; fileRef = F886FD332036067300EF2248 /* BridgeApp.strings */; };
+		F899D0E520D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */; };
 		F89B3DEA20C6F647002EAE2D /* Sequence+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89B3DE920C6F647002EAE2D /* Sequence+Utilities.swift */; };
 		F89B3DEC20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89B3DEB20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift */; };
 		F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F67692032789800B5CC4B /* StepProtocolTests.swift */; };
@@ -300,6 +301,7 @@
 		F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+Filters.swift"; sourceTree = "<group>"; };
 		F886FD30203524C600EF2248 /* Date+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Utilities.swift"; sourceTree = "<group>"; };
 		F886FD332036067300EF2248 /* BridgeApp.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = BridgeApp.strings; sourceTree = "<group>"; };
+		F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+ResearchModel.swift"; sourceTree = "<group>"; };
 		F89B3DE920C6F647002EAE2D /* Sequence+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+Utilities.swift"; sourceTree = "<group>"; };
 		F89B3DEB20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationLoggingStepObject.swift; sourceTree = "<group>"; };
 		F89F67692032789800B5CC4B /* StepProtocolTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepProtocolTests.swift; sourceTree = "<group>"; };
@@ -622,6 +624,7 @@
 				F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */,
 				F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */,
 				F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */,
+				F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */,
 			);
 			path = "Research Model";
 			sourceTree = "<group>";
@@ -984,6 +987,7 @@
 				F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */,
 				F886FD2F2035248600EF2248 /* SBBScheduledActivity+Filters.swift in Sources */,
 				F8E4A4FB20A4D9F00046577B /* JSONDecoder+Utilities.swift in Sources */,
+				F899D0E520D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift in Sources */,
 				F886FD1320351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift in Sources */,
 				F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */,
 				F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */,
