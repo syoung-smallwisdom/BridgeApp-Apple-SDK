@@ -42,10 +42,10 @@ open class SBABridgeConfiguration {
     /// The shared singleton.
     public static var shared = SBABridgeConfiguration()
     
-    /// A mapping of the activity groups defined for this application to their identifier.
+    /// A mapping of identifiers to activity groups defined for this application.
     fileprivate var activityGroupMap : [String : SBAActivityGroup] = [:]
     
-    /// A mapping of the activity infos defined for this application to their activity identifier.
+    /// A mapping of activity identifiers to activity infos defined for this application.
     fileprivate var activityInfoMap : [String : SBAActivityInfo] = [:]
     
     /// A mapping of schema identifier to schema references.
