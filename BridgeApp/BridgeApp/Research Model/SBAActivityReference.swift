@@ -62,7 +62,7 @@ extension SBAActivityReference {
     
     /// Return the activity info from the configuration map.
     public var activityInfo : SBAActivityInfo? {
-        return SBABridgeConfiguration.shared.activityInfoMap[identifier]
+        return SBABridgeConfiguration.shared.activityInfo(for: self.identifier)
     }
     
     /// Return the activity info title.
@@ -146,7 +146,7 @@ extension SBBSchemaReference : SBASingleActivityReference, RSDSchemaInfo {
 extension SBBTaskReference : SBASingleActivityReference {
     
     public var schemaInfo: RSDSchemaInfo? {
-        return SBABridgeConfiguration.shared.schemaReferenceMap[self.identifier]
+        return SBABridgeConfiguration.shared.schemaInfo(for: self.identifier)
     }
 }
 

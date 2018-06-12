@@ -56,6 +56,11 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         case previousActivities, updatedActivities
     }
     
+    /// Pointer to the shared configuration to use.
+    internal var configuration: SBABridgeConfiguration {
+        return SBABridgeConfiguration.shared
+    }
+    
     public override init() {
         super.init()
         
@@ -109,12 +114,12 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// configuration using `self.identifier` as the group identifier.
     open var activityGroup : SBAActivityGroup? {
         get {
-            return SBABridgeConfiguration.shared.activityGroup(with: self.identifier)
+            return self.configuration.activityGroup(with: self.identifier)
         }
         set {
             guard let newGroup = newValue else { return }
-            if SBABridgeConfiguration.shared.activityGroup(with: newGroup.identifier) == nil {
-                SBABridgeConfiguration.shared.addMapping(with: newGroup)
+            if self.configuration.activityGroup(with: newGroup.identifier) == nil {
+                self.configuration.addMapping(with: newGroup)
             }
             self.identifier = newGroup.identifier
         }
@@ -321,12 +326,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// Get the schema info associated with the given activity identifier. By default, this looks at the
     /// shared bridge configuration's schema reference map.
     open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
-        return SBABridgeConfiguration.shared.schemaReferenceMap[activityIdentifier]
-    }
-    
-    /// Get the task for this activity identifier. By default, this will query the bridge configuration.
-    open func task(for activityIdentifier: String) -> RSDTask? {
-        return SBABridgeConfiguration.shared.taskMap[activityIdentifier]
+        return self.configuration.schemaInfo(for: activityIdentifier)
     }
     
     /// Get the scheduled activity that is associated with this schedule identifier and task result.
@@ -449,37 +449,8 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         }
         let schedule = todaySchedules.rsd_last(where: { $0.isCompleted == false }) ?? todaySchedules.last
         
-        // Create the task path, by looking for a valid task transformer.
-        let taskPath: RSDTaskPath
-        if let activityReference = schedule?.activity.activityReference {
-            if let taskInfoStep = activityReference as? RSDTaskInfoStep {
-                taskPath = RSDTaskPath(taskInfo: taskInfoStep)
-            }
-            else {
-                let taskInfoStep = RSDTaskInfoStepObject(with: activityReference)
-                taskPath = RSDTaskPath(taskInfo: taskInfoStep)
-            }
-        }
-        else if let task = self.task(for: taskInfo.identifier) {
-            // Copy if option available.
-            if let copyableTask = task as? RSDCopyTask,
-                task.schemaInfo == nil,
-                let schema = self.schemaInfo(for: taskInfo.identifier) {
-                taskPath = RSDTaskPath(task: copyableTask.copy(with: taskInfo.identifier, schemaInfo: schema))
-            }
-            else {
-                taskPath = RSDTaskPath(task: task)
-            }
-        }
-        else if let _ = taskInfo.resourceTransformer {
-            let taskInfoStep = RSDTaskInfoStepObject(with: taskInfo)
-            taskPath = RSDTaskPath(taskInfo: taskInfoStep)
-        }
-        else {
-            assertionFailure("Failed to instantiate the task for this task info.")
-            let task = RSDTaskObject(identifier: taskInfo.identifier, stepNavigator: RSDConditionalStepNavigatorObject(with: []))
-            taskPath = RSDTaskPath(task: task)
-        }
+        // Create the task path.
+        let taskPath: RSDTaskPath = configuration.instantiateTaskPath(for: taskInfo, using: schedule)
         
         // Assign values to the task path from the schedule.
         taskPath.scheduleIdentifier = schedule?.guid
