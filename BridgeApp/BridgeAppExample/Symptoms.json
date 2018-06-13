@@ -3,27 +3,13 @@
     "type" : "tracking",
     "selection": {
         "title": "What are your Parkinson’s Disease symptoms?",
-        "detail": "Select all that apply",
-        "colorTheme" : {
-            "colorStyle" : {
-                "header" : "darkBackground",
-                "body" : "darkBackground",
-                "footer" : "lightBackground"
-            }
-        }
+        "detail": "Select all that apply"
     },
     "logging": {
         "identifier": "logging",
         "type": "symptomLogging",
         "title": "Today’s symptoms",
-        "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit symptoms" }},
-        "colorTheme" : {
-            "colorStyle" : {
-                "header" : "darkBackground",
-                "body" : "darkBackground",
-                "footer" : "lightBackground"
-            }
-        }
+        "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit symptoms" }}
     },
     "items" : [
                {
