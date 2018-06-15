@@ -3,25 +3,11 @@
     "type" : "tracking",
     "selection": {
         "title": "What triggers would you like to track?",
-        "detail": "Select all that apply",
-        "colorTheme" : {
-            "colorStyle" : {
-                "header" : "darkBackground",
-                "body" : "darkBackground",
-                "footer" : "lightBackground"
-            }
-        }
+        "detail": "Select all that apply"
     },
     "logging": {
         "title": "Your triggers",
-        "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit triggers" }},
-        "colorTheme" : {
-            "colorStyle" : {
-                "header" : "darkBackground",
-                "body" : "darkBackground",
-                "footer" : "lightBackground"
-            }
-        }
+        "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit triggers" }}
     },
     "items" : [
                {

@@ -57,6 +57,7 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
     public required init(identifier: String, type: RSDStepType?) {
         self.items = []
         super.init(identifier: identifier, type: type ?? .selection)
+        commonInit()
     }
     
     /// Override to set the properties of the subclass.
@@ -78,6 +79,7 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
         self.items = items
         self.sections = sections
         super.init(identifier: identifier, type: type ?? .selection)
+        commonInit()
     }
 
     /// Initialize from a `Decoder`.
@@ -112,6 +114,18 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
         self.items = try type(of: self).decodeItems(from: decoder) ?? []
         self.sections = try type(of: self).decodeSections(from: decoder)
         try super.init(from: decoder)
+        commonInit()
+    }
+    
+    private func commonInit() {
+        // Set the default color theme.
+        if self.colorTheme == nil {
+            var colorTheme = RSDColorThemeElementObject()
+            colorTheme.setColorStyle(.darkBackground, for: .header)
+            colorTheme.setColorStyle(.darkBackground, for: .body)
+            colorTheme.setColorStyle(.lightBackground, for: .footer)
+            self.colorTheme = colorTheme
+        }
     }
     
     /// Overridable class method for decoding tracking items.
