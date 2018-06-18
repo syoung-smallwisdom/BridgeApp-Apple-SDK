@@ -225,23 +225,16 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
                 
                     // Fetch the cached schedules.
                     let requests = self.fetchRequests()
-                    var scheduleGuids: [String] = []
-                    var schedules: [SBBScheduledActivity] = []
+                    var scheduleMap: [String : SBBScheduledActivity] = [:]
                     
                     try requests.forEach {
                         let fetchedSchedules = try self.getCachedSchedules(using: $0)
-                        if schedules.count == 0 {
-                            schedules = fetchedSchedules
-                        }
-                        else {
-                            fetchedSchedules.forEach {
-                                if !scheduleGuids.contains($0.guid) {
-                                    scheduleGuids.append($0.guid)
-                                    schedules.append($0)
-                                }
-                            }
+                        fetchedSchedules.forEach {
+                            scheduleMap[$0.guid] = $0
                         }
                     }
+                    let schedules: [SBBScheduledActivity] = scheduleMap.values.map { $0 }
+                    //print("\n---\(self.identifier):\n\(schedules)")
 
                     DispatchQueue.main.async {
                         self.update(fetchedActivities: schedules)

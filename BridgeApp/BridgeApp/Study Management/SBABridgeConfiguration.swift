@@ -83,20 +83,33 @@ open class SBABridgeConfiguration {
             BridgeSDK.setup()
         }
         
+        // Set up the app config. Load the cached version and also set up a listener to get the updated config
+        // once it has loaded.
+        NotificationCenter.default.addObserver(forName: .sbbAppConfigUpdated, object: nil, queue: OperationQueue.main) { (notification) in
+            guard let appConfig = notification.userInfo?[kSBBAppConfigInfoKey] as? SBBAppConfig ?? BridgeSDK.appConfig()
+                else {
+                    return
+            }
+            self.setup(with: appConfig)
+        }
         if let appConfig = BridgeSDK.appConfig() {
             setup(with: appConfig)
-        } else {
-            // this is the first time this app has been set up for Bridge and the appConfig hasn't
-            // had time to load yet, so we'll explicitly request it and defer that part of configuration
-            // until its completion handler gets called.
-            (SBBComponentManager.component(SBBStudyManager.classForCoder()) as! SBBStudyManagerProtocol).getAppConfig { (response, error) in
-                guard error == nil, let appConfig = response as? SBBAppConfig else { return }
-                self.setup(with: appConfig)
-            }
-            return
+        }
+        else {
+            refreshAppConfig()
         }
     }
     private var _hasInitialized = false
+    
+    /// Refresh the app config by pinging Bridge services.
+    open func refreshAppConfig() {
+        (SBBComponentManager.component(SBBStudyManager.classForCoder()) as! SBBStudyManagerProtocol).getAppConfig { (response, error) in
+            guard error == nil, let appConfig = response as? SBBAppConfig else { return }
+            DispatchQueue.main.async {
+                self.setup(with: appConfig)
+            }
+        }
+    }
     
     /// Decode the `clientData`, schemas, and surveys for this application.
     open func setup(with appConfig: SBBAppConfig) {
@@ -126,9 +139,12 @@ open class SBABridgeConfiguration {
                 }
             } catch let err {
                 debugPrint("Failed to decode the clientData object: \(err)")
+                // Attempt refreshing the app config in case the cached version is out-of-date.
+                refreshAppConfig()
             }
         }
     }
+    
     
     /// Update the mapping by adding the given activity info.
     open func addMapping(with activityInfo: SBAActivityInfo) {
