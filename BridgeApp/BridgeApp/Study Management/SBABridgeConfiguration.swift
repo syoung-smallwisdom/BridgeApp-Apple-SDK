@@ -197,8 +197,8 @@ open class SBABridgeConfiguration {
         else if let task = self.task(for: taskInfo.identifier) {
             taskPath = RSDTaskPath(task: task)
         }
-        else if let _ = taskInfo.resourceTransformer {
-            let taskInfoStep = RSDTaskInfoStepObject(with: taskInfo)
+        else if let transformer = taskInfo.resourceTransformer ?? self.instantiateTaskTransformer(for: taskInfo.identifier) {
+            let taskInfoStep = RSDTaskInfoStepObject(with: taskInfo, taskTransformer: transformer)
             taskPath = RSDTaskPath(taskInfo: taskInfoStep)
         }
         else {
@@ -219,17 +219,12 @@ open class SBABridgeConfiguration {
         }
 
         // Next look for a moduleId.
-        if let moduleId = activityReference.activityInfo?.moduleId,
-            let transformer = self.instantiateTaskTransformer(for: moduleId) {
-            return transformer
-        }
-        
-        // Finally return a task from the task map (if found).
-        if let task = self.task(for: activityReference.identifier) {
-            return SBAConfigurationTaskTransformer(task: task)
-        }
-        
-        return nil
+        let moduleId = activityReference.activityInfo?.moduleId ?? SBAModuleIdentifier(rawValue: activityReference.identifier)
+        return self.instantiateTaskTransformer(for: moduleId)
+    }
+    
+    fileprivate func instantiateTaskTransformer(for activityIdentifier: String) -> RSDTaskTransformer? {
+        return self.instantiateTaskTransformer(for: SBAModuleIdentifier(rawValue: activityIdentifier))
     }
     
     /// Override this method to return a task transformer for a given task. This method is intended
@@ -243,7 +238,7 @@ open class SBABridgeConfiguration {
             return SBAConfigurationTaskTransformer(task: task)
         }
         else {
-            return nil
+            return RSDResourceTransformerObject(resourceName: moduleId.stringValue)
         }
     }
     
