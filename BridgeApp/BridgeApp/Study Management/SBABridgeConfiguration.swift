@@ -48,8 +48,11 @@ open class SBABridgeConfiguration {
     /// A mapping of activity identifiers to activity infos defined for this application.
     fileprivate var activityInfoMap : [String : SBAActivityInfo] = [:]
     
-    /// A mapping of schema identifier to schema references.
+    /// A mapping of schema identifiers to schema references.
     fileprivate var schemaReferenceMap: [String : SBBSchemaReference] = [:]
+    
+    /// A mapping of activity identifiers to survey references.
+    fileprivate var surveyReferenceMap: [String : SBBSurveyReference] = [:]
     
     /// A mapping of activity identifiers to tasks.
     fileprivate var taskMap : [String : RSDTask] = [:]
@@ -117,6 +120,9 @@ open class SBABridgeConfiguration {
         appConfig.schemaReferences?.forEach {
             self.addMapping(with: $0 as! SBBSchemaReference)
         }
+        appConfig.surveyReferences?.forEach {
+            self.addMapping(with: $0 as! SBBSurveyReference)
+        }
         if let clientData = appConfig.clientData {
             // If there is a clientData object, need to serialize it back into data before decoding it.
             do {
@@ -161,6 +167,11 @@ open class SBABridgeConfiguration {
         self.schemaReferenceMap[schemaReference.identifier] = schemaReference
     }
     
+    /// Update the mapping by adding the given survey reference.
+    open func addMapping(with surveyReference: SBBSurveyReference) {
+        self.surveyReferenceMap[surveyReference.identifier] = surveyReference
+    }
+    
     /// Update the mapping by adding the given task.
     open func addMapping(with task: RSDTask) {
         if !self.activityInfoMap.contains(where: { $0.value.moduleId?.stringValue == task.identifier })  {
@@ -197,8 +208,8 @@ open class SBABridgeConfiguration {
         else if let task = self.task(for: taskInfo.identifier) {
             taskPath = RSDTaskPath(task: task)
         }
-        else if let _ = taskInfo.resourceTransformer {
-            let taskInfoStep = RSDTaskInfoStepObject(with: taskInfo)
+        else if let transformer = taskInfo.resourceTransformer ?? self.instantiateTaskTransformer(for: taskInfo.identifier) {
+            let taskInfoStep = RSDTaskInfoStepObject(with: taskInfo, taskTransformer: transformer)
             taskPath = RSDTaskPath(taskInfo: taskInfoStep)
         }
         else {
@@ -219,17 +230,12 @@ open class SBABridgeConfiguration {
         }
 
         // Next look for a moduleId.
-        if let moduleId = activityReference.activityInfo?.moduleId,
-            let transformer = self.instantiateTaskTransformer(for: moduleId) {
-            return transformer
-        }
-        
-        // Finally return a task from the task map (if found).
-        if let task = self.task(for: activityReference.identifier) {
-            return SBAConfigurationTaskTransformer(task: task)
-        }
-        
-        return nil
+        let moduleId = activityReference.activityInfo?.moduleId ?? SBAModuleIdentifier(rawValue: activityReference.identifier)
+        return self.instantiateTaskTransformer(for: moduleId)
+    }
+    
+    fileprivate func instantiateTaskTransformer(for activityIdentifier: String) -> RSDTaskTransformer? {
+        return self.instantiateTaskTransformer(for: SBAModuleIdentifier(rawValue: activityIdentifier))
     }
     
     /// Override this method to return a task transformer for a given task. This method is intended
@@ -242,8 +248,11 @@ open class SBABridgeConfiguration {
         else if let task = self.task(for: moduleId.rawValue) {
             return SBAConfigurationTaskTransformer(task: task)
         }
+        else if let surveyReference = self.surveyReferenceMap[moduleId.stringValue] {
+            return SBASurveyLoader(surveyReference: surveyReference)
+        }
         else {
-            return nil
+            return RSDResourceTransformerObject(resourceName: moduleId.stringValue)
         }
     }
     
