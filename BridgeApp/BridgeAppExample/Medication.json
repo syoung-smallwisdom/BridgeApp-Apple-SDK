@@ -135,6 +135,6 @@
                   "detail" : "(MAO-B)"
                   }
                   ],
-    "selection": { "title": "What items would you like to track?",
+    "selection": { "title": "What medications are you taking?",
         "detail": "Select all that apply"},
 }
