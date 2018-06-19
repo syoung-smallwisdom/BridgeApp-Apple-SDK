@@ -51,6 +51,9 @@ open class SBABridgeConfiguration {
     /// A mapping of schema identifier to schema references.
     fileprivate var schemaReferenceMap: [String : SBBSchemaReference] = [:]
     
+    /// A mapping of activity identifier to survey references.
+    fileprivate var surveyReferenceMap: [String : SBBSurveyReference] = [:]
+    
     /// A mapping of activity identifiers to tasks.
     fileprivate var taskMap : [String : RSDTask] = [:]
     
@@ -117,6 +120,9 @@ open class SBABridgeConfiguration {
         appConfig.schemaReferences?.forEach {
             self.addMapping(with: $0 as! SBBSchemaReference)
         }
+        appConfig.surveyReferences?.forEach {
+            self.addMapping(with: $0 as! SBBSurveyReference)
+        }
         if let clientData = appConfig.clientData {
             // If there is a clientData object, need to serialize it back into data before decoding it.
             do {
@@ -159,6 +165,11 @@ open class SBABridgeConfiguration {
     /// Update the mapping by adding the given schema reference.
     open func addMapping(with schemaReference: SBBSchemaReference) {
         self.schemaReferenceMap[schemaReference.identifier] = schemaReference
+    }
+    
+    /// Update the mapping by adding the given survey reference.
+    open func addMapping(with surveyReference: SBBSurveyReference) {
+        self.surveyReferenceMap[surveyReference.identifier] = surveyReference
     }
     
     /// Update the mapping by adding the given task.
@@ -236,6 +247,9 @@ open class SBABridgeConfiguration {
         }
         else if let task = self.task(for: moduleId.rawValue) {
             return SBAConfigurationTaskTransformer(task: task)
+        }
+        else if let surveyReference = self.surveyReferenceMap[moduleId.stringValue] {
+            return SBASurveyLoader(surveyReference: surveyReference)
         }
         else {
             return RSDResourceTransformerObject(resourceName: moduleId.stringValue)
