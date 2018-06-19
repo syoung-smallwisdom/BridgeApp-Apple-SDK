@@ -48,10 +48,10 @@ open class SBABridgeConfiguration {
     /// A mapping of activity identifiers to activity infos defined for this application.
     fileprivate var activityInfoMap : [String : SBAActivityInfo] = [:]
     
-    /// A mapping of schema identifier to schema references.
+    /// A mapping of schema identifiers to schema references.
     fileprivate var schemaReferenceMap: [String : SBBSchemaReference] = [:]
     
-    /// A mapping of activity identifier to survey references.
+    /// A mapping of activity identifiers to survey references.
     fileprivate var surveyReferenceMap: [String : SBBSurveyReference] = [:]
     
     /// A mapping of activity identifiers to tasks.
