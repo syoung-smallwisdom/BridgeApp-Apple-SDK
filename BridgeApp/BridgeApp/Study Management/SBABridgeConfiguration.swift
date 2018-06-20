@@ -67,6 +67,9 @@ open class SBABridgeConfiguration {
         return studyDuration
     }()
     
+    public init() {
+    }
+    
     /// Set up BridgeSDK including loading any cached configurations.
     open func setupBridge(with factory: RSDFactory, setupBlock: (()->Void)? = nil) {
         guard !_hasInitialized else { return }
