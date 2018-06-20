@@ -38,7 +38,11 @@ extension Notification.Name {
     /// Notification name posted by the `SBAScheduleManager` when the activities have been updated.
     public static let SBAUpdatedScheduledActivities = Notification.Name(rawValue: "SBAUpdatedScheduledActivities")
     
-    /// Notification name posted by the `SBAScheduleManager` when the activities did send an update
+    /// Notification name posted by the `SBAScheduleManager` before the manager will send an update
+    /// of the scheduled activities to Bridge.
+    public static let SBAWillSendUpdatedScheduledActivities = Notification.Name(rawValue: "SBAWillSendUpdatedScheduledActivities")
+    
+    /// Notification name posted by the `SBAScheduleManager` after the manager did send an update
     /// of the scheduled activities to Bridge.
     public static let SBADidSendUpdatedScheduledActivities = Notification.Name(rawValue: "SBADidSendUpdatedScheduledActivities")
 }
@@ -53,7 +57,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
 
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
-        case previousActivities, updatedActivities
+        case previousActivities, updatedActivities, updateScheduleGuids
     }
     
     /// Pointer to the shared configuration to use.
@@ -76,10 +80,9 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         
         // Add an observer that a schedule manager has updated the scheduled activities. Often updating the
         // schedules will change the available "next" schedule.
-        NotificationCenter.default.addObserver(forName: .SBADidSendUpdatedScheduledActivities, object: nil, queue: .main) { (notification) in
-            if let schedules = notification.userInfo?[SBAScheduleManager.NotificationKey.updatedActivities] as? [SBBScheduledActivity],
-                self.shouldReload(schedules: schedules) {
-                self.reloadData()
+        NotificationCenter.default.addObserver(forName: .SBAWillSendUpdatedScheduledActivities, object: nil, queue: .main) { (notification) in
+            if let schedules = notification.userInfo?[SBAScheduleManager.NotificationKey.updatedActivities] as? [SBBScheduledActivity] {
+                self.willSendUpdatedSchedules(for: schedules)
             }
         }
         
@@ -87,20 +90,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         self.loadScheduledActivities()
     }
     
-    /// Should the schedules associated with this schedule manager be changed when a given schedule updates?
-    /// By default this will return `true` if at least one of the schedules has been marked as completed
-    /// and if there is an associated activity group, if at least one of the schedules is in this group.
-    open func shouldReload(schedules: [SBBScheduledActivity]) -> Bool {
-        guard let group = self.activityGroup else {
-            return schedules.first(where: { $0.isCompleted }) != nil
-        }
-        let identifiers = group.activityIdentifiers.map { $0.stringValue }
-        return schedules.first(where: {
-            $0.activityIdentifier != nil &&
-                identifiers.contains($0.activityIdentifier!) &&
-                $0.isCompleted
-        }) != nil
-    }
     
     // MARK: Data source
     
@@ -273,7 +262,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     
     /// Called on the main thread once Bridge returns the requested scheduled activities.
     ///
-    /// - parameter scheduledActivities: The list of activities returned by the service.
+    /// - parameter fetchedActivities: The list of activities returned by the service.
     open func update(fetchedActivities: [SBBScheduledActivity]) {
         //print("\n\n--- Update called for \(self.identifier) with:\n\(fetchedActivities)")
         if (fetchedActivities != self.scheduledActivities) {
@@ -281,6 +270,21 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             let previous = self.scheduledActivities
             self.didUpdateScheduledActivities(from: previous)
         }
+    }
+    
+    /// Called on the main thread before sending the given schedules to the server for update. The default
+    /// implementation will call `self.update(fetchedActivities:)` on a unioned set of the updated schedules
+    /// and the schedules that are currently in memory. This method will filter the schedules using the
+    /// `fetchedRequests()` for this manager, but will not use the fetch limit parameter to limit the number
+    /// of schedules returned.
+    ///
+    /// - parameter schedules: The schedules that will be updated.
+    open func willSendUpdatedSchedules(for schedules:[SBBScheduledActivity]) {
+        let mergedSet = self.scheduledActivities.sba_union(with: schedules, where: { $0.guid == $1.guid })
+        let filters = self.fetchRequests().map { $0.predicate }
+        let predicate = NSCompoundPredicate(orPredicateWithSubpredicates: filters)
+        let updatedSchedules = mergedSet.filter { predicate.evaluate(with: $0) }
+        self.update(fetchedActivities: updatedSchedules)
     }
     
     /// Called when the schedules have changed.
@@ -605,9 +609,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
 
         // Send message to server that the scheduled activites were updated.
         self.sendUpdated(for: schedules, taskPath: taskPath)
-        
-        // Post message to self that the scheduled activities were updated.
-        self.didUpdateScheduledActivities(from: self.scheduledActivities)
     }
     
     /// For each schedule that this task modifies, mark it as completed and add the client data.
@@ -751,11 +752,20 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     ///     - schedules: The schedules for which to send updates.
     ///     - taskPath: The task path (if available) for the task run that triggered this update.
     open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
+        
+        // Copy the schedule objects to ensure that these changes
+        let guids = schedules.map { $0.guid }
+        
+        // Post notification that the schedules were updated.
+        NotificationCenter.default.post(name: .SBAWillSendUpdatedScheduledActivities,
+                                        object: self,
+                                        userInfo: [NotificationKey.updatedActivities : schedules])
+        
         self.activityManager.updateScheduledActivities(schedules) { (_, _) in
             // Post notification that the schedules were updated.
             NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
                                             object: self,
-                                            userInfo: [NotificationKey.updatedActivities : schedules])
+                                            userInfo: [NotificationKey.updateScheduleGuids : guids])
         }
     }
     
