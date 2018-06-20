@@ -225,7 +225,7 @@ open class SBABridgeConfiguration {
         // Exit early if this is a survey reference or if the activity info uses an embedded resource.
         if let surveyReference = activityReference as? SBBSurveyReference {
             return SBASurveyLoader(surveyReference: surveyReference)
-        } else if let resourceTransformer = activityReference.activityInfo?.resource {
+        } else if let resourceTransformer = activityReference.activityInfo?.resourceTransformer {
             return resourceTransformer
         }
 
@@ -349,9 +349,6 @@ public protocol SBAActivityGroup : RSDTaskGroup {
 /// Extend the task info protocol to include optional pointers for use by an `SBBTaskReference`
 /// as the source of a task transformer.
 public protocol SBAActivityInfo : RSDTaskInfo {
-
-    /// An optional resource for loading a task from a `SBBTaskReference` or `SBBSchemaReference`
-    var resource: RSDResourceTransformerObject? { get }
     
     /// An optional string that can be used to identify an active task module such as a
     /// "tapping" task or "walkAndBalance" task.
