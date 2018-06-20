@@ -61,6 +61,11 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         return SBABridgeConfiguration.shared
     }
     
+    /// Pointer to the shared activity manager to use.
+    public var activityManager: SBBActivityManagerProtocol {
+        return BridgeSDK.activityManager
+    }
+    
     public override init() {
         super.init()
         
@@ -253,7 +258,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     
     /// Add internal method for testing.
     internal func getCachedSchedules(using fetchRequest: FetchRequest) throws -> [SBBScheduledActivity] {
-        return try BridgeSDK.activityManager.getCachedSchedules(using: fetchRequest.predicate,
+        return try self.activityManager.getCachedSchedules(using: fetchRequest.predicate,
                                                                 sortDescriptors: fetchRequest.sortDescriptors,
                                                                 fetchLimit: fetchRequest.fetchLimit ?? 0)
     }
@@ -404,8 +409,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// task info to a schedule, but if called, it is assumed that even if there is no schedule associated
     /// with this task, that the task path should be instantiated.
     ///
-    /// The returned result includes the instantiated task path, the reference schedule (if found), and the
-    /// clientData from the most recent finished run of the schedule (if found).
+    /// The returned result includes the instantiated task path and the reference schedule (if found).
     ///
     /// - note: This method should not be used to instantiate child task paths that are used to track the
     /// task state for a subtask. Instead, it is intended for starting a new task and will set up any state
@@ -420,13 +424,44 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// - returns:
     ///     - taskPath: The instantiated task path.
     ///     - referenceSchedule: The schedule to reference for uploading the task path results (if any).
-    ///     - clientData: The client data from the most recent finished run of the schedule (if any).
     open func instantiateTaskPath(for taskInfo: RSDTaskInfo, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?) {
-        
+        let schedule = scheduledActivity(for: taskInfo.identifier, in: activityGroup)
+        let taskPath: RSDTaskPath = configuration.instantiateTaskPath(for: taskInfo, using: schedule)
+        setupTaskPath(taskPath, with: schedule)
+        return (taskPath, schedule)
+    }
+    
+    /// Instantiate a task path appropriate to the given task. This method will attempt to map the
+    /// task to a schedule, but if called, it is assumed that even if there is no schedule associated
+    /// with this task, that the task path should be instantiated.
+    ///
+    /// The returned result includes the instantiated task path and the reference schedule (if found).
+    ///
+    /// - note: This method should not be used to instantiate child task paths that are used to track the
+    /// task state for a subtask. Instead, it is intended for starting a new task and will set up any state
+    /// handling (such as tracking data groups) that must be managed globally.
+    ///
+    /// - parameters:
+    ///     - task: The task object to use to create the task path.
+    ///     - activityGroup: The activity group to use to determine the schedule. This is used for the case
+    ///                      where there may be multiple schedules with the same task and the
+    ///                      `schedulePlanGUID` on the activity group is used to determine which available
+    ///                      schedule is the one to associate with this task.
+    /// - returns:
+    ///     - taskPath: The instantiated task path.
+    ///     - referenceSchedule: The schedule to reference for uploading the task path results (if any).
+    open func instantiateTaskPath(for task: RSDTask, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?) {
+        let schedule = scheduledActivity(for: task.identifier, in: activityGroup)
+        let taskPath: RSDTaskPath = RSDTaskPath(task: task)
+        setupTaskPath(taskPath, with: schedule)
+        return (taskPath, schedule)
+    }
+    
+    func scheduledActivity(for taskIdentifier: String, in activityGroup: SBAActivityGroup?) -> SBBScheduledActivity? {
         // Set up predicates.
-        var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
+        var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskIdentifier)
         if let group = (activityGroup ?? self.activityGroup) {
-            if let guid = group.activityGuidMap?[taskInfo.identifier] {
+            if let guid = group.activityGuidMap?[taskIdentifier] {
                 taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                     taskPredicate, SBBScheduledActivity.activityGuidPredicate(with: guid)])
             }
@@ -435,15 +470,17 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
                     taskPredicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
             }
         }
-
+        
         // Get the schedule.
         let todaySchedules = self.scheduledActivities.filter {
             taskPredicate.evaluate(with: $0) && (($0.scheduledOn.timeIntervalSinceNow < 0) && !$0.isExpired)
         }
         let schedule = todaySchedules.rsd_last(where: { $0.isCompleted == false }) ?? todaySchedules.last
         
-        // Create the task path.
-        let taskPath: RSDTaskPath = configuration.instantiateTaskPath(for: taskInfo, using: schedule)
+        return schedule
+    }
+    
+    func setupTaskPath(_ taskPath: RSDTaskPath, with schedule: SBBScheduledActivity?) {
         
         // Assign values to the task path from the schedule.
         taskPath.scheduleIdentifier = schedule?.guid
@@ -459,8 +496,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         } else {
             debugPrint("WARNING: Missing a study particpant. Cannot get the data groups.")
         }
-        
-        return (taskPath, schedule)
     }
     
     /// Find the most recent client data appended to any schedule for this activity identifier.
@@ -716,7 +751,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     ///     - schedules: The schedules for which to send updates.
     ///     - taskPath: The task path (if available) for the task run that triggered this update.
     open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
-        BridgeSDK.activityManager.updateScheduledActivities(schedules) { (_, _) in
+        self.activityManager.updateScheduledActivities(schedules) { (_, _) in
             // Post notification that the schedules were updated.
             NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
                                             object: self,
