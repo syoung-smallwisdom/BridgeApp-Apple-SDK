@@ -256,7 +256,8 @@ open class SBABridgeConfiguration {
         }
     }
     
-    fileprivate func task(for activityIdentifier: String) -> RSDTask? {
+    /// Get the task to return for the given identifier.
+    open func task(for activityIdentifier: String) -> RSDTask? {
 
         // Look for a mapped task identifier.
         let storedTask = self.taskMap[activityIdentifier]

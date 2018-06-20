@@ -61,6 +61,11 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         return SBABridgeConfiguration.shared
     }
     
+    /// Pointer to the shared activity manager to use.
+    public var activityManager: SBBActivityManagerProtocol {
+        return BridgeSDK.activityManager
+    }
+    
     public override init() {
         super.init()
         
@@ -253,7 +258,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     
     /// Add internal method for testing.
     internal func getCachedSchedules(using fetchRequest: FetchRequest) throws -> [SBBScheduledActivity] {
-        return try BridgeSDK.activityManager.getCachedSchedules(using: fetchRequest.predicate,
+        return try self.activityManager.getCachedSchedules(using: fetchRequest.predicate,
                                                                 sortDescriptors: fetchRequest.sortDescriptors,
                                                                 fetchLimit: fetchRequest.fetchLimit ?? 0)
     }
@@ -716,7 +721,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     ///     - schedules: The schedules for which to send updates.
     ///     - taskPath: The task path (if available) for the task run that triggered this update.
     open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
-        BridgeSDK.activityManager.updateScheduledActivities(schedules) { (_, _) in
+        self.activityManager.updateScheduledActivities(schedules) { (_, _) in
             // Post notification that the schedules were updated.
             NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
                                             object: self,
