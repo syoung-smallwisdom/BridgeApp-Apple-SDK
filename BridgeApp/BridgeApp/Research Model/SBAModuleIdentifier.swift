@@ -56,6 +56,13 @@ public struct SBAModuleIdentifier : RawRepresentable, Codable {
     }
 }
 
+extension RSDIdentifier {
+    
+    public var moduleIdentifier : SBAModuleIdentifier {
+        return SBAModuleIdentifier(rawValue: self.rawValue)
+    }
+}
+
 extension SBAModuleIdentifier : Hashable {
     public var hashValue : Int {
         return self.rawValue.hashValue
