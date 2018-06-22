@@ -44,12 +44,21 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
     
     // MARK: UIApplicationDelegate
     
+    open func instantiateFactory() -> RSDFactory {
+        return SBAFactory()
+    }
+    
+    open func instantiateBridgeConfiguration() -> SBABridgeConfiguration {
+        return SBABridgeConfiguration()
+    }
+    
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization before application launch.
         
         // Set up bridge.
         BridgeSDK.setErrorUIDelegate(self)
-        SBABridgeConfiguration.shared.setupBridge(with: SBAFactory())
+        SBABridgeConfiguration.shared = instantiateBridgeConfiguration()
+        SBABridgeConfiguration.shared.setupBridge(with: instantiateFactory())
         
         // Set the tint color.
         self.window?.tintColor = UIColor.primaryTintColor

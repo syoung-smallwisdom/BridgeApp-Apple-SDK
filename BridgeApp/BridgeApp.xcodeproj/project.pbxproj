@@ -45,7 +45,7 @@
 		F83B451E20324A74002825AE /* BridgeSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44D42032473D002825AE /* BridgeSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84794F7207FDEED0024A230 /* SBAFactory.swift */; };
 		F847950D207FE2CB0024A230 /* TrackingNavigatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F847950C207FE2CB0024A230 /* TrackingNavigatorTests.swift */; };
-		F847950F207FE2E20024A230 /* MedicationTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F847950E207FE2E20024A230 /* MedicationTrackingTests.swift */; };
+		F847950F207FE2E20024A230 /* MedicationTrackingNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F847950E207FE2E20024A230 /* MedicationTrackingNavigationTests.swift */; };
 		F8479512207FE3160024A230 /* TrackedSelectionDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479510207FE3160024A230 /* TrackedSelectionDataSourceTests.swift */; };
 		F8479513207FE3160024A230 /* TrackedLoggingDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479511207FE3160024A230 /* TrackedLoggingDataSourceTests.swift */; };
 		F8479515207FE3720024A230 /* CodableTrackedDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479514207FE3720024A230 /* CodableTrackedDataTests.swift */; };
@@ -62,6 +62,7 @@
 		F8479527207FEA9D0024A230 /* SBATrackingDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA74207FD96100D29F60 /* SBATrackingDataSource.swift */; };
 		F847952E207FEE090024A230 /* Medication.json in Resources */ = {isa = PBXBuildFile; fileRef = F847952D207FEE090024A230 /* Medication.json */; };
 		F85AABE920800D120059F019 /* SBATrackedLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F8479530207FF0DF0024A230 /* SBATrackedLoggingCell.xib */; };
+		F869804B20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F869804A20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift */; };
 		F875578D2080850900235078 /* Research_UnitTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F875578C2080850900235078 /* Research_UnitTest.framework */; };
 		F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87D69692037956B00409087 /* SBAActivityReference.swift */; };
 		F87D69C0203B5C4900409087 /* ActivityReferenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87D69BF203B5C4900409087 /* ActivityReferenceTests.swift */; };
@@ -70,6 +71,9 @@
 		F886FD2F2035248600EF2248 /* SBBScheduledActivity+Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */; };
 		F886FD31203524C600EF2248 /* Date+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F886FD30203524C600EF2248 /* Date+Utilities.swift */; };
 		F886FD342036067300EF2248 /* BridgeApp.strings in Resources */ = {isa = PBXBuildFile; fileRef = F886FD332036067300EF2248 /* BridgeApp.strings */; };
+		F899D0E520D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */; };
+		F89B3DEA20C6F647002EAE2D /* Sequence+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89B3DE920C6F647002EAE2D /* Sequence+Utilities.swift */; };
+		F89B3DEC20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89B3DEB20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift */; };
 		F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F67692032789800B5CC4B /* StepProtocolTests.swift */; };
 		F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */; };
 		F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */; };
@@ -296,7 +300,7 @@
 		F83B451020324A33002825AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F84794F7207FDEED0024A230 /* SBAFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAFactory.swift; sourceTree = "<group>"; };
 		F847950C207FE2CB0024A230 /* TrackingNavigatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackingNavigatorTests.swift; sourceTree = "<group>"; };
-		F847950E207FE2E20024A230 /* MedicationTrackingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MedicationTrackingTests.swift; sourceTree = "<group>"; };
+		F847950E207FE2E20024A230 /* MedicationTrackingNavigationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MedicationTrackingNavigationTests.swift; sourceTree = "<group>"; };
 		F8479510207FE3160024A230 /* TrackedSelectionDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackedSelectionDataSourceTests.swift; sourceTree = "<group>"; };
 		F8479511207FE3160024A230 /* TrackedLoggingDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackedLoggingDataSourceTests.swift; sourceTree = "<group>"; };
 		F8479514207FE3720024A230 /* CodableTrackedDataTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableTrackedDataTests.swift; sourceTree = "<group>"; };
@@ -304,6 +308,7 @@
 		F847952D207FEE090024A230 /* Medication.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Medication.json; sourceTree = "<group>"; };
 		F8479530207FF0DF0024A230 /* SBATrackedLoggingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBATrackedLoggingCell.xib; sourceTree = "<group>"; };
 		F85AABD3207FFCF40059F019 /* BridgeAppTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BridgeAppTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		F869804A20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationLoggingDataSourceTests.swift; sourceTree = "<group>"; };
 		F87D69692037956B00409087 /* SBAActivityReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAActivityReference.swift; sourceTree = "<group>"; };
 		F87D69BF203B5C4900409087 /* ActivityReferenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityReferenceTests.swift; sourceTree = "<group>"; };
 		F886FD1220351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBActivity+RSDTaskInfo.swift"; sourceTree = "<group>"; };
@@ -311,6 +316,9 @@
 		F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+Filters.swift"; sourceTree = "<group>"; };
 		F886FD30203524C600EF2248 /* Date+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Utilities.swift"; sourceTree = "<group>"; };
 		F886FD332036067300EF2248 /* BridgeApp.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = BridgeApp.strings; sourceTree = "<group>"; };
+		F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+ResearchModel.swift"; sourceTree = "<group>"; };
+		F89B3DE920C6F647002EAE2D /* Sequence+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+Utilities.swift"; sourceTree = "<group>"; };
+		F89B3DEB20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationLoggingStepObject.swift; sourceTree = "<group>"; };
 		F89F67692032789800B5CC4B /* StepProtocolTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepProtocolTests.swift; sourceTree = "<group>"; };
 		F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurveyElement+RSDStep.swift"; sourceTree = "<group>"; };
 		F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASurveyConfiguration.swift; sourceTree = "<group>"; };
@@ -387,7 +395,8 @@
 				F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */,
 				F8479514207FE3720024A230 /* CodableTrackedDataTests.swift */,
 				F847950C207FE2CB0024A230 /* TrackingNavigatorTests.swift */,
-				F847950E207FE2E20024A230 /* MedicationTrackingTests.swift */,
+				F847950E207FE2E20024A230 /* MedicationTrackingNavigationTests.swift */,
+				F869804A20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift */,
 				F8479510207FE3160024A230 /* TrackedSelectionDataSourceTests.swift */,
 				F8479511207FE3160024A230 /* TrackedLoggingDataSourceTests.swift */,
 			);
@@ -552,6 +561,7 @@
 				F825BA75207FD96100D29F60 /* SBATrackedLoggingDataSource.swift */,
 				F825BA6B207FD83300D29F60 /* SBATrackedSelectionStepObject.swift */,
 				F825BA73207FD96100D29F60 /* SBATrackedSelectionDataSource.swift */,
+				F89B3DEB20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift */,
 				F825BA67207FD83200D29F60 /* SBAMedicationTrackingStepNavigator.swift */,
 				F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */,
 				CBED326420C8476C009D32F0 /* SBATrackedMedicationDetailStepObject.swift */,
@@ -611,6 +621,7 @@
 				F886FD2C2035244F00EF2248 /* NSPredicate+Utilities.swift */,
 				F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */,
 				F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */,
+				F89B3DE920C6F647002EAE2D /* Sequence+Utilities.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -635,6 +646,7 @@
 				F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */,
 				F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */,
 				F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */,
+				F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */,
 			);
 			path = "Research Model";
 			sourceTree = "<group>";
@@ -985,6 +997,7 @@
 				F886FD2D2035244F00EF2248 /* NSPredicate+Utilities.swift in Sources */,
 				F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */,
 				F8479525207FEA9D0024A230 /* SBATrackedSelectionDataSource.swift in Sources */,
+				F89B3DEC20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift in Sources */,
 				F8C7D40D20929AFF007490BC /* SBASymptomLoggingStepViewController.swift in Sources */,
 				F8A5CE6F20A36B0700E9FD75 /* SBAScheduleManager.swift in Sources */,
 				F8479520207FEA9D0024A230 /* SBATrackedItemDetailsStepObject.swift in Sources */,
@@ -997,12 +1010,14 @@
 				CBED326520C8476C009D32F0 /* SBATrackedMedicationDetailStepObject.swift in Sources */,
 				CBED326920C84C90009D32F0 /* SBATrackedMedicationDetailStepViewController.swift in Sources */,
 				F8A5CE5020A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift in Sources */,
+				F89B3DEA20C6F647002EAE2D /* Sequence+Utilities.swift in Sources */,
 				F847951D207FEA8C0024A230 /* SBATrackedLoggingStepViewController.swift in Sources */,
 				F82B1A892036305200FEA16D /* SBBImage+Utilities.swift in Sources */,
 				F8479522207FEA9D0024A230 /* SBATrackedItemsReviewStepObject.swift in Sources */,
 				F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */,
 				F886FD2F2035248600EF2248 /* SBBScheduledActivity+Filters.swift in Sources */,
 				F8E4A4FB20A4D9F00046577B /* JSONDecoder+Utilities.swift in Sources */,
+				F899D0E520D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift in Sources */,
 				F886FD1320351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift in Sources */,
 				F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */,
 				F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */,
@@ -1021,12 +1036,13 @@
 				F87D69C0203B5C4900409087 /* ActivityReferenceTests.swift in Sources */,
 				F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */,
 				F8E4A4EF20A420380046577B /* SBAScheduleManagerTests.swift in Sources */,
+				F869804B20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift in Sources */,
 				F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */,
 				F8B86AA520C074E800943127 /* ScheduleFilteringTests.swift in Sources */,
 				F8479512207FE3160024A230 /* TrackedSelectionDataSourceTests.swift in Sources */,
 				F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */,
 				F8BF02A620B60F730016C343 /* MockActivityManager.swift in Sources */,
-				F847950F207FE2E20024A230 /* MedicationTrackingTests.swift in Sources */,
+				F847950F207FE2E20024A230 /* MedicationTrackingNavigationTests.swift in Sources */,
 				F8F063F220BFB51B00DB7D9C /* ArchivableTrackingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

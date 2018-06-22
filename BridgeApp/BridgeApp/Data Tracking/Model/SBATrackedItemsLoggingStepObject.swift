@@ -151,11 +151,43 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     
     /// Update the details to the new value. This is only valid for a new value that is an `RSDResult`.
     public mutating func updateDetails(to newValue: SBATrackedItemAnswer) {
-        guard let result = newValue as? RSDResult else {
+        guard let result = newValue as? SBATrackedLoggingResultObject else {
             assertionFailure("This is not a valid tracked item answer type. Cannot map to a result.")
             return
         }
         self.appendInputResults(with: result)
+    }
+    
+    /// Build the client data for this result.
+    public func clientData() throws -> SBBJSONValue? {
+        // Only include the client data for the logging result and not the selection result.
+        guard identifier == SBATrackedItemsStepNavigator.StepIdentifiers.logging.stringValue
+            else {
+                return nil
+        }
+        return try self.rsd_jsonEncodedDictionary() as NSDictionary
+    }
+    
+    /// Returns `false` to save the results of previous runs.
+    public func shouldReplacePreviousClientData() -> Bool {
+        return false
+    }
+    
+    /// Update the selection from the client data.
+    mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
+        guard let dictionary = (clientData as? NSDictionary) ?? (clientData as? [NSDictionary])?.last
+            else {
+                assertionFailure("This is not a valid client data object.")
+                return
+        }
+        let decoder = SBAFactory.shared.createJSONDecoder()
+        let result = try decoder.decode(SBATrackedLoggingCollectionResultObject.self, from: dictionary)
+        self.loggingItems = result.loggingItems.map {
+            var loggedResult = $0
+            loggedResult.loggedDate = nil
+            loggedResult.inputResults = []
+            return loggedResult
+        }
     }
 }
 
@@ -168,6 +200,12 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
     
     /// The identifier associated with the task, step, or asynchronous action.
     public let identifier: String
+    
+    /// The identifier that maps to the `SBATrackedItem`. 
+    public var itemIdentifier: String?
+    
+    /// The timing identifier to map to a schedule.
+    public var timingIdentifier: String?
     
     /// The title for the tracked item.
     public var text: String?
@@ -212,6 +250,7 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         self.identifier = try container.decode(String.self, forKey: .identifier)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.detail = try container.decodeIfPresent(String.self, forKey: .detail)
+        self.loggedDate = try container.decodeIfPresent(Date.self, forKey: .loggedDate)
         // TODO: syoung 05/30/2018 Decode the answers.
         self.inputResults = []
     }

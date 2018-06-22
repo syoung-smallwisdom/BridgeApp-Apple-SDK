@@ -1,5 +1,5 @@
 //
-//  NSDate+Utilities.swift
+//  Date+Utilities.swift
 //  BridgeApp
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
@@ -33,7 +33,7 @@
 
 import Foundation
 
-public enum SBATimeRange : Int, Codable {
+public enum SBATimeRange : String, Codable {
     case morning, afternoon, evening, night
 }
 

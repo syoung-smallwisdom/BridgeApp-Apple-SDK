@@ -57,6 +57,7 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
     public required init(identifier: String, type: RSDStepType?) {
         self.items = []
         super.init(identifier: identifier, type: type ?? .selection)
+        commonInit()
     }
     
     /// Override to set the properties of the subclass.
@@ -78,6 +79,7 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
         self.items = items
         self.sections = sections
         super.init(identifier: identifier, type: type ?? .selection)
+        commonInit()
     }
 
     /// Initialize from a `Decoder`.
@@ -112,6 +114,18 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
         self.items = try type(of: self).decodeItems(from: decoder) ?? []
         self.sections = try type(of: self).decodeSections(from: decoder)
         try super.init(from: decoder)
+        commonInit()
+    }
+    
+    private func commonInit() {
+        // Set the default color theme.
+        if self.colorTheme == nil {
+            var colorTheme = RSDColorThemeElementObject()
+            colorTheme.setColorStyle(.darkBackground, for: .header)
+            colorTheme.setColorStyle(.darkBackground, for: .body)
+            colorTheme.setColorStyle(.lightBackground, for: .footer)
+            self.colorTheme = colorTheme
+        }
     }
     
     /// Overridable class method for decoding tracking items.
@@ -120,7 +134,7 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
     /// - throws: `DecodingError`
     open class func decodeItems(from decoder: Decoder) throws -> [SBATrackedItem]? {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let items = try container.decodeIfPresent([RSDTrackedItemObject].self, forKey: .items)
+        let items = try container.decodeIfPresent([SBATrackedItemObject].self, forKey: .items)
         return items
     }
     
@@ -130,18 +144,18 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
     /// - throws: `DecodingError`
     open class func decodeSections(from decoder: Decoder) throws -> [SBATrackedSection]? {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let sections = try container.decodeIfPresent([RSDTrackedSectionObject].self, forKey: .sections)
+        let sections = try container.decodeIfPresent([SBATrackedSectionObject].self, forKey: .sections)
         return sections
     }
     
     /// Instantiate a step result that is appropriate for this step. The default for this class is a
-    /// `RSDTrackedItemsResultObject`. If the `result` property is set, then this will instantiate a
+    /// `SBATrackedItemsResultObject`. If the `result` property is set, then this will instantiate a
     /// copy of the result with this step's identifier.
     ///
     /// - returns: A result for this step.
     open override func instantiateStepResult() -> RSDResult {
         guard let result = self.result else {
-            return RSDTrackedItemsResultObject(identifier: self.identifier)
+            return SBATrackedItemsResultObject(identifier: self.identifier)
         }
         return result.copy(with: self.identifier)
     }
@@ -189,7 +203,7 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
 ///            }
 ///            """.data(using: .utf8)! // our data in native (JSON) format
 /// ```
-public struct RSDTrackedSectionObject : Codable, SBATrackedSection {
+public struct SBATrackedSectionObject : Codable, SBATrackedSection {
     
     private enum CodingKeys : String, CodingKey {
         case identifier, text, detail
@@ -227,7 +241,7 @@ public struct RSDTrackedSectionObject : Codable, SBATrackedSection {
 ///            }
 ///            """.data(using: .utf8)! // our data in native (JSON) format
 /// ```
-public struct RSDTrackedItemObject : Codable, SBATrackedItem, RSDEmbeddedIconVendor {
+public struct SBATrackedItemObject : Codable, SBATrackedItem, RSDEmbeddedIconVendor {
     
     private enum CodingKeys : String, CodingKey {
         case identifier
@@ -283,7 +297,7 @@ public struct RSDTrackedItemObject : Codable, SBATrackedItem, RSDEmbeddedIconVen
 
 
 /// Simple tracking object for the case where only the identifier is being tracked.
-public struct RSDTrackedItemsResultObject : SBATrackedItemsResult, Codable {
+public struct SBATrackedItemsResultObject : SBATrackedItemsResult, Codable {
 
     private enum CodingKeys : String, CodingKey {
         case identifier, type, startDate, endDate, items
@@ -313,8 +327,8 @@ public struct RSDTrackedItemsResultObject : SBATrackedItemsResult, Codable {
         self.identifier = identifier
     }
     
-    public func copy(with identifier: String) -> RSDTrackedItemsResultObject {
-        var copy = RSDTrackedItemsResultObject(identifier: identifier)
+    public func copy(with identifier: String) -> SBATrackedItemsResultObject {
+        var copy = SBATrackedItemsResultObject(identifier: identifier)
         copy.items = self.items
         return copy
     }

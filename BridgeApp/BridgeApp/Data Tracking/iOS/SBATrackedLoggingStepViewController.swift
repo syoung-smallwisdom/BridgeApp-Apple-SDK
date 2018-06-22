@@ -104,7 +104,7 @@ open class SBATrackedLoggingCell: RSDButtonCell {
                 else {
                     return
             }
-            self.titleLabel.text = loggingItem.choice.text
+            self.titleLabel.text = loggingItem.title
             if let loggedDate = loggingItem.loggedDate {
                 self.setLoggedDate(loggedDate, animated: _loggedDate == nil)
             } else {

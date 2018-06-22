@@ -109,12 +109,13 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         }
 
         let indexPath = IndexPath(row: 2, section: 0)
-        guard let choiceItem = dataSource.tableItem(at: indexPath) as? RSDChoiceTableItem else {
+        guard let choiceItem = dataSource.tableItem(at: indexPath) as? SBATrackedLoggingTableItem else {
             XCTFail("Failed to get expected table item. Exiting.")
             return
         }
         
-        XCTAssertEqual(choiceItem.choice.answerValue as? String, "medC1")
+        XCTAssertEqual(choiceItem.identifier, "medC1")
+        XCTAssertEqual(choiceItem.itemIdentifier, "medC1")
         XCTAssertEqual(choiceItem.reuseIdentifier, "logging")
         
         /// Loop through twice. Item should remain selected.
@@ -258,7 +259,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
     
     func select(indexPath: IndexPath, with dataSource: RSDTableDataSource) {
         
-        guard let choiceItem = dataSource.tableItem(at: indexPath) as? RSDChoiceTableItem else {
+        guard let choiceItem = dataSource.tableItem(at: indexPath) as? SBATrackedLoggingTableItem else {
             XCTFail("Failed to get expected table item. Exiting.")
             return
         }
@@ -276,9 +277,10 @@ class TrackedLoggingDataSourceTests: XCTestCase {
     func buildDataSource() -> RSDTableDataSource? {
         let (items, sections) = buildMedicationItems()
         let tracker = SBATrackedItemsStepNavigator(identifier: "Test", items: items, sections: sections)
-        var result = RSDTrackedItemsResultObject(identifier: "selection")
-        result.items = ["medA2", "medB1", "medC1"].map { RSDIdentifier(rawValue: $0) }
-        tracker.previousResult = result
+        var result = SBATrackedLoggingCollectionResultObject(identifier: "selection")
+        result.updateSelected(to: ["medA2", "medB1", "medC1"], with: items)
+        let clientData = try! result.clientData()
+        tracker.previousClientData = clientData
         
         let task = RSDTaskObject(identifier: "loggingTest", stepNavigator: tracker)
         let taskPath = RSDTaskPath(task: task)

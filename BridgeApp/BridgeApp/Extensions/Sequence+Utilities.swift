@@ -1,5 +1,5 @@
 //
-//  SBAClientDataResult.swift
+//  Sequence+Utilities.swift
 //  BridgeApp
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
@@ -33,13 +33,48 @@
 
 import Foundation
 
-/// An `SBAClientDataResult` is an archivable result that can also save a clientData scoring object on
-/// an associated `SBBScheduledActivity` or `SBBStudyParticipant` object.
-public protocol SBAClientDataResult : RSDResult, RSDArchivable {
+extension Dictionary where Value : NSObjectProtocol {
     
-    /// Build the client data object appropriate to this result.
-    func clientData() throws -> SBBJSONValue?
+    public func sba_uniqueCount() -> Int {
+        return NSSet(array: (self as NSDictionary).allValues ).count
+    }
+}
+
+extension Array where Element : NSObjectProtocol {
     
-    /// Should the previous client data object be replaced with this one?
-    func shouldReplacePreviousClientData() -> Bool
+    public func sba_uniqueCount() -> Int {
+        return NSSet(array: self).count
+    }
+    
+    /// Create a union set of two arrays where the elements of this array are replaced with the elements of
+    /// the `other` array if the `evaluate` block evaluates to `true`.
+    ///
+    /// - parameters:
+    ///     - other: The other array with which this one should be unioned.
+    ///     - evaluate: The function to use to evaluate the search pattern.
+    /// - returns: The elements that match the pattern.
+    public func sba_union(with other:[Element], where evaluate: (Element, Element) throws -> Bool) rethrows -> [Element] {
+        var results = self
+        try other.forEach { (element) in
+            if let idx = try results.index(where: { try evaluate($0, element) }) {
+                results.remove(at: idx)
+            }
+            results.append(element)
+        }
+        return results
+    }
+}
+
+extension Dictionary where Value : Hashable {
+
+    public func sba_uniqueCount() -> Int {
+        return Set(self.values).count
+    }
+}
+
+extension Array where Element : Hashable {
+
+    public func sba_uniqueCount() -> Int {
+        return Set(self).count
+    }
 }

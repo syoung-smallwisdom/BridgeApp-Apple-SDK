@@ -1,6 +1,6 @@
 //
-//  SBAClientDataResult.swift
-//  BridgeApp
+//  SBBScheduledActivity+ResearchModel.swift
+//  BridgeApp (iOS)
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
@@ -33,13 +33,12 @@
 
 import Foundation
 
-/// An `SBAClientDataResult` is an archivable result that can also save a clientData scoring object on
-/// an associated `SBBScheduledActivity` or `SBBStudyParticipant` object.
-public protocol SBAClientDataResult : RSDResult, RSDArchivable {
+extension SBBScheduledActivity {
     
-    /// Build the client data object appropriate to this result.
-    func clientData() throws -> SBBJSONValue?
-    
-    /// Should the previous client data object be replaced with this one?
-    func shouldReplacePreviousClientData() -> Bool
+    public var schemaInfo : RSDSchemaInfo? {
+        guard let activityIdentifier = self.activityIdentifier else {
+            return nil
+        }
+        return SBABridgeConfiguration.shared.schemaInfo(for: activityIdentifier)
+    }
 }

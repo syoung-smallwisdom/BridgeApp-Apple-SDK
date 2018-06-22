@@ -74,9 +74,21 @@ class ActivityReferenceTests: XCTestCase {
     
     func testAppConfig_Setup() {
         
-        let schemaRef: [String : Any] =  ["id" : "foo",
-                                          "activityDescription" : "This is the activity description",
-                                          "revision" : NSNumber(value: 3)]
+        let schemaRefFoo = SBBSchemaReference(dictionaryRepresentation:
+            ["id" : "foo",
+             "activityDescription" : "This is the activity description",
+             "revision" : NSNumber(value: 3)])!
+        
+        let schemaRefGoo = SBBSchemaReference(dictionaryRepresentation:
+            ["id" : "goo",
+             "activityDescription" : "This is the activity description",
+             "revision" : NSNumber(value: 2)])!
+        
+        let schemaRefC = SBBSchemaReference(dictionaryRepresentation:
+            ["id" : "taskC",
+             "activityDescription" : "This is the activity description",
+             "revision" : NSNumber(value: 5)])!
+        
         let clientData: [String : Any] = [
             "studyDuration" : ["month":3],
             "groups": [
@@ -86,38 +98,66 @@ class ActivityReferenceTests: XCTestCase {
                 ],
                 [
                     "identifier" : "group2",
-                    "activityIdentifiers": ["taskC", "taskD", "taskE"]
+                    "activityIdentifiers": ["taskC", "taskD", "taskF"]
                 ],
                 ],
             "activityList": [  ["identifier" : "taskA"],
-                               ["identifier" : "taskB"],
                                ["identifier" : "taskC"],
-                               ["identifier" : "taskD"],
-                               ["identifier" : "taskE"]],
-            "tasks": [ ["identifier" : "taskA", "steps":[] ]]
+                               ["identifier" : "taskD"]],
+            "tasks": [ ["identifier" : "taskF", "steps":[] ]],
+            "taskToSchemaIdentifierMap": [
+                "taskA": "foo",
+                "taskF": "goo"
+            ]
         ]
         
         let appConfig = SBBAppConfig(dictionaryRepresentation:
-            ["schemaReferences": [schemaRef],
-             "clientData": clientData
+            ["clientData": clientData
             ])!
+        appConfig.addSchemaReferencesObject(schemaRefFoo)
+        appConfig.addSchemaReferencesObject(schemaRefGoo)
+        appConfig.addSchemaReferencesObject(schemaRefC)
 
         let config = SBABridgeConfiguration()
         config.setup(with: appConfig)
         
-        let expectedGroupIds = ["group1", "group2"]
-        let groupIds = config.activityGroups.map { $0.identifier }
-        XCTAssertEqual(groupIds, expectedGroupIds)
-        
-        let expectedActivityIds = Set(["taskA", "taskB", "taskC", "taskD", "taskE"])
-        let activityIds = Set(config.activityInfoMap.map { $0.key } )
-        XCTAssertEqual(activityIds, expectedActivityIds)
-        
-        let expectedTaskIds = Set(["taskA"])
-        let taskIds = Set(config.taskMap.map { $0.key } )
-        XCTAssertEqual(taskIds, expectedTaskIds)
-        
         XCTAssertEqual(config.studyDuration.month, 3)
+        
+        let group1 = config.activityGroup(with: "group1")
+        XCTAssertNotNil(group1)
+        let expectedIds = ["taskA", "taskB", "taskC"].map { RSDIdentifier(rawValue: $0) }
+        XCTAssertEqual(group1?.activityIdentifiers, expectedIds)
+        
+        let group2 = config.activityGroup(with: "group2")
+        XCTAssertNotNil(group2)
+        
+        let taskInfoA = config.activityInfo(for: "taskA")
+        XCTAssertNotNil(taskInfoA)
+        let schemaA = config.schemaInfo(for: "taskA")
+        XCTAssertNotNil(schemaA)
+        XCTAssertEqual(schemaA?.schemaIdentifier, "foo")
+        
+        let taskInfoC = config.activityInfo(for: "taskC")
+        XCTAssertNotNil(taskInfoC)
+        let schemaC = config.schemaInfo(for: "taskC")
+        XCTAssertNotNil(schemaC)
+        XCTAssertEqual(schemaC?.schemaIdentifier, "taskC")
+        XCTAssertEqual(schemaC?.schemaVersion, 5)
+        
+        let taskInfoF = config.activityInfo(for: "taskF")
+        XCTAssertNotNil(taskInfoF)
+        let schemaF = config.schemaInfo(for: "taskF")
+        XCTAssertNotNil(schemaF)
+        XCTAssertEqual(schemaF?.schemaIdentifier, "goo")
+        
+        if let taskInfo = taskInfoF {
+            let taskPath = config.instantiateTaskPath(for: taskInfo, using: nil)
+            XCTAssertNotNil(taskPath.task)
+            XCTAssertEqual(taskPath.identifier, "taskF")
+        }
+        else {
+            XCTFail("Failed to instantiate task info for taskF.")
+        }
     }
     
     func testActivityInfo_Codable_ModuleId() {

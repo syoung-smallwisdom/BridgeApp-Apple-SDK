@@ -109,9 +109,10 @@ class TrackingNavigatorTests: XCTestCase {
                 return
         }
         
-        var initialResult = RSDTrackedItemsResultObject(identifier: taskPath.task!.identifier)
+        var initialResult = SBATrackedLoggingCollectionResultObject(identifier: taskPath.task!.identifier)
         initialResult.updateSelected(to: ["itemA2", "itemB1", "itemC3"], with: tracker.items)
-        tracker.previousResult = initialResult
+        let clientData = try! initialResult.clientData()
+        tracker.previousClientData = clientData
         
         let (firstStep, _) = tracker.step(after: nil, with: &taskPath.result)
         XCTAssertNotNil(firstStep)
@@ -157,7 +158,7 @@ class TrackingNavigatorTests: XCTestCase {
                 "selection": { "title": "What items would you like to track?",
                                 "detail": "Select all that apply"},
                 "logging": { "title": "Your logged items",
-                             "actions": { "addMore": { "buttonTitle" : "Edit Logged Items" }}
+                             "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit Logged Items" }}
                             }
             }
         """.data(using: .utf8)! // our data in native (JSON) format

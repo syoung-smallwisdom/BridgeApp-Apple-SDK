@@ -83,11 +83,156 @@ class ArchivableTrackingTests: XCTestCase {
             } else {
                 XCTFail("Result returned nil client data or unexpected type.")
             }
-            
         }
         catch let err {
             XCTFail("Failed to encode the result: \(err)")
         }
     }
     
+    func testLoggingCollectionResultArchive_UpdateFromClientData_NoItems() {
+    
+        let clientData: NSDictionary =
+        [
+            "items" : [
+            [
+            "foo" : "goo",
+            "detail" : "a detail",
+            "identifier" : "itemA",
+            "loggedDate" : "2018-06-04T13:24:39.772-07:00",
+            "text" : "Item A"
+            ],
+            [
+            "detail" : "b detail",
+            "text" : "Item B",
+            "identifier" : "itemB"
+            ]
+            ],
+            "endDate" : "2018-06-04T13:25:39.772-07:00",
+            "startDate" : "2018-06-04T13:25:39.772-07:00",
+            "type" : "loggingCollection",
+            "identifier" : "logging"
+        ]
+        
+        do {
+        
+            var result = SBATrackedLoggingCollectionResultObject(identifier: "logging")
+            try result.updateSelected(from: clientData, with: [])
+            
+            let selectedAnswers = result.selectedAnswers
+            XCTAssertEqual(selectedAnswers.count, 2)
+            
+            guard let firstItem = selectedAnswers.first as? SBATrackedLoggingResultObject,
+               let lastItem = selectedAnswers.last as? SBATrackedLoggingResultObject
+                else {
+                    XCTFail("Items nil or not of expected type. \(selectedAnswers)")
+                    return
+            }
+            
+            XCTAssertEqual(firstItem.identifier, "itemA")
+            XCTAssertEqual(firstItem.text, "Item A")
+            XCTAssertEqual(firstItem.detail, "a detail")
+            XCTAssertNil(firstItem.loggedDate)
+            
+            XCTAssertEqual(lastItem.identifier, "itemB")
+            XCTAssertEqual(lastItem.text, "Item B")
+            XCTAssertEqual(lastItem.detail, "b detail")
+            XCTAssertNil(lastItem.loggedDate)
+        }
+        catch let err {
+            XCTFail("Failed to encode the result: \(err)")
+        }
+    }
+    
+    func testMedicationResultArchive_ClientData() {
+        
+        var result = SBAMedicationTrackingResult(identifier: "logging")
+        var medA3 = SBAMedicationAnswer(identifier: "medA3")
+        medA3.dosage = "1 ml"
+        medA3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "08:00", daysOfWeek: [.monday, .wednesday, .friday])]
+        var medC3 = SBAMedicationAnswer(identifier: "medC3")
+        medC3.dosage = "3 mg"
+        medC3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: [.sunday, .thursday])]
+        result.medications = [medA3, medC3]
+        
+        do {
+            let clientData = try result.clientData()
+            XCTAssertNotNil(clientData)
+            if let items = clientData as? [[String : Any]] {
+                XCTAssertEqual(items.count, 2)
+                if let item = items.first {
+                    XCTAssertEqual(item["identifier"] as? String, "medA3")
+                    XCTAssertEqual(item["dosage"] as? String, "1 ml")
+                    if let schedules = item["scheduleItems"] as? [[String : Any]],
+                        let schedule = schedules.first {
+                        XCTAssertEqual(schedules.count, 1)
+                        XCTAssertEqual(schedule["timeOfDay"] as? String, "08:00")
+                        XCTAssertEqual(schedule["daysOfWeek"] as? [Int], [6,4,2])
+                    }
+                    else {
+                        XCTFail("Client data 'schedules' missing or unexpected type. \(items)")
+                    }
+                }
+                if let item = items.last {
+                    XCTAssertEqual(item["identifier"] as? String, "medC3")
+                    XCTAssertEqual(item["dosage"] as? String, "3 mg")
+                }
+            } else {
+                XCTFail("Client data 'items' missing or unexpected type. \(String(describing: clientData))")
+            }
+        }
+        catch let err {
+            XCTFail("Failed to encode the result: \(err)")
+        }
+    }
+    
+    func testMedicationResult_UpdateFromClientData_NoItems() {
+        let clientData: NSArray = [
+            [
+                "dosage" : "1 ml",
+                "identifier" : "medA3",
+                "scheduleItems" : [
+                    [
+                        "daysOfWeek" : [ 6, 4, 2 ],
+                        "timeOfDay" : "08:00"
+                    ]
+                ]
+            ],
+            [
+                "dosage" : "3 mg",
+                "identifier" : "medC3",
+                "scheduleItems" : [
+                        [
+                            "daysOfWeek" : [ 1, 5 ],
+                            "timeOfDay" : "20:00"
+                        ]
+                    ]
+            ]
+        ]
+        
+        do {
+
+            var result = SBAMedicationTrackingResult(identifier: "logging")
+            try result.updateSelected(from: clientData, with: [])
+
+            let selectedAnswers = result.selectedAnswers
+            XCTAssertEqual(selectedAnswers.count, 2)
+
+            guard let firstItem = selectedAnswers.first as? SBAMedicationAnswer,
+                let lastItem = selectedAnswers.last as? SBAMedicationAnswer
+                else {
+                    XCTFail("Items nil or not of expected type. \(selectedAnswers)")
+                    return
+            }
+
+            XCTAssertEqual(firstItem.identifier, "medA3")
+            XCTAssertEqual(firstItem.dosage, "1 ml")
+
+            XCTAssertEqual(lastItem.identifier, "medC3")
+            XCTAssertEqual(lastItem.dosage, "3 mg")
+
+        }
+        catch let err {
+            XCTFail("Failed to encode the result: \(err)")
+        }
+    }
 }

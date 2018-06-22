@@ -59,7 +59,7 @@ class CodableTrackedDataTests: XCTestCase {
         """.data(using: .utf8)! // our data in native (JSON) format
         
         do {
-            let object = try decoder.decode(RSDTrackedSectionObject.self, from: json)
+            let object = try decoder.decode(SBATrackedSectionObject.self, from: json)
             
             XCTAssertEqual(object.identifier, "foo")
             XCTAssertEqual(object.text, "Text")
@@ -96,7 +96,7 @@ class CodableTrackedDataTests: XCTestCase {
         """.data(using: .utf8)! // our data in native (JSON) format
         
         do {
-            let object = try decoder.decode(RSDTrackedItemObject.self, from: json)
+            let object = try decoder.decode(SBATrackedItemObject.self, from: json)
             
             XCTAssertEqual(object.identifier, "advil-ibuprofen")
             XCTAssertEqual(object.sectionIdentifier, "pain")
@@ -135,7 +135,7 @@ class CodableTrackedDataTests: XCTestCase {
         """.data(using: .utf8)! // our data in native (JSON) format
         
         do {
-            let object = try decoder.decode(RSDTrackedItemObject.self, from: json)
+            let object = try decoder.decode(SBATrackedItemObject.self, from: json)
             
             XCTAssertEqual(object.identifier, "Ibuprofen")
             XCTAssertEqual(object.text, "Ibuprofen")
@@ -362,7 +362,7 @@ class CodableTrackedDataTests: XCTestCase {
                                                 "footer" : "lightBackground" }}
                             },
                 "logging": { "title": "Your logged items",
-                             "actions": { "addMore": { "buttonTitle" : "Edit Logged Items" }}
+                             "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit Logged Items" }}
                             }
             }
         """.data(using: .utf8)! // our data in native (JSON) format
@@ -404,11 +404,13 @@ class CodableTrackedDataTests: XCTestCase {
             "text": "Some text.",
             "detail": "This is a test.",
             "footnote": "This is a footnote.",
-            "image": "before",
+            "image": { "type": "fetchable",
+                       "imageName": "before"},
             "nextStepIdentifier": "boo",
-            "actions": { "goForward": { "buttonTitle" : "Go, Dogs! Go!" },
-                         "cancel": { "iconName" : "closeX" },
-                         "learnMore": { "iconName" : "infoIcon",
+            "actions": { "goForward": { "type": "default", "buttonTitle" : "Go, Dogs! Go!" },
+                         "cancel": { "type": "default", "iconName" : "closeX" },
+                         "learnMore": { "type": "webView", 
+                                        "iconName" : "infoIcon",
                                         "url" : "fooInfo" }
                         },
             "shouldHideActions": ["goBackward", "skip"],
@@ -431,7 +433,7 @@ class CodableTrackedDataTests: XCTestCase {
             XCTAssertEqual(object.text, "Some text.")
             XCTAssertEqual(object.detail, "This is a test.")
             XCTAssertEqual(object.footnote, "This is a footnote.")
-            XCTAssertEqual((object.imageTheme as? RSDImageWrapper)?.imageName, "before")
+            XCTAssertEqual((object.imageTheme as? RSDFetchableImageThemeElementObject)?.imageName, "before")
             XCTAssertEqual(object.nextStepIdentifier, "boo")
             
             let goForwardAction = object.action(for: .navigation(.goForward), on: object)

@@ -218,17 +218,6 @@ public final class SBAParticipantManager : NSObject {
             return
         }
         
-        // TODO: Remove debugging code once the caching thing is figured out.
-        //        #if DEBUG
-        //        do {
-        //            let schedules = try BridgeSDK.activityManager.getCachedSchedules(using: NSPredicate(value: true), sortDescriptors: nil, fetchLimit: 0)
-        //            print("\n---\nCached schedules AFTER server request:\n\(schedules)")
-        //        }
-        //        catch let err {
-        //            debugPrint("Error fetching cached results: \(err)")
-        //        }
-        //        #endif
-        
         // Save the last ping date for a successful ping of the server.
         self.lastPing = pingDate
             
@@ -261,10 +250,8 @@ public final class SBAParticipantManager : NSObject {
     /// Convenience method for wrapping the call to BridgeSDK.
     fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date) {
         let pingDate = Date()
-        //print("\n\n---Fetch schedules from:\(fromDate) to:\(toDate)")
-        
         BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .fallBackToCached) { (obj, error) in
-            print("\n\n---Fetch Results pingDate:\(pingDate) from:\(fromDate) to:\(toDate) schedules:\(String(describing: obj))")
+            // print("\n\n---Fetch Results pingDate:\(pingDate) from:\(fromDate) to:\(toDate)\n\(String(describing: obj))")
             self.updateQueue.addOperation {
                 self.handleLoadedActivities(pingDate: pingDate,
                                             scheduledActivities: obj as? [SBBScheduledActivity],

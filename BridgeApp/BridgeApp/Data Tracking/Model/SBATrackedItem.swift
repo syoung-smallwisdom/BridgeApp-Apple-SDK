@@ -94,7 +94,7 @@ public protocol SBATrackedSection {
 /// this participant.
 public protocol SBATrackedItemAnswer : Codable, RSDChoice {
     
-    /// n that maps to the associated `RSDTrackedItem`.
+    /// Identifier that maps to the associated `SBATrackedItem`.
     var identifier: String { get }
     
     /// Does the tracked answer have the required answers?
@@ -139,12 +139,19 @@ extension SBATrackedItemsResult {
 }
 
 public protocol SBATrackedItemsCollectionResult : SBATrackedItemsResult, SBAClientDataResult {
+    
+    /// Update the result from the given client data.
+    mutating func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws
 }
 
 extension SBATrackedItemsCollectionResult {
     
     /// Build the archiveable or uploadable data for this result.
     public func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
+        guard let stepId = SBATrackedItemsStepNavigator.StepIdentifiers(rawValue: self.identifier),
+            (stepId == .logging || stepId == .review) else {
+                return nil
+        }
         let data = try self.rsd_jsonEncodedData()
         let manifest = RSDFileManifest(filename: self.identifier,
                                        timestamp: self.endDate,
@@ -152,11 +159,6 @@ extension SBATrackedItemsCollectionResult {
                                        identifier: self.identifier,
                                        stepPath: stepPath)
         return (manifest, data)
-    }
-    
-    /// Build the client data for this result.
-    public func clientData() throws -> SBBJSONValue? {
-        return try self.rsd_jsonEncodedDictionary() as NSDictionary
     }
 }
 

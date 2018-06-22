@@ -48,13 +48,10 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     public private(set) var taskPath: RSDTaskPath!
     
     /// The table sections for this data source.
-    public var sections: [RSDTableSection] {
-        return _sections
-    }
-    private var _sections: [RSDTableSection]
+    public private(set) var sections: [RSDTableSection]
     
     /// The list of item groups.
-    public private(set) var itemGroups: [RSDTableItemGroup]
+    public internal(set) var itemGroups: [RSDTableItemGroup]
     
     /// The initial result when the data source was first displayed.
     public let initialResult: SBATrackedItemsResult?
@@ -64,7 +61,7 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     
     /// Initialize a new `RSDFormStepDataSourceObject`.
     /// - parameters:
-    ///     - step:             The RSDTrackedSelectionStep for this data source.
+    ///     - step:             The `SBATrackedItemsStep` for this data source.
     ///     - taskPath:         The current task path for this data source.
     public init(step: SBATrackedItemsStep, taskPath: RSDTaskPath) {
         self.trackedStep = step
@@ -82,7 +79,7 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
 
         // build the sections and groups
         let (sections, groups) = type(of: self).buildSections(step: step, initialResult: initialResult)
-        self._sections = sections
+        self.sections = sections
         self.itemGroups = groups
     }
     
@@ -98,7 +95,7 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
         let removedRows = previousItems.subtracting(newItems).map { $0.indexPath }
         
         // Update the current sections
-        self._sections = sections
+        self.sections = sections
         self.itemGroups = groups
         
         return (addedRows, removedRows)
@@ -106,7 +103,7 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     
     /// Overridable class function for building the sections of the table.
     /// - parameters:
-    ///     - step: The RSDTrackedSelectionStep for this data source.
+    ///     - step: The `SBATrackedItemsStep` for this data source.
     ///     - initialResult: The initial result (if any).
     /// - returns:
     ///     - sections: The built table sections.
@@ -132,12 +129,12 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     }
     
     /// Instantiate a tracking result of the appropriate object type for this data source.
-    /// The default implementation returns a new instance of `RSDTrackedItemsResultObject`.
+    /// The default implementation returns a new instance of `SBATrackedItemsResultObject`.
     ///
     /// - returns: The appropriate tracking result.
     open func instantiateTrackingResult() -> SBATrackedItemsResult {
         return self.step.instantiateStepResult() as? SBATrackedItemsResult ??
-            RSDTrackedItemsResultObject(identifier: step.identifier)
+            SBATrackedItemsResultObject(identifier: step.identifier)
     }
     
     // MARK: RSDTableDataSource implementation
@@ -173,7 +170,7 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     ///     - reloadSection: `true` if the section needs to be reloaded b/c other answers have changed,
     ///                      otherwise returns `false`.
     /// - throws: `RSDInputFieldError` if the selection is invalid.
-    open func selectAnswer(item: RSDChoiceTableItem, at indexPath: IndexPath) throws -> (isSelected: Bool, reloadSection: Bool) {
+    open func selectAnswer(item: RSDTableItem, at indexPath: IndexPath) throws -> (isSelected: Bool, reloadSection: Bool) {
         fatalError("Abstract method - subclass must override")
     }
 }

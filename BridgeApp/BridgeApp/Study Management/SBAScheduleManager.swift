@@ -38,7 +38,11 @@ extension Notification.Name {
     /// Notification name posted by the `SBAScheduleManager` when the activities have been updated.
     public static let SBAUpdatedScheduledActivities = Notification.Name(rawValue: "SBAUpdatedScheduledActivities")
     
-    /// Notification name posted by the `SBAScheduleManager` when the activities did send an update
+    /// Notification name posted by the `SBAScheduleManager` before the manager will send an update
+    /// of the scheduled activities to Bridge.
+    public static let SBAWillSendUpdatedScheduledActivities = Notification.Name(rawValue: "SBAWillSendUpdatedScheduledActivities")
+    
+    /// Notification name posted by the `SBAScheduleManager` after the manager did send an update
     /// of the scheduled activities to Bridge.
     public static let SBADidSendUpdatedScheduledActivities = Notification.Name(rawValue: "SBADidSendUpdatedScheduledActivities")
 }
@@ -49,11 +53,21 @@ extension Notification.Name {
 /// valid for today and the most recent finished activity (if any) for each activity identifier where the
 /// "activity identifier" refers to an `SBBActivity` object's associated `SBAActivityReference`.
 ///
-open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
+open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDelegate {
 
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
-        case previousActivities, updatedActivities
+        case previousActivities, updatedActivities, updateScheduleGuids
+    }
+    
+    /// Pointer to the shared configuration to use.
+    public var configuration: SBABridgeConfiguration {
+        return SBABridgeConfiguration.shared
+    }
+    
+    /// Pointer to the shared activity manager to use.
+    public var activityManager: SBBActivityManagerProtocol {
+        return BridgeSDK.activityManager
     }
     
     public override init() {
@@ -66,10 +80,9 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         
         // Add an observer that a schedule manager has updated the scheduled activities. Often updating the
         // schedules will change the available "next" schedule.
-        NotificationCenter.default.addObserver(forName: .SBADidSendUpdatedScheduledActivities, object: nil, queue: .main) { (notification) in
-            if let schedules = notification.userInfo?[SBAScheduleManager.NotificationKey.updatedActivities] as? [SBBScheduledActivity],
-                self.shouldReload(schedules: schedules) {
-                self.reloadData()
+        NotificationCenter.default.addObserver(forName: .SBAWillSendUpdatedScheduledActivities, object: nil, queue: .main) { (notification) in
+            if let schedules = notification.userInfo?[SBAScheduleManager.NotificationKey.updatedActivities] as? [SBBScheduledActivity] {
+                self.willSendUpdatedSchedules(for: schedules)
             }
         }
         
@@ -77,20 +90,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         self.loadScheduledActivities()
     }
     
-    /// Should the schedules associated with this schedule manager be changed when a given schedule updates?
-    /// By default this will return `true` if at least one of the schedules has been marked as completed
-    /// and if there is an associated activity group, if at least one of the schedules is in this group.
-    open func shouldReload(schedules: [SBBScheduledActivity]) -> Bool {
-        guard let group = self.activityGroup else {
-            return schedules.first(where: { $0.isCompleted }) != nil
-        }
-        let identifiers = group.activityIdentifiers.map { $0.stringValue }
-        return schedules.first(where: {
-            $0.activityIdentifier != nil &&
-                identifiers.contains($0.activityIdentifier!) &&
-                $0.isCompleted
-        }) != nil
-    }
     
     // MARK: Data source
     
@@ -109,12 +108,12 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     /// configuration using `self.identifier` as the group identifier.
     open var activityGroup : SBAActivityGroup? {
         get {
-            return SBABridgeConfiguration.shared.activityGroup(with: self.identifier)
+            return self.configuration.activityGroup(with: self.identifier)
         }
         set {
             guard let newGroup = newValue else { return }
-            if SBABridgeConfiguration.shared.activityGroup(with: newGroup.identifier) == nil {
-                SBABridgeConfiguration.shared.addMapping(with: newGroup)
+            if self.configuration.activityGroup(with: newGroup.identifier) == nil {
+                self.configuration.addMapping(with: newGroup)
             }
             self.identifier = newGroup.identifier
         }
@@ -220,23 +219,16 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
                 
                     // Fetch the cached schedules.
                     let requests = self.fetchRequests()
-                    var scheduleGuids: [String] = []
-                    var schedules: [SBBScheduledActivity] = []
+                    var scheduleMap: [String : SBBScheduledActivity] = [:]
                     
                     try requests.forEach {
                         let fetchedSchedules = try self.getCachedSchedules(using: $0)
-                        if schedules.count == 0 {
-                            schedules = fetchedSchedules
-                        }
-                        else {
-                            fetchedSchedules.forEach {
-                                if !scheduleGuids.contains($0.guid) {
-                                    scheduleGuids.append($0.guid)
-                                    schedules.append($0)
-                                }
-                            }
+                        fetchedSchedules.forEach {
+                            scheduleMap[$0.guid] = $0
                         }
                     }
+                    let schedules: [SBBScheduledActivity] = scheduleMap.values.map { $0 }
+                    //print("\n---\(self.identifier):\n\(schedules)")
 
                     DispatchQueue.main.async {
                         self.update(fetchedActivities: schedules)
@@ -255,7 +247,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     
     /// Add internal method for testing.
     internal func getCachedSchedules(using fetchRequest: FetchRequest) throws -> [SBBScheduledActivity] {
-        return try BridgeSDK.activityManager.getCachedSchedules(using: fetchRequest.predicate,
+        return try self.activityManager.getCachedSchedules(using: fetchRequest.predicate,
                                                                 sortDescriptors: fetchRequest.sortDescriptors,
                                                                 fetchLimit: fetchRequest.fetchLimit ?? 0)
     }
@@ -270,7 +262,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     
     /// Called on the main thread once Bridge returns the requested scheduled activities.
     ///
-    /// - parameter scheduledActivities: The list of activities returned by the service.
+    /// - parameter fetchedActivities: The list of activities returned by the service.
     open func update(fetchedActivities: [SBBScheduledActivity]) {
         //print("\n\n--- Update called for \(self.identifier) with:\n\(fetchedActivities)")
         if (fetchedActivities != self.scheduledActivities) {
@@ -278,6 +270,21 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
             let previous = self.scheduledActivities
             self.didUpdateScheduledActivities(from: previous)
         }
+    }
+    
+    /// Called on the main thread before sending the given schedules to the server for update. The default
+    /// implementation will call `self.update(fetchedActivities:)` on a unioned set of the updated schedules
+    /// and the schedules that are currently in memory. This method will filter the schedules using the
+    /// `fetchedRequests()` for this manager, but will not use the fetch limit parameter to limit the number
+    /// of schedules returned.
+    ///
+    /// - parameter schedules: The schedules that will be updated.
+    open func willSendUpdatedSchedules(for schedules:[SBBScheduledActivity]) {
+        let mergedSet = self.scheduledActivities.sba_union(with: schedules, where: { $0.guid == $1.guid })
+        let filters = self.fetchRequests().map { $0.predicate }
+        let predicate = NSCompoundPredicate(orPredicateWithSubpredicates: filters)
+        let updatedSchedules = mergedSet.filter { predicate.evaluate(with: $0) }
+        self.update(fetchedActivities: updatedSchedules)
     }
     
     /// Called when the schedules have changed.
@@ -321,12 +328,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     /// Get the schema info associated with the given activity identifier. By default, this looks at the
     /// shared bridge configuration's schema reference map.
     open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
-        return SBABridgeConfiguration.shared.schemaReferenceMap[activityIdentifier]
-    }
-    
-    /// Get the task for this activity identifier. By default, this will query the bridge configuration.
-    open func task(for activityIdentifier: String) -> RSDTask? {
-        return SBABridgeConfiguration.shared.taskMap[activityIdentifier]
+        return self.configuration.schemaInfo(for: activityIdentifier)
     }
     
     /// Get the scheduled activity that is associated with this schedule identifier and task result.
@@ -411,8 +413,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     /// task info to a schedule, but if called, it is assumed that even if there is no schedule associated
     /// with this task, that the task path should be instantiated.
     ///
-    /// The returned result includes the instantiated task path, the reference schedule (if found), and the
-    /// clientData from the most recent finished run of the schedule (if found).
+    /// The returned result includes the instantiated task path and the reference schedule (if found).
     ///
     /// - note: This method should not be used to instantiate child task paths that are used to track the
     /// task state for a subtask. Instead, it is intended for starting a new task and will set up any state
@@ -427,75 +428,67 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     /// - returns:
     ///     - taskPath: The instantiated task path.
     ///     - referenceSchedule: The schedule to reference for uploading the task path results (if any).
-    ///     - clientData: The client data from the most recent finished run of the schedule (if any).
-    open func instantiateTaskPath(for taskInfo: RSDTaskInfo, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?, clientData: SBBJSONValue?) {
-        
+    open func instantiateTaskPath(for taskInfo: RSDTaskInfo, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?) {
+        let schedule = scheduledActivity(for: taskInfo.identifier, in: activityGroup)
+        let taskPath: RSDTaskPath = configuration.instantiateTaskPath(for: taskInfo, using: schedule)
+        setupTaskPath(taskPath, with: schedule)
+        return (taskPath, schedule)
+    }
+    
+    /// Instantiate a task path appropriate to the given task. This method will attempt to map the
+    /// task to a schedule, but if called, it is assumed that even if there is no schedule associated
+    /// with this task, that the task path should be instantiated.
+    ///
+    /// The returned result includes the instantiated task path and the reference schedule (if found).
+    ///
+    /// - note: This method should not be used to instantiate child task paths that are used to track the
+    /// task state for a subtask. Instead, it is intended for starting a new task and will set up any state
+    /// handling (such as tracking data groups) that must be managed globally.
+    ///
+    /// - parameters:
+    ///     - task: The task object to use to create the task path.
+    ///     - activityGroup: The activity group to use to determine the schedule. This is used for the case
+    ///                      where there may be multiple schedules with the same task and the
+    ///                      `schedulePlanGUID` on the activity group is used to determine which available
+    ///                      schedule is the one to associate with this task.
+    /// - returns:
+    ///     - taskPath: The instantiated task path.
+    ///     - referenceSchedule: The schedule to reference for uploading the task path results (if any).
+    open func instantiateTaskPath(for task: RSDTask, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?) {
+        let schedule = scheduledActivity(for: task.identifier, in: activityGroup)
+        let taskPath: RSDTaskPath = RSDTaskPath(task: task)
+        setupTaskPath(taskPath, with: schedule)
+        return (taskPath, schedule)
+    }
+    
+    func scheduledActivity(for taskIdentifier: String, in activityGroup: SBAActivityGroup?) -> SBBScheduledActivity? {
         // Set up predicates.
-        var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
+        var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskIdentifier)
         if let group = (activityGroup ?? self.activityGroup) {
-            if let guid = group.schedulePlanGuid {
-                taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                    taskPredicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
-            }
-            else if let guid = group.activityGuidMap?[taskInfo.identifier] {
+            if let guid = group.activityGuidMap?[taskIdentifier] {
                 taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                     taskPredicate, SBBScheduledActivity.activityGuidPredicate(with: guid)])
             }
+            else if let guid = group.schedulePlanGuid {
+                taskPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                    taskPredicate, SBBScheduledActivity.schedulePlanPredicate(with: guid)])
+            }
         }
-
+        
         // Get the schedule.
         let todaySchedules = self.scheduledActivities.filter {
             taskPredicate.evaluate(with: $0) && (($0.scheduledOn.timeIntervalSinceNow < 0) && !$0.isExpired)
         }
         let schedule = todaySchedules.rsd_last(where: { $0.isCompleted == false }) ?? todaySchedules.last
         
-        // Get the clientData from the most recent finished schedule with the same activity identifier.
-        var clientData: SBBJSONValue?
-        var currentFinishedOn = Date.distantPast
-        let activityPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskInfo.identifier)
-        self.scheduledActivities.forEach { (schedule) in
-            if let data = schedule.clientData,
-                let finishedOn = schedule.finishedOn, finishedOn > currentFinishedOn,
-                activityPredicate.evaluate(with: schedule) {
-                clientData = data
-                currentFinishedOn = finishedOn
-            }
-        }
-        
-        // Create the task path, by looking for a valid task transformer.
-        let taskPath: RSDTaskPath
-        if let activityReference = schedule?.activity.activityReference {
-            if let taskInfoStep = activityReference as? RSDTaskInfoStep {
-                taskPath = RSDTaskPath(taskInfo: taskInfoStep)
-            }
-            else {
-                let taskInfoStep = RSDTaskInfoStepObject(with: activityReference)
-                taskPath = RSDTaskPath(taskInfo: taskInfoStep)
-            }
-        }
-        else if let task = self.task(for: taskInfo.identifier) {
-            // Copy if option available.
-            if let copyableTask = task as? RSDCopyTask,
-                task.schemaInfo == nil,
-                let schema = self.schemaInfo(for: taskInfo.identifier) {
-                taskPath = RSDTaskPath(task: copyableTask.copy(with: taskInfo.identifier, schemaInfo: schema))
-            }
-            else {
-                taskPath = RSDTaskPath(task: task)
-            }
-        }
-        else if let _ = taskInfo.resourceTransformer {
-            let taskInfoStep = RSDTaskInfoStepObject(with: taskInfo)
-            taskPath = RSDTaskPath(taskInfo: taskInfoStep)
-        }
-        else {
-            assertionFailure("Failed to instantiate the task for this task info.")
-            let task = RSDTaskObject(identifier: taskInfo.identifier, stepNavigator: RSDConditionalStepNavigatorObject(with: []))
-            taskPath = RSDTaskPath(task: task)
-        }
+        return schedule
+    }
+    
+    func setupTaskPath(_ taskPath: RSDTaskPath, with schedule: SBBScheduledActivity?) {
         
         // Assign values to the task path from the schedule.
         taskPath.scheduleIdentifier = schedule?.guid
+        taskPath.trackingDelegate = self
         
         // Set up the data groups tracking rule.
         if let participant = SBAParticipantManager.shared.studyParticipant {
@@ -507,8 +500,26 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         } else {
             debugPrint("WARNING: Missing a study particpant. Cannot get the data groups.")
         }
-        
-        return (taskPath, schedule, clientData)
+    }
+    
+    /// Find the most recent client data appended to any schedule for this activity identifier.
+    ///
+    /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
+    /// - returns: The client data JSON (if any) associated with this activity identifier.
+    open func clientData(with activityIdentifier: String) -> SBBJSONValue? {
+        // Get the clientData from the most recent finished schedule with the same activity identifier.
+        var clientData: SBBJSONValue?
+        var currentFinishedOn = Date.distantPast
+        let activityPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: activityIdentifier)
+        self.scheduledActivities.forEach { (schedule) in
+            if let data = schedule.clientData,
+                let finishedOn = schedule.finishedOn, finishedOn > currentFinishedOn,
+                activityPredicate.evaluate(with: schedule) {
+                clientData = data
+                currentFinishedOn = finishedOn
+            }
+        }
+        return clientData
     }
     
     /// Subclass the cohorts tracking rule so that we can use casting to check for an existing
@@ -556,6 +567,8 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     // MARK: Upload to server
     
     /// Update the data groups. By default, this will look for changes on the shared `DataGroupsTrackingRule`.
+    ///
+    /// - parameter taskPath: The task path for the task which has just run.
     open func updateDataGroups(for taskPath: RSDTaskPath) {
         let rules = SBAFactory.shared.trackingRules.remove(where: { $0 is DataGroupsTrackingRule})
         guard let rule = rules.first as? DataGroupsTrackingRule,
@@ -573,6 +586,8 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     
     /// Update the values on the scheduled activity. By default, this will recurse through the task path
     /// and its children, looking for a schedule associated with the subtask path.
+    ///
+    /// - parameter taskPath: The task path for the task which has just run.
     public func updateSchedules(for taskPath: RSDTaskPath) {
         guard taskPath.parentPath == nil else {
             assertionFailure("This method should **only** be called for the top-level task path.")
@@ -594,12 +609,11 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
 
         // Send message to server that the scheduled activites were updated.
         self.sendUpdated(for: schedules, taskPath: taskPath)
-        
-        // Post message to self that the scheduled activities were updated.
-        self.didUpdateScheduledActivities(from: self.scheduledActivities)
     }
     
     /// For each schedule that this task modifies, mark it as completed and add the client data.
+    ///
+    /// - parameter taskPath: The task path for the task which has just run.
     open func getAndUpdateSchedule(for taskPath: RSDTaskPath) -> SBBScheduledActivity? {
         guard let schedule = self.scheduledActivity(for: taskPath.result, scheduleIdentifier: taskPath.scheduleIdentifier)
             else {
@@ -614,9 +628,15 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
     }
     
     /// Append the client data to the schedule.
+    ///
+    /// - parameters:
+    ///     - taskPath: The task path for the task which has just run.
+    ///     - schedule: The schedule associated with this task segment.
     open func appendClientData(from taskPath: RSDTaskPath, to schedule: SBBScheduledActivity) {
-        guard let clientData = self.clientData(from: taskPath, for: schedule) else { return }
-        if let existingClientData = schedule.clientData {
+        guard let (clientData, shouldReplace) = self.buildClientData(from: taskPath, for: schedule) else { return }
+        if !shouldReplace, let existingClientData = schedule.clientData {
+            
+            // If there is previous client data, then append this to that object.
             var array: [Any] = (existingClientData as? [Any]) ?? [existingClientData]
             if let newArray = clientData as? [Any] {
                 array.append(contentsOf: newArray)
@@ -626,12 +646,30 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
             schedule.clientData = array as NSArray
         }
         else {
-            schedule.clientData = (clientData as? NSArray) ?? ([clientData] as NSArray)
+
+            // If there isn't previous client data or the previous data should be replaced, then set the
+            // client data to either an array or dictionary (the allowed top-level JSON objects).
+            schedule.clientData = {
+                if let array = clientData as? NSArray {
+                    return array
+                }
+                else if shouldReplace, let dictionary = clientData as? NSDictionary {
+                    return dictionary
+                }
+                else {
+                    return [clientData] as NSArray
+                }
+            }()
         }
     }
     
-    /// Get the client data from the given task path.
-    open func clientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> SBBJSONValue? {
+    /// Build the client data from the given task path.
+    ///
+    /// - parameters:
+    ///     - taskPath: The task path for the task which has just run.
+    ///     - schedule: The schedule associated with this task segment.
+    /// - returns: The client data built for this task path (if any).
+    open func buildClientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> (clientData: SBBJSONValue, shouldReplacePrevious: Bool)? {
         do {
             return try recursiveGetClientData(from: taskPath.result, isTopLevel: true)
         }
@@ -641,7 +679,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         }
     }
     
-    private func recursiveGetClientData(from taskResult: RSDTaskResult, isTopLevel: Bool) throws  -> SBBJSONValue? {
+    private func recursiveGetClientData(from taskResult: RSDTaskResult, isTopLevel: Bool) throws  -> (SBBJSONValue, Bool)? {
         // Verify that this task result is not associated with a different schema.
         guard isTopLevel || (taskResult.schemaInfo ?? self.schemaInfo(for: taskResult.identifier) == nil)
             else {
@@ -649,21 +687,32 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         }
         
         var dataResults: [SBBJSONValue] = []
-        if let data = try recursiveGetClientData(from: taskResult.stepHistory) {
+        var shouldReplacePrevious = false
+        if let (data, shouldReplace) = try recursiveGetClientData(from: taskResult.stepHistory) {
             dataResults.append(data)
+            shouldReplacePrevious = shouldReplace || shouldReplacePrevious
         }
         if let asyncResults = taskResult.asyncResults,
-            let data = try recursiveGetClientData(from: asyncResults) {
+            let (data, shouldReplace) = try recursiveGetClientData(from: asyncResults) {
             dataResults.append(data)
+            shouldReplacePrevious = shouldReplace || shouldReplacePrevious
+
         }
-        return dataResults.count <= 1 ? dataResults.first : (dataResults as NSArray)
+        
+        if let clientData = dataResults.count <= 1 ? dataResults.first : (dataResults as NSArray) {
+            return (clientData, shouldReplacePrevious)
+        }
+        else {
+            return nil
+        }
     }
     
-    private func recursiveGetClientData(from results: [RSDResult]) throws  -> SBBJSONValue? {
+    private func recursiveGetClientData(from results: [RSDResult]) throws -> (SBBJSONValue, Bool)? {
         
-        func getClientData(_ result: RSDResult) throws -> SBBJSONValue? {
-            if let clientResult = result as? SBAClientDataResult {
-                return try clientResult.clientData()
+        func getClientData(_ result: RSDResult) throws -> (SBBJSONValue, Bool)? {
+            if let clientResult = result as? SBAClientDataResult,
+                let clientData = try clientResult.clientData() {
+                return (clientData, clientResult.shouldReplacePreviousClientData())
             }
             else if let taskResult = result as? RSDTaskResult {
                 return try self.recursiveGetClientData(from: taskResult, isTopLevel: false)
@@ -676,8 +725,10 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
             }
         }
         
+        var shouldReplacePrevious: Bool = false
         let dictionary = try results.rsd_filteredDictionary { (result) throws -> (String, SBBJSONValue)? in
-            guard let data = try getClientData(result) else { return nil }
+            guard let (data, shouldReplace) = try getClientData(result) else { return nil }
+            shouldReplacePrevious = shouldReplace || shouldReplacePrevious
             return (result.identifier, data)
         }
         
@@ -685,23 +736,36 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager {
         if dictionary.count == 0 {
             return nil
         }
-        else if dictionary.count == 1 {
-            return dictionary.first!.value
+        else if dictionary.sba_uniqueCount() == 1 || shouldReplacePrevious {
+            return (dictionary.first!.value, shouldReplacePrevious)
         }
         else {
-            return dictionary as NSDictionary
+            return (dictionary as NSDictionary, false)
         }
     }
     
     /// Send message to Bridge server to update the given schedules. This includes both the task
     /// that was completed and any tasks that were performed as a requirement of completion of the
     /// primary task (such as a required one-time survey).
+    ///
+    /// - parameters:
+    ///     - schedules: The schedules for which to send updates.
+    ///     - taskPath: The task path (if available) for the task run that triggered this update.
     open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
-        BridgeSDK.activityManager.updateScheduledActivities(schedules) { (_, _) in
+        
+        // Copy the schedule objects to ensure that these changes
+        let guids = schedules.map { $0.guid }
+        
+        // Post notification that the schedules were updated.
+        NotificationCenter.default.post(name: .SBAWillSendUpdatedScheduledActivities,
+                                        object: self,
+                                        userInfo: [NotificationKey.updatedActivities : schedules])
+        
+        self.activityManager.updateScheduledActivities(schedules) { (_, _) in
             // Post notification that the schedules were updated.
             NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
                                             object: self,
-                                            userInfo: [NotificationKey.updatedActivities : schedules])
+                                            userInfo: [NotificationKey.updateScheduleGuids : guids])
         }
     }
     
