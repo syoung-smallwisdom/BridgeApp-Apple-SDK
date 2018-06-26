@@ -223,7 +223,17 @@ open class SBABridgeConfiguration {
         return taskPath
     }
     
-    /// Return the task transformer for the given activity reference.
+    /// Instantiate the task transformer for the given task info.
+    open func instantiateTaskTransformer(for taskInfo: RSDTaskInfo) -> RSDTaskTransformer? {
+        if let transformer = taskInfo.resourceTransformer {
+            return transformer
+        } else {
+            let moduleId = (taskInfo as? SBAActivityInfo)?.moduleId ?? SBAModuleIdentifier(rawValue: taskInfo.identifier)
+            return self.instantiateTaskTransformer(for: moduleId)
+        }
+    }
+    
+    /// Instantiate the task transformer for the given activity reference.
     open func instantiateTaskTransformer(for activityReference: SBASingleActivityReference) -> RSDTaskTransformer? {
         // Exit early if this is a survey reference or if the activity info uses an embedded resource.
         if let surveyReference = activityReference as? SBBSurveyReference {
