@@ -59,6 +59,10 @@ extension RSDStepType {
 
 open class SBAFactory : RSDFactory {
     
+    public var configuration : SBABridgeConfiguration {
+        return SBABridgeConfiguration.shared
+    }
+    
     /// Override to implement custom step navigators.
     override open func decodeStepNavigator(from decoder: Decoder, with type: RSDStepNavigatorType) throws -> RSDStepNavigator {
         switch type {
@@ -80,6 +84,14 @@ open class SBAFactory : RSDFactory {
             return try SBATrackedItemsLoggingStepObject(from: decoder)
         case .symptomLogging:
             return try SBASymptomLoggingStepObject(from: decoder)
+        case .taskInfo:
+            if let taskInfo = try? SBAActivityInfoObject(from: decoder),
+                let transformer = self.configuration.instantiateTaskTransformer(for: taskInfo) {
+                return RSDTaskInfoStepObject(with: taskInfo, taskTransformer: transformer)
+            }
+            else {
+                return try super.decodeStep(from: decoder, with: type)
+            }
         default:
             return try super.decodeStep(from: decoder, with: type)
         }
