@@ -235,6 +235,15 @@ public final class SBAParticipantManager : NSObject {
                 BridgeSDK.surveyManager.getSurveyByRef(survey.href, cachingPolicy: .checkCacheFirst) { (_, _) in }
             }
         }
+        
+        // Including all the surveys listed in the appConfig (now that we know the user is authenticated).
+        if let appConfig = BridgeSDK.appConfig(), let surveyRefs = appConfig.surveyReferences as? [SBBSurveyReference] {
+            surveyRefs.forEach { (survey) in
+                if !surveys.contains(survey.href) {
+                    BridgeSDK.surveyManager.getSurveyByRef(survey.href, cachingPolicy: .checkCacheFirst) { (_, _) in }
+                }
+            }
+        }
 
         if self._loadingBlocked {
             // If loading refresh was requested, but blocked, then reload again.
