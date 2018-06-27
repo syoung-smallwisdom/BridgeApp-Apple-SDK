@@ -20,133 +20,159 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mM6-Ae-bzg">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="364"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="375.5"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Schedule" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fVg-UM-rk1">
-                                <rect key="frame" x="28" y="16" width="72.5" height="19.5"/>
+                                <rect key="frame" x="28" y="16" width="72.5" height="49"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0jW-x4-zKr" customClass="RSDCheckboxButton" customModule="ResearchUI">
-                                <rect key="frame" x="16" y="54.5" width="343" height="32"/>
-                                <state key="normal" title="Take this medication at any time"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="selectedColor">
-                                        <color key="value" red="0.0" green="0.68235294120000001" blue="0.93725490199999995" alpha="1" colorSpace="calibratedRGB"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="everydayTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="kSP-Vv-nFG"/>
-                                </connections>
-                            </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qfO-hr-hg7" userLabel="Schedule Line Separator">
-                                <rect key="frame" x="0.0" y="37.5" width="375" height="1"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="1" id="uh6-UY-rdz"/>
-                                </constraints>
-                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Kwf-zh-HMw" userLabel="Timing Line Separator">
-                                <rect key="frame" x="0.0" y="102.5" width="375" height="1"/>
+                                <rect key="frame" x="0.0" y="65.5" width="375" height="1"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="JEq-6z-fgC"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l91-dC-cfy" userLabel="Time and Duration View" customClass="RSDToggleConstraintView" customModule="ResearchUI">
-                                <rect key="frame" x="0.0" y="114.5" width="375" height="162"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="0Sw-Is-hWh">
+                                <rect key="frame" x="0.0" y="66.5" width="375" height="309"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GTu-bw-bpy">
-                                        <rect key="frame" x="0.0" y="16" width="375" height="130"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                        <inset key="contentEdgeInsets" minX="28" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <state key="normal" title="7:00 AM">
-                                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jeF-xD-3Eh">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+                                        <subviews>
+                                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0jW-x4-zKr" customClass="RSDCheckboxButton" customModule="ResearchUI">
+                                                <rect key="frame" x="16" y="19" width="343" height="32"/>
+                                                <state key="normal" title="Take this medication at any time"/>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="color" keyPath="selectedColor">
+                                                        <color key="value" red="0.0" green="0.68235294120000001" blue="0.93725490199999995" alpha="1" colorSpace="calibratedRGB"/>
+                                                    </userDefinedRuntimeAttribute>
+                                                </userDefinedRuntimeAttributes>
+                                                <connections>
+                                                    <action selector="atAnytimeTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="kHa-Sb-4lB"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="0jW-x4-zKr" firstAttribute="leading" secondItem="jeF-xD-3Eh" secondAttribute="leading" constant="16" id="2EW-FJ-XYQ"/>
+                                            <constraint firstAttribute="bottom" secondItem="0jW-x4-zKr" secondAttribute="bottom" constant="18" id="Kmr-jl-XaM"/>
+                                            <constraint firstAttribute="height" constant="69" id="Vw2-XD-mj0"/>
+                                            <constraint firstAttribute="trailing" secondItem="0jW-x4-zKr" secondAttribute="trailing" constant="16" id="fpX-4y-bWg"/>
+                                            <constraint firstItem="0jW-x4-zKr" firstAttribute="top" secondItem="jeF-xD-3Eh" secondAttribute="top" constant="19" id="gOI-j6-T79"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qfO-hr-hg7" userLabel="Schedule Line Separator">
+                                        <rect key="frame" x="0.0" y="69" width="375" height="1"/>
+                                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="1" id="uh6-UY-rdz"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l91-dC-cfy" userLabel="Time and Duration View" customClass="RSDToggleConstraintView" customModule="ResearchUI">
+                                        <rect key="frame" x="0.0" y="70" width="375" height="162"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GTu-bw-bpy">
+                                                <rect key="frame" x="0.0" y="16" width="375" height="130"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                <inset key="contentEdgeInsets" minX="28" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                                <state key="normal" title="7:00 AM">
+                                                    <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="timeTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="1EI-PZ-WQL"/>
+                                                </connections>
+                                            </button>
+                                            <datePicker contentMode="scaleToFill" verticalHuggingPriority="980" verticalCompressionResistancePriority="980" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="udU-jk-CpC">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="162"/>
+                                                <date key="date" timeIntervalSinceReferenceDate="546545880.15172601">
+                                                    <!--2018-04-27 18:18:00 +0000-->
+                                                </date>
+                                                <connections>
+                                                    <action selector="timeChanged:" destination="KGk-i7-Jjw" eventType="valueChanged" id="E9S-MT-gWH"/>
+                                                </connections>
+                                            </datePicker>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="udU-jk-CpC" firstAttribute="leading" secondItem="l91-dC-cfy" secondAttribute="leading" id="35R-Px-F5q"/>
+                                            <constraint firstItem="udU-jk-CpC" firstAttribute="top" secondItem="l91-dC-cfy" secondAttribute="top" id="7bo-Di-nbT"/>
+                                            <constraint firstItem="GTu-bw-bpy" firstAttribute="top" secondItem="l91-dC-cfy" secondAttribute="top" priority="950" constant="16" id="Bfk-Ew-mkI"/>
+                                            <constraint firstAttribute="trailing" secondItem="GTu-bw-bpy" secondAttribute="trailing" id="W6b-oj-M0M"/>
+                                            <constraint firstItem="GTu-bw-bpy" firstAttribute="leading" secondItem="l91-dC-cfy" secondAttribute="leading" id="aK2-AH-xc9"/>
+                                            <constraint firstAttribute="bottom" secondItem="udU-jk-CpC" secondAttribute="bottom" id="et8-nd-wQD"/>
+                                            <constraint firstAttribute="bottom" secondItem="GTu-bw-bpy" secondAttribute="bottom" priority="950" constant="16" id="lUp-Sd-xdh"/>
+                                            <constraint firstAttribute="trailing" secondItem="udU-jk-CpC" secondAttribute="trailing" id="mWw-Ac-Y0x"/>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="boolean" keyPath="isOpen" value="NO"/>
+                                        </userDefinedRuntimeAttributes>
                                         <connections>
-                                            <action selector="timeTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="1EI-PZ-WQL"/>
+                                            <outlet property="closedView" destination="GTu-bw-bpy" id="HHj-Sy-ssb"/>
+                                            <outlet property="openView" destination="udU-jk-CpC" id="tqI-54-ODC"/>
+                                            <outletCollection property="openConstraints" destination="et8-nd-wQD" collectionClass="NSMutableArray" id="oZQ-2Q-aso"/>
                                         </connections>
-                                    </button>
-                                    <datePicker contentMode="scaleToFill" verticalHuggingPriority="980" verticalCompressionResistancePriority="980" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="udU-jk-CpC">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="162"/>
-                                        <date key="date" timeIntervalSinceReferenceDate="546545880.15172601">
-                                            <!--2018-04-27 18:18:00 +0000-->
-                                        </date>
-                                    </datePicker>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kDm-R9-Kpb">
+                                        <rect key="frame" x="0.0" y="232" width="375" height="77"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qG1-dl-5Qw" userLabel="Day of week Line Separator">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
+                                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="1" id="Bgb-Io-1oW"/>
+                                                </constraints>
+                                            </view>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="8NC-hR-2ou">
+                                                <rect key="frame" x="0.0" y="6" width="375" height="64"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="64" id="Xkb-T9-8sU"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                <inset key="contentEdgeInsets" minX="28" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                                <state key="normal" title="Friday">
+                                                    <color key="titleColor" red="0.031601355820105814" green="0.031601355820105814" blue="0.031601355820105814" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="dayTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="6XL-kb-O0j"/>
+                                                </connections>
+                                            </button>
+                                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron" translatesAutoresizingMaskIntoConstraints="NO" id="iPP-t4-6ce">
+                                                <rect key="frame" x="340" y="28" width="11" height="20"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="qG1-dl-5Qw" firstAttribute="top" secondItem="kDm-R9-Kpb" secondAttribute="top" id="0Py-4X-0ua"/>
+                                            <constraint firstItem="8NC-hR-2ou" firstAttribute="centerY" secondItem="kDm-R9-Kpb" secondAttribute="centerY" id="8iP-BH-2Jk"/>
+                                            <constraint firstAttribute="height" constant="77" id="MX3-fP-qM2"/>
+                                            <constraint firstItem="iPP-t4-6ce" firstAttribute="centerY" secondItem="kDm-R9-Kpb" secondAttribute="centerY" id="bWB-8S-ins"/>
+                                            <constraint firstItem="qG1-dl-5Qw" firstAttribute="leading" secondItem="kDm-R9-Kpb" secondAttribute="leading" id="dSm-AZ-9me"/>
+                                            <constraint firstAttribute="trailing" secondItem="8NC-hR-2ou" secondAttribute="trailing" id="iiS-8c-KA5"/>
+                                            <constraint firstAttribute="trailing" secondItem="iPP-t4-6ce" secondAttribute="trailing" constant="24" id="pSK-93-eFE"/>
+                                            <constraint firstAttribute="trailing" secondItem="qG1-dl-5Qw" secondAttribute="trailing" id="rJn-1i-cRc"/>
+                                            <constraint firstItem="8NC-hR-2ou" firstAttribute="leading" secondItem="kDm-R9-Kpb" secondAttribute="leading" id="yeT-0r-DhZ"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="udU-jk-CpC" firstAttribute="leading" secondItem="l91-dC-cfy" secondAttribute="leading" id="35R-Px-F5q"/>
-                                    <constraint firstItem="udU-jk-CpC" firstAttribute="top" secondItem="l91-dC-cfy" secondAttribute="top" id="7bo-Di-nbT"/>
-                                    <constraint firstItem="GTu-bw-bpy" firstAttribute="top" secondItem="l91-dC-cfy" secondAttribute="top" priority="950" constant="16" id="Bfk-Ew-mkI"/>
-                                    <constraint firstAttribute="trailing" secondItem="GTu-bw-bpy" secondAttribute="trailing" id="W6b-oj-M0M"/>
-                                    <constraint firstItem="GTu-bw-bpy" firstAttribute="leading" secondItem="l91-dC-cfy" secondAttribute="leading" id="aK2-AH-xc9"/>
-                                    <constraint firstAttribute="bottom" secondItem="udU-jk-CpC" secondAttribute="bottom" id="et8-nd-wQD"/>
-                                    <constraint firstAttribute="bottom" secondItem="GTu-bw-bpy" secondAttribute="bottom" priority="950" constant="16" id="lUp-Sd-xdh"/>
-                                    <constraint firstAttribute="trailing" secondItem="udU-jk-CpC" secondAttribute="trailing" id="mWw-Ac-Y0x"/>
+                                    <constraint firstAttribute="trailing" secondItem="kDm-R9-Kpb" secondAttribute="trailing" id="hVN-KX-HjY"/>
+                                    <constraint firstItem="kDm-R9-Kpb" firstAttribute="leading" secondItem="0Sw-Is-hWh" secondAttribute="leading" id="vKy-ZZ-HKr"/>
                                 </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isOpen" value="NO"/>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <outlet property="closedView" destination="GTu-bw-bpy" id="HHj-Sy-ssb"/>
-                                    <outlet property="openView" destination="udU-jk-CpC" id="h81-kv-pb5"/>
-                                    <outletCollection property="openConstraints" destination="et8-nd-wQD" collectionClass="NSMutableArray" id="oZQ-2Q-aso"/>
-                                </connections>
-                            </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qG1-dl-5Qw" userLabel="Day of week Line Separator">
-                                <rect key="frame" x="0.0" y="282.5" width="375" height="1"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="1" id="Bgb-Io-1oW"/>
-                                </constraints>
-                            </view>
-                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron" translatesAutoresizingMaskIntoConstraints="NO" id="iPP-t4-6ce">
-                                <rect key="frame" x="331" y="314" width="11" height="20"/>
-                            </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8NC-hR-2ou">
-                                <rect key="frame" x="0.0" y="292" width="375" height="64"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="64" id="Xkb-T9-8sU"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <inset key="contentEdgeInsets" minX="28" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                <state key="normal" title="Friday">
-                                    <color key="titleColor" red="0.031601355820105814" green="0.031601355820105814" blue="0.031601355820105814" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <connections>
-                                    <action selector="dayTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="6XL-kb-O0j"/>
-                                </connections>
-                            </button>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="qfO-hr-hg7" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" id="0uu-be-So8"/>
-                            <constraint firstItem="l91-dC-cfy" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" id="B4K-Od-dXs"/>
+                            <constraint firstAttribute="trailing" secondItem="Kwf-zh-HMw" secondAttribute="trailing" id="2YI-Oc-SFa"/>
+                            <constraint firstItem="Kwf-zh-HMw" firstAttribute="top" secondItem="fVg-UM-rk1" secondAttribute="bottom" id="BNs-vi-4OM"/>
                             <constraint firstItem="fVg-UM-rk1" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" constant="28" id="BsR-vx-uEu"/>
-                            <constraint firstItem="Kwf-zh-HMw" firstAttribute="top" secondItem="0jW-x4-zKr" secondAttribute="bottom" constant="16" id="FDA-nG-ip2"/>
-                            <constraint firstItem="qG1-dl-5Qw" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" id="INe-T7-csL"/>
-                            <constraint firstAttribute="trailing" secondItem="0jW-x4-zKr" secondAttribute="trailing" constant="16" id="JbS-Om-fOY"/>
-                            <constraint firstAttribute="trailing" secondItem="Kwf-zh-HMw" secondAttribute="trailing" id="K8B-nq-e6H"/>
-                            <constraint firstItem="8NC-hR-2ou" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" id="KKs-zk-Cqm"/>
-                            <constraint firstAttribute="trailing" secondItem="iPP-t4-6ce" secondAttribute="trailing" constant="33" id="Lxv-u2-j65"/>
-                            <constraint firstItem="iPP-t4-6ce" firstAttribute="centerY" secondItem="8NC-hR-2ou" secondAttribute="centerY" id="Mca-ca-R2r"/>
-                            <constraint firstItem="Kwf-zh-HMw" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" id="Nme-ca-IZT"/>
-                            <constraint firstItem="qG1-dl-5Qw" firstAttribute="top" secondItem="l91-dC-cfy" secondAttribute="bottom" constant="6" id="OIa-pb-iem"/>
-                            <constraint firstItem="Kwf-zh-HMw" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" id="PFH-36-Ogf"/>
-                            <constraint firstAttribute="bottom" secondItem="8NC-hR-2ou" secondAttribute="bottom" constant="8" id="RI7-zI-9mB"/>
-                            <constraint firstItem="l91-dC-cfy" firstAttribute="top" secondItem="Kwf-zh-HMw" secondAttribute="bottom" constant="11" id="cCq-6X-Nkl"/>
-                            <constraint firstItem="8NC-hR-2ou" firstAttribute="top" secondItem="qG1-dl-5Qw" secondAttribute="bottom" constant="8.5" id="eAs-QV-H55"/>
+                            <constraint firstItem="0Sw-Is-hWh" firstAttribute="top" secondItem="Kwf-zh-HMw" secondAttribute="bottom" id="HBm-ms-Myq"/>
+                            <constraint firstAttribute="bottom" secondItem="0Sw-Is-hWh" secondAttribute="bottom" id="Ln6-bS-t1D"/>
+                            <constraint firstItem="0Sw-Is-hWh" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" id="PZd-XT-nEJ"/>
+                            <constraint firstItem="Kwf-zh-HMw" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" id="Ptq-2x-cbB"/>
                             <constraint firstItem="fVg-UM-rk1" firstAttribute="top" secondItem="mM6-Ae-bzg" secondAttribute="top" constant="16" id="eQc-N5-6iH"/>
-                            <constraint firstItem="0jW-x4-zKr" firstAttribute="top" secondItem="qfO-hr-hg7" secondAttribute="bottom" constant="16" id="fiL-W7-k1n"/>
-                            <constraint firstAttribute="trailing" secondItem="Kwf-zh-HMw" secondAttribute="trailing" id="lyF-hR-ofC"/>
-                            <constraint firstAttribute="trailing" secondItem="l91-dC-cfy" secondAttribute="trailing" id="rH8-26-2rl"/>
-                            <constraint firstAttribute="trailing" secondItem="qfO-hr-hg7" secondAttribute="trailing" id="sQB-08-m5v"/>
-                            <constraint firstAttribute="trailing" secondItem="8NC-hR-2ou" secondAttribute="trailing" id="uOa-WB-bQS"/>
-                            <constraint firstItem="0jW-x4-zKr" firstAttribute="leading" secondItem="mM6-Ae-bzg" secondAttribute="leading" constant="16" id="wV5-nK-k8y"/>
-                            <constraint firstItem="qfO-hr-hg7" firstAttribute="top" secondItem="fVg-UM-rk1" secondAttribute="bottom" constant="2" id="waz-Rl-Xrn"/>
-                            <constraint firstAttribute="trailing" secondItem="qG1-dl-5Qw" secondAttribute="trailing" id="wmj-BV-Fu3"/>
+                            <constraint firstAttribute="trailing" secondItem="0Sw-Is-hWh" secondAttribute="trailing" id="saF-zK-mre"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -154,15 +180,20 @@
                 <constraints>
                     <constraint firstItem="mM6-Ae-bzg" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="4uh-pu-x9H"/>
                     <constraint firstAttribute="trailing" secondItem="mM6-Ae-bzg" secondAttribute="trailing" id="YhX-U0-2WD"/>
-                    <constraint firstAttribute="bottom" secondItem="mM6-Ae-bzg" secondAttribute="bottom" constant="11.5" id="c0d-bz-5Y3"/>
+                    <constraint firstAttribute="bottom" secondItem="mM6-Ae-bzg" secondAttribute="bottom" id="c0d-bz-5Y3"/>
                     <constraint firstItem="mM6-Ae-bzg" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="xcm-mU-Hay"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
             <connections>
+                <outlet property="atAnytimeCheckbox" destination="0jW-x4-zKr" id="Syf-9u-3wt"/>
+                <outlet property="atAnytimeContainer" destination="jeF-xD-3Eh" id="wbb-Nh-AA6"/>
+                <outlet property="dayButton" destination="8NC-hR-2ou" id="vMC-63-Hv6"/>
+                <outlet property="dayButtonContainer" destination="kDm-R9-Kpb" id="gDN-jQ-za7"/>
                 <outlet property="inlineTimePicker" destination="l91-dC-cfy" id="Q8i-Ql-zwq"/>
-                <outlet property="timeButton" destination="0jW-x4-zKr" id="YCM-ao-k7f"/>
+                <outlet property="timeButton" destination="GTu-bw-bpy" id="BCm-k6-37g"/>
+                <outlet property="timePicker" destination="udU-jk-CpC" id="pQY-Us-FKK"/>
                 <outlet property="titleLabel" destination="fVg-UM-rk1" id="wng-KY-JLg"/>
                 <outletCollection property="labels" destination="fVg-UM-rk1" collectionClass="NSMutableArray" id="7eF-zm-Kb8"/>
                 <outletCollection property="separatorLines" destination="qfO-hr-hg7" collectionClass="NSMutableArray" id="0at-It-Fht"/>

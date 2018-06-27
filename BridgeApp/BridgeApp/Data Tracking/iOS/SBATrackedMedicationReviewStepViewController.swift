@@ -33,7 +33,7 @@
 
 import Foundation
 
-open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewController {
+open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewController, RSDTaskViewControllerDelegate {
     
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
@@ -51,38 +51,70 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource {
             if let tableItem = reviewDataSource.tableItem(at: indexPath) as? RSDModalStepTableItem {
                 let identifier = tableItem.identifier
-                
                 let detailStep = SBATrackedMedicationDetailStepObject(id: identifier)
                 detailStep.title = identifier
-                detailStep.detail = "Remove medication"
-                let taskVc = SBATrackedMedicationDetailStepViewController(step: detailStep)
                 var navigator = RSDConditionalStepNavigatorObject(with: [detailStep])
                 navigator.progressMarkers = []
                 let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
-                self.taskPath = RSDTaskPath(task: task)
-                taskVc.taskController = self
+                let taskVc = RSDTaskViewController(task: task)
+                taskVc.delegate = self
+                
+                // TODO: mdephillips 6/27/18 I wasn't able to pass the existing details result to the detail vc using this code below, how can i do that?
+                if let source = tableData as? SBATrackedMedicationReviewDataSource,
+                    let selectedMed = source.trackingResult().selectedAnswers[indexPath.row] as? SBAMedicationAnswer,
+                    let dosageUnwrapped = selectedMed.dosage {
+                    let existingDetailsResult = SBAMedicationDetailsResultObject(identifier: identifier)
+                    existingDetailsResult.dosage = dosageUnwrapped
+                    existingDetailsResult.schedules = selectedMed.scheduleItems
+                    taskVc.taskPath.appendStepHistory(with: existingDetailsResult)
+                }
+                
                 self.present(taskVc, animated: true, completion: nil)
             }
         }
     }
-}
-
-extension SBATrackedMedicationReviewStepViewController : RSDTaskController {
-    public var taskPath: RSDTaskPath! {
-        get {
-            return self.taskController.taskPath
-        }
-        set(newValue) {
-            
+    
+    override open func actionTapped(with actionType: RSDUIActionType) -> Bool {
+        if actionType == .navigation(.goForward) {
+            // TODO: mdephillips 6/27/18 move to med logging
+            weak var weakSelf = self
+            dismiss(animated: true, completion: {
+                weakSelf?.dismiss(animated: true, completion: nil)
+            })
+            return true
+        } else {
+            return super.actionTapped(with: actionType)
         }
     }
     
-    public var canSaveTaskProgress: Bool {
-        return false
-    }
-    
-    public func handleTaskCancelled(shouldSave: Bool) {
+    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
         
+        guard let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource else {
+            dismiss(animated: true, completion: nil)
+            return
+        }
+        
+        if reason == .completed {  // details added
+            if let detailsResult = taskController.taskResult.stepHistory.last as? SBAMedicationDetailsResultObject {
+                reviewDataSource.updateResults(with: detailsResult)
+            }
+            if let removeMedResult = taskController.taskResult.stepHistory.last as? SBARemoveMedicationResultObject {
+                reviewDataSource.updateResults(byRemoving: removeMedResult.identifier)
+            }
+            // TODO: mdephillips 6/27/18 only reload the updated cell
+            self.tableView.reloadData()
+        }
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
+        // no-op
+    }
+    
+    public func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
+        // no-op
+        return nil
     }
 }
 
@@ -105,18 +137,6 @@ open class SBATrackedMedicationReviewCell: RSDTableViewCell {
     /// Action button that is associated with this cell.
     @IBOutlet open var actionButton: UIButton!
     
-    /// The target selector for tapping the button.
-    @IBAction func buttonTapped() {
-        
-    }
-
-    /// Override to set the content view background color to the color of the table background.
-    override open var tableBackgroundColor: UIColor! {
-        didSet {
-            self.contentView.backgroundColor = tableBackgroundColor
-        }
-    }
-    
     var loggedButton: RSDRoundedButton? {
         return self.actionButton as? RSDRoundedButton
     }
@@ -132,18 +152,40 @@ open class SBATrackedMedicationReviewCell: RSDTableViewCell {
     
     override open var tableItem: RSDTableItem! {
         didSet {
-            guard let loggingItem = tableItem as? SBATrackedMedicationReviewItem
+            guard let medItem = tableItem as? SBATrackedMedicationReviewItem
                 else {
                     return
             }
             
-            self.titleLabel.text = loggingItem.loggedResult.identifier
-            
-            self.detailLabel.text = loggingItem.details
-            if loggingItem.details != nil {
+            if let dosageUnwrapped = medItem.medication.dosage {
+                self.titleLabel.text = String(format: "%@ %@", medItem.medication.identifier, dosageUnwrapped)
+                if let schedules = medItem.medication.scheduleItems {
+                    var timeStr = ""
+                    if schedules.first?.scheduleAtAnytime ?? false == true {
+                        timeStr = Localization.localizedString("MEDICATION_ANYTIME")
+                    } else {
+                        let timeArray = schedules.filter({ $0.weeklyScheduleObject.timeOfDayString != nil })
+                            .map({ (schedule) -> String in
+                                let time = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.date(from: schedule.weeklyScheduleObject.timeOfDayString!) ?? Date()
+                                return DateFormatter.localizedString(from: time, dateStyle: .none, timeStyle: .short)
+                            })
+                        timeStr = timeArray.joined(separator: ", ")
+                    }
+                    
+                    var weekdaySet: Set<RSDWeekday> = Set()
+                    for schedule in schedules {
+                        for weekday in schedule.weeklyScheduleObject.daysOfWeek {
+                            weekdaySet.insert(weekday)
+                        }
+                    }
+                    let weekdayStr = SBATrackedWeeklyScheduleCell.weekdayTitle(for: Array(weekdaySet))
+                    self.detailLabel.text = String(format: "%@\n%@", timeStr, weekdayStr)
+                }
                 self.actionButton.isHidden = false
                 self.cheveronView.isHidden = true
             } else {
+                self.titleLabel.text = medItem.medication.identifier
+                self.detailLabel.text = nil
                 self.actionButton.isHidden = true
                 self.cheveronView.isHidden = false
             }

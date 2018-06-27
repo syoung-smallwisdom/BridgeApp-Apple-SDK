@@ -84,7 +84,7 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     }
     
     override open class func buildDetailSteps(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> [SBATrackedItemDetailsStep]? {
-        return [SBAMedicationDetailsStepObject(identifier: StepIdentifiers.addDetails.stringValue)]
+        return nil
     }
     
     override open class func buildLoggingStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep {
@@ -110,49 +110,6 @@ extension SBAMedication {
     public var addDetailsIdentifier: String? {
         return (self.isContinuousInjection ?? false) ? nil : SBATrackedItemsStepNavigator.StepIdentifiers.addDetails.stringValue
     }
-}
-
-/// The medication details form step overrides the base class implementation to add an input field
-/// for the dosage.
-open class SBAMedicationDetailsStepObject : SBATrackedItemDetailsStepObject, RSDStepViewControllerVendor {
-    
-    fileprivate enum FieldIdentifiers : String, CodingKey {
-        case dosage, schedules
-    }
-    
-    public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
-        return SBATrackedMedicationDetailStepViewController(step: self)
-    }
-    
-    /// Override to return a `SBASymptomLoggingDataSource`.
-    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
-        return SBATrackedMedicationReviewDataSource(step: self as! SBATrackedItemsStep, taskPath: taskPath)
-    }
-    
-    /// Add the dosage input field.
-    override open class func buildInputFields() -> [RSDInputField] {
-        let inputField = RSDInputFieldObject(identifier: FieldIdentifiers.dosage.stringValue, dataType: .base(.string), uiHint: .textfield, prompt: Localization.localizedString("MEDICATION_DOSAGE_PROMPT"))
-        inputField.placeholder = Localization.localizedString("MEDICATION_DOSAGE_PLACEHOLDER")
-        return [inputField]
-    }
-    
-    /// Return the dosage field identifier.
-    override open class func inputFieldIdentifiers() -> [String] {
-        return [FieldIdentifiers.dosage.rawValue]
-    }
-    
-    /// Override and return an `SBAMedicationAnswer`.
-    override open func answer(from taskResult: RSDTaskResult) -> SBATrackedItemAnswer? {
-        guard let answerMap = self.answerMap(from: taskResult) else { return nil }
-        var medication = SBAMedicationAnswer(identifier: self.identifier)
-        medication.dosage = answerMap.answers[FieldIdentifiers.dosage.stringValue] as? String
-        medication.scheduleItems = Set(answerMap.schedules)
-        return medication
-    }
-    
-    // TODO: syoung 02/27/2018 customize the daysOfWeek input field title to include medication
-    // and time of the day.
-    // "MEDICATION_DAYS_OF_WEEK_TITLE_%1$@_at_%2$@" = "Which days do you take %1$@ at %2$@?";
 }
 
 /// A medication item includes details for displaying a given medication.
@@ -251,7 +208,7 @@ public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
     public var dosage: String?
     
     /// The scheduled items associated with this medication result.
-    public var scheduleItems: Set<RSDWeeklyScheduleObject>?
+    public var scheduleItems: [SBAWeeklyScheduleResultObject]?
     
     /// Is the medication delivered via continuous injection? If this is the case, then questions about
     /// schedule timing and dosage should be skipped.

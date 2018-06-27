@@ -33,11 +33,40 @@
 
 import UIKit
 
-open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewController {
+open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewController, RSDTaskViewControllerDelegate {
+    
+    var selectedIndexPath: IndexPath?
+    
+    var underlinedButtonNib: UINib {
+        let bundle = Bundle(for: SBATrackedMedicationDetailStepViewController.self)
+        let nibName = "SBAUnderlinedButtonCell"
+        return UINib(nibName: nibName, bundle: bundle)
+    }
+    
+    var roundedButtonNib: UINib {
+        let bundle = Bundle(for: SBATrackedMedicationDetailStepViewController.self)
+        let nibName = "SBARoundedButtonCell"
+        return UINib(nibName: nibName, bundle: bundle)
+    }
+    
+    override open var isForwardEnabled: Bool {
+        if let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+            return source.allAnswersValid()
+        }
+        return true
+    }
     
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
         _registeredIdentifiers.insert(reuseIdentifier)
+        
+        if reuseIdentifier == SBATrackedWeeklyScheduleDataSource.FieldIdentifiers.header.stringValue {
+            tableView.register(underlinedButtonNib, forCellReuseIdentifier: reuseIdentifier)
+            return
+        } else if reuseIdentifier == SBATrackedWeeklyScheduleDataSource.FieldIdentifiers.addSchedule.stringValue {
+            tableView.register(roundedButtonNib, forCellReuseIdentifier: reuseIdentifier)
+            return
+        }
         
         let reuseId = RSDFormUIHint(rawValue: reuseIdentifier)
         switch reuseId {
@@ -57,14 +86,127 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     override open func configure(cell: UITableViewCell, in tableView: UITableView, at indexPath: IndexPath) {
         super.configure(cell: cell, in: tableView, at: indexPath)
-        if let weeklySchedule = cell as? SBATrackedWeeklyScheduleCell {
+        if let weeklySchedule = cell as? SBATrackedWeeklyScheduleCell,
+            let source = tableData as? SBATrackedWeeklyScheduleDataSource,
+            let tableItem = source.tableItem(at: indexPath) {
             weeklySchedule.delegate = self
-            //weeklySchedule.prepareForInsertion(into: tableView)
             weeklySchedule.inlineTimePicker.isOpen = (indexPath == _activeIndexPath)
+            weeklySchedule.tableItem = tableItem
+            let isLastScheduleItem = (indexPath.row == (source.schedulesSection.tableItems.count - 1))
+            weeklySchedule.atAnytimeHidden = !isLastScheduleItem
         }
         if let dosageCell = cell as? SBATrackedTextfieldCell {
             dosageCell.textField.delegate = self
         }
+        if let buttonCell = cell as? RSDButtonCell {
+            if let _ = buttonCell.actionButton as? RSDUnderlinedButton {
+                    buttonCell.actionButton.setTitle(Localization.localizedString("MEDICATION_REMOVE_MEDICATION"), for: .normal)
+                buttonCell.actionButton.setTitleColor(UIColor.primaryTintColor, for: .normal)
+                buttonCell.backgroundView?.backgroundColor = UIColor.appBackgroundDark
+            }
+            if let _ = buttonCell.actionButton as? RSDRoundedButton {
+                buttonCell.actionButton.setTitle(Localization.localizedString("ADD_ANOTHER_SCHEDULE_BUTTON"), for: .normal)
+            }
+            buttonCell.delegate = self
+        }
+    }
+    
+    override open func didTapButton(on cell: RSDButtonCell) {
+        if let _ = cell.actionButton as? RSDUnderlinedButton {
+            removeMedicationTapped()
+            return
+        }
+        if let _ = cell.actionButton as? RSDRoundedButton {
+           addAnotherScheduleTapped()
+            return
+        }
+        super.didTapButton(on: cell)
+    }
+    
+    func removeMedicationTapped() {
+        let removeStep = SBARemoveMedicationStepObject(identifier: step.identifier, type: .instruction)
+        removeStep.imageTheme = SBAInstructionImage(identifier: "removeInstruction")
+        removeStep.title = " " // adds some extra space
+        var navigator = RSDConditionalStepNavigatorObject(with: [removeStep])
+        navigator.progressMarkers = []
+        let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
+        let taskVc = RSDTaskViewController(task: task)
+        taskVc.delegate = self
+        self.present(taskVc, animated: true, completion: nil)
+    }
+    
+    func addAnotherScheduleTapped() {
+        guard let source = tableData as? SBATrackedWeeklyScheduleDataSource else { return }
+        source.addScheduleItem()
+        // TODO: mdephillips 6/24/18 animate in new tableview cell and animate hiding other cell's checkbox
+        self.tableView.reloadData()
+    }
+    
+    override open func textFieldDidEndEditing(_ textField: UITextField) {
+        // TODO: mdephillips 6/25/18 figure out why this isnt being done automatically
+        if let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+            try? source.dosageTableItem?.setAnswer(textField.text)
+        }
+        self.answersDidChange(in: SBATrackedWeeklyScheduleDataSource.FieldIdentifiers.dosage.sectionIndex())
+        super.textFieldDidEndEditing(textField)
+    }
+    
+    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
+        
+        // the user selected the "remove notification" instead of an indexPath schedule cell
+        if self.selectedIndexPath == nil {
+            if reason == .completed {
+                if let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+                    source.appendRemoveMedicationToTaskPath()
+                }
+                super.jumpForward()
+            }
+        } else {
+            self.selectedIndexPath = nil
+            if reason == .completed {
+                weak var weakSelf = self
+                dismiss(animated: true, completion: {
+                    weakSelf?.tableView.reloadData()
+                })
+                return
+            }
+        }
+        dismiss(animated: true, completion: nil)
+    }
+    
+    public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
+        if let source = tableData as? SBATrackedWeeklyScheduleDataSource,
+            let indexPath = self.selectedIndexPath,
+            let selectedTableItem = source.sections[indexPath.section].tableItems[indexPath.row] as? SBATrackedWeeklyScheduleTableItem {
+            if taskPath.result.stepHistory.count > 0,
+                let collectionResult = taskPath.result.stepHistory[0] as? RSDCollectionResultObject {
+                var weekdaysSelected = [RSDWeekday]()
+                for weekdayResult in collectionResult.inputResults {
+                    if let weekdayAnswerResult = weekdayResult as? RSDAnswerResultObject,
+                        let weekdayValueArray = weekdayAnswerResult.value as? [Int] {
+                        for weekdayInt in weekdayValueArray {
+                            if let weekday = RSDWeekday(rawValue: weekdayInt) {
+                                weekdaysSelected.append(weekday)
+                            }
+                        }
+                    }
+                }
+                selectedTableItem.weekdays = weekdaysSelected
+            }
+        }
+    }
+    
+
+    override open func actionTapped(with actionType: RSDUIActionType) -> Bool {
+        if actionType == .navigation(.goForward),
+            let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+            source.appendStepResultToTaskPathAndFinish(with: self)
+        }
+        return super.actionTapped(with: actionType)
+    }
+    
+    public func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
+        return nil
     }
     
     private var _activeIndexPath: IndexPath?
@@ -88,32 +230,28 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
 extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklyScheduleCellDelegate {
     public func didTapDay(for cell: SBATrackedWeeklyScheduleCell) {
         _endTimeEditingIfNeeded()
+        guard let scheduleItem = cell.tableItem as? SBATrackedWeeklyScheduleTableItem,
+            let source = tableData as? RSDModalStepDataSource
+        else {
+            assertionFailure("Cannot handle the button tap.")
+            return
+        }
+        self.selectedIndexPath = cell.indexPath
+        let step = source.step(for: scheduleItem)
+        var navigator = RSDConditionalStepNavigatorObject(with: [step])
+        navigator.progressMarkers = []
+        let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
+        let taskVc = RSDTaskViewController(task: task)
+        taskVc.delegate = self
+        self.present(taskVc, animated: true, completion: nil)
     }
-
+    
     public func didChangeDay(for cell: SBATrackedWeeklyScheduleCell, selected: Int) {
         _endTimeEditingIfNeeded()
-//        guard let loggingItem = cell.tableItem as? SBASymptomTableItem else { return }
-//        didSelectModalItem(loggingItem, at: cell.indexPath)
-//        guard let dataSource = self.tableData as? SBATrackedMedicationDetailDataSource,
-//            let tableItem = cell.tableItem as? SBASymptomTableItem
-//            else {
-//                assertionFailure("Failed to change severity. Could not get table source or table item.")
-//                return
-//        }
-//        tableItem.severity = SBASymptomSeverityLevel(rawValue: selected)
-//        dataSource.updateResults(with: tableItem)
     }
     
     public func didChangeTiming(for cell: SBATrackedWeeklyScheduleCell, selected: Int) {
         _endTimeEditingIfNeeded()
-//        guard let dataSource = self.tableData as? SBATrackedMedicationDetailDataSource,
-//            let tableItem = cell.tableItem as? SBASymptomTableItem
-//            else {
-//                assertionFailure("Failed to change severity. Could not get table source or table item.")
-//                return
-//        }
-//        tableItem.medicationTiming = SBASymptomMedicationTiming(intValue: selected)
-//        dataSource.updateResults(with: tableItem)
     }
     
     public func didTapTime(for cell: SBATrackedWeeklyScheduleCell) {
@@ -124,22 +262,21 @@ extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklySchedul
     
     private func _endTimeEditingIfNeeded(_ shouldCollapse: Bool = true) {
         guard let indexPath = _activeIndexPath,
-//            let scheduleItem = self.tableData?.tableItem(at: indexPath) as? SBASymptomTableItem,
-            //let dataSource = self.tableData as? SBATrackedMedicationDetailDataSource,
             let cell = tableView.cellForRow(at: indexPath) as? SBATrackedWeeklyScheduleCell
             else {
                 return
         }
-        //let time = cell.timePicker.date
-        //loggingItem.time = time
-        //dataSource.updateResults(with: loggingItem)
         _activeIndexPath = nil
         if shouldCollapse {
             self.tableView.reloadRows(at: [cell.indexPath], with: .none)
         }
     }
     
-    public func didChangeEveryDaySelection(for cell: SBATrackedWeeklyScheduleCell, selected: Bool) {
+    public func didChangeScheduleAtAnytimeSelection(for cell: SBATrackedWeeklyScheduleCell, selected: Bool) {
+        if let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+            source.scheduleAtAnytimeChanged(selected: selected)
+        }
+        self.tableView.reloadData()
         _endTimeEditingIfNeeded()
     }
 }
@@ -150,7 +287,7 @@ public protocol SBATrackedWeeklyScheduleCellDelegate : class, NSObjectProtocol {
     
     func didTapTime(for cell: SBATrackedWeeklyScheduleCell)
     
-    func didChangeEveryDaySelection(for cell: SBATrackedWeeklyScheduleCell, selected: Bool)
+    func didChangeScheduleAtAnytimeSelection(for cell: SBATrackedWeeklyScheduleCell, selected: Bool)
     
     func didChangeTiming(for cell: SBATrackedWeeklyScheduleCell, selected: Int)
 }
@@ -206,8 +343,10 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     @IBOutlet open var titleLabel: UILabel!
     @IBOutlet open var timeButton: UIButton!
     @IBOutlet open var timePicker: UIDatePicker!
+    @IBOutlet open var dayButtonContainer: UIView!
     @IBOutlet open var dayButton: UIButton!
-    @IBOutlet open var everydayCheckbox: RSDCheckboxButton!
+    @IBOutlet open var atAnytimeContainer: UIView!
+    @IBOutlet open var atAnytimeCheckbox: RSDCheckboxButton!
     
     @IBOutlet open var separatorLines: [UIView]!
     @IBOutlet open var labels: [UILabel]!
@@ -231,32 +370,102 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
         }
     }
     
+    var atAnytimeHidden: Bool = false {
+        didSet {
+            atAnytimeContainer.isHidden = atAnytimeHidden
+        }
+    }
+    
     override open var tableItem: RSDTableItem! {
         didSet {
-            guard let loggingItem = tableItem as? SBASymptomTableItem
-                else {
-                    return
+            guard let scheduleItem = weeklyScheduleTableItem else { return }
+            atAnytimeCheckbox.isSelected = scheduleItem.scheduleAtAnytime
+            if scheduleItem.scheduleAtAnytime {
+                dayButtonContainer.isHidden = true
+                inlineTimePicker.isHidden = true
+            } else {
+                dayButtonContainer.isHidden = false
+                inlineTimePicker.isHidden = false
+                let timePickerDate = scheduleItem.time ?? Calendar.current.date(bySetting: .hour, value: 7, of: Date()) ?? Date()
+                timeButton?.setTitle(DateFormatter.localizedString(from: timePickerDate, dateStyle: .none, timeStyle: .short), for: .normal)
+                timePicker.date = timePickerDate
+                self.weeklyScheduleTableItem?.time = timePickerDate
+                if scheduleItem.weekdays?.count ?? 0 == RSDWeekday.all.count {                    dayButton.setTitle(Localization.localizedString("MEDICATION_SCHEDULE_EVERYDAY"), for: .normal)
+                } else {
+                    if let weekdays = scheduleItem.weekdays {
+                        dayButton.setTitle(SBATrackedWeeklyScheduleCell.weekdayTitle(for: weekdays), for: .normal)
+                    }
+                }
             }
-            titleLabel.text = loggingItem.loggedResult.text
-            timeButton?.setTitle(DateFormatter.localizedString(from: loggingItem.time, dateStyle: .none, timeStyle: .short), for: .normal)
-            timePicker.date = loggingItem.time
-            let durationTitle = loggingItem.duration?.text ?? Localization.localizedString("ADD_DURATION_BUTTON")
-            //durationButton?.setTitle(durationTitle, for: .normal)
-            let medicationTiming = loggingItem.medicationTiming?.intValue ?? -1
-            //medicationTimingButtons.forEach { $0.isSelected = (medicationTiming == $0.tag) }
         }
+    }
+    
+    public static func weekdayTitle(for weekdays: [RSDWeekday]) -> String {
+        let daysPerLine = 3
+        var count = 0
+        var dayButtonTitle = ""
+        for weekday in weekdays {
+            dayButtonTitle += weekday.text ?? ""
+            count = count + 1
+            if count % daysPerLine == 0 && count != weekdays.count {
+                dayButtonTitle += ",\n"
+            } else if count < weekdays.count {
+                if count == weekdays.count - 1 {
+                    dayButtonTitle += ", and "
+                } else {
+                    dayButtonTitle += ", "
+                }
+            }
+        }
+        return dayButtonTitle
+    }
+    
+    var weeklyScheduleTableItem: SBATrackedWeeklyScheduleTableItem? {
+        return tableItem as? SBATrackedWeeklyScheduleTableItem
     }
     
     @IBAction func timeTapped(_ sender: Any) {
         self.delegate?.didTapTime(for: self)
     }
     
+    @IBAction func timeChanged(_ sender: Any) {
+        self.weeklyScheduleTableItem?.time = timePicker.date
+    }
+    
     @IBAction func dayTapped(_ sender: Any) {
         self.delegate?.didTapDay(for: self)
     }
     
-    @IBAction func everydayTapped(_ sender: RSDCheckboxButton) {
+    @IBAction func atAnytimeTapped(_ sender: RSDCheckboxButton) {
         sender.isSelected = !sender.isSelected
-        self.delegate?.didChangeEveryDaySelection(for: self, selected: sender.isSelected)
+        if let scheduleItem = weeklyScheduleTableItem {
+            scheduleItem.scheduleAtAnytime = !scheduleItem.scheduleAtAnytime
+        }
+        self.delegate?.didChangeScheduleAtAnytimeSelection(for: self, selected: sender.isSelected)
+    }
+}
+
+// TODO: mdephillips 6/26/18 why do i have to make this class? only seeing protocol impl
+open class SBAInstructionImage: RSDImageThemeElement {
+    
+    public var imageIdentifier: String
+    
+    public var placementType: RSDImagePlacementType? {
+        return .iconBefore
+    }
+    
+    public var size: CGSize
+    
+    public var bundle: Bundle? {
+        return Bundle(for: SBAInstructionImage.self)
+    }
+    
+    fileprivate static func defaultSize() -> CGSize {
+        return CGSize(width: 200.0, height: 200.0)
+    }
+    
+    public init(identifier: String) {
+        imageIdentifier = identifier
+        size = SBAInstructionImage.defaultSize()
     }
 }

@@ -28,7 +28,7 @@
                     <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron" translatesAutoresizingMaskIntoConstraints="NO" id="AXN-7H-4Sk">
                         <rect key="frame" x="270" y="103.5" width="18" height="20"/>
                     </imageView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xJu-Gz-sXN" customClass="RSDUnderlinedButton" customModule="ResearchUI">
+                    <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xJu-Gz-sXN" customClass="RSDUnderlinedButton" customModule="ResearchUI">
                         <rect key="frame" x="248" y="96.5" width="56" height="32.5"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="56" id="w0A-PX-kEC"/>
@@ -49,7 +49,7 @@
                         </constraints>
                     </view>
                 </subviews>
-                <color key="backgroundColor" red="0.9900637747553046" green="0.26231237191400747" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                <color key="backgroundColor" red="0.9900637747553046" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                 <constraints>
                     <constraint firstItem="tQR-rc-Cks" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="24" id="42T-Gp-SSN"/>
                     <constraint firstAttribute="trailing" secondItem="HVl-8W-XGS" secondAttribute="trailing" id="5wo-pv-iNf"/>

@@ -56,6 +56,8 @@
 "EVENING_MEDICATION_SECTION_TITLE" = "Evening medications";
 "MISSED_MEDICATION_SECTION_TITLE" = "Missed medications";
 "MEDICATION_ANYTIME" = "Anytime";
+"MEDICATION_DAY_OF_WEEK_%@" = "On which days do you want to take %@";
+"MEDICATION_SCHEDULE_EVERYDAY" = "Everyday";
 
 /* Failure messages */
 "NETWORK_FAILURE_TITLE" = "Could Not Complete"; // Title for a step or alert indicating a network failure
