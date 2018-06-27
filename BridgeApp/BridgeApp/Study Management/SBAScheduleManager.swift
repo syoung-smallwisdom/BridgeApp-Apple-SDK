@@ -461,6 +461,20 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         return (taskPath, schedule)
     }
     
+    /// Instantiate a task path appropriate to the given schedule.
+    ///
+    /// - note: This method should not be used to instantiate child task paths that are used to track the
+    /// task state for a subtask. Instead, it is intended for starting a new task and will set up any state
+    /// handling (such as tracking data groups) that must be managed globally.
+    ///
+    /// - parameter schedule: The schedule to use to set up the task.
+    /// - returns: The instantiated task path.
+    open func instantiateTaskPath(for schedule: SBBScheduledActivity) -> RSDTaskPath {
+        let taskPath = schedule.instantiateTaskPath()
+        setupTaskPath(taskPath, with: schedule)
+        return taskPath
+    }
+    
     func scheduledActivity(for taskIdentifier: String, in activityGroup: SBAActivityGroup?) -> SBBScheduledActivity? {
         // Set up predicates.
         var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskIdentifier)
