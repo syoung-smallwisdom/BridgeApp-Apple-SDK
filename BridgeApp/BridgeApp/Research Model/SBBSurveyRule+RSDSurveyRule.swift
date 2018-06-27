@@ -91,6 +91,13 @@ extension SBBSurveyQuestion : RSDSurveyNavigationStep {
     }
 }
 
+extension SBBSurveyQuestion : RSDCohortAssignmentStep {
+    
+    public func cohortsToApply(with result: RSDTaskResult) -> (add: Set<String>, remove: Set<String>)? {
+        return self.evaluateCohortsToApply(with: result)
+    }
+}
+
 extension sbb_InputField {
     
     /// Only return the rules that are valid comparable rules

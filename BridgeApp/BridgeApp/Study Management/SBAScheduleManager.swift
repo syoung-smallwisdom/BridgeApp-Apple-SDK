@@ -818,6 +818,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         let schemaInfo = schema ?? RSDSchemaInfoObject(identifier: taskResult.identifier, revision: 1)
         let archiveIdentifier = schemaInfo.schemaIdentifier ?? taskResult.identifier
         let schedule = self.scheduledActivity(for: taskResult, scheduleIdentifier: scheduleIdentifier)
+            ?? (currentArchive as? SBAScheduledActivityArchive)?.schedule
         let isPlaceholder = (currentArchive == nil) && (schema == nil) && (schedule == nil)
         
         // If there is a top-level archive then return the exisiting if and only if the identifiers are the
