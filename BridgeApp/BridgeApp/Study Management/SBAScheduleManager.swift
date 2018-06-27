@@ -597,10 +597,9 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         // Recursively get and update all the schedules in this task path.
         var schedules = [SBBScheduledActivity]()
         func appendSchedule(for path: RSDTaskPath) {
-            guard let schedule = self.getAndUpdateSchedule(for: path) else {
-                return
+            if let schedule = self.getAndUpdateSchedule(for: path) {
+                schedules.append(schedule)
             }
-            schedules.append(schedule)
             path.childPaths.enumerated().forEach {
                 appendSchedule(for: $0.element.value)
             }
@@ -815,9 +814,12 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             return currentArchive
         }
         
+        
         let schemaInfo = schema ?? RSDSchemaInfoObject(identifier: taskResult.identifier, revision: 1)
         let archiveIdentifier = schemaInfo.schemaIdentifier ?? taskResult.identifier
         let schedule = self.scheduledActivity(for: taskResult, scheduleIdentifier: scheduleIdentifier)
+            ?? (currentArchive as? SBAScheduledActivityArchive)?.schedule
+        let isPlaceholder = (currentArchive == nil) && (schema == nil) && (schedule == nil)
         
         // If there is a top-level archive then return the exisiting if and only if the identifiers are the
         // same or the schema is nil.
@@ -826,8 +828,8 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             return inputArchive
         }
         
-        // Otherwise, return the current archive or
-        return SBAScheduledActivityArchive(identifier: archiveIdentifier, schemaInfo: schemaInfo, schedule: schedule)
+        // Otherwise, instantiate a new archive.
+        return SBAScheduledActivityArchive(identifier: archiveIdentifier, schemaInfo: schemaInfo, schedule: schedule, isPlaceholder: isPlaceholder)
     }
     
     /// Finalize the upload of all the created archives.
@@ -838,7 +840,10 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             self.copyTestArchive(archive: archive)
         }
         #endif
-        let archives = dataArchives.compactMap { $0 as? SBBDataArchive }
+        let archives: [SBBDataArchive] = dataArchives.compactMap {
+            guard let archive = $0 as? SBBDataArchive else { return nil }
+            return !archive.isEmpty() ? archive : nil
+        }
         SBBDataArchive.encryptAndUploadArchives(archives)
         completion()
     }
