@@ -44,6 +44,7 @@ private let kSurveyGuidKey                    = "surveyGuid"
 
 private let kMetadataFilename                 = "metadata.json"
 
+
 /// A subclass of the `SBBDataArchive` that implements `RSDDataArchive` for task results.
 open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
     
@@ -56,16 +57,20 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
     /// The schema info for this archive.
     public let schemaInfo: RSDSchemaInfo
     
+    /// Is the archive a top-level archive?
+    public let isPlaceholder: Bool
+    
     /// The schedule identifier is the `SBBScheduledActivity.guid` which is a combination of the activity
     /// guid and the `scheduledOn` property.
     public var scheduleIdentifier: String? {
         return schedule?.guid
     }
     
-    public init(identifier: String, schemaInfo: RSDSchemaInfo, schedule: SBBScheduledActivity?) {
+    public init(identifier: String, schemaInfo: RSDSchemaInfo, schedule: SBBScheduledActivity?, isPlaceholder: Bool = false) {
         self.identifier = identifier
         self.schedule = schedule
         self.schemaInfo = schemaInfo
+        self.isPlaceholder = isPlaceholder
         super.init(reference: identifier, jsonValidationMapping: nil)
         
         // set info values.
@@ -118,6 +123,9 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
     
     /// Close the archive with optional metadata from a task result.
     open func completeArchive(createdOn: Date, with metadata: [String : Any]? = nil) throws {
+        // If the archive is empty and this is a placeholder archive, then exit early without
+        // adding the metadata.
+        if self.isEmpty() && isPlaceholder { return }
         
         // Set up the activity metadata.
         var metadataDictionary: [String : Any] = metadata ?? [:]
