@@ -53,32 +53,17 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     override open class func buildReviewStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep? {
         let stepId = StepIdentifiers.review.stringValue
         let step = SBATrackedMedicationReviewStepObject(identifier: stepId, items: items, sections: sections, type: .review)
-        
-        // TODO: mdephillips 6/19/18 this should not be a boolean defined here but be a dynamic decision based on the task path or result object state
-        let isDetailedReview = false
-        
-        if isDetailedReview {
-            // Set the default values for the title and subtitle to display depending upon state.
-            // TODO: mdephillips 6/19/18 localize in mPower strings file
-            step.addDetailsTitle = "Medication list"
-            step.reviewTitle = Localization.localizedString("MEDICATION_REVIEW_TITLE")
-            // Add the customization of the add more and go forward buttons.
-            let addMoreAction = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_ADD_MORE_BUTTON"))
-            let goForwardAction = RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SUBMIT"))
-            step.actions = [.navigation(.goForward) : goForwardAction,
-                            .addMore : addMoreAction]
-        } else {
-            // Set the default values for the title and subtitle to display depending upon state.
-            step.addDetailsTitle = Localization.localizedString("MEDICATION_ADD_DETAILS_TITLE")
-            step.addDetailsSubtitle = Localization.localizedString("MEDICATION_ADD_DETAILS_DETAIL")
-            step.reviewTitle = Localization.localizedString("MEDICATION_REVIEW_TITLE")
-            // Add the customization of the add more and go forward buttons.
-            // TODO: mdephillips 6/19/18 localize in mPower strings file
-            let addMoreAction = RSDUIActionObject(buttonTitle: "Edit medication list")
-            let goForwardAction = RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_NEXT"))
-            step.actions = [.navigation(.goForward) : goForwardAction,
-                            .addMore : addMoreAction]
-        }
+
+        // Set the default values for the title and subtitle to display depending upon state.
+        step.addDetailsTitle = Localization.localizedString("MEDICATION_ADD_DETAILS_TITLE")
+        step.addDetailsSubtitle = Localization.localizedString("MEDICATION_ADD_DETAILS_DETAIL")
+        step.reviewTitle = Localization.localizedString("MEDICATION_REVIEW_TITLE")
+        // Add the customization of the add more and go forward buttons.
+        // TODO: mdephillips 6/19/18 localize in mPower strings file
+        let addMoreAction = RSDUIActionObject(buttonTitle: "Edit medication list")
+        let goForwardAction = RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SAVE"))
+        step.actions = [.navigation(.goForward) : goForwardAction,
+                        .addMore : addMoreAction]
         
         return step
     }

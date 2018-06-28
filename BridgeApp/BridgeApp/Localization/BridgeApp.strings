@@ -58,6 +58,7 @@
 "MEDICATION_ANYTIME" = "Anytime";
 "MEDICATION_DAY_OF_WEEK_%@" = "On which days do you want to take %@";
 "MEDICATION_SCHEDULE_EVERYDAY" = "Everyday";
+"MEDICATION_LIST_TITLE" = "Medication list";
 
 /* Failure messages */
 "NETWORK_FAILURE_TITLE" = "Could Not Complete"; // Title for a step or alert indicating a network failure

@@ -35,6 +35,10 @@ import Foundation
 
 open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewController, RSDTaskViewControllerDelegate {
     
+    open var reviewStep: SBATrackedItemsReviewStepObject? {
+        return self.step as? SBATrackedItemsReviewStepObject
+    }
+    
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
         _registeredIdentifiers.insert(reuseIdentifier)
@@ -101,11 +105,18 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
             if let removeMedResult = taskController.taskResult.stepHistory.last as? SBARemoveMedicationResultObject {
                 reviewDataSource.updateResults(byRemoving: removeMedResult.identifier)
             }
+            updateUIToDetailsMode()
             // TODO: mdephillips 6/27/18 only reload the updated cell
             self.tableView.reloadData()
         }
         
         dismiss(animated: true, completion: nil)
+    }
+    
+    public func updateUIToDetailsMode() {
+        // Set the default values for the title and subtitle to display depending upon state.
+        // TODO: mdephillips 6/19/18 localize in mPower strings file
+        self.navigationHeader?.titleLabel?.text = Localization.localizedString("MEDICATION_LIST_TITLE")
     }
     
     public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
