@@ -684,12 +684,51 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// - returns: The client data built for this task path (if any).
     open func buildClientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> (clientData: SBBJSONValue, shouldReplacePrevious: Bool)? {
         do {
-            return try recursiveGetClientData(from: taskPath.result, isTopLevel: true)
+            let clientData = try recursiveGetClientData(from: taskPath.result, isTopLevel: true)
+            if clientData != nil {
+                return clientData
+            }
+            else {
+                let answerMap = self.buildSurveyAnswerMap(from: taskPath, for: schedule)
+                if answerMap.count > 0 {
+                    return (answerMap as NSDictionary, true)
+                }
+                else {
+                    return nil
+                }
+            }
         }
         catch let err {
             assertionFailure("Failed to encode client data: \(err)")
             return nil
         }
+    }
+    
+    /// Build a simple answer map for this task result.
+    /// - note: This can be used to create client data for surveys.
+    open func buildSurveyAnswerMap(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> [String : Any] {
+        let taskResult = taskPath.result
+        var answers = [String : Any]()
+        
+        func appendValue(_ value: Any?, forKey key: String) {
+            answers[key] = (value as? SBBJSONValue) ?? (value as? RSDJSONValue)?.jsonObject()
+        }
+        
+        func appendResult(_ result: RSDResult) {
+            if let answers = (result as? RSDCollectionResult)?.answers() {
+                answers.forEach {
+                    appendValue($0.value, forKey: $0.key)
+                }
+            }
+            else if let answerResult = result as? RSDAnswerResult {
+                appendValue(answerResult.value, forKey: answerResult.identifier)
+            }
+        }
+        
+        taskResult.stepHistory.forEach { appendResult($0) }
+        taskResult.asyncResults?.forEach { appendResult($0) }
+        
+        return answers
     }
     
     private func recursiveGetClientData(from taskResult: RSDTaskResult, isTopLevel: Bool) throws  -> (SBBJSONValue, Bool)? {
