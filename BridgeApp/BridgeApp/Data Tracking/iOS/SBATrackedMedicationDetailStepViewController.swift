@@ -86,17 +86,23 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     override open func configure(cell: UITableViewCell, in tableView: UITableView, at indexPath: IndexPath) {
         super.configure(cell: cell, in: tableView, at: indexPath)
-        if let weeklySchedule = cell as? SBATrackedWeeklyScheduleCell,
-            let source = tableData as? SBATrackedWeeklyScheduleDataSource,
-            let tableItem = source.tableItem(at: indexPath) {
+        
+        guard let source = tableData as? SBATrackedWeeklyScheduleDataSource,
+            let tableItem = source.tableItem(at: indexPath) else {
+            return
+        }
+        
+        if let weeklySchedule = cell as? SBATrackedWeeklyScheduleCell {
             weeklySchedule.delegate = self
             weeklySchedule.inlineTimePicker.isOpen = (indexPath == _activeIndexPath)
             weeklySchedule.tableItem = tableItem
             let isLastScheduleItem = (indexPath.row == (source.schedulesSection.tableItems.count - 1))
             weeklySchedule.atAnytimeHidden = !isLastScheduleItem
         }
-        if let dosageCell = cell as? SBATrackedTextfieldCell {
+        if let dosageCell = cell as? SBATrackedTextfieldCell,
+            let textTableItem = tableItem as? RSDTextInputTableItem {
             dosageCell.textField.delegate = self
+            dosageCell.textField.text = textTableItem.answerText
         }
         if let buttonCell = cell as? RSDButtonCell {
             if let _ = buttonCell.actionButton as? RSDUnderlinedButton {
@@ -195,7 +201,6 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
             }
         }
     }
-    
 
     override open func actionTapped(with actionType: RSDUIActionType) -> Bool {
         if actionType == .navigation(.goForward),
@@ -379,13 +384,14 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     override open var tableItem: RSDTableItem! {
         didSet {
             guard let scheduleItem = weeklyScheduleTableItem else { return }
-            atAnytimeCheckbox.isSelected = scheduleItem.scheduleAtAnytime
-            if scheduleItem.scheduleAtAnytime {
+            if scheduleItem.time == nil {
                 dayButtonContainer.isHidden = true
                 inlineTimePicker.isHidden = true
+                self.atAnytimeCheckbox.isSelected = true
             } else {
                 dayButtonContainer.isHidden = false
                 inlineTimePicker.isHidden = false
+                self.atAnytimeCheckbox.isSelected = false
                 let timePickerDate = scheduleItem.time ?? Calendar.current.date(bySetting: .hour, value: 7, of: Date()) ?? Date()
                 timeButton?.setTitle(DateFormatter.localizedString(from: timePickerDate, dateStyle: .none, timeStyle: .short), for: .normal)
                 timePicker.date = timePickerDate
@@ -439,7 +445,11 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     @IBAction func atAnytimeTapped(_ sender: RSDCheckboxButton) {
         sender.isSelected = !sender.isSelected
         if let scheduleItem = weeklyScheduleTableItem {
-            scheduleItem.scheduleAtAnytime = !scheduleItem.scheduleAtAnytime
+            if (sender.isSelected) {
+                scheduleItem.time = nil
+            } else {
+                scheduleItem.time = Calendar.current.date(bySetting: .hour, value: 7, of: Date().startOfDay())
+            }
         }
         self.delegate?.didChangeScheduleAtAnytimeSelection(for: self, selected: sender.isSelected)
     }

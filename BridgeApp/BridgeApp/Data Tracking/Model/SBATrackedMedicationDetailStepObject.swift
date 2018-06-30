@@ -1,5 +1,5 @@
 //
-//  SBATrackedMedicationLoggingStepObject.swift
+//  SBATrackedMedicationDetailStepObject.swift
 //  BridgeApp
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
@@ -33,58 +33,14 @@
 
 import Foundation
 
-/// A step used for logging symptoms.
-open class SBATrackedMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject {
+/// A step used for adding medication details like dosage, and the schedule behind when the user takes the medication
+open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObject, RSDStepViewControllerVendor {
     
-    #if !os(watchOS)
-    /// Override to return a symptom logging step view controller.
-    override open func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
-        return SBASymptomLoggingStepViewController(step: self)
-    }
-    #endif
-    
-    /// Override to return a `SBASymptomLoggingDataSource`.
-    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
-        return SBASymptomLoggingDataSource(step: self, taskPath: taskPath)
-    }
-}
-
-/// A step used for logging symptoms.
-open class SBATrackedMedicationDetailStepObject : RSDTableStep, RSDStepViewControllerVendor {
-    
-    public var hasImageChoices: Bool
-    
-    public var title: String?
-    
-    public var text: String?
-    
-    public var detail: String?
-    
-    public var footnote: String?
-    
-    public var identifier: String
-    
-    public var stepType: RSDStepType
-    
-    public init (id: String) {
-        identifier = id
-        stepType = .form
-        hasImageChoices = false
+    fileprivate enum FieldIdentifiers : String, CodingKey {
+        case dosage, schedules
     }
     
-    public func instantiateStepResult() -> RSDResult {
-        return SBAMedicationDetailsResultObject(identifier: identifier)
-    }
-    
-    public func validate() throws {
-        
-    }
-    
-    public func action(for actionType: RSDUIActionType, on step: RSDStep) -> RSDUIAction? {
-        return nil
-    }
-    
-    public func shouldHideAction(for actionType: RSDUIActionType, on step: RSDStep) -> Bool? {
+    override open func shouldHideAction(for actionType: RSDUIActionType, on step: RSDStep) -> Bool? {
         if actionType == .navigation(.goBackward) ||
             actionType == .navigation(.skip) {
             return true
@@ -97,16 +53,27 @@ open class SBATrackedMedicationDetailStepObject : RSDTableStep, RSDStepViewContr
         return SBATrackedMedicationDetailStepViewController(step: self)
     }
     
-    /// Override to return a `SBASymptomLoggingDataSource`.
-    open func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
+    /// Override and return an `SBAMedicationAnswer`.
+    override open func answer(from taskResult: RSDTaskResult) -> SBATrackedItemAnswer? {
+        guard let detailsResult = taskResult.findResult(for: self) as? SBAMedicationDetailsResultObject else { return nil }
+        var medication = SBAMedicationAnswer(identifier: self.identifier)
+        medication.dosage = detailsResult.dosage
+        if let schedulesUnwrapped = detailsResult.schedules {
+            medication.scheduleItems = Set(schedulesUnwrapped)
+        }
+        return medication
+    }
+    
+    /// Override to return a `SBATrackedWeeklyScheduleDataSource`.
+    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
         return SBATrackedWeeklyScheduleDataSource.init(identifier: identifier, step: self, taskPath: taskPath)
     }
 }
 
-/// A data source used to handle symptom logging.
+/// A data source used to the weekly schedule for a medication
 open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModalStepTaskControllerDelegate {
     
-    enum FieldIdentifiers : String, CodingKey {
+    enum FieldIdentifiers : String {
         case header, dosage, schedules, addSchedule
         
         func sectionIndex() -> Int {
@@ -143,11 +110,15 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
         self.step = step
         self.taskPath = taskPath
         self.sections = []
+        
+        let previousAnswer = (step as? SBATrackedMedicationDetailStepObject)?.previousAnswer as? SBAMedicationAnswer
 
         sections.append(createHeaderSection())
-        sections.append(createDosageSection())
-        sections.append(createSchedulesSection())
-        sections.append(createAddScheduleSection())
+        sections.append(createDosageSection(with: previousAnswer))
+        sections.append(createSchedulesSection(with: previousAnswer))
+        if shouldCreateAddScheduleSection(with: previousAnswer) {
+            sections.append(createAddScheduleSection())
+        }
     }
     
     fileprivate func createHeaderSection() -> RSDTableSection {
@@ -156,19 +127,45 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
         return headerSection
     }
     
-    fileprivate func createDosageSection() -> RSDTableSection {
+    fileprivate func createDosageSection(with previousAnswer: SBAMedicationAnswer?) -> RSDTableSection {
         let inputField = RSDInputFieldObject(identifier: FieldIdentifiers.dosage.stringValue, dataType: .base(.string), uiHint: .textfield, prompt: Localization.localizedString("MEDICATION_DOSAGE_PROMPT"))
         inputField.placeholder = Localization.localizedString("MEDICATION_DOSAGE_PLACEHOLDER")
         let dosageTableItem = RSDTextInputTableItem(rowIndex: 0, inputField: inputField, uiHint: .textfield)
+        if let previousAnswerUnwrapped = previousAnswer {
+            try? dosageTableItem.setAnswer(previousAnswerUnwrapped.dosage)
+        }
         let dosageSection = RSDTableSection(identifier: FieldIdentifiers.dosage.stringValue, sectionIndex: FieldIdentifiers.dosage.sectionIndex(), tableItems: [dosageTableItem])
         return dosageSection
     }
     
-    fileprivate func createSchedulesSection() -> RSDTableSection {
-        let scheduleTableItem = SBATrackedWeeklyScheduleTableItem(identifier:
-            String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, 0), rowIndex: 0, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId)
-        let scheduleSections = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: [scheduleTableItem])
+    fileprivate func createSchedulesSection(with previousAnswer: SBAMedicationAnswer?) -> RSDTableSection {
+        var scheduleTableItems = [SBATrackedWeeklyScheduleTableItem]()
+        if let previousAnswerUnwrapped = previousAnswer,
+            let scheduleItemsUnwrapped = previousAnswerUnwrapped.scheduleItems {
+            for scheudle in scheduleItemsUnwrapped {
+                let scheduleItem = SBATrackedWeeklyScheduleTableItem(identifier:
+                    String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, 0), rowIndex: 0, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId, schedule: scheudle)
+                
+                scheduleTableItems.append(scheduleItem)
+            }
+        } else {
+            let scheduleItem = SBATrackedWeeklyScheduleTableItem(identifier:
+                String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, 0), rowIndex: 0, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId)
+            scheduleTableItems.append(scheduleItem)
+        }
+        let scheduleSections = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: scheduleTableItems)
         return scheduleSections
+    }
+    
+    fileprivate func shouldCreateAddScheduleSection(with previousAnswer: SBAMedicationAnswer?) -> Bool {
+        if let previousAnswerUnwrapped = previousAnswer {
+            for schedule in previousAnswerUnwrapped.scheduleItems ?? [] {
+                if schedule.timeOfDayString == nil {
+                    return false
+                }
+            }
+        }
+        return true
     }
     
     fileprivate func createAddScheduleSection() -> RSDTableSection {
@@ -207,7 +204,11 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
         let lastIndex = schedulesSection.tableItems.count - 1
         let tableItem = schedulesSection.tableItems[lastIndex]
         guard let scheduleItem = tableItem as? SBATrackedWeeklyScheduleTableItem else { return }
-        scheduleItem.scheduleAtAnytime = selected
+        if selected {
+            scheduleItem.time = nil
+        } else {
+            scheduleItem.time = Calendar.current.date(byAdding: .hour, value: 7, to: Date())
+        }
         let newSchedulesSection = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: [scheduleItem])
         sections[FieldIdentifiers.schedules.sectionIndex()] = newSchedulesSection
         
@@ -273,15 +274,16 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
     }
     
     public func appendStepResultToTaskPathAndFinish(with stepViewController: RSDStepViewController) {
-        let stepResult = SBAMedicationDetailsResultObject(identifier: step.identifier)
+        var stepResult = SBAMedicationDetailsResultObject(identifier: step.identifier)
         stepResult.dosage = self.dosageTableItem?.answerText
-        var scheduleResults = [SBAWeeklyScheduleResultObject]()
+        var scheduleResults = [RSDWeeklyScheduleObject]()
         for tableItem in self.schedulesSection.tableItems {
             if let scheduleItem = (tableItem as? SBATrackedWeeklyScheduleTableItem) {
                 scheduleResults.append(scheduleItem.result)
             }
         }
         stepResult.schedules = scheduleResults
+        
         self.taskPath.appendStepHistory(with: stepResult)
     }
     
@@ -318,7 +320,7 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
     }
 }
 
-open class SBAMedicationDetailsResultObject: RSDCollectionResult {
+public struct SBAMedicationDetailsResultObject: RSDResult {
     
     enum CodingKeys: String, CodingKey, Codable {
         case identifier, type, startDate, endDate, inputResults, dosage, schedules
@@ -334,36 +336,9 @@ open class SBAMedicationDetailsResultObject: RSDCollectionResult {
     
     public var endDate: Date
     
-    public var dosage: String? {
-        get {
-            if let dosageResult = self.findResult(with: CodingKeys.dosage.stringValue) as? RSDAnswerResultObject {
-                return dosageResult.value as? String
-            }
-            return nil
-        }
-        set {
-            let dosageId = CodingKeys.dosage.stringValue
-            var answerResult = RSDAnswerResultObject(identifier: dosageId, answerType: .string)
-            answerResult.value = newValue
-            // TODO: mdephillips 6/26/18 cannot use mutating member on immutable value???
-//            removeInputResult(with: CodingKeys.dosage.stringValue)
-//            appendInputResults(with: answerResult)
-            if let idx = inputResults.index(where: { $0.identifier == dosageId }) {
-                inputResults.remove(at: idx)
-            }
-            self.inputResults.append(answerResult)
-        }
-    }
+    public var dosage: String?
     
-    public var schedules: [SBAWeeklyScheduleResultObject]? {
-        get {
-            return self.inputResults.filter({ $0.identifier != CodingKeys.dosage.stringValue }) as? [SBAWeeklyScheduleResultObject]
-        }
-        set {
-            self.inputResults = self.inputResults.filter({ $0.identifier == CodingKeys.dosage.stringValue })
-            self.inputResults.append(contentsOf: newValue ?? [])
-        }
-    }
+    public var schedules: [RSDWeeklyScheduleObject]?
     
     public init(identifier: String) {
         self.identifier = identifier
@@ -373,15 +348,6 @@ open class SBAMedicationDetailsResultObject: RSDCollectionResult {
         endDate = Date()
     }
     
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.identifier = try container.decode(String.self, forKey: .identifier)
-        self.type = try container.decodeIfPresent(RSDResultType.self, forKey: .type) ?? .collection
-        self.startDate = try container.decodeIfPresent(Date.self, forKey: .startDate) ?? Date()
-        self.endDate = try container.decodeIfPresent(Date.self, forKey: .endDate) ?? Date()
-        // TODO: mdephillips 6/26/18 how do i decode an array of schedules?
-    }
-    
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: AnyCodingKey.self)
         
@@ -389,7 +355,8 @@ open class SBAMedicationDetailsResultObject: RSDCollectionResult {
         try container.encodeIfPresent(type, forKey: AnyCodingKey(stringValue: CodingKeys.type.stringValue)!)
         try container.encodeIfPresent(startDate, forKey: AnyCodingKey(stringValue: CodingKeys.startDate.stringValue)!)
         try container.encodeIfPresent(endDate, forKey: AnyCodingKey(stringValue: CodingKeys.endDate.stringValue)!)
-        // TODO: mdephillips 6/26/18 how do i encode an array of schedules?
+        try container.encodeIfPresent(dosage, forKey: AnyCodingKey(stringValue: CodingKeys.dosage.stringValue)!)
+        try container.encodeIfPresent(schedules, forKey: AnyCodingKey(stringValue: CodingKeys.schedules.stringValue)!)
     }
 }
 
@@ -400,22 +367,22 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
         case schedules
     }
     
-    var result: SBAWeeklyScheduleResultObject
+    var result: RSDWeeklyScheduleObject
     
     /// The duration window describing how long the symptoms occurred.
     public var weekdays: [RSDWeekday]? {
         get {
-            return Array(self.result.weeklyScheduleObject.daysOfWeek)
+            return Array(self.result.daysOfWeek)
         }
         set {
-            self.result.weeklyScheduleObject.daysOfWeek = Set(newValue ?? [])
+            self.result.daysOfWeek = Set(newValue ?? [])
         }
     }
     
     /// The time when the symptom started occuring.
     public var time: Date? {
         get {
-            guard let tod = self.result.weeklyScheduleObject.timeOfDayString,
+            guard let tod = self.result.timeOfDayString,
              let date = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.date(from: tod) else {
                 return nil
             }
@@ -423,19 +390,10 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
         }
         set {
             if let newValueUnwrapped = newValue {
-                self.result.weeklyScheduleObject.timeOfDayString = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.string(from: newValueUnwrapped)
+                self.result.timeOfDayString = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.string(from: newValueUnwrapped)
             } else {
-                self.result.weeklyScheduleObject.timeOfDayString = nil
+                self.result.timeOfDayString = nil
             }
-        }
-    }
-    
-    public var scheduleAtAnytime: Bool {
-        get {
-            return self.result.scheduleAtAnytime
-        }
-        set {
-            self.result.scheduleAtAnytime = newValue
         }
     }
     
@@ -445,9 +403,21 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
     ///     - rowIndex: The index of this item relative to all rows in the section in which this item resides.
     ///     - reuseIdentifier: The string to use as the reuse identifier.
     public init(identifier: String, rowIndex: Int, reuseIdentifier: String = SBATrackedWeeklyScheduleCell.reuseId) {
-        self.result = SBAWeeklyScheduleResultObject(identifier: SBATrackedWeeklyScheduleTableItem.resultIdentifier(identifier: identifier, rowIndex: rowIndex))
-        self.result.weeklyScheduleObject.daysOfWeek = Set()
-        self.result.weeklyScheduleObject.daysOfWeek.insert(.friday)
+        var weekdays = Set<RSDWeekday>()
+        weekdays.insert(.friday)
+        let date = Calendar.current.date(bySetting: .hour, value: 7, of: Date().startOfDay())
+        let timeOfDay = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.string(from: date!)
+        self.result = RSDWeeklyScheduleObject(timeOfDayString: timeOfDay, daysOfWeek: weekdays)
+        super.init(identifier: identifier, rowIndex: rowIndex, reuseIdentifier: reuseIdentifier)
+    }
+    
+    /// Initialize a new RSDTableItem.
+    /// - parameters:
+    ///     - identifier: The cell identifier.
+    ///     - rowIndex: The index of this item relative to all rows in the section in which this item resides.
+    ///     - reuseIdentifier: The string to use as the reuse identifier.
+    public init(identifier: String, rowIndex: Int, reuseIdentifier: String, schedule: RSDWeeklyScheduleObject) {
+        self.result = schedule
         super.init(identifier: identifier, rowIndex: rowIndex, reuseIdentifier: reuseIdentifier)
     }
     
@@ -470,85 +440,5 @@ open class SBARemoveMedicationResultObject: RSDResult {
         type = .navigation
         startDate = Date()
         endDate = Date()
-    }
-}
-
-open class SBAWeeklyScheduleResultObject : RSDResult, Codable {
-
-    private enum CodingKeys : String, CodingKey {
-        case identifier, type, startDate, endDate, weeklyScheduleObject, anytime
-    }
-
-    public var identifier: String
-    
-    public var type: RSDResultType
-    
-    public var startDate: Date
-    
-    public var endDate: Date
-    
-    public var weeklyScheduleObject: RSDWeeklyScheduleObject
-    
-    /**
-     When true, no matter what the value of weeklyScheduleObject is, the schedule should be treated as all the time
-     */
-    public var scheduleAtAnytime: Bool
-    
-    public init(identifier: String) {
-        self.identifier = identifier
-        type = SBAWeeklyScheduleResultObject.defaultType()
-        weeklyScheduleObject = SBAWeeklyScheduleResultObject.defaultWeeklySchedule()
-        startDate = SBAWeeklyScheduleResultObject.defaultStartDate()
-        endDate = SBAWeeklyScheduleResultObject.defaultEndDate()
-        scheduleAtAnytime = SBAWeeklyScheduleResultObject.defaultScheduleAtAnytime()
-    }
-    
-    public init(identifier: String, type: RSDResultType, startDate: Date, endDate: Date, weeklyScheduleObject: RSDWeeklyScheduleObject, scheduleAtAnytime: Bool) {
-        self.identifier = identifier
-        self.type = type
-        self.startDate = startDate
-        self.endDate = endDate
-        self.weeklyScheduleObject = weeklyScheduleObject
-        self.scheduleAtAnytime = scheduleAtAnytime
-    }
-    
-    private static func defaultScheduleAtAnytime() -> Bool {
-        return false
-    }
-    
-    private static func defaultType() -> RSDResultType {
-        return .answer
-    }
-    
-    private static func defaultStartDate() -> Date {
-        return Date()
-    }
-    
-    private static func defaultEndDate() -> Date {
-        return Date()
-    }
-    
-    private static func defaultWeeklySchedule() -> RSDWeeklyScheduleObject {
-        return RSDWeeklyScheduleObject()
-    }
-    
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.identifier = try container.decode(String.self, forKey: .identifier)
-        self.type = try container.decodeIfPresent(RSDResultType.self, forKey: .type) ?? SBAWeeklyScheduleResultObject.defaultType()
-        self.startDate = try container.decodeIfPresent(Date.self, forKey: .startDate) ?? SBAWeeklyScheduleResultObject.defaultStartDate()
-        self.endDate = try container.decodeIfPresent(Date.self, forKey: .endDate) ?? SBAWeeklyScheduleResultObject.defaultEndDate()
-        self.scheduleAtAnytime = try container.decodeIfPresent(Bool.self, forKey: .anytime) ?? SBAWeeklyScheduleResultObject.defaultScheduleAtAnytime()
-        self.weeklyScheduleObject = try container.decodeIfPresent(RSDWeeklyScheduleObject.self, forKey: .weeklyScheduleObject) ?? SBAWeeklyScheduleResultObject.defaultWeeklySchedule()
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: AnyCodingKey.self)
-        try container.encode(identifier, forKey: AnyCodingKey(stringValue: CodingKeys.identifier.stringValue)!)
-        try container.encodeIfPresent(type, forKey: AnyCodingKey(stringValue: CodingKeys.type.stringValue)!)
-        try container.encodeIfPresent(startDate, forKey: AnyCodingKey(stringValue: CodingKeys.startDate.stringValue)!)
-        try container.encodeIfPresent(endDate, forKey: AnyCodingKey(stringValue: CodingKeys.endDate.stringValue)!)
-        try container.encodeIfPresent(scheduleAtAnytime, forKey: AnyCodingKey(stringValue: CodingKeys.anytime.stringValue)!)
-        try container.encodeIfPresent(weeklyScheduleObject, forKey: AnyCodingKey(stringValue: CodingKeys.weeklyScheduleObject.stringValue)!)
     }
 }

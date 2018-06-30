@@ -126,9 +126,7 @@ extension SBAMedicationAnswer {
     /// Filter the medications based on what medications have *not* been marked as taken *or* are within range
     /// for the the time of day (morning/afternoon/evening).
     func availableMedications(at timeOfDay: Date, includeLogged: Bool = true) -> MedicationTiming? {
-        guard let scheduleItems = self.scheduleItems?.sorted(by: { (result1, result2) -> Bool in
-            return result1.identifier > result2.identifier
-        }),
+        guard let scheduleItems = self.scheduleItems?.sorted(),
             scheduleItems.count > 0
             else {
                 return nil
@@ -145,19 +143,19 @@ extension SBAMedicationAnswer {
         
         scheduleItems.forEach { (schedule) in
             // Only include if the day of the week is valid.
-            guard schedule.weeklyScheduleObject.daysOfWeek.contains(dayOfWeek)
+            guard schedule.daysOfWeek.contains(dayOfWeek)
                 else {
                     return
             }
             
             // Only include if the schedule time is either "anytime" or before now.
-            let scheduleTime = schedule.weeklyScheduleObject.timeOfDay(on: timeOfDay)
+            let scheduleTime = schedule.timeOfDay(on: timeOfDay)
             guard scheduleTime == nil || scheduleTime! <= timeOfDay
                 else {
                     return
             }
             
-            let timingIdentifier = schedule.weeklyScheduleObject.timeOfDayString
+            let timingIdentifier = schedule.timeOfDayString
             let loggedDate = self.timestamps?.first(where: { $0.timingIdentifier == timingIdentifier })?.loggedDate
             let isCurrent = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
             
@@ -169,10 +167,10 @@ extension SBAMedicationAnswer {
             }
             
             let rowIndex = isCurrent ? currentItems.count : missedItems.count
-            let tableItem = SBATrackedLoggingTableItem(rowIndex: rowIndex, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.weeklyScheduleObject.timeOfDayString)
+            let tableItem = SBATrackedLoggingTableItem(rowIndex: rowIndex, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString)
             tableItem.title = self.longTitle
             tableItem.detail = (scheduleTime == nil) ?
-                Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.weeklyScheduleObject.daysOfWeek)
+                Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
             tableItem.loggedDate = loggedDate
             
             if isCurrent {

@@ -36,6 +36,15 @@ import Foundation
 /// A step used for logging symptoms.
 open class SBATrackedMedicationReviewStepObject : SBATrackedItemsReviewStepObject, RSDStepViewControllerVendor {
     
+    public var selectedDetailIdentifier: String?
+    
+    override open func nextStepIdentifier(with result: RSDTaskResult?, conditionalRule : RSDConditionalRule?, isPeeking: Bool) -> String? {
+        if let detailsStepId = self.selectedDetailIdentifier {
+            return detailsStepId
+        }
+        return super.nextStepIdentifier(with: result, conditionalRule: conditionalRule, isPeeking: isPeeking)
+    }
+
     #if !os(watchOS)
     /// Override to return a medication tracking step view controller.
     open func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
@@ -50,10 +59,57 @@ open class SBATrackedMedicationReviewStepObject : SBATrackedItemsReviewStepObjec
 }
 
 /// A data source used to handle tracked medication review.
-open class SBATrackedMedicationReviewDataSource : SBATrackedLoggingDataSource {
+open class SBATrackedMedicationReviewDataSource : SBATrackingDataSource, RSDModalStepDataSource {
 
-    /// Override the instantiation of the table item to return a symptom table item.
-    override open class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
+    fileprivate var mostRecentResult: SBAMedicationTrackingResult? {
+        return self.trackingResult() as? SBAMedicationTrackingResult
+    }
+    
+    /// Overridable class function for building the sections of the table.
+    /// - parameters:
+    ///     - step: The `SBATrackedItemsStep` for this data source.
+    ///     - initialResult: The initial result (if any).
+    /// - returns:
+    ///     - sections: The built table sections.
+    ///     - itemGroups: The associated item groups.
+    override open class func buildSections(step: SBATrackedItemsStep, initialResult: SBATrackedItemsResult?) -> (sections: [RSDTableSection], itemGroups: [RSDTableItemGroup]) {
+        guard let result = initialResult else {
+            assertionFailure("A non-nil initial result is expected for logging items")
+            return ([], [])
+        }
+        
+        let review = buildReviewSections(step: step, result: result)
+        var itemGroups = review.itemGroups
+        var sections = review.sections
+        
+        let actionType: RSDUIActionType = .addMore
+        if let uiStep = step as? RSDUIActionHandler, let action = uiStep.action(for: actionType, on: step) {
+            let tableItem = SBAModalSelectionTableItem(identifier: actionType.stringValue, rowIndex: 0, reuseIdentifier: RSDFormUIHint.modalButton.stringValue, action: action)
+            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: [tableItem]))
+            sections.append(RSDTableSection(identifier: "addMore", sectionIndex: 1, tableItems: [tableItem]))
+        }
+        
+        return (sections, itemGroups)
+    }
+    
+    /// Build the review sections of the table. This is called by `buildSections(step:initialResult)` to get
+    /// the review sections of the table. That method will then append an `.addMore` section if appropriate.
+    open class func buildReviewSections(step: SBATrackedItemsStep, result: SBATrackedItemsResult) -> (sections: [RSDTableSection], itemGroups: [RSDTableItemGroup]) {
+        
+        let inputField = RSDChoiceInputFieldObject(identifier: step.identifier, choices: result.selectedAnswers, dataType: .collection(.multipleChoice, .string), uiHint: .logging)
+        let trackedItems = result.selectedAnswers.enumerated().map { (idx, item) -> RSDTableItem in
+            let choice: RSDChoice = step.items.first(where: { $0.identifier == item.identifier }) ?? item
+            return self.instantiateTableItem(at: idx, inputField: inputField, itemAnswer: item, choice: choice)
+        }
+        
+        let itemGroups: [RSDTableItemGroup] = [RSDTableItemGroup(beginningRowIndex: 0, items: trackedItems)]
+        let sections: [RSDTableSection] = [RSDTableSection(identifier: "logging", sectionIndex: 0, tableItems: trackedItems)]
+        
+        return (sections, itemGroups)
+    }
+    
+    /// Override the instantiation of the table item to return a medication review table item
+    open class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
 
         guard let medAnswer = itemAnswer as? SBAMedicationAnswer else {
             return RSDTextTableItem(rowIndex: rowIndex, text: "Invalid SBATrackedItemAnswer format")
@@ -63,14 +119,24 @@ open class SBATrackedMedicationReviewDataSource : SBATrackedLoggingDataSource {
         return reviewItem
     }
     
+    /// Call when a review item is selected, this will add a details result to the step history
+    /// That will be used to create the correct details step
+    func reviewItemSelected(identifier: String) {
+        if let currentResult = self.mostRecentResult,
+            let existingDetailsResult = currentResult.medications.first(where: { $0.identifier == identifier }),
+            let reviewStep = self.step as? SBATrackedMedicationReviewStepObject {
+            reviewStep.selectedDetailIdentifier = existingDetailsResult.identifier
+        }
+    }
+    
     func updateResults(with details: SBAMedicationDetailsResultObject) {
-        guard var currentResult = self.trackingResult() as? SBAMedicationTrackingResult,
+        guard var currentResult = self.mostRecentResult,
             let medResults = currentResult.selectedAnswers as? [SBAMedicationAnswer],
             var matchingResult = medResults.first(where: { $0.identifier == details.identifier }) else {
                 return
         }
         matchingResult.dosage = details.dosage
-        matchingResult.scheduleItems = details.schedules
+        matchingResult.scheduleItems = Set(details.schedules ?? [])
         
         var newItems = self.trackingResult().selectedAnswers.filter({ $0.identifier != details.identifier })
         newItems.append(matchingResult)
@@ -95,6 +161,14 @@ open class SBATrackedMedicationReviewDataSource : SBATrackedLoggingDataSource {
             _ = self.reloadDataSource(with: currentResult)
             delegate?.tableDataSource(self, didChangeAnswersIn: 0)
         }
+    }
+    
+    public func step(for tableItem: RSDModalStepTableItem) -> RSDStep {
+        return RSDFormUIStep()
+    }
+    
+    public func willPresent(_ stepController: RSDStepController, from tableItem: RSDModalStepTableItem) {
+        let i = 0
     }
 }
 

@@ -52,43 +52,47 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
     private var _registeredIdentifiers = Set<String>()
     
     open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource {
-            if let tableItem = reviewDataSource.tableItem(at: indexPath) as? RSDModalStepTableItem {
-                let identifier = tableItem.identifier
-                let detailStep = SBATrackedMedicationDetailStepObject(id: identifier)
-                detailStep.title = identifier
-                var navigator = RSDConditionalStepNavigatorObject(with: [detailStep])
-                navigator.progressMarkers = []
-                let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
-                let taskVc = RSDTaskViewController(task: task)
-                taskVc.delegate = self
-                
-                // TODO: mdephillips 6/27/18 I wasn't able to pass the existing details result to the detail vc using this code below, how can i do that?
-                if let source = tableData as? SBATrackedMedicationReviewDataSource,
-                    let selectedMed = source.trackingResult().selectedAnswers[indexPath.row] as? SBAMedicationAnswer,
-                    let dosageUnwrapped = selectedMed.dosage {
-                    let existingDetailsResult = SBAMedicationDetailsResultObject(identifier: identifier)
-                    existingDetailsResult.dosage = dosageUnwrapped
-                    existingDetailsResult.schedules = selectedMed.scheduleItems
-                    taskVc.taskPath.appendStepHistory(with: existingDetailsResult)
-                }
-                
-                self.present(taskVc, animated: true, completion: nil)
-            }
+        if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
+        let selectedIdentifier = reviewDataSource.tableItem(at: indexPath)?.identifier {
+            reviewDataSource.reviewItemSelected(identifier: selectedIdentifier)
+            self.goForward()            
+//            if let tableItem = reviewDataSource.tableItem(at: indexPath) as? RSDModalStepTableItem {
+//                let identifier = tableItem.identifier
+//                let detailStep = SBATrackedMedicationDetailStepObject(identifier: identifier, type: RSDStepType.symptomLogging)
+//                detailStep.title = identifier
+//                var navigator = RSDConditionalStepNavigatorObject(with: [detailStep])
+//                navigator.progressMarkers = []
+//                let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
+//                let taskVc = RSDTaskViewController(task: task)
+//                taskVc.delegate = self
+//
+//                // TODO: mdephillips 6/27/18 I wasn't able to pass the existing details result to the detail vc using this code below, how can i do that?
+//                if ,
+//                    let selectedMed = source.trackingResult().selectedAnswers[indexPath.row] as? SBAMedicationAnswer,
+//                    let dosageUnwrapped = selectedMed.dosage {
+//                    var existingDetailsResult = SBAMedicationDetailsResultObject(identifier: identifier)
+//                    existingDetailsResult.dosage = dosageUnwrapped
+//                    existingDetailsResult.schedules = selectedMed.scheduleItems
+//                    taskVc.taskPath.appendStepHistory(with: existingDetailsResult)
+//                }
+//
+//                self.present(taskVc, animated: true, completion: nil)
+//            }
         }
     }
     
     override open func actionTapped(with actionType: RSDUIActionType) -> Bool {
-        if actionType == .navigation(.goForward) {
-            // TODO: mdephillips 6/27/18 move to med logging
-            weak var weakSelf = self
-            dismiss(animated: true, completion: {
-                weakSelf?.dismiss(animated: true, completion: nil)
-            })
-            return true
-        } else {
-            return super.actionTapped(with: actionType)
-        }
+//        if actionType == .navigation(.goForward) {
+//            // TODO: mdephillips 6/27/18 move to med logging
+//            weak var weakSelf = self
+//            dismiss(animated: true, completion: {
+//                weakSelf?.dismiss(animated: true, completion: nil)
+//            })
+//            return true
+//        } else {
+//            return super.actionTapped(with: actionType)
+//        }
+        return super.actionTapped(with: actionType)
     }
     
     public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
@@ -172,12 +176,12 @@ open class SBATrackedMedicationReviewCell: RSDTableViewCell {
                 self.titleLabel.text = String(format: "%@ %@", medItem.medication.identifier, dosageUnwrapped)
                 if let schedules = medItem.medication.scheduleItems {
                     var timeStr = ""
-                    if schedules.first?.scheduleAtAnytime ?? false == true {
+                    if schedules.first?.timeOfDayString == nil {
                         timeStr = Localization.localizedString("MEDICATION_ANYTIME")
                     } else {
-                        let timeArray = schedules.filter({ $0.weeklyScheduleObject.timeOfDayString != nil })
+                        let timeArray = schedules.filter({ $0.timeOfDayString != nil })
                             .map({ (schedule) -> String in
-                                let time = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.date(from: schedule.weeklyScheduleObject.timeOfDayString!) ?? Date()
+                                let time = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.date(from: schedule.timeOfDayString!) ?? Date()
                                 return DateFormatter.localizedString(from: time, dateStyle: .none, timeStyle: .short)
                             })
                         timeStr = timeArray.joined(separator: ", ")
@@ -185,7 +189,7 @@ open class SBATrackedMedicationReviewCell: RSDTableViewCell {
                     
                     var weekdaySet: Set<RSDWeekday> = Set()
                     for schedule in schedules {
-                        for weekday in schedule.weeklyScheduleObject.daysOfWeek {
+                        for weekday in schedule.daysOfWeek {
                             weekdaySet.insert(weekday)
                         }
                     }

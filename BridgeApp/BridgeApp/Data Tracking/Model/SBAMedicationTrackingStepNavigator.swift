@@ -59,8 +59,7 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         step.addDetailsSubtitle = Localization.localizedString("MEDICATION_ADD_DETAILS_DETAIL")
         step.reviewTitle = Localization.localizedString("MEDICATION_REVIEW_TITLE")
         // Add the customization of the add more and go forward buttons.
-        // TODO: mdephillips 6/19/18 localize in mPower strings file
-        let addMoreAction = RSDUIActionObject(buttonTitle: "Edit medication list")
+        let addMoreAction = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_EDIT_LIST_TITLE"))
         let goForwardAction = RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SAVE"))
         step.actions = [.navigation(.goForward) : goForwardAction,
                         .addMore : addMoreAction]
@@ -69,7 +68,8 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     }
     
     override open class func buildDetailSteps(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> [SBATrackedItemDetailsStep]? {
-        return nil
+        let detailStepObject = SBATrackedMedicationDetailStepObject(identifier: SBATrackedItemsStepNavigator.StepIdentifiers.addDetails.stringValue, type: .medicationDetails)
+        return [detailStepObject]
     }
     
     override open class func buildLoggingStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep {
@@ -78,6 +78,33 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
     override open func instantiateLoggingResult() -> SBATrackedItemsCollectionResult {
         return SBAMedicationTrackingResult(identifier: self.reviewStep!.identifier)
+    }
+    
+    override open func getDetailStep(with identifier: String) -> (RSDStep, SBATrackedItemAnswer)? {
+        let returnValue = super.getDetailStep(with: identifier)
+        if let detailStep = returnValue?.0 as? SBATrackedMedicationDetailStepObject {
+            // Because we can visit a details step multiple times, we need to make sure
+            // the previous answer is up to date for the step
+            detailStep.updatePreviousAnswer(answer: returnValue?.1)
+        }
+        return returnValue
+    }
+    
+    override open func step(after step: RSDStep?, with result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection) {
+        
+        // Check if it is a detail step, if so, reverse to the review step
+        if isDetailStep(with: step?.identifier) {
+            // When moving forward, always update the in-memory result before continuing.
+            updateInMemoryResult(from: result, using: step)            
+            return (getReviewStep(), .reverse)
+        }
+        
+        return super.step(after: step, with: &result)
+    }
+    
+    func isDetailStep(with identifier: String?) -> Bool {
+        guard let identifierUnwrapped = identifier else { return false }
+        return self.items.contains(where: { $0.identifier == identifierUnwrapped })
     }
 }
 
@@ -193,7 +220,7 @@ public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
     public var dosage: String?
     
     /// The scheduled items associated with this medication result.
-    public var scheduleItems: [SBAWeeklyScheduleResultObject]?
+    public var scheduleItems: Set<RSDWeeklyScheduleObject>?
     
     /// Is the medication delivered via continuous injection? If this is the case, then questions about
     /// schedule timing and dosage should be skipped.
