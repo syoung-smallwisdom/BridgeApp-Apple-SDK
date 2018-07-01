@@ -126,8 +126,7 @@ extension SBAMedicationAnswer {
     /// Filter the medications based on what medications have *not* been marked as taken *or* are within range
     /// for the the time of day (morning/afternoon/evening).
     func availableMedications(at timeOfDay: Date, includeLogged: Bool = true) -> MedicationTiming? {
-        guard let scheduleItems = self.scheduleItems?.sorted(),
-            scheduleItems.count > 0
+        guard let scheduleItems = self.scheduleItems?.sorted(), scheduleItems.count > 0
             else {
                 return nil
         }
@@ -155,7 +154,7 @@ extension SBAMedicationAnswer {
                     return
             }
             
-            let timingIdentifier = schedule.timeOfDayString
+            let timingIdentifier = schedule.timeOfDayString ?? timeRange.rawValue
             let loggedDate = self.timestamps?.first(where: { $0.timingIdentifier == timingIdentifier })?.loggedDate
             let isCurrent = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
             
