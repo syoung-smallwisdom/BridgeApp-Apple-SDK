@@ -130,9 +130,8 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     }
     
     func removeMedicationTapped() {
-        let removeStep = SBARemoveMedicationStepObject(identifier: step.identifier, type: .instruction)
-        removeStep.imageTheme = try? SBAInstructionImage(icon: RSDImageWrapper(imageName: "removeInstruction"))
-        removeStep.title = " " // adds some extra space
+        let removeStep = SBARemoveMedicationStepObject(identifier: step.identifier)
+        removeStep.actions = [.navigation(.goForward): RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_REMOVE_BUTTON_TEXT"))]
         var navigator = RSDConditionalStepNavigatorObject(with: [removeStep])
         navigator.progressMarkers = []
         let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)

@@ -72,42 +72,103 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertEqual(reviewStep.addDetailsSubtitle, "Select to add your medication dosing information and schedule(s).")
         XCTAssertEqual(reviewStep.reviewTitle, "Review medications")
         if let action = reviewStep.actions?[.addMore] {
-            XCTAssertEqual(action.buttonTitle, "＋ Add medications")
+            XCTAssertEqual(action.buttonTitle, "Edit medication list")
         } else {
             XCTFail("Step action does not include `.addMore`")
         }
         
         XCTAssertEqual(medTracker.detailStepTemplates?.count ?? 0, 1)
-        guard let detailStep = medTracker.detailStepTemplates?.first as? SBAMedicationDetailsStepObject else {
+        guard let detailStep = medTracker.detailStepTemplates?.first as? SBATrackedMedicationDetailStepObject else {
             XCTFail("Failed to build the detail step. \(String(describing: medTracker.detailStepTemplates)) ")
             return
         }
         
-        XCTAssertEqual(detailStep.inputFields.count, 1)
-        if let dosage = detailStep.inputFields.first {
-            XCTAssertEqual(dosage.identifier, "dosage")
-            XCTAssertEqual(dosage.inputPrompt, "Dosage")
-            XCTAssertEqual(dosage.placeholder, "e.g. 10/100 mg")
-            XCTAssertEqual(dosage.dataType, .base(.string))
-            XCTAssertEqual(dosage.inputUIHint, .textfield)
+        // Test fresh data source with no previous details
+        let taskPath = RSDTaskPath(task: RSDTaskObject(identifier: "medTracking", stepNavigator: medTracker))
+        if let dataSource = detailStep.instantiateDataSource(with: taskPath, for: Set()) as? SBATrackedMedicationDetailsDataSource {
+            XCTAssertEqual(dataSource.sections.count, 4)
+            XCTAssertEqual(dataSource.sections[0].identifier, "header")
+            XCTAssertEqual(dataSource.sections[1].identifier, "dosage")
+            XCTAssertEqual(dataSource.sections[2].identifier, "schedules")
+            XCTAssertEqual(dataSource.sections[3].identifier, "addSchedule")
+            
+            // Test changing the data source by adding a schedule
+            dataSource.addScheduleItem()
+            XCTAssertEqual(dataSource.sections.count, 4)
+            XCTAssertEqual(dataSource.sections[0].identifier, "header")
+            XCTAssertEqual(dataSource.sections[1].identifier, "dosage")
+            XCTAssertEqual(dataSource.sections[2].identifier, "schedules")
+            XCTAssertEqual(dataSource.sections[2].tableItems.count, 2)
+            XCTAssertEqual(dataSource.sections[3].identifier, "addSchedule")
+            
+            // Test changing the data source schedule at anytime to selected
+            dataSource.scheduleAtAnytimeChanged(selected: true)
+            XCTAssertEqual(dataSource.sections.count, 3)
+            XCTAssertEqual(dataSource.sections[0].identifier, "header")
+            XCTAssertEqual(dataSource.sections[1].identifier, "dosage")
+            XCTAssertEqual(dataSource.sections[2].identifier, "schedules")
+            XCTAssertEqual(dataSource.sections[2].tableItems.count, 1)
         } else {
-            XCTFail("\(detailStep.inputFields) is empty")
+            XCTFail("detail data source not instantiated")
         }
         
-        // Check defaults for the schedule time template
-        let scheduleTime = detailStep.scheduleTimeTemplate
-        XCTAssertEqual(scheduleTime.identifier, "timeOfDay")
-        XCTAssertEqual(scheduleTime.inputPrompt, "Schedule")
-        checkScheduleTime(scheduleTime, "testBuildInitialSteps")
-        
-        // Check defaults for the days of the week template
-        let scheduleDays = detailStep.scheduleDaysTemplate
-        XCTAssertEqual(scheduleDays.identifier, "daysOfWeek")
-        XCTAssertEqual(scheduleDays.inputPrompt, "When do you take it at this time?")
-        checkScheduleDays(scheduleDays, "testBuildInitialSteps")
-        if let _ = scheduleDays as? RSDPopoverInputFieldObject {
+        var medication = SBAMedicationAnswer(identifier: detailStep.identifier)
+        medication.dosage = "10 mg"
+        let monThruWed: [RSDWeekday] = [.monday, .tuesday, .wednesday]
+        let friThruSun: [RSDWeekday] = [.friday, .saturday, .sunday]
+        medication.scheduleItems = Set([RSDWeeklyScheduleObject(timeOfDayString: "07:00", daysOfWeek: Set(monThruWed)), RSDWeeklyScheduleObject(timeOfDayString: "17:00", daysOfWeek: Set(friThruSun))])
+        detailStep.updatePreviousAnswer(answer: medication)
+        if let dataSource = detailStep.instantiateDataSource(with: taskPath, for: Set()) as? SBATrackedMedicationDetailsDataSource {
+            XCTAssertEqual(dataSource.sections.count, 4)
+            XCTAssertEqual(dataSource.sections[0].identifier, "header")
+            
+            XCTAssertEqual(dataSource.sections[1].identifier, "dosage")
+            if let dosageTableItem = dataSource.sections[1].tableItems[0] as? RSDTextInputTableItem {
+                XCTAssertEqual(dosageTableItem.answerText, "10 mg")
+            } else {
+                XCTFail("dosage table item not instantiated")
+            }
+            
+            XCTAssertEqual(dataSource.sections[2].identifier, "schedules")
+            XCTAssertEqual(dataSource.sections[2].tableItems.count, 2)
+            if let scheduleTableItem = dataSource.sections[2].tableItems[0] as? SBATrackedWeeklyScheduleTableItem {
+                XCTAssertEqual(RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.string(from: scheduleTableItem.time!), "07:00")
+                XCTAssertEqual(scheduleTableItem.weekdays?.count, 3)
+                XCTAssertTrue(scheduleTableItem.weekdays!.contains(monThruWed[0]))
+                XCTAssertTrue(scheduleTableItem.weekdays!.contains(monThruWed[1]))
+                XCTAssertTrue(scheduleTableItem.weekdays!.contains(monThruWed[2]))
+            } else {
+                XCTFail("schedule table item 1 not instantiated")
+            }
+            
+            XCTAssertEqual(dataSource.sections[3].identifier, "addSchedule")
         } else {
-            XCTFail("\(String(describing: scheduleDays)) not expected type.")
+            XCTFail("detail data source not instantiated")
+        }
+        
+        medication.dosage = "100 mg"
+        medication.scheduleItems = Set([RSDWeeklyScheduleObject(timeOfDayString: nil, daysOfWeek: Set())])
+        detailStep.updatePreviousAnswer(answer: medication)
+        if let dataSource = detailStep.instantiateDataSource(with: taskPath, for: Set()) as? SBATrackedMedicationDetailsDataSource {
+            XCTAssertEqual(dataSource.sections.count, 3)
+            XCTAssertEqual(dataSource.sections[0].identifier, "header")
+            XCTAssertEqual(dataSource.sections[1].identifier, "dosage")
+            if let dosageTableItem = dataSource.sections[1].tableItems[0] as? RSDTextInputTableItem {
+                XCTAssertEqual(dosageTableItem.answerText, "100 mg")
+            } else {
+                XCTFail("dosage table item not instantiated")
+            }
+            
+            XCTAssertEqual(dataSource.sections[2].identifier, "schedules")
+            XCTAssertEqual(dataSource.sections[2].tableItems.count, 1)
+            if let scheduleTableItem = dataSource.sections[2].tableItems[0] as? SBATrackedWeeklyScheduleTableItem {
+                XCTAssertNil(scheduleTableItem.time)
+                XCTAssertEqual(scheduleTableItem.weekdays?.count, 0)
+            } else {
+                XCTFail("schedule table item 1 not instantiated")
+            }
+        } else {
+            XCTFail("detail data source not instantiated")
         }
     }
     
@@ -175,7 +236,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertNotNil(thirdStep)
         XCTAssertEqual(thirdStep?.identifier, "medA2")
         
-        guard let medA2DetailsStep = thirdStep as? SBAMedicationDetailsStepObject else {
+        guard let medA2DetailsStep = thirdStep as? SBATrackedMedicationDetailStepObject else {
             XCTFail("Failed to create the expected step. Exiting.")
             return
         }
@@ -189,9 +250,13 @@ class MedicationTrackingNavigationTests: XCTestCase {
         
         let (fourthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
         XCTAssertNotNil(fourthStep)
-        XCTAssertEqual(fourthStep?.identifier, "medB4")
+        XCTAssertEqual(fourthStep?.identifier, "review")
         
-        guard let medB4DetailsStep = fourthStep as? SBAMedicationDetailsStepObject else {
+        // Next step after selection is review.
+        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
+        XCTAssertNotNil(fifthStep)
+        
+        guard let medB4DetailsStep = fifthStep as? SBATrackedMedicationDetailStepObject else {
             XCTFail("Failed to create the expected step. Exiting.")
             return
         }
@@ -200,24 +265,25 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertTrue(medTracker.hasStep(before: medB4DetailsStep, with: taskResult))
         XCTAssertTrue(medTracker.hasStep(after: medB4DetailsStep, with: taskResult))
         XCTAssertTrue(medB4DetailsStep.instantiateStepResult() is RSDCollectionResult)
-
+        
         taskResult.appendStepHistory(with: medB4Result())
         
         // Next step after selection is review.
-        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
-        XCTAssertNotNil(fifthStep)
+        let (sixthstep, _) = medTracker.step(after: fifthStep, with: &taskResult)
+        XCTAssertNotNil(sixthstep)
         
-        guard let finalReviewStep = fifthStep as? SBATrackedItemsReviewStepObject else {
-            XCTFail("Failed to return the final review step. Exiting. \(String(describing: fifthStep))")
+        guard let finalReviewStep = sixthstep as? SBATrackedItemsReviewStepObject else {
+            XCTFail("Failed to return the final review step. Exiting. \(String(describing: sixthstep))")
             return
         }
         
         XCTAssertNil(medTracker.step(before: finalReviewStep, with: &taskResult))
         XCTAssertEqual(finalReviewStep.identifier, initialReviewStep.identifier)
         XCTAssertFalse(medTracker.hasStep(before: finalReviewStep, with: taskResult))
-        XCTAssertFalse(medTracker.hasStep(after: finalReviewStep, with: taskResult))
         
-        checkFinalReviewStep(finalReviewStep)
+        // TODO: mdephillips 7/1/18 check reminders or logging
+        //        XCTAssertFalse(medTracker.hasStep(after: finalReviewStep, with: taskResult))
+        //        checkFinalReviewStep(finalReviewStep)
     }
     
     func testMedicationTrackingNavigation_FirstRun_CustomOrder() {
@@ -262,7 +328,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertNotNil(thirdStep)
         XCTAssertEqual(thirdStep?.identifier, "medB4")
         
-        guard let medB4DetailsStep = thirdStep as? SBAMedicationDetailsStepObject else {
+        guard let medB4DetailsStep = thirdStep as? SBATrackedMedicationDetailStepObject else {
             XCTFail("Failed to create the expected step. Exiting.")
             return
         }
@@ -273,9 +339,13 @@ class MedicationTrackingNavigationTests: XCTestCase {
         
         let (fourthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
         XCTAssertNotNil(fourthStep)
-        XCTAssertEqual(fourthStep?.identifier, "medA2")
+        XCTAssertEqual(fourthStep?.identifier, "review")
         
-        guard let medA2DetailsStep = fourthStep as? SBAMedicationDetailsStepObject else {
+        // Next step after selection is review.
+        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
+        XCTAssertNotNil(fifthStep)
+        
+        guard let medA2DetailsStep = fifthStep as? SBATrackedMedicationDetailStepObject else {
             XCTFail("Failed to create the expected step. Exiting.")
             return
         }
@@ -288,10 +358,10 @@ class MedicationTrackingNavigationTests: XCTestCase {
         taskResult.appendStepHistory(with: medA2Result())
         
         // Next step after selection is review.
-        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
+        let (sixthStep, _) = medTracker.step(after: fifthStep, with: &taskResult)
         XCTAssertNotNil(fifthStep)
         
-        guard let finalReviewStep = fifthStep as? SBATrackedItemsReviewStepObject else {
+        guard let finalReviewStep = sixthStep as? SBATrackedItemsReviewStepObject else {
             XCTFail("Failed to return the final review step. Exiting. \(String(describing: fifthStep))")
             return
         }
@@ -299,9 +369,10 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertNil(medTracker.step(before: finalReviewStep, with: &taskResult))
         XCTAssertEqual(finalReviewStep.identifier, "review")
         XCTAssertFalse(medTracker.hasStep(before: finalReviewStep, with: taskResult))
-        XCTAssertFalse(medTracker.hasStep(after: finalReviewStep, with: taskResult))
         
-        checkFinalReviewStep(finalReviewStep)
+        // TODO: mdephillips 7/1/18 check reminders or logging
+//        XCTAssertFalse(medTracker.hasStep(after: finalReviewStep, with: taskResult))
+//        checkFinalReviewStep(finalReviewStep)
     }
     
     func testMedicationTrackingNavigation_FollowupRun() {
@@ -449,44 +520,22 @@ class MedicationTrackingNavigationTests: XCTestCase {
 
 // Helper methods
 
-func medB4Result() -> RSDCollectionResult {
-    let timeFormatter = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter
-    
-    var collectionResultB4 = RSDCollectionResultObject(identifier: "medB4")
-    var dosageB4 = RSDAnswerResultObject(identifier: "dosage", answerType: .string)
-    dosageB4.value = "1/20 mg"
-    collectionResultB4.appendInputResults(with: dosageB4)
-    var timeB4_0 = RSDAnswerResultObject(identifier: "timeOfDay.0", answerType: RSDAnswerResultType(baseType: .date, sequenceType: nil, formDataType: nil, dateFormat: "HH:mm"))
-    timeB4_0.value = timeFormatter.date(from: "07:30")
-    collectionResultB4.appendInputResults(with: timeB4_0)
-    var daysB4_0 = RSDAnswerResultObject(identifier: "daysOfWeek.0", answerType: RSDAnswerResultType(baseType: .integer, sequenceType: .array))
-    daysB4_0.value = Array(1...7)
-    collectionResultB4.appendInputResults(with: daysB4_0)
-    
-    return collectionResultB4
+func medB4Result() -> SBAMedicationDetailsResultObject {
+    var result = SBAMedicationDetailsResultObject(identifier: "medB4")
+    result.dosage = "1/20 mg"
+    let schedule0 = RSDWeeklyScheduleObject(timeOfDayString: "07:30", daysOfWeek: Set([.monday, .wednesday, .friday]))
+    let schedule1 = RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: Set(RSDWeekday.all))
+    result.schedules = [schedule0, schedule1]
+    return result
 }
 
-func medA2Result() -> RSDCollectionResult {
-    let timeFormatter = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter
-    
-    var collectionResultA2 = RSDCollectionResultObject(identifier: "medA2")
-    var dosageA2 = RSDAnswerResultObject(identifier: "dosage", answerType: .string)
-    dosageA2.value = "5 ml"
-    collectionResultA2.appendInputResults(with: dosageA2)
-    var timeA2_0 = RSDAnswerResultObject(identifier: "timeOfDay.0", answerType: RSDAnswerResultType(baseType: .date, sequenceType: nil, formDataType: nil, dateFormat: "HH:mm"))
-    timeA2_0.value = timeFormatter.date(from: "08:30")
-    collectionResultA2.appendInputResults(with: timeA2_0)
-    var daysA2_0 = RSDAnswerResultObject(identifier: "daysOfWeek.0", answerType: RSDAnswerResultType(baseType: .integer, sequenceType: .array))
-    daysA2_0.value = [2, 4, 6]
-    collectionResultA2.appendInputResults(with: daysA2_0)
-    var timeA2_1 = RSDAnswerResultObject(identifier: "timeOfDay.1", answerType: RSDAnswerResultType(baseType: .date, sequenceType: nil, formDataType: nil, dateFormat: "HH:mm"))
-    timeA2_1.value = timeFormatter.date(from: "20:00")
-    collectionResultA2.appendInputResults(with: timeA2_1)
-    var daysA2_1 = RSDAnswerResultObject(identifier: "daysOfWeek.1", answerType: RSDAnswerResultType(baseType: .integer, sequenceType: .array))
-    daysA2_1.value = [1]
-    collectionResultA2.appendInputResults(with: daysA2_1)
-    
-    return collectionResultA2
+func medA2Result() -> SBAMedicationDetailsResultObject {
+    var result = SBAMedicationDetailsResultObject(identifier: "medA2")
+    result.dosage = "5 ml"
+    let schedule0 = RSDWeeklyScheduleObject(timeOfDayString: "08:30", daysOfWeek: Set([.monday, .wednesday, .friday]))
+    let schedule1 = RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: Set([.sunday]))
+    result.schedules = [schedule0, schedule1]
+    return result
 }
 
 func buildMedicationItems() -> (items: [SBAMedicationItem], sections: [SBATrackedSection]) {

@@ -36,15 +36,6 @@ import Foundation
 /// A step used for review selected medication and their details
 open class SBATrackedMedicationReviewStepObject : SBATrackedItemsReviewStepObject, RSDStepViewControllerVendor {
     
-    public var selectedDetailIdentifier: String?
-    
-    override open func nextStepIdentifier(with result: RSDTaskResult?, conditionalRule : RSDConditionalRule?, isPeeking: Bool) -> String? {
-        if let detailsStepId = self.selectedDetailIdentifier {
-            return detailsStepId
-        }
-        return super.nextStepIdentifier(with: result, conditionalRule: conditionalRule, isPeeking: isPeeking)
-    }
-
     #if !os(watchOS)
     /// Override to return a medication tracking review step view controller.
     open func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
@@ -125,7 +116,7 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingDataSource, RSDModa
         if let currentResult = self.mostRecentResult,
             let existingDetailsResult = currentResult.medications.first(where: { $0.identifier == identifier }),
             let reviewStep = self.step as? SBATrackedMedicationReviewStepObject {
-            reviewStep.selectedDetailIdentifier = existingDetailsResult.identifier
+            reviewStep.nextStepIdentifier = existingDetailsResult.identifier
         }
     }
 
