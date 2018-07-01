@@ -66,12 +66,12 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
     
     /// Override to return a `SBATrackedWeeklyScheduleDataSource`.
     open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
-        return SBATrackedWeeklyScheduleDataSource.init(identifier: identifier, step: self, taskPath: taskPath)
+        return SBATrackedMedicationDetailsDataSource.init(identifier: identifier, step: self, taskPath: taskPath)
     }
 }
 
 /// A data source used to the weekly schedule for a medication
-open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModalStepTaskControllerDelegate {
+open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     
     enum FieldIdentifiers : String {
         case header, dosage, schedules, addSchedule
@@ -174,11 +174,9 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
         return addScheduleSection
     }
     
-    /**
-     Adds a schedule item to the schedules section
-     While not strictly enforced, this should not be called if any existing
-     schedule items are set to schedule at anytime
-    */
+    /// Adds a schedule item to the schedules section.
+    /// While not strictly enforced, this should not be called if any existing
+    /// schedule items are set to schedule at anytime.
     public func addScheduleItem() {
         guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first else {
             return
@@ -192,10 +190,9 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
         sections[FieldIdentifiers.schedules.sectionIndex()] = newSchedulesSection
     }
     
-    /**
-     Call this method when the user has selected that they schedule this at anytime
-     This will reduce the schedule section to 1 element
-    */
+    
+    /// Call this method when the user has selected that they schedule this at anytime.
+    /// This will reduce the schedule section to 1 element.
     public func scheduleAtAnytimeChanged(selected: Bool) {
         guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first,
             schedulesSection.tableItems.count > 0 else {
@@ -204,10 +201,12 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
         let lastIndex = schedulesSection.tableItems.count - 1
         let tableItem = schedulesSection.tableItems[lastIndex]
         guard let scheduleItem = tableItem as? SBATrackedWeeklyScheduleTableItem else { return }
-        if selected {
+        if (selected) {
             scheduleItem.time = nil
+            scheduleItem.weekdays = nil
         } else {
-            scheduleItem.time = Calendar.current.date(byAdding: .hour, value: 7, to: Date())
+            scheduleItem.time = Calendar.current.date(bySetting: .hour, value: 7, of: Date().startOfDay())
+            scheduleItem.weekdays = [.friday]
         }
         let newSchedulesSection = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: [scheduleItem])
         sections[FieldIdentifiers.schedules.sectionIndex()] = newSchedulesSection
@@ -224,48 +223,6 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
                 self.sections.remove(at: FieldIdentifiers.addSchedule.sectionIndex())
             }
         }
-    }
-    
-    internal var _currentTaskController: RSDModalStepTaskController?
-    internal var _currentTableItem: RSDModalStepTableItem?
-    
-    public func willPresent(_ stepController: RSDStepController, from tableItem: RSDModalStepTableItem) {
-        
-        // Need to append the step history twice to put the result in both the **current** and previous results.
-        // TODO: syoung 05/08/2018 Refactor to a less obfuscated way of getting results.
-        let step = stepController.step!
-        var navigator = RSDConditionalStepNavigatorObject(with: [step])
-        navigator.progressMarkers = []
-        let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
-        let path = RSDTaskPath(task: task)
-//        if let previousResult = weeklyScheduleItem.result.findResult(with: step.identifier) {
-//            path.appendStepHistory(with: previousResult)
-//            path.appendStepHistory(with: previousResult)
-//        }
-        path.currentStep = stepController.step
-        let taskController = RSDModalStepTaskController()
-        _currentTaskController = taskController
-        _currentTableItem = tableItem
-        taskController.taskPath = path
-        taskController.stepController = stepController
-        taskController.delegate = self
-        stepController.taskController = taskController
-    }
-    
-    // MARK: RSDModalStepTaskControllerDelegate
-    
-    open func goForward(with taskController: RSDModalStepTaskController) {
-        self.delegate?.tableDataSource(self, didFinishWith: taskController.stepController)
-    }
-    
-    // MARK: Selection management
-
-    
-    /// Default behavior is to dismiss the view controller without changes.
-    open func goBack(with taskController: RSDModalStepTaskController) {
-        self.delegate?.tableDataSource(self, didFinishWith: taskController.stepController)
-        _currentTaskController = nil
-        _currentTableItem = nil
     }
     
     public func appendRemoveMedicationToTaskPath() {
@@ -287,7 +244,7 @@ open class SBATrackedWeeklyScheduleDataSource : RSDModalStepDataSource, RSDModal
         self.taskPath.appendStepHistory(with: stepResult)
     }
     
-    /// Returns the weekday choice step
+    /// Returns the weekday choice step.
     public func step(for tableItem: RSDModalStepTableItem) -> RSDStep {
         let identifier = String(describing: RSDWeekday.self)
         let choices: [RSDWeekday] = [.sunday, .monday, .tuesday, .wednesday, .thursday, .friday, .saturday]
@@ -360,7 +317,7 @@ public struct SBAMedicationDetailsResultObject: RSDResult {
     }
 }
 
-/// The symptom table item is tracked using the result object.
+/// The weekly schedule table item is tracked using the result object.
 open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
     
     public enum ResultIdentifier : String, CodingKey, Codable {
@@ -369,7 +326,7 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
     
     var result: RSDWeeklyScheduleObject
     
-    /// The duration window describing how long the symptoms occurred.
+    /// The weekdays that the user has their medication scheduled
     public var weekdays: [RSDWeekday]? {
         get {
             return Array(self.result.daysOfWeek)
@@ -379,7 +336,7 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
         }
     }
     
-    /// The time when the symptom started occuring.
+    /// The time at which the user should be taking their medication.
     public var time: Date? {
         get {
             guard let tod = self.result.timeOfDayString,
@@ -397,7 +354,7 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
         }
     }
     
-    /// Initialize a new RSDTableItem.
+    /// Initialize a new SBATrackedWeeklyScheduleTableItem.
     /// - parameters:
     ///     - identifier: The cell identifier.
     ///     - rowIndex: The index of this item relative to all rows in the section in which this item resides.
@@ -411,7 +368,7 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
         super.init(identifier: identifier, rowIndex: rowIndex, reuseIdentifier: reuseIdentifier)
     }
     
-    /// Initialize a new RSDTableItem.
+    /// Initialize a new SBATrackedWeeklyScheduleTableItem.
     /// - parameters:
     ///     - identifier: The cell identifier.
     ///     - rowIndex: The index of this item relative to all rows in the section in which this item resides.

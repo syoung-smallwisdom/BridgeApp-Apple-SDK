@@ -55,29 +55,7 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
         let selectedIdentifier = reviewDataSource.tableItem(at: indexPath)?.identifier {
             reviewDataSource.reviewItemSelected(identifier: selectedIdentifier)
-            self.goForward()            
-//            if let tableItem = reviewDataSource.tableItem(at: indexPath) as? RSDModalStepTableItem {
-//                let identifier = tableItem.identifier
-//                let detailStep = SBATrackedMedicationDetailStepObject(identifier: identifier, type: RSDStepType.symptomLogging)
-//                detailStep.title = identifier
-//                var navigator = RSDConditionalStepNavigatorObject(with: [detailStep])
-//                navigator.progressMarkers = []
-//                let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
-//                let taskVc = RSDTaskViewController(task: task)
-//                taskVc.delegate = self
-//
-//                // TODO: mdephillips 6/27/18 I wasn't able to pass the existing details result to the detail vc using this code below, how can i do that?
-//                if ,
-//                    let selectedMed = source.trackingResult().selectedAnswers[indexPath.row] as? SBAMedicationAnswer,
-//                    let dosageUnwrapped = selectedMed.dosage {
-//                    var existingDetailsResult = SBAMedicationDetailsResultObject(identifier: identifier)
-//                    existingDetailsResult.dosage = dosageUnwrapped
-//                    existingDetailsResult.schedules = selectedMed.scheduleItems
-//                    taskVc.taskPath.appendStepHistory(with: existingDetailsResult)
-//                }
-//
-//                self.present(taskVc, animated: true, completion: nil)
-//            }
+            self.goForward()
         }
     }
     
@@ -95,32 +73,13 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         return super.actionTapped(with: actionType)
     }
     
-    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
-        
+    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {        
         guard let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource else {
             dismiss(animated: true, completion: nil)
             return
         }
-        
-        if reason == .completed {  // details added
-            if let detailsResult = taskController.taskResult.stepHistory.last as? SBAMedicationDetailsResultObject {
-                reviewDataSource.updateResults(with: detailsResult)
-            }
-            if let removeMedResult = taskController.taskResult.stepHistory.last as? SBARemoveMedicationResultObject {
-                reviewDataSource.updateResults(byRemoving: removeMedResult.identifier)
-            }
-            updateUIToDetailsMode()
-            // TODO: mdephillips 6/27/18 only reload the updated cell
-            self.tableView.reloadData()
-        }
-        
+
         dismiss(animated: true, completion: nil)
-    }
-    
-    public func updateUIToDetailsMode() {
-        // Set the default values for the title and subtitle to display depending upon state.
-        // TODO: mdephillips 6/19/18 localize in mPower strings file
-        self.navigationHeader?.titleLabel?.text = Localization.localizedString("MEDICATION_LIST_TITLE")
     }
     
     public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
@@ -133,12 +92,12 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
     }
 }
 
-/// Table cell for logging tracked data.
+/// Table cell for displayiing medication information to review.
 open class SBATrackedMedicationReviewCell: RSDTableViewCell {
     
     public static let reuseId = "medicationReview"
     
-    /// The nib to use with this cell. Default will instantiate a `SBATrackedLoggingCell`.
+    /// The nib to use with this cell. Default will instantiate a `SBATrackedMedicationReviewCell`.
     open class var nib: UINib {
         let bundle = Bundle(for: SBATrackedMedicationReviewCell.self)
         let nibName = String(describing: SBATrackedMedicationReviewCell.self)

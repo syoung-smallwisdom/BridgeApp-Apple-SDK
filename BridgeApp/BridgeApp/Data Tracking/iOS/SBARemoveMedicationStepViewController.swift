@@ -81,8 +81,7 @@ open class SBARemoveMedicationStepViewController: RSDTableStepViewController {
 
 open class SBAFormTitleTextCell : RSDTextLabelCell {
     
-    /// The text field associated with this cell.
-    /// The label used to display text using this cell.
+    /// The secondary label for displaying step text
     @IBOutlet public var subLabel: UILabel!
     
     /// The nib to use with this cell. Default will instantiate a `SBAFormTitleTextCell`.
@@ -93,20 +92,20 @@ open class SBAFormTitleTextCell : RSDTextLabelCell {
     }
 }
 
-/// A step used for logging symptoms.
+/// A step used for asking the user if they are sure they want to remove a medication.
 open class SBARemoveMedicationStepObject : RSDUIStepObject, RSDStepViewControllerVendor {
     
     public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
         return SBARemoveMedicationStepViewController(step: self)
     }
     
-    /// Override to return a `SBASymptomLoggingDataSource`.
+    /// Override to return a `SBARemoveMedicationDataSource`.
     open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
         return SBARemoveMedicationDataSource.init(identifier: identifier, step: self, taskPath: taskPath)
     }
 }
 
-/// A data source used to handle symptom logging.
+/// A data source used to handle asking the user if they are sure they want to remove a medication.
 open class SBARemoveMedicationDataSource : RSDTableDataSource {
     
     enum FieldIdentifiers : String, CodingKey {

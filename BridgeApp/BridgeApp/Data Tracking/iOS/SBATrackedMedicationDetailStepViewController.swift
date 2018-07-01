@@ -50,7 +50,7 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     }
     
     override open var isForwardEnabled: Bool {
-        if let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+        if let source = tableData as? SBATrackedMedicationDetailsDataSource {
             return source.allAnswersValid()
         }
         return true
@@ -60,10 +60,10 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
         _registeredIdentifiers.insert(reuseIdentifier)
         
-        if reuseIdentifier == SBATrackedWeeklyScheduleDataSource.FieldIdentifiers.header.stringValue {
+        if reuseIdentifier == SBATrackedMedicationDetailsDataSource.FieldIdentifiers.header.stringValue {
             tableView.register(underlinedButtonNib, forCellReuseIdentifier: reuseIdentifier)
             return
-        } else if reuseIdentifier == SBATrackedWeeklyScheduleDataSource.FieldIdentifiers.addSchedule.stringValue {
+        } else if reuseIdentifier == SBATrackedMedicationDetailsDataSource.FieldIdentifiers.addSchedule.stringValue {
             tableView.register(roundedButtonNib, forCellReuseIdentifier: reuseIdentifier)
             return
         }
@@ -87,7 +87,7 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     override open func configure(cell: UITableViewCell, in tableView: UITableView, at indexPath: IndexPath) {
         super.configure(cell: cell, in: tableView, at: indexPath)
         
-        guard let source = tableData as? SBATrackedWeeklyScheduleDataSource,
+        guard let source = tableData as? SBATrackedMedicationDetailsDataSource,
             let tableItem = source.tableItem(at: indexPath) else {
             return
         }
@@ -131,7 +131,7 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     func removeMedicationTapped() {
         let removeStep = SBARemoveMedicationStepObject(identifier: step.identifier, type: .instruction)
-        removeStep.imageTheme = SBAInstructionImage(identifier: "removeInstruction")
+        removeStep.imageTheme = try? SBAInstructionImage(icon: RSDImageWrapper(imageName: "removeInstruction"))
         removeStep.title = " " // adds some extra space
         var navigator = RSDConditionalStepNavigatorObject(with: [removeStep])
         navigator.progressMarkers = []
@@ -142,7 +142,7 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     }
     
     func addAnotherScheduleTapped() {
-        guard let source = tableData as? SBATrackedWeeklyScheduleDataSource else { return }
+        guard let source = tableData as? SBATrackedMedicationDetailsDataSource else { return }
         source.addScheduleItem()
         // TODO: mdephillips 6/24/18 animate in new tableview cell and animate hiding other cell's checkbox
         self.tableView.reloadData()
@@ -150,10 +150,10 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     override open func textFieldDidEndEditing(_ textField: UITextField) {
         // TODO: mdephillips 6/25/18 figure out why this isnt being done automatically
-        if let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+        if let source = tableData as? SBATrackedMedicationDetailsDataSource {
             try? source.dosageTableItem?.setAnswer(textField.text)
         }
-        self.answersDidChange(in: SBATrackedWeeklyScheduleDataSource.FieldIdentifiers.dosage.sectionIndex())
+        self.answersDidChange(in: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.dosage.sectionIndex())
         super.textFieldDidEndEditing(textField)
     }
     
@@ -162,7 +162,7 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
         // the user selected the "remove notification" instead of an indexPath schedule cell
         if self.selectedIndexPath == nil {
             if reason == .completed {
-                if let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+                if let source = tableData as? SBATrackedMedicationDetailsDataSource {
                     source.appendRemoveMedicationToTaskPath()
                 }
                 super.jumpForward()
@@ -181,7 +181,7 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     }
     
     public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
-        if let source = tableData as? SBATrackedWeeklyScheduleDataSource,
+        if let source = tableData as? SBATrackedMedicationDetailsDataSource,
             let indexPath = self.selectedIndexPath,
             let selectedTableItem = source.sections[indexPath.section].tableItems[indexPath.row] as? SBATrackedWeeklyScheduleTableItem {
             if taskPath.result.stepHistory.count > 0,
@@ -201,11 +201,14 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
             }
         }
     }
-
+    
     override open func actionTapped(with actionType: RSDUIActionType) -> Bool {
         if actionType == .navigation(.goForward),
-            let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+            let source = tableData as? SBATrackedMedicationDetailsDataSource {
             source.appendStepResultToTaskPathAndFinish(with: self)
+        } else if actionType == .navigation(.cancel) {
+            super.goBack()
+            return true
         }
         return super.actionTapped(with: actionType)
     }
@@ -236,17 +239,27 @@ extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklySchedul
     public func didTapDay(for cell: SBATrackedWeeklyScheduleCell) {
         _endTimeEditingIfNeeded()
         guard let scheduleItem = cell.tableItem as? SBATrackedWeeklyScheduleTableItem,
-            let source = tableData as? RSDModalStepDataSource
+            let source = tableData as? SBATrackedMedicationDetailsDataSource
         else {
             assertionFailure("Cannot handle the button tap.")
             return
         }
         self.selectedIndexPath = cell.indexPath
         let step = source.step(for: scheduleItem)
+        
+        // Create the result to give the weekdays their pre-populated state
+        var previousResult = RSDCollectionResultObject(identifier: step.identifier)
+        var answerResult = RSDAnswerResultObject(identifier: step.identifier, answerType: RSDAnswerResultType(baseType: .string, sequenceType: .array, formDataType: .collection(.multipleChoice, .string), dateFormat: nil, unit: nil, sequenceSeparator: nil))
+        answerResult.value = scheduleItem.weekdays?.map({ $0.rawValue })
+        previousResult.inputResults = [answerResult]
+        
         var navigator = RSDConditionalStepNavigatorObject(with: [step])
         navigator.progressMarkers = []
         let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
+        let path = RSDTaskPath(task: task)
+        path.appendStepHistory(with: previousResult)
         let taskVc = RSDTaskViewController(task: task)
+        taskVc.taskPath = path
         taskVc.delegate = self
         self.present(taskVc, animated: true, completion: nil)
     }
@@ -278,7 +291,7 @@ extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklySchedul
     }
     
     public func didChangeScheduleAtAnytimeSelection(for cell: SBATrackedWeeklyScheduleCell, selected: Bool) {
-        if let source = tableData as? SBATrackedWeeklyScheduleDataSource {
+        if let source = tableData as? SBATrackedMedicationDetailsDataSource {
             source.scheduleAtAnytimeChanged(selected: selected)
         }
         self.tableView.reloadData()
@@ -331,7 +344,7 @@ open class TrackedTextField: RSDStepTextField {
     }
 }
 
-/// Table view cell for logging symptoms.
+/// Table view cell for selecting time of day and weekdays that the user should take their medication
 open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     
     public static let reuseId = "weeklySchedule"
@@ -383,24 +396,28 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     
     override open var tableItem: RSDTableItem! {
         didSet {
-            guard let scheduleItem = weeklyScheduleTableItem else { return }
-            if scheduleItem.time == nil {
-                dayButtonContainer.isHidden = true
-                inlineTimePicker.isHidden = true
-                self.atAnytimeCheckbox.isSelected = true
+            refreshUI()
+        }
+    }
+    
+    func refreshUI() {
+        guard let scheduleItem = weeklyScheduleTableItem else { return }
+        if scheduleItem.time == nil {
+            dayButtonContainer.isHidden = true
+            inlineTimePicker.isHidden = true
+            self.atAnytimeCheckbox.isSelected = true
+        } else {
+            dayButtonContainer.isHidden = false
+            inlineTimePicker.isHidden = false
+            self.atAnytimeCheckbox.isSelected = false
+            let timePickerDate = scheduleItem.time ?? Calendar.current.date(bySetting: .hour, value: 7, of: Date()) ?? Date()
+            timeButton?.setTitle(DateFormatter.localizedString(from: timePickerDate, dateStyle: .none, timeStyle: .short), for: .normal)
+            timePicker.date = timePickerDate
+            self.weeklyScheduleTableItem?.time = timePickerDate
+            if scheduleItem.weekdays?.count ?? 0 == RSDWeekday.all.count {                    dayButton.setTitle(Localization.localizedString("MEDICATION_SCHEDULE_EVERYDAY"), for: .normal)
             } else {
-                dayButtonContainer.isHidden = false
-                inlineTimePicker.isHidden = false
-                self.atAnytimeCheckbox.isSelected = false
-                let timePickerDate = scheduleItem.time ?? Calendar.current.date(bySetting: .hour, value: 7, of: Date()) ?? Date()
-                timeButton?.setTitle(DateFormatter.localizedString(from: timePickerDate, dateStyle: .none, timeStyle: .short), for: .normal)
-                timePicker.date = timePickerDate
-                self.weeklyScheduleTableItem?.time = timePickerDate
-                if scheduleItem.weekdays?.count ?? 0 == RSDWeekday.all.count {                    dayButton.setTitle(Localization.localizedString("MEDICATION_SCHEDULE_EVERYDAY"), for: .normal)
-                } else {
-                    if let weekdays = scheduleItem.weekdays {
-                        dayButton.setTitle(SBATrackedWeeklyScheduleCell.weekdayTitle(for: weekdays), for: .normal)
-                    }
+                if let weekdays = scheduleItem.weekdays {
+                    dayButton.setTitle(SBATrackedWeeklyScheduleCell.weekdayTitle(for: weekdays), for: .normal)
                 }
             }
         }
@@ -444,38 +461,30 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     
     @IBAction func atAnytimeTapped(_ sender: RSDCheckboxButton) {
         sender.isSelected = !sender.isSelected
-        if let scheduleItem = weeklyScheduleTableItem {
-            if (sender.isSelected) {
-                scheduleItem.time = nil
-            } else {
-                scheduleItem.time = Calendar.current.date(bySetting: .hour, value: 7, of: Date().startOfDay())
-            }
-        }
         self.delegate?.didChangeScheduleAtAnytimeSelection(for: self, selected: sender.isSelected)
     }
 }
 
-// TODO: mdephillips 6/26/18 why do i have to make this class? only seeing protocol impl
-open class SBAInstructionImage: RSDImageThemeElement {
+open class SBAInstructionImage: RSDEmbeddedIconVendor, RSDImageThemeElement, RSDFetchableImageThemeElement {
     
     public var imageIdentifier: String
     
-    public var placementType: RSDImagePlacementType? {
-        return .iconBefore
-    }
+    public var placementType: RSDImagePlacementType?
     
     public var size: CGSize
     
-    public var bundle: Bundle? {
-        return Bundle(for: SBAInstructionImage.self)
+    public var bundle: Bundle?
+    
+    public var icon: RSDImageWrapper?
+    
+    public init (icon: RSDImageWrapper?) {
+        self.imageIdentifier = icon?.imageIdentifier ?? ""
+        self.icon = icon
+        self.size = CGSize(width: 200.0, height: 200.0)
     }
     
-    fileprivate static func defaultSize() -> CGSize {
-        return CGSize(width: 200.0, height: 200.0)
-    }
-    
-    public init(identifier: String) {
-        imageIdentifier = identifier
-        size = SBAInstructionImage.defaultSize()
+    public func fetchImage(for size: CGSize, callback: @escaping ((String?, UIImage?) -> Void)) {
+        let image = UIImage(named: self.imageIdentifier)
+        callback(self.imageIdentifier, image)
     }
 }

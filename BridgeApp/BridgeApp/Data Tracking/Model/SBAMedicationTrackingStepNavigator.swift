@@ -94,9 +94,23 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         
         // Check if it is a detail step, if so, reverse to the review step
         if isDetailStep(with: step?.identifier) {
-            // When moving forward, always update the in-memory result before continuing.
-            updateInMemoryResult(from: result, using: step)            
-            return (getReviewStep(), .reverse)
+            var nextStep: RSDStep?
+            if let _ = result.stepHistory.last as? SBARemoveMedicationResultObject {
+                // Result of the step is to remove the medication
+                let selectedIdentifiers = (result.findResult(for: self.selectionStep) as? SBATrackedItemsResult)?.selectedIdentifiers.filter({ $0 != step?.identifier })
+                updateSelectedInMemoryResult(to: selectedIdentifiers, with: self.items)
+                if selectedIdentifiers?.count == 0 {
+                    // If there are no more selected medications, go back to selection step
+                    nextStep = getSelectionStep()
+                } else {
+                    nextStep = getReviewStep()
+                }
+            } else {
+                // When moving forward, always update the in-memory result before continuing.
+                updateInMemoryResult(from: result, using: step)
+                nextStep = getReviewStep()
+            }
+            return (nextStep, .reverse)
         }
         
         return super.step(after: step, with: &result)
