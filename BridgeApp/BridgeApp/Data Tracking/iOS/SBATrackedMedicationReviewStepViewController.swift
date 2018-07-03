@@ -39,6 +39,10 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         return self.step as? SBATrackedItemsReviewStepObject
     }
     
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
         _registeredIdentifiers.insert(reuseIdentifier)
@@ -52,11 +56,20 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
     private var _registeredIdentifiers = Set<String>()
     
     open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
         let selectedIdentifier = reviewDataSource.tableItem(at: indexPath)?.identifier {
             reviewDataSource.reviewItemSelected(identifier: selectedIdentifier)
             self.goForward()
         }
+    }
+    
+    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        cell.selectedBackgroundView = UIView()
+        cell.selectedBackgroundView?.backgroundColor = UIColor.rsd_choiceCellBackgroundHighlighted
+        cell.selectionStyle = .gray
+        return cell
     }
     
     override open func actionTapped(with actionType: RSDUIActionType) -> Bool {

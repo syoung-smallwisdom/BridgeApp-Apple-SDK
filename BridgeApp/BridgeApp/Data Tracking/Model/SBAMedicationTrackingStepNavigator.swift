@@ -86,6 +86,7 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
             // Because we can visit a details step multiple times, we need to make sure
             // the previous answer is up to date for the step
             detailStep.updatePreviousAnswer(answer: returnValue?.1)
+            detailStep.title = returnValue?.1.identifier
         }
         return returnValue
     }
