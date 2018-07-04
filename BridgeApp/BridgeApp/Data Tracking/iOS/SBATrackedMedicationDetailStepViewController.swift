@@ -33,7 +33,7 @@
 
 import UIKit
 
-open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewController, RSDTaskViewControllerDelegate {
+open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewController, RSDTaskViewControllerDelegate, SBATrackedMedicationNavigationHeaderViewDelegate {
     
     var selectedIndexPath: IndexPath?
     
@@ -51,10 +51,10 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     func createCustomNavigationHeader() {
         let header =  SBATrackedMedicationNavigationHeaderView()
+        header.delegate = self
         header.backgroundColor = UIColor.appBackgroundDark
         header.usesLightStyle = true
-        header.underlinedButton?.setTitle(Localization.localizedString("MEDICATION_REMOVE_MEDICATION"), for: .normal)
-        header.underlinedButton?.addTarget(self, action: #selector(removeMedicationTapped), for: .touchUpInside)
+        header.underlinedButtonText = Localization.localizedString("MEDICATION_REMOVE_MEDICATION")
         self.navigationHeader = header
         self.tableView.tableHeaderView = header
     }
@@ -231,6 +231,10 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     open override func goForward() {
         _endTimeEditingIfNeeded(false)
         super.goForward()
+    }
+    
+    public func underlinedButtonTapped() {
+        removeMedicationTapped()
     }
 }
 
@@ -509,33 +513,23 @@ open class SBAInstructionImage: RSDEmbeddedIconVendor, RSDImageThemeElement, RSD
     }
 }
 
+public protocol SBATrackedMedicationNavigationHeaderViewDelegate {
+    func underlinedButtonTapped()
+}
+
 open class SBATrackedMedicationNavigationHeaderView: RSDTableStepHeaderView {
     
     private var _underlinedButtonContraints: [NSLayoutConstraint] = []
     
+    var delegate: SBATrackedMedicationNavigationHeaderViewDelegate?
+    var underlinedButtonText: String?
     /// The label for displaying step detail text.
     @IBOutlet open var underlinedButton: RSDUnderlinedButton?
     
-    public override init() {
-        super.init(frame: CGRect.zero)
-        commonInitNavigationHeaderView()
-    }
-    
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInitNavigationHeaderView()
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInitNavigationHeaderView()
-    }
-    
-    private func commonInitNavigationHeaderView() {
+    override open func updateVerticalConstraints(currentLastView: UIView?) -> (firstView: UIView?, lastView: UIView?) {
         addUnderlinedButtonIfNeeded()
-    }
-    
-    override open func setupFinalVerticalViews() -> UIView? {
+        var results = super.updateVerticalConstraints(currentLastView: currentLastView)
+        
         // Remove existing constraints for the underlined button
         NSLayoutConstraint.deactivate(_underlinedButtonContraints)
         _underlinedButtonContraints.removeAll()
@@ -546,10 +540,17 @@ open class SBATrackedMedicationNavigationHeaderView: RSDTableStepHeaderView {
             _underlinedButtonContraints.append(contentsOf:
                 underlinedButtonUnwrapped.rsd_alignBelow(view: titleLabelUnwrapped, padding: constants.verticalSpacing))
         }
-        return underlinedButton
+        
+        results.lastView = underlinedButton
+        return results
     }
     
-    /// Convenience method for adding a label.
+    func addUnderlinedButtonIfNeeded() {
+        guard underlinedButton == nil else { return }
+        underlinedButton = addUnderlinedButton(font: UIFont.rsd_headerTextLabel, color: UIColor.rsd_headerTextLabel)
+    }
+    
+    /// Convenience method for adding an underlined button.
     open func addUnderlinedButton(font: UIFont, color: UIColor) -> RSDUnderlinedButton {
         let button = RSDUnderlinedButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -557,6 +558,8 @@ open class SBATrackedMedicationNavigationHeaderView: RSDTableStepHeaderView {
         button.setTitleColor(color, for: .normal)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.preferredMaxLayoutWidth = constants.labelMaxLayoutWidth
+        button.setTitle(underlinedButtonText, for: .normal)
+        button.addTarget(self, action: #selector(self.underlineButtonTapped), for: .touchUpInside)
         self.addSubview(button)
         
         button.rsd_alignToSuperview([.leading, .trailing], padding: constants.sideMargin)
@@ -565,8 +568,7 @@ open class SBATrackedMedicationNavigationHeaderView: RSDTableStepHeaderView {
         return button
     }
     
-    func addUnderlinedButtonIfNeeded() {
-        guard underlinedButton == nil else { return }
-        underlinedButton = addUnderlinedButton(font: UIFont.rsd_headerTextLabel, color: UIColor.rsd_headerTextLabel)
+    @objc func underlineButtonTapped() {
+        self.delegate?.underlinedButtonTapped()
     }
 }
