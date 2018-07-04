@@ -93,6 +93,11 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
     override open func step(after step: RSDStep?, with result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection) {
         
+        guard let _ = step?.identifier else {
+            // TODO: mdephillips 7/3/18 remove this conditional once logging step is complete
+            return (getSelectionStep(), .forward)
+        }
+        
         // Check if it is a detail step, if so, reverse to the review step
         if isDetailStep(with: step?.identifier) {
             var nextStep: RSDStep?
@@ -112,6 +117,12 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
                 nextStep = getReviewStep()
             }
             return (nextStep, .reverse)
+        }
+        
+        if let reviewStep = step as? SBATrackedItemsReviewStepObject,
+            reviewStep.nextStepIdentifier == nil {            
+            // TODO: mdephillips 7/3/18 move to reminders screen, for now end
+            return (nil, .forward)
         }
         
         return super.step(after: step, with: &result)
