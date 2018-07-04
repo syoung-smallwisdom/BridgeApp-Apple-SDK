@@ -39,8 +39,10 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         return self.step as? SBATrackedItemsReviewStepObject
     }
     
-    override open func viewDidLoad() {
-        super.viewDidLoad()
+    override open func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // This will clear any selected review cells
+        (self.step as? SBATrackedItemsReviewStepObject)?.nextStepIdentifier = nil
     }
     
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
@@ -70,20 +72,6 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         cell.selectedBackgroundView?.backgroundColor = UIColor.rsd_choiceCellBackgroundHighlighted
         cell.selectionStyle = .gray
         return cell
-    }
-    
-    override open func actionTapped(with actionType: RSDUIActionType) -> Bool {
-//        if actionType == .navigation(.goForward) {
-//            // TODO: mdephillips 6/27/18 move to med logging
-//            weak var weakSelf = self
-//            dismiss(animated: true, completion: {
-//                weakSelf?.dismiss(animated: true, completion: nil)
-//            })
-//            return true
-//        } else {
-//            return super.actionTapped(with: actionType)
-//        }
-        return super.actionTapped(with: actionType)
     }
     
     public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {        
