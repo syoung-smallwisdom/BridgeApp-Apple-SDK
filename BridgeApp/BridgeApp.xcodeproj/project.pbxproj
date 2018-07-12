@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0356943720EECD25006A555A /* MedicationReminderDetails.json in Resources */ = {isa = PBXBuildFile; fileRef = 0356943520EECD25006A555A /* MedicationReminderDetails.json */; };
 		0356943820EECD25006A555A /* MedicationReminder.json in Resources */ = {isa = PBXBuildFile; fileRef = 0356943620EECD25006A555A /* MedicationReminder.json */; };
 		0356943A20EECD4D006A555A /* SBAMedicationRemindersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356943920EECD4D006A555A /* SBAMedicationRemindersViewController.swift */; };
 		CB179EC820F6C3860066A685 /* MedicationReminder.json in Resources */ = {isa = PBXBuildFile; fileRef = 0356943620EECD25006A555A /* MedicationReminder.json */; };
@@ -263,7 +262,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0356943520EECD25006A555A /* MedicationReminderDetails.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = MedicationReminderDetails.json; sourceTree = "<group>"; };
 		0356943620EECD25006A555A /* MedicationReminder.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = MedicationReminder.json; sourceTree = "<group>"; };
 		0356943920EECD4D006A555A /* SBAMedicationRemindersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAMedicationRemindersViewController.swift; sourceTree = "<group>"; };
 		CB65713C20E056CC00A8E61C /* SBAUnderlinedButtonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBAUnderlinedButtonCell.xib; sourceTree = "<group>"; };
@@ -422,7 +420,6 @@
 			isa = PBXGroup;
 			children = (
 				0356943620EECD25006A555A /* MedicationReminder.json */,
-				0356943520EECD25006A555A /* MedicationReminderDetails.json */,
 				F8C7D3BC20927065007490BC /* Symptoms.json */,
 				F847952D207FEE090024A230 /* Medication.json */,
 				F825BA59207FD48300D29F60 /* Triggers.json */,
@@ -973,7 +970,6 @@
 				CBED325D20C83538009D32F0 /* Assets.xcassets in Resources */,
 				F818E2412032B07E00C538ED /* README.md in Resources */,
 				F886FD342036067300EF2248 /* BridgeApp.strings in Resources */,
-				0356943720EECD25006A555A /* MedicationReminderDetails.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -997,7 +993,6 @@
 				F847952E207FEE090024A230 /* Medication.json in Resources */,
 				F825BA5A207FD48300D29F60 /* Triggers.json in Resources */,
 				F83906FE20325E70005FC0BA /* sample-study.pem in Resources */,
-				CB179EDD20F6C3880066A685 /* MedicationReminderDetails.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

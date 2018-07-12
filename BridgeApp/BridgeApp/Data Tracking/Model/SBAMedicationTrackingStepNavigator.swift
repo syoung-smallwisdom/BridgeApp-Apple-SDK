@@ -35,6 +35,15 @@ import Foundation
 
 open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
+    public var reminderStep: SBAMedicationRemindersStepObject? {
+        // Only initialize when needed, some run-throughs of medication dont need this step
+        if _reminderStep == nil {
+            self.buildReminderStep()
+        }
+        return _reminderStep
+    }
+    fileprivate var _reminderStep: SBAMedicationRemindersStepObject?
+    
     override open class func decodeItems(from decoder: Decoder) throws -> (items: [SBATrackedItem], sections: [SBATrackedSection]?) {
         let container = try decoder.container(keyedBy: ItemsCodingKeys.self)
         let items = try container.decode([SBAMedicationItem].self, forKey: .items)
@@ -120,9 +129,8 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         }
         
         if let reviewStep = step as? SBATrackedItemsReviewStepObject,
-            reviewStep.nextStepIdentifier == nil {            
-            // TODO: mdephillips 7/3/18 move to reminders screen, for now end
-            return (nil, .forward)
+            reviewStep.nextStepIdentifier == nil {
+            return (self.reminderStep, .forward)
         }
         
         return super.step(after: step, with: &result)
@@ -131,6 +139,17 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     func isDetailStep(with identifier: String?) -> Bool {
         guard let identifierUnwrapped = identifier else { return false }
         return self.items.contains(where: { $0.identifier == identifierUnwrapped })
+    }
+    
+    func buildReminderStep() {
+        do {
+            let resourceTransformer = RSDResourceTransformerObject(resourceName: "MedicationReminder")
+            let task = try RSDFactory.shared.decodeTask(with: resourceTransformer)
+            _reminderStep = task.stepNavigator.step(with: "medicationReminder") as? SBAMedicationRemindersStepObject
+            _reminderStep?.reminderTimeChoiceStep = task.stepNavigator.step(with: "medicationReminderDetails") as? RSDFormUIStepObject
+        } catch let err {
+            fatalError("Failed to decode the task. \(err)")
+        }
     }
 }
 
