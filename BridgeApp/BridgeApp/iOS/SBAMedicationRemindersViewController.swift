@@ -32,7 +32,6 @@
 //
 
 import UIKit
-import BridgeApp
 
 class SBAMedicationRemindersViewController: RSDTableStepViewController {
     
@@ -72,6 +71,7 @@ class SBAMedicationRemindersViewController: RSDTableStepViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         // Override default behavior to show the details task so the user can select their intervals
         showReminderDetailsTask()
     }
@@ -148,5 +148,11 @@ extension SBAMedicationRemindersViewController: RSDTaskViewControllerDelegate {
 
     func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
         return nil
+    }
+}
+
+open class SBAMedicationRemindersStepObject: RSDFormUIStepObject, RSDStepViewControllerVendor {
+    public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
+        return SBAMedicationRemindersViewController(step: self)
     }
 }

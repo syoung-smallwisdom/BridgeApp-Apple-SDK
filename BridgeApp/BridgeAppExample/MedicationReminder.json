@@ -5,7 +5,7 @@
     "steps":[
              {
              "identifier": "medicationReminder",
-             "type": "form",
+             "type": "medicationReminders",
              "title": "Let's set a Reminder for your Medications",
              "detail":"When do you want us to remind you to take your Parkinson's medications? You can always change them later.",
              "image":{
