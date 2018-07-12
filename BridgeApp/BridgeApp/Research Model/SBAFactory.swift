@@ -58,6 +58,9 @@ extension RSDStepType {
     
     /// Defaults to creating a `SBASymptomLoggingStepObject`.
     public static let medicationReminders: RSDStepType = "medicationReminders"
+
+    /// Defaults to creating a 'SBATrackedMedicationDetailStepObject'
+    public static let medicationDetails: RSDStepType = "medicationDetails"
 }
 
 open class SBAFactory : RSDFactory {
@@ -89,6 +92,8 @@ open class SBAFactory : RSDFactory {
             return try SBASymptomLoggingStepObject(from: decoder)
         case .medicationReminders:
             return try SBAMedicationRemindersStepObject(from: decoder)
+        case .medicationDetails:
+            return try SBATrackedMedicationDetailStepObject(from: decoder)
         case .taskInfo:
             if let taskInfo = try? SBAActivityInfoObject(from: decoder),
                 let transformer = self.configuration.instantiateTaskTransformer(for: taskInfo) {

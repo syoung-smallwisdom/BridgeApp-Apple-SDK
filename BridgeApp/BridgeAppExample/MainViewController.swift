@@ -48,15 +48,11 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
             symptomsInfo.title = "Symptoms"
             symptomsInfo.resourceTransformer = RSDResourceTransformerObject(resourceName: "Symptoms")
             
-            var medReminder = RSDTaskInfoObject(with: "Reminders")
-            medReminder.title = "Reminders"
-            medReminder.resourceTransformer = RSDResourceTransformerObject(resourceName: "MedicationReminder")
+            var medicationInfo = RSDTaskInfoObject(with: "Medication")
+            medicationInfo.title = "Medication"
+            medicationInfo.resourceTransformer = RSDResourceTransformerObject(resourceName: "Medication")
             
-            var medication = RSDTaskInfoObject(with: "Medication")
-            medication.title = "Medication"
-            medication.resourceTransformer = RSDResourceTransformerObject(resourceName: "Medication")
-            
-            return RSDTaskGroupObject(with: "Tracking", tasks: [triggersInfo, symptomsInfo, medReminder, medication])
+            return RSDTaskGroupObject(with: "Tracking", tasks: [triggersInfo, symptomsInfo, medicationInfo])
         }()
         
         return [trackingTaskGroup]
