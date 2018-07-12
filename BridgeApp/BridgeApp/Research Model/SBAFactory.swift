@@ -56,7 +56,7 @@ extension RSDStepType {
     /// Defaults to creating a `SBASymptomLoggingStepObject`.
     public static let symptomLogging: RSDStepType = "symptomLogging"
     
-    /// Defaults to creating a `SBASymptomLoggingStepObject`.
+    /// Defaults to creating a `SBAMedicationRemindersStepObject`.
     public static let medicationReminders: RSDStepType = "medicationReminders"
 
     /// Defaults to creating a 'SBATrackedMedicationDetailStepObject'
