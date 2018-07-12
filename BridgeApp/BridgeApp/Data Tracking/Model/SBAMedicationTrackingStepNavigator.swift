@@ -133,6 +133,11 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
             return (self.reminderStep, .forward)
         }
         
+        if let _ = step as? SBAMedicationRemindersStepObject {
+            // TODO: medphillips 7/12/18, go to logging step
+            return (nil, .forward)
+        }
+        
         return super.step(after: step, with: &result)
     }
     
