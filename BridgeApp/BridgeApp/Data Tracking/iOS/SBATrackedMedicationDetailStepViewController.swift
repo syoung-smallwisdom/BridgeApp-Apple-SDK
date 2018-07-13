@@ -46,6 +46,7 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     override open func viewDidLoad() {
         super.viewDidLoad()
+        self.tableView.backgroundColor = UIColor.darkPrimaryTintColor
         self.createCustomNavigationHeader()
     }
     
@@ -142,9 +143,15 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     func addAnotherScheduleTapped() {
         guard let source = tableData as? SBATrackedMedicationDetailsDataSource else { return }
-        source.addScheduleItem()
-        // TODO: mdephillips 6/24/18 animate in new tableview cell and animate hiding other cell's checkbox
-        self.tableView.reloadData()
+        if let indexPathOfNewCell = source.addScheduleItem() {
+            self.tableView.beginUpdates()
+            self.tableView.insertRows(at: [indexPathOfNewCell], with: .left)
+            // The previous row item will hide the check box now, so we also must reload it
+            self.tableView.reloadRows(at: [IndexPath(item: indexPathOfNewCell.item - 1, section: indexPathOfNewCell.section)], with: .none)
+            self.tableView.endUpdates()
+        } else {
+            self.tableView.reloadData()
+        }
     }
     
     override open func textFieldDidEndEditing(_ textField: UITextField) {
@@ -295,9 +302,21 @@ extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklySchedul
     
     public func didChangeScheduleAtAnytimeSelection(for cell: SBATrackedWeeklyScheduleCell, selected: Bool) {
         if let source = tableData as? SBATrackedMedicationDetailsDataSource {
-            source.scheduleAtAnytimeChanged(selected: selected)
+            let tableViewUpdates = source.scheduleAtAnytimeChanged(selected: selected)
+            self.tableView.beginUpdates()
+            if let lastSectionAdded = tableViewUpdates.sectionAdded {
+                if lastSectionAdded {
+                    self.tableView.insertSections(IndexSet.init(integer: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.addSchedule.sectionIndex()), with: .left)
+                } else {
+                   self.tableView.deleteSections(IndexSet.init(integer: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.addSchedule.sectionIndex()), with: .right)
+                }
+            }
+            if let itemsRemoved = tableViewUpdates.itemsRemoved {
+                self.tableView.deleteRows(at: itemsRemoved, with: .right)
+            }
+            self.tableView.reloadRows(at: [IndexPath(item: 0, section: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.schedules.sectionIndex())], with: .none)
+            self.tableView.endUpdates()
         }
-        self.tableView.reloadData()
         _endTimeEditingIfNeeded()
     }
 }

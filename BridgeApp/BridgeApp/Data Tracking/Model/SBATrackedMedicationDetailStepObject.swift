@@ -169,9 +169,9 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     /// Adds a schedule item to the schedules section.
     /// While not strictly enforced, this should not be called if any existing
     /// schedule items are set to schedule at anytime.
-    public func addScheduleItem() {
+    public func addScheduleItem() -> IndexPath? {
         guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first else {
-            return
+            return nil
         }
         let newIndex = schedulesSection.tableItems.count
         let scheduleTableItem = SBATrackedWeeklyScheduleTableItem(identifier:
@@ -180,19 +180,25 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
         newTableItems.append(scheduleTableItem)
         let newSchedulesSection = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: newTableItems)
         sections[FieldIdentifiers.schedules.sectionIndex()] = newSchedulesSection
+        return IndexPath(item: newIndex, section: FieldIdentifiers.schedules.sectionIndex())
     }
     
     
     /// Call this method when the user has selected that they schedule this at anytime.
     /// This will reduce the schedule section to 1 element.
-    public func scheduleAtAnytimeChanged(selected: Bool) {
+    public func scheduleAtAnytimeChanged(selected: Bool) -> (itemsRemoved: [IndexPath]?, sectionAdded: Bool?) {
+        
+        var itemsRemoved = [IndexPath]()
+        
         guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first,
             schedulesSection.tableItems.count > 0 else {
-            return
+            return (nil, nil)
         }
         let lastIndex = schedulesSection.tableItems.count - 1
         let tableItem = schedulesSection.tableItems[lastIndex]
-        guard let scheduleItem = tableItem as? SBATrackedWeeklyScheduleTableItem else { return }
+        guard let scheduleItem = tableItem as? SBATrackedWeeklyScheduleTableItem else {
+            return (nil, nil)
+        }
         if (selected) {
             scheduleItem.time = nil
             scheduleItem.weekdays = nil
@@ -215,6 +221,15 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
                 self.sections.remove(at: FieldIdentifiers.addSchedule.sectionIndex())
             }
         }
+        
+        // If the user unselected the schedule, the cell is only updated
+        if selected && lastIndex >= 1 {
+            for i in 1...lastIndex {
+                itemsRemoved.append(IndexPath(item: i, section: FieldIdentifiers.schedules.sectionIndex()))
+            }
+        }
+        
+        return (itemsRemoved, !selected)
     }
     
     public func appendRemoveMedicationToTaskPath() {
