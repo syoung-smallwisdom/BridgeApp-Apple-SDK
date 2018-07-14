@@ -165,22 +165,6 @@ class MedicationTrackingNavigationTests: XCTestCase {
         } else {
             XCTFail("detail data source not instantiated")
         }
-        
-        let reminderStep = medTracker.reminderStep
-        XCTAssertNotNil(reminderStep)
-        XCTAssertEqual(reminderStep?.identifier, "medicationReminder")
-        XCTAssertEqual(reminderStep?.title, "Let's set a Reminder for your Medications")
-        XCTAssertEqual(reminderStep?.detail, "When do you want us to remind you to take your Parkinson's medications? You can always change them later.")
-        guard let image = reminderStep?.imageTheme as? RSDFetchableImageThemeElementObject else {
-            XCTFail("no fetchable reminder icon")
-            return
-        }
-        XCTAssertEqual(image.imageName, "remindersIcon")
-        
-        let reminderChoiceStep = reminderStep?.reminderTimeChoiceStep
-        XCTAssertNotNil(reminderChoiceStep)
-        XCTAssertEqual(reminderChoiceStep?.identifier, "medicationReminderDetails")
-        XCTAssertEqual(reminderChoiceStep?.title, "How many minutes before medication time would you like to be notified?")
     }
     
     func testMedicationTrackingNavigation_FirstRun() {
@@ -302,7 +286,6 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Failed to return the reminderStep. Exiting. \(String(describing: seventhStep))")
             return
         }
-        XCTAssertNotNil(reminderStep.reminderTimeChoiceStep)
         
         // TODO: mdephillips 7/12/18 add unit tests for logging
         let (lastStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
@@ -404,7 +387,6 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Failed to return the reminderStep. Exiting. \(String(describing: seventhStep))")
             return
         }
-        XCTAssertNotNil(reminderStep.reminderTimeChoiceStep)
         
         // TODO: mdephillips 7/12/18 add unit tests for logging
         let (lastStep, _) = medTracker.step(after: reminderStep, with: &taskResult)

@@ -159,26 +159,49 @@
                   ],
     "selection": { "title": "What medications are you taking?",
         "detail": "Select all that apply"},
-    "reminderStep": {
-        "identifier": "medicationReminder",
-        "type": "medicationReminders",
-        "title": "Let's set a Reminder for your Medications",
-        "detail":"When do you want us to remind you to take your Parkinson's medications? You can always change them later.",
-        "image":{
-            "type": "fetchable",
-            "imageName":"remindersIcon",
-            "placementType":"iconBefore"
-        },
-        "colorTheme": {
-            "usesLightStyle": false
-        },
-        "uiHint": "list",
-        "dataType": "multipleChoice.integer",
-        "choices": [
-                    {
-                    "text": "15 minutes before medication time",
-                    "value": 15
-                    }
-                    ]
+    "reminder":
+        {
+            "identifier": "medicationReminders",
+            "type": "medicationReminders",
+            "title": "Let's set a Reminder for your Medications",
+            "detail":"When do you want us to remind you to take your Parkinson's medications? You can always change them later.",
+            "image":{
+                "type": "fetchable",
+                "imageName":"remindersIcon",
+                "placementType":"iconBefore"
+            },
+            "colorTheme": {
+                "usesLightStyle": false
+            },
+            "actions" : { "goForward": { "type": "default", "buttonTitle": "Submit" }},
+            "shouldHideActions":["skip", "goBackward"],
+            "reminderChoices": [
+                        {
+                        "text": "15 minutes before",
+                        "value": 15
+                        },
+                        {
+                        "text": "30 minutes before",
+                        "value": 30
+                        },
+                        {
+                        "text": "45 minutes before",
+                        "value": 45
+                        },
+                        {
+                        "text": "60 minutes before",
+                        "value": 60
+                        },
+                        {
+                        "text": "No reminder"
+                        },
+                        ],
+            "inputFields": [{
+                            "identifier": "medicationReminderDetails",
+                            "type": "modalButton",
+                            "uiHint": "modalButton",
+                            "dataType": "modalButton"
+                            }]
+                            
     },
 }

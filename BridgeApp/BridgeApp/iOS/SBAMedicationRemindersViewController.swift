@@ -33,63 +33,57 @@
 
 import UIKit
 
-class SBAMedicationRemindersViewController: RSDTableStepViewController {
+open class SBAMedicationRemindersViewController: RSDTableStepViewController {
     
     public var reminderStep: SBAMedicationRemindersStepObject? {
         return self.step as? SBAMedicationRemindersStepObject
     }
     
     override open var isForwardEnabled: Bool {
-        if let intervals = intervals(from: taskController.taskPath) {
-            return intervals.count > 0
+        return true
+    }
+
+    override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
+        guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
+        _registeredIdentifiers.insert(reuseIdentifier)
+        
+        let reuseId = RSDFormUIHint(rawValue: reuseIdentifier)
+        switch reuseId {
+        case .modalButton:
+            tableView.register(SBATrackedModalButtonCell.nib, forCellReuseIdentifier: reuseIdentifier)
+            break
+        default:
+            super.registerReuseIdentifierIfNeeded(reuseIdentifier)
+            break
         }
-        return false
     }
+    private var _registeredIdentifiers = Set<String>()
 
-    override func setupModel() {
-        
-        super.setupModel()
-        
-        // We want a section label above the first choice cell, which doesn't have one by default.
-        // So we set the title of that table item
-        (tableData?.sections.first)?.title = "Add reminders"
-    }
-
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        // Override default behavior to show the details task so the user can select their intervals
-        showReminderDetailsTask()
-    }
-    
-    open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60.0
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         // Get the cell from super and update the label with the cancatenation of our current reminder intervals
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         let labelString: String = {
             if let intervals = intervals(from: taskController.taskPath), intervals.count > 0 {
-                return intervals.compactMap { return String($0) }.joined(separator: ", ") + " minutes before medication time."
+                return String(format: Localization.localizedString("MEDICATION_REMINDER_CHOICES_%@"), Localization.localizedAndJoin(intervals.compactMap { return String($0) }))
             }
             else {
-                return "(no reminders set)"
+                return Localization.localizedString("MEDICATION_REMINDER_CHOICES_NONE_SET")
             }
         }()
-        cell.textLabel?.text = labelString
-        
-        // Also add a disclosure indicator
-        cell.accessoryType = .disclosureIndicator
-        cell.selectedBackgroundView = UIView()
-        cell.selectedBackgroundView?.backgroundColor = UIColor.rsd_choiceCellBackgroundHighlighted
-        cell.selectionStyle = .gray
-        
+        if let modalCell = cell as? SBATrackedModalButtonCell {
+            modalCell.delegate = self
+            modalCell.promptLabel.text = Localization.localizedString("MEDICATION_REMINDER_ADD")
+            modalCell.actionButton.setTitle(labelString, for: .normal)
+        }
         return cell
     }
     
+    override open func didTapButton(on cell: RSDButtonCell) {
+        self.showReminderDetailsTask()
+    }
+    
     func intervals(from taskPath: RSDTaskPath) -> [Int]? {
-        
         guard taskPath.result.stepHistory.count > 0,
             let collectionResult = taskPath.result.stepHistory.last as? RSDCollectionResultObject else {
                 return nil
@@ -108,23 +102,22 @@ class SBAMedicationRemindersViewController: RSDTableStepViewController {
     }
     
     func showReminderDetailsTask() {
-        
-        guard let reminderStepTimeChoiceStep = self.reminderStep?.reminderTimeChoiceStep else { return }
+
+        guard let reminderChoicesStep = self.reminderStep?.reminderChoicesStep() else { return }
         
         // Instantiate and create the reminder details task
-        var navigator = RSDConditionalStepNavigatorObject(with: [reminderStepTimeChoiceStep])
+        var navigator = RSDConditionalStepNavigatorObject(with: [reminderChoicesStep])
         navigator.progressMarkers = []
         let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
         let taskPath = RSDTaskPath(task: task)
-        
+
         // See if we currently have any reminder intervals saved and, if so, add them to the result
         // for our new task so they are prepopulated for the user
         if let intervals = intervals(from: taskController.taskPath),
-            intervals.count > 0,
-            let reminderTimeChoiceIdentifier = self.reminderStep?.reminderTimeChoiceStep?.identifier {
-            update(taskPath: taskPath, with: intervals, for: reminderTimeChoiceIdentifier)
+            intervals.count > 0  {
+            update(taskPath: taskPath, with: intervals, for: reminderChoicesStep.identifier)
         }
-        
+
         let vc = RSDTaskViewController(taskPath: taskPath)
         vc.delegate = self
         self.present(vc, animated: true, completion: nil)
@@ -147,11 +140,11 @@ class SBAMedicationRemindersViewController: RSDTableStepViewController {
 }
 
 extension SBAMedicationRemindersViewController: RSDTaskViewControllerDelegate {
-    func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
+    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
         dismiss(animated: true, completion: nil)
     }
     
-    func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
+    public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
         if let intervals = intervals(from: taskPath) {
             // Update our current task results with the intervals selected by the user
             update(taskPath: self.taskController.taskPath, with: intervals, for: self.step.identifier)
@@ -160,16 +153,57 @@ extension SBAMedicationRemindersViewController: RSDTaskViewControllerDelegate {
         }
     }
 
-    func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
+    public func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
         return nil
     }
 }
 
 open class SBAMedicationRemindersStepObject: RSDFormUIStepObject, RSDStepViewControllerVendor {
     
-    public var reminderTimeChoiceStep: RSDFormUIStepObject?
+    /// Publicly accessible coding keys for the default structure for decoding items and sections.
+    enum CodingKeys : String, CodingKey {
+        case reminderChoices
+    }
+    
+    public var reminderChoices: [RSDChoiceObject<Int>]?
+    
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let reminderChoices = try container.decode([RSDChoiceObject<Int>].self, forKey: .reminderChoices)
+        self.reminderChoices = reminderChoices
+    }
+    
+    public required init(identifier: String, type: RSDStepType?) {
+        super.init(identifier: identifier, type: type)
+    }
     
     public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
         return SBAMedicationRemindersViewController(step: self)
+    }
+    
+    /// Returns the reminder choice step
+    public func reminderChoicesStep() -> RSDStep? {
+        guard let reminderChoicesUnwrapped = self.reminderChoices else { return nil }
+        let identifier = String(describing: CodingKeys.reminderChoices.stringValue)
+        let dataType = RSDFormDataType.collection(.multipleChoice, .integer)
+        let inputField = RSDChoiceInputFieldObject(identifier: identifier, choices: reminderChoicesUnwrapped, dataType: dataType)
+        let formStep = RSDFormUIStepObject(identifier: identifier, inputFields: [inputField])
+        let formTitle = String(format: Localization.localizedString("MEDICATION_REMINDER_CHOICES_TITLE"))
+        formStep.title = formTitle
+        formStep.actions = [.navigation(.goForward) : RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SAVE"))]
+        return formStep
+    }
+}
+
+open class SBATrackedModalButtonCell : RSDButtonCell {
+    
+    @IBOutlet weak var promptLabel: UILabel!
+    
+    /// The nib to use with this cell. Default will instantiate a `SBATrackedMedicationDetailCell`.
+    open class var nib: UINib {
+        let bundle = Bundle(for: SBATrackedModalButtonCell.self)
+        let nibName = String(describing: SBATrackedModalButtonCell.self)
+        return UINib(nibName: nibName, bundle: bundle)
     }
 }
