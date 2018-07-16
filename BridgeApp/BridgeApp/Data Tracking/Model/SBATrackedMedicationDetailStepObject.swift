@@ -168,6 +168,7 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     /// Adds a schedule item to the schedules section.
     /// While not strictly enforced, this should not be called if any existing
     /// schedule items are set to schedule at anytime.
+    /// @return the indexpath of the section that was added
     public func addScheduleItem() -> IndexPath? {
         guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first else {
             return nil
@@ -185,6 +186,8 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     
     /// Call this method when the user has selected that they schedule this at anytime.
     /// This will reduce the schedule section to 1 element.
+    /// @return itemsRemoved: the index paths of the items that were removed,
+    ///         sectionAdded: true if the "add schedule" section was added, false if it was removed
     public func scheduleAtAnytimeChanged(selected: Bool) -> (itemsRemoved: [IndexPath]?, sectionAdded: Bool?) {
         
         var itemsRemoved = [IndexPath]()
