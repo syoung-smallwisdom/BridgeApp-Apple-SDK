@@ -35,6 +35,28 @@ import Foundation
 
 open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
+    private enum CodingKeys : String, CodingKey {
+        case reminder
+    }
+    
+    public private(set) var reminderStep: SBAMedicationRemindersStepObject?
+    
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let reminderStep: SBAMedicationRemindersStepObject? = try {
+            guard container.contains(.reminder) else { return nil }
+            let nestedDecoder = try container.superDecoder(forKey: .reminder)
+            return try decoder.factory.decodeStep(from: nestedDecoder) as? SBAMedicationRemindersStepObject
+        }()
+        self.reminderStep = reminderStep ?? type(of: self).buildReminderStep()
+    }
+    
+    public required init(identifier: String, items: [SBATrackedItem], sections: [SBATrackedSection]?) {
+        self.reminderStep = type(of: self).buildReminderStep()
+        super.init(identifier: identifier, items: items, sections: sections)
+    }
+    
     override open class func decodeItems(from decoder: Decoder) throws -> (items: [SBATrackedItem], sections: [SBATrackedSection]?) {
         let container = try decoder.container(keyedBy: ItemsCodingKeys.self)
         let items = try container.decode([SBAMedicationItem].self, forKey: .items)
@@ -65,6 +87,11 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
                         .addMore : addMoreAction]
         
         return step
+    }
+    
+    /// @return a step that will be used to set medication reminders
+    open class func buildReminderStep() -> SBAMedicationRemindersStepObject? {
+        return nil
     }
     
     override open class func buildDetailSteps(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> [SBATrackedItemDetailsStep]? {
@@ -120,8 +147,12 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         }
         
         if let reviewStep = step as? SBATrackedItemsReviewStepObject,
-            reviewStep.nextStepIdentifier == nil {            
-            // TODO: mdephillips 7/3/18 move to reminders screen, for now end
+            reviewStep.nextStepIdentifier == nil {
+            return (self.reminderStep, .forward)
+        }
+        
+        if let _ = step as? SBAMedicationRemindersStepObject {
+            // TODO: medphillips 7/12/18, go to logging step
             return (nil, .forward)
         }
         
