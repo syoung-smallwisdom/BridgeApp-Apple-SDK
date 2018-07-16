@@ -35,18 +35,21 @@ import Foundation
 
 open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
-    /// Publicly accessible coding keys for the default structure for decoding items and sections.
-    public enum ReminderCodingKeys : String, CodingKey {
+    private enum CodingKeys : String, CodingKey {
         case reminder
     }
     
-    public var reminderStep: SBAMedicationRemindersStepObject
+    public private(set) var reminderStep: SBAMedicationRemindersStepObject?
     
     public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: ReminderCodingKeys.self)
-        let reminderStep = try container.decode(SBAMedicationRemindersStepObject.self, forKey: .reminder)
-        self.reminderStep = reminderStep
         try super.init(from: decoder)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let reminderStep: SBAMedicationRemindersStepObject? = try {
+            guard container.contains(.reminder) else { return nil }
+            let nestedDecoder = try container.superDecoder(forKey: .reminder)
+            return try decoder.factory.decodeStep(from: nestedDecoder) as? SBAMedicationRemindersStepObject
+        }()
+        self.reminderStep = reminderStep ?? type(of: self).buildReminderStep()
     }
     
     public required init(identifier: String, items: [SBATrackedItem], sections: [SBATrackedSection]?) {
@@ -86,9 +89,9 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         return step
     }
     
-    open class func buildReminderStep() -> SBAMedicationRemindersStepObject {
-        // This needs the content filled in if this step navigator will work without JSON
-        return SBAMedicationRemindersStepObject(identifier: RSDStepType.medicationReminders.stringValue, type: .medicationReminders)
+    /// @return a step that will be used to set medication reminders
+    open class func buildReminderStep() -> SBAMedicationRemindersStepObject? {
+        return nil
     }
     
     override open class func buildDetailSteps(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> [SBATrackedItemDetailsStep]? {

@@ -175,6 +175,7 @@
             },
             "actions" : { "goForward": { "type": "default", "buttonTitle": "Submit" }},
             "shouldHideActions":["skip", "goBackward"],
+            "dataType": "integer",
             "reminderChoices": [
                         {
                         "text": "15 minutes before",
@@ -195,13 +196,6 @@
                         {
                         "text": "No reminder"
                         },
-                        ],
-            "inputFields": [{
-                            "identifier": "medicationReminderDetails",
-                            "type": "modalButton",
-                            "uiHint": "modalButton",
-                            "dataType": "modalButton"
-                            }]
-                            
+                        ]
     },
 }

@@ -33,7 +33,7 @@
 
 import UIKit
 
-open class SBAMedicationRemindersViewController: RSDTableStepViewController {
+open class SBAMedicationRemindersStepViewController: RSDTableStepViewController {
     
     public var reminderStep: SBAMedicationRemindersStepObject? {
         return self.step as? SBAMedicationRemindersStepObject
@@ -64,7 +64,7 @@ open class SBAMedicationRemindersViewController: RSDTableStepViewController {
         // Get the cell from super and update the label with the cancatenation of our current reminder intervals
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         let labelString: String = {
-            if let intervals = intervals(from: taskController.taskPath), intervals.count > 0 {
+            if let intervals = intervals(from: taskController.taskPath, stepIdentifier: self.step.identifier), intervals.count > 0 {
                 return String(format: Localization.localizedString("MEDICATION_REMINDER_CHOICES_%@"), Localization.localizedAndJoin(intervals.compactMap { return String($0) }))
             }
             else {
@@ -83,22 +83,10 @@ open class SBAMedicationRemindersViewController: RSDTableStepViewController {
         self.showReminderDetailsTask()
     }
     
-    func intervals(from taskPath: RSDTaskPath) -> [Int]? {
-        guard taskPath.result.stepHistory.count > 0,
-            let collectionResult = taskPath.result.stepHistory.last as? RSDCollectionResultObject else {
-                return nil
-        }
-
-        var intervalsSelected = [Int]()
-        for intervalResult in collectionResult.inputResults {
-            if let intervalAnswerResult = intervalResult as? RSDAnswerResultObject,
-                let intervalValueArray = intervalAnswerResult.value as? [Int] {
-                for intervalInt in intervalValueArray {
-                    intervalsSelected.append(intervalInt)
-                }
-            }
-        }
-        return intervalsSelected
+    func intervals(from taskPath: RSDTaskPath, stepIdentifier: String) -> [Int]? {
+        guard let stepResult = taskPath.result.findResult(with: stepIdentifier) else { return nil }
+        let aResult = (stepResult as? RSDCollectionResult)?.inputResults.first ?? stepResult
+        return (aResult as? RSDAnswerResult)?.value as? [Int]
     }
     
     func showReminderDetailsTask() {
@@ -113,7 +101,7 @@ open class SBAMedicationRemindersViewController: RSDTableStepViewController {
 
         // See if we currently have any reminder intervals saved and, if so, add them to the result
         // for our new task so they are prepopulated for the user
-        if let intervals = intervals(from: taskController.taskPath),
+        if let intervals = intervals(from: taskController.taskPath, stepIdentifier: self.step.identifier),
             intervals.count > 0  {
             update(taskPath: taskPath, with: intervals, for: reminderChoicesStep.identifier)
         }
@@ -139,13 +127,13 @@ open class SBAMedicationRemindersViewController: RSDTableStepViewController {
     }
 }
 
-extension SBAMedicationRemindersViewController: RSDTaskViewControllerDelegate {
+extension SBAMedicationRemindersStepViewController: RSDTaskViewControllerDelegate {
     public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
         dismiss(animated: true, completion: nil)
     }
     
     public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
-        if let intervals = intervals(from: taskPath) {
+        if let intervals = intervals(from: taskPath, stepIdentifier: SBAMedicationRemindersStepObject.CodingKeys.reminderChoices.stringValue) {
             // Update our current task results with the intervals selected by the user
             update(taskPath: self.taskController.taskPath, with: intervals, for: self.step.identifier)
             tableView.reloadData()
@@ -160,12 +148,16 @@ extension SBAMedicationRemindersViewController: RSDTaskViewControllerDelegate {
 
 open class SBAMedicationRemindersStepObject: RSDFormUIStepObject, RSDStepViewControllerVendor {
     
-    /// Publicly accessible coding keys for the default structure for decoding items and sections.
     enum CodingKeys : String, CodingKey {
         case reminderChoices
     }
     
     public var reminderChoices: [RSDChoiceObject<Int>]?
+    
+    override open var inputFields: [RSDInputField] {
+        let dataType = RSDFormDataType.collection(.multipleChoice, .integer)
+        return [RSDInputFieldObject(identifier: RSDFormUIHint.modalButton.rawValue, dataType: dataType, uiHint: .modalButton, prompt: Localization.localizedString("MEDICATION_REMINDER_ADD"))]
+    }
     
     public required init(from decoder: Decoder) throws {
         try super.init(from: decoder)
@@ -179,7 +171,7 @@ open class SBAMedicationRemindersStepObject: RSDFormUIStepObject, RSDStepViewCon
     }
     
     public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
-        return SBAMedicationRemindersViewController(step: self)
+        return SBAMedicationRemindersStepViewController(step: self)
     }
     
     /// Returns the reminder choice step
