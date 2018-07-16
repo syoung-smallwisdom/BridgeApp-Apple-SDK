@@ -62,7 +62,9 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     override open func setupNavigationView(_ navigationView: RSDStepNavigationView, placement: RSDColorPlacement) {
         super.setupNavigationView(navigationView, placement: placement)
-        navigationView.cancelButton?.setImage(UIImage(named: "BackButtonIcon"), for: .normal)
+        if let backImage = UIImage(named: "BackButtonIcon") {
+            navigationView.cancelButton?.setImage(backImage, for: .normal)
+        }
     }
     
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
