@@ -45,7 +45,6 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
             actionType == .navigation(.skip) {
             return true
         }
-        // TODO: mdephillips 6/27/18 make X button be a back button
         return false
     }
     

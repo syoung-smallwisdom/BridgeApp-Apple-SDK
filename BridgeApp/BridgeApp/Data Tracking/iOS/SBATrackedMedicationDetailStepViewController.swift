@@ -226,17 +226,17 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     private var _activeIndexPath: IndexPath?
     
     open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        _endTimeEditingIfNeeded()
+        _ = _endTimeEditingIfNeeded()
         super.tableView(tableView, didSelectRowAt: indexPath)
     }
     
     open func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        _endTimeEditingIfNeeded()
+        _ = _endTimeEditingIfNeeded()
         return indexPath.section == 0 ? nil : indexPath
     }
     
     open override func goForward() {
-        _endTimeEditingIfNeeded(false)
+        _ = _endTimeEditingIfNeeded(false)
         super.goForward()
     }
     
@@ -247,77 +247,78 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
 
 extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklyScheduleCellDelegate {
     public func didTapDay(for cell: SBATrackedWeeklyScheduleCell) {
-        _endTimeEditingIfNeeded()
-        guard let scheduleItem = cell.tableItem as? SBATrackedWeeklyScheduleTableItem,
-            let source = tableData as? SBATrackedMedicationDetailsDataSource
-        else {
-            assertionFailure("Cannot handle the button tap.")
-            return
+        if !_endTimeEditingIfNeeded() {
+            guard let scheduleItem = cell.tableItem as? SBATrackedWeeklyScheduleTableItem,
+                let source = tableData as? SBATrackedMedicationDetailsDataSource
+            else {
+                assertionFailure("Cannot handle the button tap.")
+                return
+            }
+            self.selectedIndexPath = cell.indexPath
+            let step = source.step(for: scheduleItem)
+            
+            // Create the result to give the weekdays their pre-populated state
+            var previousResult = RSDCollectionResultObject(identifier: step.identifier)
+            var answerResult = RSDAnswerResultObject(identifier: step.identifier, answerType: RSDAnswerResultType(baseType: .string, sequenceType: .array, formDataType: .collection(.multipleChoice, .string), dateFormat: nil, unit: nil, sequenceSeparator: nil))
+            answerResult.value = scheduleItem.weekdays?.map({ $0.rawValue })
+            previousResult.inputResults = [answerResult]
+            
+            var navigator = RSDConditionalStepNavigatorObject(with: [step])
+            navigator.progressMarkers = []
+            let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
+            let path = RSDTaskPath(task: task)
+            path.appendStepHistory(with: previousResult)
+            let taskVc = RSDTaskViewController(task: task)
+            taskVc.taskPath = path
+            taskVc.delegate = self
+            self.present(taskVc, animated: true, completion: nil)
         }
-        self.selectedIndexPath = cell.indexPath
-        let step = source.step(for: scheduleItem)
-        
-        // Create the result to give the weekdays their pre-populated state
-        var previousResult = RSDCollectionResultObject(identifier: step.identifier)
-        var answerResult = RSDAnswerResultObject(identifier: step.identifier, answerType: RSDAnswerResultType(baseType: .string, sequenceType: .array, formDataType: .collection(.multipleChoice, .string), dateFormat: nil, unit: nil, sequenceSeparator: nil))
-        answerResult.value = scheduleItem.weekdays?.map({ $0.rawValue })
-        previousResult.inputResults = [answerResult]
-        
-        var navigator = RSDConditionalStepNavigatorObject(with: [step])
-        navigator.progressMarkers = []
-        let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
-        let path = RSDTaskPath(task: task)
-        path.appendStepHistory(with: previousResult)
-        let taskVc = RSDTaskViewController(task: task)
-        taskVc.taskPath = path
-        taskVc.delegate = self
-        self.present(taskVc, animated: true, completion: nil)
-    }
-    
-    public func didChangeDay(for cell: SBATrackedWeeklyScheduleCell, selected: Int) {
-        _endTimeEditingIfNeeded()
     }
     
     public func didChangeTiming(for cell: SBATrackedWeeklyScheduleCell, selected: Int) {
-        _endTimeEditingIfNeeded()
+        _ = _endTimeEditingIfNeeded()
     }
     
     public func didTapTime(for cell: SBATrackedWeeklyScheduleCell) {
-        _endTimeEditingIfNeeded()
+        _ = _endTimeEditingIfNeeded()
         _activeIndexPath = cell.indexPath
         self.tableView.reloadRows(at: [cell.indexPath], with: .none)
     }
     
-    private func _endTimeEditingIfNeeded(_ shouldCollapse: Bool = true) {
+    public func didChangeScheduleAtAnytimeSelection(for cell: SBATrackedWeeklyScheduleCell, selected: Bool) {
+        if !_endTimeEditingIfNeeded() {
+            cell.atAnytimeCheckbox.isSelected = selected
+            if let source = tableData as? SBATrackedMedicationDetailsDataSource {
+                let tableViewUpdates = source.scheduleAtAnytimeChanged(selected: selected)
+                self.tableView.beginUpdates()
+                if let lastSectionAdded = tableViewUpdates.sectionAdded {
+                    if lastSectionAdded {
+                        self.tableView.insertSections(IndexSet.init(integer: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.addSchedule.sectionIndex()), with: .left)
+                    } else {
+                        self.tableView.deleteSections(IndexSet.init(integer: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.addSchedule.sectionIndex()), with: .right)
+                    }
+                }
+                if let itemsRemoved = tableViewUpdates.itemsRemoved {
+                    self.tableView.deleteRows(at: itemsRemoved, with: .right)
+                }
+                self.tableView.reloadRows(at: [IndexPath(item: 0, section: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.schedules.sectionIndex())], with: .none)
+                self.tableView.endUpdates()
+            }
+        }
+    }
+    
+    /// @return true if time editing was closed, false if nothing was done
+    private func _endTimeEditingIfNeeded(_ shouldCollapse: Bool = true) -> Bool {
         guard let indexPath = _activeIndexPath,
             let cell = tableView.cellForRow(at: indexPath) as? SBATrackedWeeklyScheduleCell
             else {
-                return
+                return false
         }
         _activeIndexPath = nil
         if shouldCollapse {
             self.tableView.reloadRows(at: [cell.indexPath], with: .none)
         }
-    }
-    
-    public func didChangeScheduleAtAnytimeSelection(for cell: SBATrackedWeeklyScheduleCell, selected: Bool) {
-        if let source = tableData as? SBATrackedMedicationDetailsDataSource {
-            let tableViewUpdates = source.scheduleAtAnytimeChanged(selected: selected)
-            self.tableView.beginUpdates()
-            if let lastSectionAdded = tableViewUpdates.sectionAdded {
-                if lastSectionAdded {
-                    self.tableView.insertSections(IndexSet.init(integer: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.addSchedule.sectionIndex()), with: .left)
-                } else {
-                   self.tableView.deleteSections(IndexSet.init(integer: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.addSchedule.sectionIndex()), with: .right)
-                }
-            }
-            if let itemsRemoved = tableViewUpdates.itemsRemoved {
-                self.tableView.deleteRows(at: itemsRemoved, with: .right)
-            }
-            self.tableView.reloadRows(at: [IndexPath(item: 0, section: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.schedules.sectionIndex())], with: .none)
-            self.tableView.endUpdates()
-        }
-        _endTimeEditingIfNeeded()
+        return true
     }
 }
 
@@ -460,30 +461,10 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
             if scheduleItem.weekdays?.count ?? 0 == RSDWeekday.all.count {                    dayButton.setTitle(Localization.localizedString("MEDICATION_SCHEDULE_EVERYDAY"), for: .normal)
             } else {
                 if let weekdays = scheduleItem.weekdays {
-                    dayButton.setTitle(SBATrackedWeeklyScheduleCell.weekdayTitle(for: weekdays), for: .normal)
+                    dayButton.setTitle(RSDWeeklyScheduleFormatter().string(from: Set(weekdays)), for: .normal)
                 }
             }
         }
-    }
-    
-    public static func weekdayTitle(for weekdays: [RSDWeekday]) -> String {
-        let daysPerLine = 3
-        var count = 0
-        var dayButtonTitle = ""
-        for weekday in weekdays {
-            dayButtonTitle += weekday.text ?? ""
-            count = count + 1
-            if count % daysPerLine == 0 && count != weekdays.count {
-                dayButtonTitle += ",\n"
-            } else if count < weekdays.count {
-                if count == weekdays.count - 1 {
-                    dayButtonTitle += ", and "
-                } else {
-                    dayButtonTitle += ", "
-                }
-            }
-        }
-        return dayButtonTitle
     }
     
     var weeklyScheduleTableItem: SBATrackedWeeklyScheduleTableItem? {
@@ -503,8 +484,7 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     }
     
     @IBAction func atAnytimeTapped(_ sender: RSDCheckboxButton) {
-        sender.isSelected = !sender.isSelected
-        self.delegate?.didChangeScheduleAtAnytimeSelection(for: self, selected: sender.isSelected)
+        self.delegate?.didChangeScheduleAtAnytimeSelection(for: self, selected: !sender.isSelected)
     }
 }
 
