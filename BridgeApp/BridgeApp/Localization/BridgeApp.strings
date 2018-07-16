@@ -64,6 +64,11 @@
 "MEDICATION_REMOVE_BUTTON_TEXT" = "Yes, remove medication";
 "MEDICATION_REMOVE_MEDICATION" = "Remove medication";
 "MEDICATION_REMOVE_TITLE_%@" = "Are you sure you want to remove %@ from your current medication list?";
+"MEDICATION_REMINDER_CHOICES_TITLE" = "When do you want us to remind you?";
+"MEDICATION_REMINDER_ADD" = "Add reminders";
+"MEDICATION_REMINDER_CHOICES_NONE_SET" = "(no reminders set)";
+"MEDICATION_REMINDER_CHOICES_%@" = "%@ minutes before medication time.";
+
 
 /* Failure messages */
 "NETWORK_FAILURE_TITLE" = "Could Not Complete"; // Title for a step or alert indicating a network failure

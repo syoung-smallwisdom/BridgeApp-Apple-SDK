@@ -323,7 +323,13 @@ class CodableTrackedDataTests: XCTestCase {
                         { "identifier": "itemB2", "sectionIdentifier" : "b" },
                         { "identifier": "itemC1", "sectionIdentifier" : "c" }
                     ],
-            "sections": [{ "identifier": "a" }, { "identifier": "b" }, { "identifier": "c" }]
+            "sections": [{ "identifier": "a" }, { "identifier": "b" }, { "identifier": "c" }],
+            "reminder": {
+                "identifier": "medicationReminders",
+                "type": "medicationReminders",
+                "dataType": "integer",
+                "reminderChoices": [ { "text": "No reminder" } ]
+            }
         }
         """.data(using: .utf8)! // our data in native (JSON) format
         

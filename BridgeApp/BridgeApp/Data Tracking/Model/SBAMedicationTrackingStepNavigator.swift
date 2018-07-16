@@ -35,14 +35,27 @@ import Foundation
 
 open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
-    public var reminderStep: SBAMedicationRemindersStepObject? {
-        // Only initialize when needed, some run-throughs of medication dont need this step
-        if _reminderStep == nil {
-            self.buildReminderStep()
-        }
-        return _reminderStep
+    private enum CodingKeys : String, CodingKey {
+        case reminder
     }
-    fileprivate var _reminderStep: SBAMedicationRemindersStepObject?
+    
+    public private(set) var reminderStep: SBAMedicationRemindersStepObject?
+    
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let reminderStep: SBAMedicationRemindersStepObject? = try {
+            guard container.contains(.reminder) else { return nil }
+            let nestedDecoder = try container.superDecoder(forKey: .reminder)
+            return try decoder.factory.decodeStep(from: nestedDecoder) as? SBAMedicationRemindersStepObject
+        }()
+        self.reminderStep = reminderStep ?? type(of: self).buildReminderStep()
+    }
+    
+    public required init(identifier: String, items: [SBATrackedItem], sections: [SBATrackedSection]?) {
+        self.reminderStep = type(of: self).buildReminderStep()
+        super.init(identifier: identifier, items: items, sections: sections)
+    }
     
     override open class func decodeItems(from decoder: Decoder) throws -> (items: [SBATrackedItem], sections: [SBATrackedSection]?) {
         let container = try decoder.container(keyedBy: ItemsCodingKeys.self)
@@ -74,6 +87,11 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
                         .addMore : addMoreAction]
         
         return step
+    }
+    
+    /// @return a step that will be used to set medication reminders
+    open class func buildReminderStep() -> SBAMedicationRemindersStepObject? {
+        return nil
     }
     
     override open class func buildDetailSteps(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> [SBATrackedItemDetailsStep]? {
@@ -144,17 +162,6 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     func isDetailStep(with identifier: String?) -> Bool {
         guard let identifierUnwrapped = identifier else { return false }
         return self.items.contains(where: { $0.identifier == identifierUnwrapped })
-    }
-    
-    func buildReminderStep() {
-        do {
-            let resourceTransformer = RSDResourceTransformerObject(resourceName: "MedicationReminder")
-            let task = try RSDFactory.shared.decodeTask(with: resourceTransformer)
-            _reminderStep = task.stepNavigator.step(with: "medicationReminder") as? SBAMedicationRemindersStepObject
-            _reminderStep?.reminderTimeChoiceStep = task.stepNavigator.step(with: "medicationReminderDetails") as? RSDFormUIStepObject
-        } catch let err {
-            fatalError("Failed to decode the task. \(err)")
-        }
     }
 }
 
