@@ -277,26 +277,17 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertEqual(finalReviewStep.identifier, initialReviewStep.identifier)
         XCTAssertFalse(medTracker.hasStep(before: finalReviewStep, with: taskResult))
         
-        // Next step after the review step will be the reminder step because nextStepIdentifier will be nil
-        finalReviewStep.nextStepIdentifier = nil
-        let (seventhStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
-        XCTAssertNotNil(seventhStep )
-        
-        guard let reminderStep = seventhStep as? SBAMedicationRemindersStepObject else {
-            XCTFail("Failed to return the reminderStep. Exiting. \(String(describing: seventhStep))")
-            return
-        }
-        
         // TODO: mdephillips 7/12/18 add unit tests for logging
-        let (lastStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
-        XCTAssertNil(lastStep)
+//        let (lastStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
+//        XCTAssertNil(lastStep)
     }
     
     func testMedicationTrackingNavigation_FirstRun_CustomOrder() {
         NSLocale.setCurrentTest(Locale(identifier: "en_US"))
         
         let (items, sections) = buildMedicationItems()
-        let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: sections)
+        // SBAMedicationTrackingStepNavigatorWithReminders class will include remidners step
+        let medTracker = SBAMedicationTrackingStepNavigatorWithReminders(identifier: "Test", items: items, sections: sections)
         
         var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "medication")
         
@@ -381,12 +372,18 @@ class MedicationTrackingNavigationTests: XCTestCase {
         // Next step after the review step will be the reminder step because nextStepIdentifier will be nil
         finalReviewStep.nextStepIdentifier = nil
         let (seventhStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
-        XCTAssertNotNil(seventhStep )
+        XCTAssertNotNil(seventhStep)
         
         guard let reminderStep = seventhStep as? SBAMedicationRemindersStepObject else {
             XCTFail("Failed to return the reminderStep. Exiting. \(String(describing: seventhStep))")
             return
         }
+        XCTAssertEqual(reminderStep.identifier, "reminder")
+        XCTAssertEqual(reminderStep.title, "reminder title")
+        XCTAssertEqual(reminderStep.detail, "reminder detail")
+        XCTAssertNotNil(reminderStep.reminderChoices)
+        
+        XCTAssertNotNil(reminderStep.reminderChoicesStep())
         
         // TODO: mdephillips 7/12/18 add unit tests for logging
         let (lastStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
@@ -582,4 +579,15 @@ func buildMedicationItems() -> (items: [SBAMedicationItem], sections: [SBATracke
                         ]
     
     return (items, sections)
+}
+
+open class SBAMedicationTrackingStepNavigatorWithReminders: SBAMedicationTrackingStepNavigator {
+    /// @return a step that will be used to set medication reminders
+    override open class func buildReminderStep() -> SBAMedicationRemindersStepObject? {
+        let step = SBAMedicationRemindersStepObject(identifier: "reminder", type: .medicationReminders)
+        step.title = "reminder title"
+        step.detail = "reminder detail"
+        step.reminderChoices = try? [RSDChoiceObject(value: 15), RSDChoiceObject(value: 30)]
+        return step
+    }
 }
