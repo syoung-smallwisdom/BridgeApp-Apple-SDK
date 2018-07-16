@@ -175,7 +175,6 @@
             },
             "actions" : { "goForward": { "type": "default", "buttonTitle": "Submit" }},
             "shouldHideActions":["skip", "goBackward"],
-            "dataType": "integer",
             "reminderChoices": [
                         {
                         "text": "15 minutes before",
@@ -194,7 +193,8 @@
                         "value": 60
                         },
                         {
-                        "text": "No reminder"
+                        "text": "No reminder",
+                        "isExclusive": true
                         },
                         ]
     },

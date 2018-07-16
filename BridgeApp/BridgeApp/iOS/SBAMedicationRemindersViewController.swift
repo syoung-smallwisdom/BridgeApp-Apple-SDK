@@ -38,10 +38,6 @@ open class SBAMedicationRemindersStepViewController: RSDTableStepViewController 
     public var reminderStep: SBAMedicationRemindersStepObject? {
         return self.step as? SBAMedicationRemindersStepObject
     }
-    
-    override open var isForwardEnabled: Bool {
-        return true
-    }
 
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
@@ -58,6 +54,15 @@ open class SBAMedicationRemindersStepViewController: RSDTableStepViewController 
         }
     }
     private var _registeredIdentifiers = Set<String>()
+    
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        // See if we don't currently have any reminder intervals saved, if so, set a default "do not remind me" state
+        if intervals(from: taskController.taskPath, stepIdentifier: self.step.identifier) == nil {
+            update(taskPath: taskController.taskPath, with: [], for: self.step.identifier)
+            super.answersDidChange(in: 0)
+        }
+    }
 
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
@@ -146,7 +151,7 @@ extension SBAMedicationRemindersStepViewController: RSDTaskViewControllerDelegat
     }
 }
 
-open class SBAMedicationRemindersStepObject: RSDFormUIStepObject, RSDStepViewControllerVendor {
+open class SBAMedicationRemindersStepObject: RSDUIStepObject, RSDFormUIStep, RSDStepViewControllerVendor {
     
     enum CodingKeys : String, CodingKey {
         case reminderChoices
@@ -154,9 +159,11 @@ open class SBAMedicationRemindersStepObject: RSDFormUIStepObject, RSDStepViewCon
     
     public var reminderChoices: [RSDChoiceObject<Int>]?
     
-    override open var inputFields: [RSDInputField] {
+    open var inputFields: [RSDInputField] {
         let dataType = RSDFormDataType.collection(.multipleChoice, .integer)
-        return [RSDInputFieldObject(identifier: RSDFormUIHint.modalButton.rawValue, dataType: dataType, uiHint: .modalButton, prompt: Localization.localizedString("MEDICATION_REMINDER_ADD"))]
+        let inputField = RSDInputFieldObject(identifier: RSDFormUIHint.modalButton.rawValue, dataType: dataType, uiHint: .modalButton, prompt: Localization.localizedString("MEDICATION_REMINDER_ADD"))
+        inputField.isOptional = true
+        return [inputField]
     }
     
     public required init(from decoder: Decoder) throws {
