@@ -36,6 +36,12 @@ import Foundation
 /// The medication logging step is used to log information about each item that is being tracked.
 open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RSDNavigationSkipRule {
     
+    #if !os(watchOS)
+    override open func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
+        return SBATrackedMedicationLoggingStepViewController(step: self)
+    }
+    #endif
+    
     /// Override to return a `SBAMedicationLoggingDataSource`.
     open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
         return SBAMedicationLoggingDataSource(step: self, taskPath: taskPath)
@@ -103,6 +109,22 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
 
         return (sections, itemGroups)
     }
+    
+    /// Returns the review step.
+    override open func step(for tableItem: RSDModalStepTableItem) -> RSDStep {
+        guard let step = (self.taskPath.task?.stepNavigator as? SBATrackedItemsStepNavigator)?.getReviewStep() as? SBATrackedItemsStep
+            else {
+                assertionFailure("Expecting the task navigator to be a tracked items navigator.")
+                return RSDUIStepObject(identifier: tableItem.identifier)
+        }
+        return step
+    }
+}
+
+extension RSDFormUIHint {
+    
+    /// Display a cell appropriate to logging a timestamp.
+    public static let medicationLogging: RSDFormUIHint = "medicationLogging"
 }
 
 struct MedicationTiming {
@@ -166,7 +188,7 @@ extension SBAMedicationAnswer {
             }
             
             let rowIndex = isCurrent ? currentItems.count : missedItems.count
-            let tableItem = SBATrackedLoggingTableItem(rowIndex: rowIndex, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString)
+            let tableItem = SBATrackedMedicationLoggingTableItem(rowIndex: rowIndex, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString, groupCount: scheduleItems.count)
             tableItem.title = self.longTitle
             tableItem.detail = (scheduleTime == nil) ?
                 Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
@@ -186,6 +208,20 @@ extension SBAMedicationAnswer {
         }
     
         return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: currentItems, missedItems: missedItems)
+    }
+}
+
+open class SBATrackedMedicationLoggingTableItem: SBATrackedLoggingTableItem {
+    
+    /// The number of items in this item's subgrouping (for schedules that are grouped).
+    public private(set) var groupCount: Int
+    
+    /// Used to keep track of the state of editing the display time
+    public var isEditingDisplayTime = false
+    
+    public init(rowIndex: Int, itemIdentifier: String, timingIdentifier: String? = nil, timeOfDayString: String? = nil, groupCount: Int, uiHint: RSDFormUIHint = .medicationLogging) {
+        self.groupCount = groupCount
+        super.init(rowIndex: rowIndex, itemIdentifier: itemIdentifier, timingIdentifier: timingIdentifier, timeOfDayString: timeOfDayString, uiHint: uiHint)
     }
 }
 

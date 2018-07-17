@@ -68,6 +68,8 @@
 "MEDICATION_REMINDER_ADD" = "Add reminders";
 "MEDICATION_REMINDER_CHOICES_NONE_SET" = "(no reminders set)";
 "MEDICATION_REMINDER_CHOICES_%@" = "%@ minutes before medication time.";
+"MEDICATION_LOGGING_TIME_EDIT_%@" = "%@ - Edit";
+"MEDICATION_VIEW_LIST" = "View medication list";
 
 
 /* Failure messages */

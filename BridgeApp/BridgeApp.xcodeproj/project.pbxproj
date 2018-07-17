@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0356943A20EECD4D006A555A /* SBAMedicationRemindersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356943920EECD4D006A555A /* SBAMedicationRemindersViewController.swift */; };
+		CB267A9D20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */; };
+		CB267AB320FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB267AB220FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib */; };
 		CB65715120E056CC00A8E61C /* SBAUnderlinedButtonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB65713C20E056CC00A8E61C /* SBAUnderlinedButtonCell.xib */; };
 		CB65715320E07AE200A8E61C /* SBARoundedButtonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB65715220E07AE100A8E61C /* SBARoundedButtonCell.xib */; };
 		CB65717B20E2946C00A8E61C /* SBAFormTitleTextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB65716620E2946C00A8E61C /* SBAFormTitleTextCell.xib */; };
@@ -262,6 +264,8 @@
 
 /* Begin PBXFileReference section */
 		0356943920EECD4D006A555A /* SBAMedicationRemindersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAMedicationRemindersViewController.swift; sourceTree = "<group>"; };
+		CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATrackedMedicationLoggingStepViewController.swift; sourceTree = "<group>"; };
+		CB267AB220FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBAMedicationLoggingCell.xib; sourceTree = "<group>"; };
 		CB65713C20E056CC00A8E61C /* SBAUnderlinedButtonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBAUnderlinedButtonCell.xib; sourceTree = "<group>"; };
 		CB65715220E07AE100A8E61C /* SBARoundedButtonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBARoundedButtonCell.xib; sourceTree = "<group>"; };
 		CB65716620E2946C00A8E61C /* SBAFormTitleTextCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBAFormTitleTextCell.xib; sourceTree = "<group>"; };
@@ -591,6 +595,7 @@
 				CBED326820C84C8F009D32F0 /* SBATrackedMedicationDetailStepViewController.swift */,
 				CBED325920C5E349009D32F0 /* SBATrackedMedicationReviewStepViewController.swift */,
 				CB65717C20E2953000A8E61C /* SBARemoveMedicationStepViewController.swift */,
+				CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -598,6 +603,7 @@
 		F847952F207FF0C90024A230 /* Default Nibs and Storyboards */ = {
 			isa = PBXGroup;
 			children = (
+				CB267AB220FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib */,
 				CB74DC9220D88EC4008DBB6C /* SBATrackedTextfieldCell.xib */,
 				CBC1F44D20F98F8A003DFF9B /* SBATrackedModalButtonCell.xib */,
 				F8C7D4112092A1F5007490BC /* SBASymptomLoggingCell.xib */,
@@ -967,6 +973,7 @@
 				CB74DC9320D88EC4008DBB6C /* SBATrackedTextfieldCell.xib in Resources */,
 				F85AABE920800D120059F019 /* SBATrackedLoggingCell.xib in Resources */,
 				CBED325D20C83538009D32F0 /* Assets.xcassets in Resources */,
+				CB267AB320FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib in Resources */,
 				F818E2412032B07E00C538ED /* README.md in Resources */,
 				F886FD342036067300EF2248 /* BridgeApp.strings in Resources */,
 			);
@@ -1004,6 +1011,7 @@
 				F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */,
 				F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */,
 				F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */,
+				CB267A9D20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */,
 				F8C7D3F6209285A8007490BC /* SBASymptomLoggingStepObject.swift in Sources */,
 				F8479521207FEA9D0024A230 /* SBATrackedItemsLoggingStepObject.swift in Sources */,
 				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,

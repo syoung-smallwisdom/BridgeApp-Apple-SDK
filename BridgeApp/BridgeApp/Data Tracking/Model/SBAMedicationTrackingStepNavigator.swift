@@ -41,6 +41,8 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
     public private(set) var reminderStep: SBAMedicationRemindersStepObject?
     
+    private var inMemoryMedicationResult: SBAMedicationTrackingResult?
+    
     public required init(from decoder: Decoder) throws {
         try super.init(from: decoder)
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -100,11 +102,15 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     }
     
     override open class func buildLoggingStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep {
-        return SBAMedicationLoggingStepObject(identifier: StepIdentifiers.logging.stringValue, items: items, sections: sections)
+        let loggingStep = SBAMedicationLoggingStepObject(identifier: StepIdentifiers.logging.stringValue, items: items, sections: sections)
+        loggingStep.actions = [.addMore: RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_VIEW_LIST"))]
+        return loggingStep
     }
     
     override open func instantiateLoggingResult() -> SBATrackedItemsCollectionResult {
-        return SBAMedicationTrackingResult(identifier: self.reviewStep!.identifier)
+        // Hold on to the medication tracking result so that we can make changes to it
+        self.inMemoryMedicationResult = SBAMedicationTrackingResult(identifier: self.reviewStep!.identifier)
+        return self.inMemoryMedicationResult!
     }
     
     override open func getDetailStep(with identifier: String) -> (RSDStep, SBATrackedItemAnswer)? {
@@ -148,11 +154,28 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         
         if let reviewStep = step as? SBATrackedItemsReviewStepObject,
             reviewStep.nextStepIdentifier == nil {
-            return (self.reminderStep, .forward)
+            if let reminderStepUnwrapped = self.reminderStep,
+                !reminderStepUnwrapped.shouldSkipStep(with: result, conditionalRule: nil, isPeeking: false) {
+                return (reminderStepUnwrapped, .forward)
+            } else {
+                return (getLoggingStep(), .forward)
+            }
         }
         
         if let _ = step as? SBAMedicationRemindersStepObject {
-            // TODO: medphillips 7/12/18, go to logging step
+            if let stepResult = result.stepHistory.last as? RSDCollectionResult,
+                let reminderMinutes = (stepResult.inputResults.first as? RSDAnswerResult)?.value as? [Int] {
+                self.inMemoryMedicationResult?.reminders = reminderMinutes
+            } else {
+                self.inMemoryMedicationResult?.reminders = nil
+            }
+            return (getLoggingStep(), .forward)
+        }
+        
+        if let medLoggingStep = step as? SBAMedicationLoggingStepObject {
+            if medLoggingStep.nextStepIdentifier == getReviewStep()?.identifier {
+                return (getReviewStep(), .forward)
+            }
             return (nil, .forward)
         }
         
@@ -355,13 +378,20 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         return medications
     }
     
+    /// A list of minutes before the medication scheduled times that a user should be reminded about each medication
+    public var reminders: [Int]?
+    
     public init(identifier: String) {
         self.identifier = identifier
     }
     
     public func copy(with identifier: String) -> SBAMedicationTrackingResult {
         var copy = SBAMedicationTrackingResult(identifier: identifier)
+        copy.startDate = self.startDate
+        copy.endDate = self.endDate
+        copy.type = self.type
         copy.medications = self.medications
+        copy.reminders = self.reminders
         return copy
     }
     

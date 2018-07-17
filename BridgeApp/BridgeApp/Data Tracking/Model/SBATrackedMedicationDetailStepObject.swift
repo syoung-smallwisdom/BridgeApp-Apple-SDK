@@ -201,7 +201,7 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
         }
         if (selected) {
             scheduleItem.time = nil
-            scheduleItem.weekdays = nil
+            scheduleItem.weekdays = Array(RSDWeekday.all)
         } else {
             scheduleItem.time = Calendar.current.date(bySetting: .hour, value: 7, of: Date().startOfDay())
             scheduleItem.weekdays = [.friday]
