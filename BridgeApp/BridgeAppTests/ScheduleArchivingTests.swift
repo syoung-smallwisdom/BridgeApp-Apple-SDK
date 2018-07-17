@@ -47,7 +47,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     }
     
     func testScheduledActivity_CompoundTask_InsertedTask() {
-        let taskPath = createCompoundTaskController().taskPath!
+        let taskPath = runCompoundTask()
         guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
             XCTFail("Failed to build the expected child paths.")
             return
@@ -69,7 +69,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     }
     
     func testDataArchiver_CompoundTask_WithSchedules() {
-        let taskPath = createCompoundTaskController().taskPath!
+        let taskPath = runCompoundTask()
         
         // Create an associated schedule for the inserted task and the top level task
         let schedules = self.createSchedules(identifiers: [mainTaskIdentifier, insertTaskIdentifier],
@@ -115,7 +115,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     }
     
     func testDataArchiver_CompoundTask_NoSchedules() {
-        let taskPath = createCompoundTaskController().taskPath!
+        let taskPath = runCompoundTask()
         
         let topResult = taskPath.result
         guard let archive = self.scheduleManager.dataArchiver(for: topResult,
@@ -157,7 +157,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     func testGetClientData_CompoundTask() {
         shouldReplacePrevious = false
 
-        let taskPath = createCompoundTaskController().taskPath!
+        let taskPath = runCompoundTask()
         guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
             XCTFail("Fails assumption. Could not retrieve child task path.")
             return
@@ -172,7 +172,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
                 return
         }
         
-        let topClientData = self.scheduleManager.buildClientData(from: taskPath, for: topSchedule)?.clientData
+        let topClientData = self.scheduleManager.buildClientData(from: taskPath.result, for: topSchedule)?.clientData
         XCTAssertNotNil(topClientData)
         if let dictionary = topClientData as? NSDictionary {
             let expectedDictionary : NSDictionary = [
@@ -189,7 +189,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             XCTFail("\(String(describing: topClientData)) is not a Dictionary.")
         }
         
-        let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath, for: subtaskSchedule)?.clientData
+        let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath.result, for: subtaskSchedule)?.clientData
         XCTAssertNotNil(insertedClientData)
         if let stringValue = insertedClientData as? String {
             XCTAssertEqual(stringValue, "insertStep")
@@ -202,7 +202,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     func testAppendClientData_ShouldReplaceIsFalse() {
         shouldReplacePrevious = false
         
-        let taskPath = createCompoundTaskController().taskPath!
+        let taskPath = runCompoundTask()
         guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
             XCTFail("Fails assumption. Could not retrieve child task path.")
             return
@@ -216,17 +216,17 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
                 return
         }
         
-        self.scheduleManager.appendClientData(from: subtaskPath, to: schedule)
+        self.scheduleManager.appendClientData(from: subtaskPath.result, to: schedule)
         XCTAssertEqual(schedule.clientData as? [String], ["insertStep"])
         
-        self.scheduleManager.appendClientData(from: subtaskPath, to: schedule)
+        self.scheduleManager.appendClientData(from: subtaskPath.result, to: schedule)
         XCTAssertEqual(schedule.clientData as? [String], ["insertStep", "insertStep"])
     }
     
     func testAppendClientData_ShouldReplaceIsTrue() {
         shouldReplacePrevious = true
         
-        let taskPath = createCompoundTaskController().taskPath!
+        let taskPath = runCompoundTask()
         guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
             XCTFail("Fails assumption. Could not retrieve child task path.")
             return
@@ -240,15 +240,18 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             return
         }
         
-        self.scheduleManager.appendClientData(from: subtaskPath, to: schedule)
+        self.scheduleManager.appendClientData(from: subtaskPath.result, to: schedule)
         XCTAssertEqual(schedule.clientData as? [String], ["insertStep"])
         
-        self.scheduleManager.appendClientData(from: subtaskPath, to: schedule)
+        self.scheduleManager.appendClientData(from: subtaskPath.result, to: schedule)
         XCTAssertEqual(schedule.clientData as? [String], ["insertStep"])
     }
     
     func testUpdateSchedules() {
-        let taskPath = createCompoundTaskController().taskPath!
+        // Before calling the readyToSave method of the task controller, the task path is copied. The copy
+        // does not include pointers to objects that are used to run the task and **only** includes properties
+        // used to archive the task result.
+        let taskPath = runCompoundTask().copy() as! RSDTaskPath
         let schedules = self.createSchedules(identifiers: [mainTaskIdentifier, insertTaskIdentifier],
                                              clientData: nil)
         guard let topSchedule = schedules[mainTaskIdentifier],
@@ -288,7 +291,9 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     let mainTaskSchemaIdentifier = "test"
     let mainTaskSchemaRevision = 2
     
-    func createCompoundTaskController() -> TestTaskController {
+    let tempTaskIdentifier = "tempTask"
+    
+    func runCompoundTask() -> RSDTaskPath {
         
         // Create a task to be inserted into the parent task.
         let insertStep = TestStep(identifier: "insertStep")
@@ -309,7 +314,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         taskController.topLevelTask = task
         let _ = taskController.test_stepTo("completion")
         
-        return taskController
+        return taskController.taskPath!
     }
 }
 
