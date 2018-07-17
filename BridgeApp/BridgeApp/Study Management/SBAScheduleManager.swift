@@ -610,15 +610,16 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         
         // Recursively get and update all the schedules in this task path.
         var schedules = [SBBScheduledActivity]()
-        func appendSchedule(for path: RSDTaskPath) {
-            if let schedule = self.getAndUpdateSchedule(for: path) {
+        func appendSchedule(_ taskResult: RSDTaskResult,_ scheduleIdentifier: String?) {
+            if let schedule = self.getAndUpdateSchedule(for: taskResult, with: scheduleIdentifier) {
                 schedules.append(schedule)
             }
-            path.childPaths.enumerated().forEach {
-                appendSchedule(for: $0.element.value)
+            taskResult.stepHistory.forEach {
+                guard let subtaskResult = $0 as? RSDTaskResult else { return }
+                appendSchedule(subtaskResult, nil)
             }
         }
-        appendSchedule(for: taskPath)
+        appendSchedule(taskPath.result, taskPath.scheduleIdentifier)
 
         // Send message to server that the scheduled activites were updated.
         self.sendUpdated(for: schedules, taskPath: taskPath)
@@ -626,16 +627,16 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     
     /// For each schedule that this task modifies, mark it as completed and add the client data.
     ///
-    /// - parameter taskPath: The task path for the task which has just run.
-    open func getAndUpdateSchedule(for taskPath: RSDTaskPath) -> SBBScheduledActivity? {
-        guard let schedule = self.scheduledActivity(for: taskPath.result, scheduleIdentifier: taskPath.scheduleIdentifier)
+    /// - parameter taskResult: The task result for the task which has just run.
+    open func getAndUpdateSchedule(for taskResult: RSDTaskResult, with scheduleIdentifier: String?) -> SBBScheduledActivity? {
+        guard let schedule = self.scheduledActivity(for: taskResult, scheduleIdentifier: scheduleIdentifier)
             else {
                 return nil
         }
         
-        schedule.startedOn = taskPath.result.startDate
-        schedule.finishedOn = taskPath.result.endDate
-        self.appendClientData(from: taskPath, to: schedule)
+        schedule.startedOn = taskResult.startDate
+        schedule.finishedOn = taskResult.endDate
+        self.appendClientData(from: taskResult, to: schedule)
         
         return schedule
     }
@@ -643,10 +644,10 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// Append the client data to the schedule.
     ///
     /// - parameters:
-    ///     - taskPath: The task path for the task which has just run.
+    ///     - taskResult: The task result for the task which has just run.
     ///     - schedule: The schedule associated with this task segment.
-    open func appendClientData(from taskPath: RSDTaskPath, to schedule: SBBScheduledActivity) {
-        guard let (clientData, shouldReplace) = self.buildClientData(from: taskPath, for: schedule) else { return }
+    open func appendClientData(from taskResult: RSDTaskResult, to schedule: SBBScheduledActivity) {
+        guard let (clientData, shouldReplace) = self.buildClientData(from: taskResult, for: schedule) else { return }
         if !shouldReplace, let existingClientData = schedule.clientData {
             
             // If there is previous client data, then append this to that object.
@@ -679,17 +680,17 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// Build the client data from the given task path.
     ///
     /// - parameters:
-    ///     - taskPath: The task path for the task which has just run.
+    ///     - taskResult: The task result for the task which has just run.
     ///     - schedule: The schedule associated with this task segment.
     /// - returns: The client data built for this task path (if any).
-    open func buildClientData(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> (clientData: SBBJSONValue, shouldReplacePrevious: Bool)? {
+    open func buildClientData(from taskResult: RSDTaskResult, for schedule: SBBScheduledActivity) -> (clientData: SBBJSONValue, shouldReplacePrevious: Bool)? {
         do {
-            let clientData = try recursiveGetClientData(from: taskPath.result, isTopLevel: true)
+            let clientData = try recursiveGetClientData(from: taskResult, isTopLevel: true)
             if clientData != nil {
                 return clientData
             }
             else {
-                let answerMap = self.buildSurveyAnswerMap(from: taskPath, for: schedule)
+                let answerMap = self.buildSurveyAnswerMap(from: taskResult, for: schedule)
                 if answerMap.count > 0 {
                     return (answerMap as NSDictionary, true)
                 }
@@ -706,8 +707,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     
     /// Build a simple answer map for this task result.
     /// - note: This can be used to create client data for surveys.
-    open func buildSurveyAnswerMap(from taskPath: RSDTaskPath, for schedule: SBBScheduledActivity) -> [String : Any] {
-        let taskResult = taskPath.result
+    open func buildSurveyAnswerMap(from taskResult: RSDTaskResult, for schedule: SBBScheduledActivity) -> [String : Any] {
         var answers = [String : Any]()
         
         func appendValue(_ value: Any?, forKey key: String) {
