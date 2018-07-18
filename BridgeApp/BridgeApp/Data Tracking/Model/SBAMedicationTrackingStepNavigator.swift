@@ -41,8 +41,6 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
     public private(set) var reminderStep: SBAMedicationRemindersStepObject?
     
-    private var inMemoryMedicationResult: SBAMedicationTrackingResult?
-    
     public required init(from decoder: Decoder) throws {
         try super.init(from: decoder)
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -108,9 +106,7 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     }
     
     override open func instantiateLoggingResult() -> SBATrackedItemsCollectionResult {
-        // Hold on to the medication tracking result so that we can make changes to it
-        self.inMemoryMedicationResult = SBAMedicationTrackingResult(identifier: self.reviewStep!.identifier)
-        return self.inMemoryMedicationResult!
+        return SBAMedicationTrackingResult(identifier: self.reviewStep!.identifier)
     }
     
     override open func getDetailStep(with identifier: String) -> (RSDStep, SBATrackedItemAnswer)? {
@@ -188,9 +184,9 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     open func step(after reminderStep: SBAMedicationRemindersStepObject, result: inout RSDTaskResult) -> RSDStep? {
         if let stepResult = result.stepHistory.last as? RSDCollectionResult,
             let reminderMinutes = (stepResult.inputResults.first as? RSDAnswerResult)?.value as? [Int] {
-            self.inMemoryMedicationResult?.reminders = reminderMinutes
+            self.updateInMemoryResultDetails(to: SBATrackedMedicationReminderAnswer(reminders: reminderMinutes))
         } else {
-            self.inMemoryMedicationResult?.reminders = []
+            self.updateInMemoryResultDetails(to: SBATrackedMedicationReminderAnswer(reminders: []))
         }
         return getLoggingStep()
     }
@@ -474,6 +470,8 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
             medication.timestamps = timestamps
             self.medications.remove(at: idx)
             self.medications.insert(medication, at: idx)
+        } else if let remindersResult = newValue as? SBATrackedMedicationReminderAnswer {
+            self.reminders = remindersResult.reminders
         }
     }
     
@@ -529,6 +527,49 @@ public struct SBATimestamp : Codable, Hashable, RSDScheduleTime {
         else {
             return nil
         }
+    }
+}
+
+/// This class is used to communicate to the step navigator changes in the medication reminders
+public struct SBATrackedMedicationReminderAnswer: Codable, SBATrackedItemAnswer {
+    
+    private enum CodingKeys : String, CodingKey {
+        case reminders
+    }
+    
+    /// An array of minutes that represent the time before a medication is scheduled that the user should be reminded
+    public var reminders: [Int]?
+    
+    public var identifier: String {
+        return "Reminders"
+    }
+    
+    public var hasRequiredValues: Bool {
+        return self.reminders != nil
+    }
+    
+    public var answerValue: Codable? {
+        return self.reminders
+    }
+    
+    public var text: String? {
+        return nil
+    }
+    
+    public var detail: String? {
+        return nil
+    }
+    
+    public var isExclusive: Bool {
+        return false
+    }
+    
+    public var imageVendor: RSDImageVendor? {
+        return nil
+    }
+    
+    public func isEqualToResult(_ result: RSDResult?) -> Bool {
+        return false
     }
 }
 
