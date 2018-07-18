@@ -306,11 +306,11 @@ class MedicationTrackingNavigationTests: XCTestCase {
         taskResult.appendStepHistory(with: selectionResult)
         
         let (step2, _) = medTracker.step(after: selectionStep, with: &taskResult)
-        guard let initialReviewStep = step2 as? SBATrackedItemsReviewStepObject else {
+        guard let reviewStep1 = step2 as? SBATrackedItemsReviewStepObject else {
             XCTFail("Failed to create the initial review step. Exiting.")
             return
         }
-        guard let secondResult = initialReviewStep.instantiateStepResult() as? SBAMedicationTrackingResult else {
+        guard let secondResult = reviewStep1.instantiateStepResult() as? SBAMedicationTrackingResult else {
             XCTFail("Failed to create the expected result. Exiting.")
             return
         }
@@ -318,9 +318,9 @@ class MedicationTrackingNavigationTests: XCTestCase {
         taskResult.appendStepHistory(with: secondResult)
         
         // Set up the review step with a custom order by setting the next step identifier
-        initialReviewStep.nextStepIdentifier = "medB4"
+        reviewStep1.nextStepIdentifier = "medB4"
         
-        let (thirdStep, _) = medTracker.step(after: initialReviewStep, with: &taskResult)
+        let (thirdStep, _) = medTracker.step(after: reviewStep1, with: &taskResult)
 
         XCTAssertNotNil(thirdStep)
         XCTAssertEqual(thirdStep?.identifier, "medB4")
@@ -358,20 +358,20 @@ class MedicationTrackingNavigationTests: XCTestCase {
         let (sixthStep, _) = medTracker.step(after: fifthStep, with: &taskResult)
         XCTAssertNotNil(fifthStep)
         
-        guard let finalReviewStep = sixthStep as? SBATrackedItemsReviewStepObject else {
+        guard let reviewStep2 = sixthStep as? SBATrackedItemsReviewStepObject else {
             XCTFail("Failed to return the final review step. Exiting. \(String(describing: sixthStep))")
             return
         }
         
-        XCTAssertNil(medTracker.step(before: finalReviewStep, with: &taskResult))
-        XCTAssertEqual(finalReviewStep.identifier, "review")
-        XCTAssertFalse(medTracker.hasStep(before: finalReviewStep, with: taskResult))
+        XCTAssertNil(medTracker.step(before: reviewStep2, with: &taskResult))
+        XCTAssertEqual(reviewStep2.identifier, "review")
+        XCTAssertFalse(medTracker.hasStep(before: reviewStep2, with: taskResult))
         
-        XCTAssertTrue(medTracker.hasStep(after: finalReviewStep, with: taskResult))
+        XCTAssertTrue(medTracker.hasStep(after: reviewStep2, with: taskResult))
         
         // Next step after the review step will be the reminder step because nextStepIdentifier will be nil
-        finalReviewStep.nextStepIdentifier = nil
-        let (seventhStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
+        reviewStep2.nextStepIdentifier = nil
+        let (seventhStep, _) = medTracker.step(after: reviewStep2, with: &taskResult)
         XCTAssertNotNil(seventhStep)
         
         guard let reminderStep = seventhStep as? SBAMedicationRemindersStepObject else {
@@ -384,6 +384,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertNotNil(reminderStep.reminderChoices)
         
         XCTAssertNotNil(reminderStep.reminderChoicesStep())
+        taskResult.appendStepHistory(with: remindersResult(reminderStep: reminderStep))
         
         let (eigthStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
         XCTAssertNotNil(eigthStep)
@@ -392,8 +393,30 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Failed to return the loggingStep. Exiting. \(String(describing: eigthStep))")
             return
         }
-        // Test navigating to the review step based on the "view medication list" button
-        loggingStep.nextStepIdentifier = finalReviewStep.identifier                
+        // This should push to review step, like if the user tapped the "view medication list" button
+        loggingStep.nextStepIdentifier = reviewStep2.identifier
+        
+        let (ninethStep, _) = medTracker.step(after: loggingStep, with: &taskResult)
+        XCTAssertNotNil(ninethStep)
+        
+        guard let reviewStep3 = ninethStep as? SBATrackedMedicationReviewStepObject else {
+            XCTFail("Failed to return the reviewStep3. Exiting. \(String(describing: ninethStep))")
+            return
+        }
+        
+        // At this point the reminders step should be skipped to the loggin step, because there is already a reminders result
+        let (tenthStep, _) = medTracker.step(after: reviewStep3, with: &taskResult)
+        XCTAssertNotNil(tenthStep)
+        
+        guard let loggingStep2 = tenthStep as? SBAMedicationLoggingStepObject else {
+            XCTFail("Failed to return the loggingStep2. Exiting. \(String(describing: tenthStep))")
+            return
+        }
+        loggingStep2.nextStepIdentifier = nil
+        
+        // User logged their medications and task is complete
+        let (eleventhStep, _) = medTracker.step(after: loggingStep2, with: &taskResult)
+        XCTAssertNil(eleventhStep)
     }
     
     func testMedicationTrackingNavigation_FollowupRun() {
@@ -557,6 +580,20 @@ func medA2Result() -> SBAMedicationDetailsResultObject {
     let schedule0 = RSDWeeklyScheduleObject(timeOfDayString: "08:30", daysOfWeek: Set([.monday, .wednesday, .friday]))
     let schedule1 = RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: Set([.sunday]))
     result.schedules = [schedule0, schedule1]
+    return result
+}
+
+func remindersResult(reminderStep: SBAMedicationRemindersStepObject) -> RSDCollectionResultObject {
+    var result = RSDCollectionResultObject(identifier: reminderStep.identifier)
+    var answerResult = RSDAnswerResultObject(identifier: reminderStep.identifier,
+                                             answerType: RSDAnswerResultType(baseType: .integer,
+                                                                             sequenceType: .array,
+                                                                             formDataType: .collection(.multipleChoice, .integer),
+                                                                             dateFormat: nil,
+                                                                             unit: nil,
+                                                                             sequenceSeparator: nil))
+    answerResult.value = [45, 60]
+    result.inputResults = [answerResult]
     return result
 }
 

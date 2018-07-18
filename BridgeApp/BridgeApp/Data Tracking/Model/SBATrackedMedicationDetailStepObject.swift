@@ -169,7 +169,7 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     /// While not strictly enforced, this should not be called if any existing
     /// schedule items are set to schedule at anytime.
     /// - returns: The index path of the section that was added.
-    public func addScheduleItem() -> IndexPath? {
+    @discardableResult public func addScheduleItem() -> IndexPath? {
         guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first else {
             return nil
         }
@@ -189,7 +189,7 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     /// - returns:
     ///        - itemsRemoved: The index paths of the items that were removed.
     ///        - sectionAdded: `true` if the "add schedule" section was added; `false` if it was removed.
-    public func scheduleAtAnytimeChanged(selected: Bool) -> (itemsRemoved: [IndexPath], sectionAdded: Bool)? {
+    @discardableResult public func scheduleAtAnytimeChanged(selected: Bool) -> (itemsRemoved: [IndexPath], sectionAdded: Bool)? {
         guard let schedulesSection = sections.first(where: {$0.identifier == FieldIdentifiers.schedules.stringValue}),
             let scheduleItem = schedulesSection.tableItems.last as? SBATrackedWeeklyScheduleTableItem else {
                 return nil
