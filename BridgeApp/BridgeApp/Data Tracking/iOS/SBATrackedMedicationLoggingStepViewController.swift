@@ -59,9 +59,10 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
             header.detailLabel.rsd_alignBelow(view: titleLabelRef, padding: 20.0)
             
             // Style the header to match design
-            header.contentView.backgroundColor = UIColor.darkPrimaryTintColor
+            header.contentView.backgroundColor = UIColor.appBackgroundDark
             header.titleLabel.textColor = UIColor.white
             header.titleLabel.textAlignment = .center
+            header.titleLabel.font = UIFont.rsd_headerTitleLabel
         }
         return view
     }
@@ -165,6 +166,7 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     @IBOutlet weak var titleLabelHeight: NSLayoutConstraint!
     
     @IBOutlet weak var weekdayLabel: UILabel!
+    @IBOutlet weak var checkmarkView: RSDCheckmarkView!
     
     @IBOutlet weak var loggedView: UIView!
     @IBOutlet weak var loggedTimeButton: RSDUnderlinedButton!
@@ -181,6 +183,12 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     
     var loggingTableItem: SBATrackedMedicationLoggingTableItem? {
         return self.tableItem as? SBATrackedMedicationLoggingTableItem
+    }
+    
+    override open func awakeFromNib() {
+        super.awakeFromNib()
+        
+        self.checkmarkView.backgroundColor = UIColor.secondaryTintColor
     }
     
     override open var tableItem: RSDTableItem! {
@@ -229,7 +237,7 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     open var bottomDividerType: BottomDividerType = .thin {
         didSet {
             self.bottomDividerHeight.constant = CGFloat(self.bottomDividerType.rawValue)
-            self.bottomDivider.backgroundColor = (self.bottomDividerType == .thin) ? UIColor.appVeryLightGray : UIColor.darkPrimaryTintColor
+            self.bottomDivider.backgroundColor = (self.bottomDividerType == .thin) ? UIColor.appVeryLightGray : UIColor.appBackgroundDark
         }
     }
     

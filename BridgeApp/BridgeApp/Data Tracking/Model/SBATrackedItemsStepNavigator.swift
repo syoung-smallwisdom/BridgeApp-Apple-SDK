@@ -279,6 +279,11 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
         _inMemoryResult.updateSelected(to: selectedIdentifiers, with: self.items)
     }
     
+    // Exposed for sub-classes to call
+    func updateInMemoryResultDetails(to newValue: SBATrackedItemAnswer) {
+        _inMemoryResult.updateDetails(to: newValue)
+    }
+    
     /// Instantiate the appropriate result that can be used for logging and review.
     open func instantiateLoggingResult() -> SBATrackedItemsCollectionResult {
         return SBATrackedLoggingCollectionResultObject(identifier: self.loggingStep.identifier)

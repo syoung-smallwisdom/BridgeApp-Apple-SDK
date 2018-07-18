@@ -366,11 +366,9 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
     ///     - rowIndex: The index of this item relative to all rows in the section in which this item resides.
     ///     - reuseIdentifier: The string to use as the reuse identifier.
     public init(identifier: String, rowIndex: Int, reuseIdentifier: String = SBATrackedWeeklyScheduleCell.reuseId) {
-        var weekdays = Set<RSDWeekday>()
-        weekdays.insert(.friday)
         let date = Calendar.current.date(bySetting: .hour, value: 7, of: Date().startOfDay())
         let timeOfDay = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.string(from: date!)
-        self.result = RSDWeeklyScheduleObject(timeOfDayString: timeOfDay, daysOfWeek: weekdays)
+        self.result = RSDWeeklyScheduleObject(timeOfDayString: timeOfDay, daysOfWeek: RSDWeekday.all)
         super.init(identifier: identifier, rowIndex: rowIndex, reuseIdentifier: reuseIdentifier)
     }
     
