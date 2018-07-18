@@ -228,17 +228,17 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     private var _activeIndexPath: IndexPath?
     
     open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        _ = _endTimeEditingIfNeeded()
+        _endTimeEditingIfNeeded()
         super.tableView(tableView, didSelectRowAt: indexPath)
     }
     
     open func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        _ = _endTimeEditingIfNeeded()
+        _endTimeEditingIfNeeded()
         return indexPath.section == 0 ? nil : indexPath
     }
     
     open override func goForward() {
-        _ = _endTimeEditingIfNeeded(false)
+        _endTimeEditingIfNeeded(false)
         super.goForward()
     }
     
@@ -278,11 +278,11 @@ extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklySchedul
     }
     
     public func didChangeTiming(for cell: SBATrackedWeeklyScheduleCell, selected: Int) {
-        _ = _endTimeEditingIfNeeded()
+        _endTimeEditingIfNeeded()
     }
     
     public func didTapTime(for cell: SBATrackedWeeklyScheduleCell) {
-        _ = _endTimeEditingIfNeeded()
+        _endTimeEditingIfNeeded()
         _activeIndexPath = cell.indexPath
         self.tableView.reloadRows(at: [cell.indexPath], with: .none)
     }
@@ -293,14 +293,14 @@ extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklySchedul
             if let source = tableData as? SBATrackedMedicationDetailsDataSource {
                 let tableViewUpdates = source.scheduleAtAnytimeChanged(selected: selected)
                 self.tableView.beginUpdates()
-                if let lastSectionAdded = tableViewUpdates.sectionAdded {
+                if let lastSectionAdded = tableViewUpdates?.sectionAdded {
                     if lastSectionAdded {
                         self.tableView.insertSections(IndexSet.init(integer: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.addSchedule.sectionIndex()), with: .left)
                     } else {
                         self.tableView.deleteSections(IndexSet.init(integer: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.addSchedule.sectionIndex()), with: .right)
                     }
                 }
-                if let itemsRemoved = tableViewUpdates.itemsRemoved {
+                if let itemsRemoved = tableViewUpdates?.itemsRemoved {
                     self.tableView.deleteRows(at: itemsRemoved, with: .right)
                 }
                 self.tableView.reloadRows(at: [IndexPath(item: 0, section: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.schedules.sectionIndex())], with: .none)
@@ -310,7 +310,7 @@ extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklySchedul
     }
     
     /// @return true if time editing was closed, false if nothing was done
-    private func _endTimeEditingIfNeeded(_ shouldCollapse: Bool = true) -> Bool {
+    @discardableResult private func _endTimeEditingIfNeeded(_ shouldCollapse: Bool = true) -> Bool {
         guard let indexPath = _activeIndexPath,
             let cell = tableView.cellForRow(at: indexPath) as? SBATrackedWeeklyScheduleCell
             else {
