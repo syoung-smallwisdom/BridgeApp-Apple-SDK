@@ -385,9 +385,15 @@ class MedicationTrackingNavigationTests: XCTestCase {
         
         XCTAssertNotNil(reminderStep.reminderChoicesStep())
         
-        // TODO: mdephillips 7/12/18 add unit tests for logging
-        let (lastStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
-        XCTAssertNil(lastStep)
+        let (eigthStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
+        XCTAssertNotNil(eigthStep)
+        
+        guard let loggingStep = eigthStep as? SBAMedicationLoggingStepObject else {
+            XCTFail("Failed to return the loggingStep. Exiting. \(String(describing: eigthStep))")
+            return
+        }
+        // Test navigating to the review step based on the "view medication list" button
+        loggingStep.nextStepIdentifier = finalReviewStep.identifier                
     }
     
     func testMedicationTrackingNavigation_FollowupRun() {
