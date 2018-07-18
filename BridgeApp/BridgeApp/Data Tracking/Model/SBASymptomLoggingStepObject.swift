@@ -122,7 +122,7 @@ open class SBASymptomLoggingDataSource : SBATrackedLoggingDataSource {
     func updateResults(with tableItem: SBASymptomTableItem) {
         
         var stepResult = self.trackingResult()
-        stepResult.updateDetails(to: tableItem.loggedResult)
+        stepResult.updateDetails(from: tableItem.loggedResult)
         self.taskPath.appendStepHistory(with: stepResult)
         
         // inform delegate that answers have changed

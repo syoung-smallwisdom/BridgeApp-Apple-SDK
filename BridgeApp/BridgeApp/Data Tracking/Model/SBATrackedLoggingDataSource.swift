@@ -128,7 +128,7 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         // Update the answers.
         let loggedResult = buildAnswer(for: loggingItem)
         var stepResult = self.trackingResult()
-        stepResult.updateDetails(to: loggedResult)
+        stepResult.updateDetails(from: loggedResult)
         self.taskPath.appendStepHistory(with: stepResult)
         
         // Inform delegate that answers have changed.
@@ -138,7 +138,7 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
     }
     
     /// Build the answer object appropriate to this tracked logging item.
-    open func buildAnswer(for loggingItem: SBATrackedLoggingTableItem) -> SBATrackedItemAnswer {
+    open func buildAnswer(for loggingItem: SBATrackedLoggingTableItem) -> RSDResult {
         var loggedResult = SBATrackedLoggingResultObject(identifier: loggingItem.identifier, text: loggingItem.title, detail: loggingItem.detail)
         loggedResult.itemIdentifier = loggingItem.itemIdentifier
         loggedResult.timingIdentifier = loggingItem.timingIdentifier

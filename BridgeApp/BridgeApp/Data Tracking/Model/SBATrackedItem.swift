@@ -111,7 +111,7 @@ public protocol SBATrackedItemsResult : RSDResult, RSDCopyWithIdentifier {
     mutating func updateSelected(to selectedIdentifiers: [String]?, with items: [SBATrackedItem])
     
     /// Update the result from the given task result and items.
-    mutating func updateDetails(to newValue: SBATrackedItemAnswer)
+    mutating func updateDetails(from result: RSDResult)
 }
 
 extension SBATrackedItemsResult {
@@ -192,7 +192,4 @@ public protocol SBATrackedItemDetailsStep : RSDStep {
     
     /// Create a copy of the step using this step as a template for the given tracked item.
     func copy(from trackedItem: SBATrackedItem, with previousAnswer: SBATrackedItemAnswer?) -> RSDStep?
-    
-    /// Return the appropriate tracked item answer from the given task result.
-    func answer(from taskResult: RSDTaskResult) -> SBATrackedItemAnswer?
 }
