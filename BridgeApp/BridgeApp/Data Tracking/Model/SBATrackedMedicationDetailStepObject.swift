@@ -52,17 +52,6 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
         return SBATrackedMedicationDetailStepViewController(step: self)
     }
     
-    /// Override and return an `SBAMedicationAnswer`.
-    override open func answer(from taskResult: RSDTaskResult) -> SBATrackedItemAnswer? {
-        guard let detailsResult = taskResult.findResult(for: self) as? SBAMedicationDetailsResultObject else { return nil }
-        var medication = SBAMedicationAnswer(identifier: self.identifier)
-        medication.dosage = detailsResult.dosage
-        if let schedulesUnwrapped = detailsResult.schedules {
-            medication.scheduleItems = Set(schedulesUnwrapped)
-        }
-        return medication
-    }
-    
     /// Override to return a `SBATrackedWeeklyScheduleDataSource`.
     open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
         return SBATrackedMedicationDetailsDataSource.init(identifier: identifier, step: self, taskPath: taskPath)

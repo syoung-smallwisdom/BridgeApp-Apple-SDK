@@ -338,7 +338,7 @@ public struct SBATrackedItemsResultObject : SBATrackedItemsResult, Codable {
         self.items = sort(selectedIdentifiers, with: items).map { RSDIdentifier(rawValue: $0) }
     }
     
-    mutating public func updateDetails(to newValue: SBATrackedItemAnswer) {
+    mutating public func updateDetails(from result: RSDResult) {
         // Do nothing
     }
 }

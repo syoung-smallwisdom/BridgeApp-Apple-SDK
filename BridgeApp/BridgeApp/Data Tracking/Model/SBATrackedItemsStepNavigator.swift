@@ -251,10 +251,13 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     
     /// Updates the in-memory result that is used to track the selection state.
     ///
+    /// - note: This is exposed publicly to allow subclasses of the navigator to call this method directly,
+    /// but this method should **only** be called by a subclass of `SBATrackedItemsStepNavigator`.
+    ///
     /// - parameters:
     ///     - taskResult: The current task result.
     ///     - previousStep: The previous step that was displayed and is triggering calling this function
-    func updateInMemoryResult(from taskResult: RSDTaskResult, using previousStep: RSDStep?) {
+    public func updateInMemoryResult(from taskResult: RSDTaskResult, using previousStep: RSDStep?) {
         
         if previousStep?.identifier == self.selectionStep.identifier {
             let selectedIdentifiers = (taskResult.findResult(for: self.selectionStep) as? SBATrackedItemsResult)?.selectedIdentifiers
@@ -268,20 +271,14 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
                 assertionFailure("Expecting the review step to have a SBATrackedItemsCollectionResult.")
             }
         }
-        else if let detailsStep = previousStep as? SBATrackedItemDetailsStep,
-            let answer = detailsStep.answer(from: taskResult) {
-            _inMemoryResult.updateDetails(to: answer)
+        else if let step = previousStep, let result = taskResult.findResult(for: step)  {
+            _inMemoryResult.updateDetails(from: result)
         }
     }
     
-    // Exposed for sub-classes to call
-    func updateSelectedInMemoryResult(to selectedIdentifiers: [String]?, with items: [SBATrackedItem]) {
+    /// Update the selected items for the in-memory result.
+    public func updateSelectedInMemoryResult(to selectedIdentifiers: [String]?, with items: [SBATrackedItem]) {
         _inMemoryResult.updateSelected(to: selectedIdentifiers, with: self.items)
-    }
-    
-    // Exposed for sub-classes to call
-    func updateInMemoryResultDetails(to newValue: SBATrackedItemAnswer) {
-        _inMemoryResult.updateDetails(to: newValue)
     }
     
     /// Instantiate the appropriate result that can be used for logging and review.

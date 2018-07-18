@@ -49,7 +49,7 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
             let nestedDecoder = try container.superDecoder(forKey: .reminder)
             return try decoder.factory.decodeStep(from: nestedDecoder) as? SBAMedicationRemindersStepObject
         }()
-        self.reminderStep = reminderStep ?? type(of: self).buildReminderStep()
+        self.reminderStep = (reminderStep ?? type(of: self).buildReminderStep())?.copy(with: RSDIdentifier.medicationReminders.stringValue)
     }
     
     public required init(identifier: String, items: [SBATrackedItem], sections: [SBATrackedSection]?) {
@@ -182,26 +182,22 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     }
     
     open func step(after reminderStep: SBAMedicationRemindersStepObject, result: inout RSDTaskResult) -> RSDStep? {
-        if let stepResult = result.stepHistory.last as? RSDCollectionResult,
-            let reminderMinutes = (stepResult.inputResults.first as? RSDAnswerResult)?.value as? [Int] {
-            self.updateInMemoryResultDetails(to: SBATrackedMedicationReminderAnswer(reminders: reminderMinutes))
-        } else {
-            self.updateInMemoryResultDetails(to: SBATrackedMedicationReminderAnswer(reminders: []))
-        }
+        updateInMemoryResult(from: result, using: reminderStep)
         return getLoggingStep()
     }
     
     open func step(after loggingStep: SBAMedicationLoggingStepObject, result: inout RSDTaskResult) -> RSDStep? {
-        if let loggingResult = result.stepHistory.last as? SBATrackedLoggingCollectionResultObject {
-            for loggingItem in loggingResult.loggingItems {
-                super.updateInMemoryResultDetails(to: loggingItem)
-            }
-        }
+        updateInMemoryResult(from: result, using: loggingStep)
         if loggingStep.nextStepIdentifier == getReviewStep()?.identifier {
             return getReviewStep()
         }
         return nil
     }
+}
+
+extension RSDIdentifier {
+    
+    public static let medicationReminders: RSDIdentifier = "medicationReminders"
 }
 
 /// A medication item includes details for displaying a given medication.
@@ -438,27 +434,45 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         self.medications = meds
     }
     
-    mutating public func updateDetails(to newValue: SBATrackedItemAnswer) {
-        if let newMedication = newValue as? SBAMedicationAnswer {
-            guard let idx = medications.index(where: { $0.identifier == newValue.identifier }) else {
-                return
-            }
-    
-            // If this is a medication answer, then replace the existing one with a new one.
-            var medication = newMedication
-            if (newMedication.timestamps?.count ?? 0) == 0 {
-                medication.timestamps = self.medications[idx].timestamps
-            }
-            self.medications.remove(at: idx)
-            self.medications.insert(medication, at: idx)
+    mutating public func updateDetails(from result: RSDResult) {
+        if let detailsResult = result as? SBAMedicationDetailsResultObject {
+            updateMedicationDetails(from: detailsResult)
         }
-        else if let loggingResult = newValue as? SBATrackedLoggingResultObject,
-            let itemIdentifier = loggingResult.itemIdentifier,
-            let timingIdentifier = loggingResult.timingIdentifier {
-            guard let idx = medications.index(where: { $0.identifier == itemIdentifier }) else {
-                return
+        else if let loggingResult = result as? SBATrackedLoggingCollectionResultObject {
+            updateLogging(from: loggingResult)
+        }
+        else if result.identifier == RSDIdentifier.medicationReminders.stringValue {
+            updateReminders(from: result)
+        }
+    }
+    
+    mutating func updateMedicationDetails(from detailsResult: SBAMedicationDetailsResultObject) {
+        guard let idx = medications.index(where: { $0.identifier == detailsResult.identifier }) else {
+            return
+        }
+        
+        // Build a new answer from the detail.
+        var medication = SBAMedicationAnswer(identifier: detailsResult.identifier)
+        medication.dosage = detailsResult.dosage
+        if let schedulesUnwrapped = detailsResult.schedules {
+            medication.scheduleItems = Set(schedulesUnwrapped)
+        }
+
+        // Copy the timestamps from the previous answer.
+        medication.timestamps = self.medications[idx].timestamps
+        self.medications.remove(at: idx)
+        self.medications.insert(medication, at: idx)
+    }
+    
+    mutating func updateLogging(from loggingResult: SBATrackedLoggingCollectionResultObject) {
+        loggingResult.loggingItems.forEach {
+            let loggingResult = $0
+            guard let itemIdentifier = loggingResult.itemIdentifier,
+                let timingIdentifier = loggingResult.timingIdentifier,
+                let idx = medications.index(where: { $0.identifier == itemIdentifier })
+                else {
+                    return
             }
-            
             // If this is a timestamp logging then add/remove timestamp.
             var medication = self.medications[idx]
             var timestamps: [SBATimestamp] = medication.timestamps ?? []
@@ -470,9 +484,12 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
             medication.timestamps = timestamps
             self.medications.remove(at: idx)
             self.medications.insert(medication, at: idx)
-        } else if let remindersResult = newValue as? SBATrackedMedicationReminderAnswer {
-            self.reminders = remindersResult.reminders
         }
+    }
+    
+    mutating func updateReminders(from result: RSDResult) {
+        let aResult = (result as? RSDCollectionResult)?.inputResults.first ?? result
+        self.reminders = (aResult as? RSDAnswerResult)?.value as? [Int]
     }
     
     public func clientData() throws -> SBBJSONValue? {
@@ -534,49 +551,6 @@ public struct SBATimestamp : Codable, Hashable, RSDScheduleTime {
         else {
             return nil
         }
-    }
-}
-
-/// This class is used to communicate to the step navigator changes in the medication reminders
-public struct SBATrackedMedicationReminderAnswer: Codable, SBATrackedItemAnswer {
-    
-    private enum CodingKeys : String, CodingKey {
-        case reminders
-    }
-    
-    /// An array of minutes that represent the time before a medication is scheduled that the user should be reminded
-    public var reminders: [Int]?
-    
-    public var identifier: String {
-        return "Reminders"
-    }
-    
-    public var hasRequiredValues: Bool {
-        return self.reminders != nil
-    }
-    
-    public var answerValue: Codable? {
-        return self.reminders
-    }
-    
-    public var text: String? {
-        return nil
-    }
-    
-    public var detail: String? {
-        return nil
-    }
-    
-    public var isExclusive: Bool {
-        return false
-    }
-    
-    public var imageVendor: RSDImageVendor? {
-        return nil
-    }
-    
-    public func isEqualToResult(_ result: RSDResult?) -> Bool {
-        return false
     }
 }
 

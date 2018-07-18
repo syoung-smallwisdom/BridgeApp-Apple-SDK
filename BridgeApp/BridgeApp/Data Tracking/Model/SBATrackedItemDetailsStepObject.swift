@@ -109,12 +109,6 @@ open class SBATrackedItemDetailsStepObject : RSDFormUIStepObject, SBATrackedItem
         copy.title = self.title ?? trackedItem.title
         return copy
     }
-    
-    /// Subclasses must implement and *DO NOT* call super.
-    open func answer(from taskResult: RSDTaskResult) -> SBATrackedItemAnswer? {
-        // TODO: syoung 02/28/2018 Use `Decodable` protocol to create the appropriate item from a dictionary.
-        fatalError("Subclasses must override this method to return a details answer that is appropriate to this step.")
-    }
 
     /// Class function for returning the identifiers for the added fields.
     open class func inputFieldIdentifiers() -> [String] {
