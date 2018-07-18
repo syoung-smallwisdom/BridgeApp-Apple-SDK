@@ -276,10 +276,18 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertNil(medTracker.step(before: finalReviewStep, with: &taskResult))
         XCTAssertEqual(finalReviewStep.identifier, initialReviewStep.identifier)
         XCTAssertFalse(medTracker.hasStep(before: finalReviewStep, with: taskResult))
+        finalReviewStep.nextStepIdentifier = nil
         
-        // TODO: mdephillips 7/12/18 add unit tests for logging
-//        let (lastStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
-//        XCTAssertNil(lastStep)
+        let (seventhStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
+        XCTAssertNotNil(seventhStep)
+        
+        guard let loggingStep = seventhStep as? SBAMedicationLoggingStepObject else {
+            XCTFail("Failed to return the loggingStep. Exiting. \(String(describing: seventhStep))")
+            return
+        }
+        
+        let (lastStep, _) = medTracker.step(after: loggingStep, with: &taskResult)
+        XCTAssertNil(lastStep)
     }
     
     func testMedicationTrackingNavigation_FirstRun_CustomOrder() {
@@ -432,14 +440,21 @@ class MedicationTrackingNavigationTests: XCTestCase {
         var medC3 = SBAMedicationAnswer(identifier: "medC3")
         medC3.dosage = "1"
         medC3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: [.sunday, .thursday])]
+        //medC3.timestamps = [SBATimestamp(timingIdentifier: "20:00", loggedDate: <#T##Date#>)]
         initialResult.medications = [medA3, medC3]
+        initialResult.reminders = [] // this is how the previous answer of "no reminders please" looks
+        
         let clientData = try! initialResult.clientData()
         
         medTracker.previousClientData = clientData
         
         // Check initial state
-        XCTAssertNotNil(medTracker.getSelectionStep())
-        XCTAssertNotNil(medTracker.getReviewStep())
+        let selectionStep = medTracker.getSelectionStep() as? SBATrackedSelectionStepObject
+        XCTAssertNotNil(selectionStep)
+        XCTAssertEqual(selectionStep?.result?.selectedAnswers.count, 2)
+        
+        let reviewStep = medTracker.getReviewStep() as? SBATrackedMedicationReviewStepObject
+        XCTAssertNotNil(reviewStep)        
         
         if let detailsStep = medTracker.step(with: "medA3") as? SBATrackedItemDetailsStepObject {
             XCTAssertNotNil(detailsStep.trackedItem)
@@ -456,6 +471,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Step not found or not of expected type.")
         }
 
+        
         // TODO: mdephillips 7/4/18 happy 4th! add the logging step back in once that is completed
         
 //        var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "logMedications")

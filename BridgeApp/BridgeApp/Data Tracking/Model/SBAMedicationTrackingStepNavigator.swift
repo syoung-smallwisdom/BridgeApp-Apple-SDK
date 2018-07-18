@@ -371,7 +371,7 @@ extension SBAMedicationAnswer : SBAMedication {
 public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionResult {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, type, startDate, endDate, medications = "items"
+        case identifier, type, startDate, endDate, medications = "items", reminders
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
@@ -477,7 +477,9 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     
     public func clientData() throws -> SBBJSONValue? {
         let dictionary = try self.rsd_jsonEncodedDictionary()
-        return dictionary[CodingKeys.medications.stringValue] as? SBBJSONValue
+        return
+            [CodingKeys.medications.stringValue : dictionary[CodingKeys.medications.stringValue],
+             CodingKeys.reminders.stringValue : dictionary[CodingKeys.reminders.stringValue]] as SBBJSONValue
     }
     
     /// Returns `true` to replace the results of a previous run.
@@ -486,12 +488,17 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
-        let decoder = SBAFactory.shared.createJSONDecoder()
-        let meds = try decoder.decode([SBAMedicationAnswer].self, from: clientData)
-        self.medications = meds.map { (input) in
-            var med = input
-            med.timestamps = med.timestamps?.filter { Calendar.current.isDateInToday($0.loggedDate) }
-            return med
+        if let clientDataMap = clientData as? [String : Any] {
+            self.reminders = clientDataMap[CodingKeys.reminders.stringValue] as? [Int]
+            if let medJson = clientDataMap[CodingKeys.medications.stringValue] as? SBBJSONValue {
+                let decoder = SBAFactory.shared.createJSONDecoder()
+                let meds = try decoder.decode([SBAMedicationAnswer].self, from: medJson)
+                self.medications = meds.map { (input) in
+                    var med = input
+                    med.timestamps = med.timestamps?.filter { Calendar.current.isDateInToday($0.loggedDate) }
+                    return med
+                }
+            }
         }
     }
 }

@@ -152,12 +152,13 @@ class ArchivableTrackingTests: XCTestCase {
         var medC3 = SBAMedicationAnswer(identifier: "medC3")
         medC3.dosage = "3 mg"
         medC3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: [.sunday, .thursday])]
+        result.reminders = [45, 60]
         result.medications = [medA3, medC3]
         
         do {
-            let clientData = try result.clientData()
+            let clientData = try result.clientData() as? [String : Any]
             XCTAssertNotNil(clientData)
-            if let items = clientData as? [[String : Any]] {
+            if let items = clientData!["items"] as? [[String : Any]] {
                 XCTAssertEqual(items.count, 2)
                 if let item = items.first {
                     XCTAssertEqual(item["identifier"] as? String, "medA3")
@@ -179,6 +180,13 @@ class ArchivableTrackingTests: XCTestCase {
             } else {
                 XCTFail("Client data 'items' missing or unexpected type. \(String(describing: clientData))")
             }
+            if let reminders = clientData!["reminders"] as? [Int] {
+                XCTAssertEqual(reminders.count, 2)
+                XCTAssertEqual(reminders[0], 45)
+                XCTAssertEqual(reminders[1], 60)
+            } else {
+                XCTFail("Client data 'reminders' missing or unexpected type. \(String(describing: clientData))")
+            }
         }
         catch let err {
             XCTFail("Failed to encode the result: \(err)")
@@ -186,7 +194,8 @@ class ArchivableTrackingTests: XCTestCase {
     }
     
     func testMedicationResult_UpdateFromClientData_NoItems() {
-        let clientData: NSArray = [
+        let clientData: [String : Any] = [
+            "items": [
             [
                 "dosage" : "1 ml",
                 "identifier" : "medA3",
@@ -206,13 +215,14 @@ class ArchivableTrackingTests: XCTestCase {
                             "timeOfDay" : "20:00"
                         ]
                     ]
-            ]
-        ]
+            ]],
+            "reminders": [45]
+    ]
         
         do {
 
             var result = SBAMedicationTrackingResult(identifier: "logging")
-            try result.updateSelected(from: clientData, with: [])
+            try result.updateSelected(from: clientData as SBBJSONValue, with: [])
 
             let selectedAnswers = result.selectedAnswers
             XCTAssertEqual(selectedAnswers.count, 2)
@@ -230,6 +240,8 @@ class ArchivableTrackingTests: XCTestCase {
             XCTAssertEqual(lastItem.identifier, "medC3")
             XCTAssertEqual(lastItem.dosage, "3 mg")
 
+            XCTAssertEqual(result.reminders?.count, 1)
+            XCTAssertEqual(result.reminders?[0], 45)
         }
         catch let err {
             XCTFail("Failed to encode the result: \(err)")
