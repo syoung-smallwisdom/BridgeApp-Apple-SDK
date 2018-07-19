@@ -67,10 +67,10 @@
             </objects>
             <point key="canvasLocation" x="1021.6" y="118.29085457271366"/>
         </scene>
-        <!--Remove Medication Step View Controller-->
+        <!--Remove Tracked Item Step View Controller-->
         <scene sceneID="M4N-Wh-Nb7">
             <objects>
-                <viewController storyboardIdentifier="SBARemoveMedicationStepViewController" id="JOD-Gc-w2M" customClass="SBARemoveMedicationStepViewController" customModule="BridgeApp" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SBARemoveMedicationStepViewController" id="JOD-Gc-w2M" customClass="SBARemoveTrackedItemStepViewController" customModule="BridgeApp" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mGN-2P-G68" customClass="RSDStepNavigationView" customModule="ResearchUI">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

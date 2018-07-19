@@ -221,7 +221,8 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     }
     
     public func appendRemoveMedicationToTaskPath() {
-        let stepResult = SBARemoveMedicationResultObject(identifier: step.identifier)
+        var stepResult = SBARemoveTrackedItemsResultObject(identifier: self.step.identifier)
+        stepResult.items = [RSDIdentifier(rawValue: self.step.identifier)]
         self.taskPath.appendStepHistory(with: stepResult)
     }
     
@@ -373,22 +374,5 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
     
     private static func resultIdentifier(identifier: String, rowIndex: Int) -> String {
         return String(format: "%@%d", identifier, rowIndex)
-    }
-}
-
-open class SBARemoveMedicationResultObject: RSDResult {
-    public var identifier: String
-    
-    public var type: RSDResultType
-    
-    public var startDate: Date
-    
-    public var endDate: Date
-    
-    public init(identifier: String) {
-        self.identifier = identifier
-        type = .navigation
-        startDate = Date()
-        endDate = Date()
     }
 }
