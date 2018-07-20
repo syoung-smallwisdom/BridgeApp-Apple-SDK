@@ -157,6 +157,7 @@ open class SBAMedicationRemindersStepObject: RSDUIStepObject, RSDFormUIStep, RSD
         case reminderChoices
     }
     
+    public var previousResult: [Int]?
     public var reminderChoices: [RSDChoiceObject<Int>]?
     
     open var inputFields: [RSDInputField] {
@@ -181,6 +182,15 @@ open class SBAMedicationRemindersStepObject: RSDUIStepObject, RSDFormUIStep, RSD
         return SBAMedicationRemindersStepViewController(step: self)
     }
     
+    override open func copyInto(_ copy: RSDUIStepObject) {
+        super.copyInto(copy)
+        guard let subclassCopy = copy as? SBAMedicationRemindersStepObject else {
+            assertionFailure("Superclass implementation of the `copy(with:)` protocol should return an instance of this class.")
+            return
+        }
+        subclassCopy.reminderChoices = self.reminderChoices
+    }
+    
     /// Returns the reminder choice step
     public func reminderChoicesStep() -> RSDStep? {
         guard let reminderChoicesUnwrapped = self.reminderChoices else { return nil }
@@ -198,7 +208,7 @@ open class SBAMedicationRemindersStepObject: RSDUIStepObject, RSDFormUIStep, RSD
     
     public func shouldSkipStep(with result: RSDTaskResult?, conditionalRule: RSDConditionalRule?, isPeeking: Bool) -> Bool {
         // If this does not have a medication tracking result then it should be skipped.
-        return (result?.stepHistory ?? []).contains(where: { $0.identifier == self.identifier })
+        return (result?.stepHistory ?? []).contains(where: { $0.identifier == self.identifier }) || self.previousResult != nil
     }
 }
 

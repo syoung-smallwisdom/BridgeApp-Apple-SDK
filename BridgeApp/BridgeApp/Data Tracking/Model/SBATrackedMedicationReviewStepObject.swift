@@ -180,6 +180,10 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingDataSource, RSDModa
             self.taskPath.appendStepHistory(with: stepResult)
             let changes = self.reloadDataSource(with: result)
             
+            if let stepNavigator = self.taskPath.task?.stepNavigator as? SBAMedicationTrackingStepNavigator {
+                stepNavigator.updateSelectedInMemoryResult(to: result.selectedIdentifiers, with: trackedStep.items)
+            }
+            
             // reload the table delegate.
             self.delegate?.tableDataSourceDidEndUpdate(self, addedRows: changes.addedRows, removedRows: changes.removedRows)
         }

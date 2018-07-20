@@ -109,16 +109,6 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
 
         return (sections, itemGroups)
     }
-    
-    /// Returns the review step.
-    override open func step(for tableItem: RSDModalStepTableItem) -> RSDStep {
-        guard let step = (self.taskPath.task?.stepNavigator as? SBATrackedItemsStepNavigator)?.getReviewStep() as? SBATrackedItemsStep
-            else {
-                assertionFailure("Expecting the task navigator to be a tracked items navigator.")
-                return RSDUIStepObject(identifier: tableItem.identifier)
-        }
-        return step
-    }
 }
 
 extension RSDFormUIHint {

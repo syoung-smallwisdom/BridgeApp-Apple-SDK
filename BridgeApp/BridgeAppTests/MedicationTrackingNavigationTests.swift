@@ -244,12 +244,8 @@ class MedicationTrackingNavigationTests: XCTestCase {
 
         taskResult.appendStepHistory(with: medA2Result())
         
-        let (fourthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
-        XCTAssertNotNil(fourthStep)
-        XCTAssertEqual(fourthStep?.identifier, "review")
-        
         // Next step after selection is review.
-        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
+        let (fifthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
         XCTAssertNotNil(fifthStep)
         
         guard let medB4DetailsStep = fifthStep as? SBATrackedMedicationDetailStepObject else {
@@ -279,15 +275,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
         finalReviewStep.nextStepIdentifier = nil
         
         let (seventhStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
-        XCTAssertNotNil(seventhStep)
-        
-        guard let loggingStep = seventhStep as? SBAMedicationLoggingStepObject else {
-            XCTFail("Failed to return the loggingStep. Exiting. \(String(describing: seventhStep))")
-            return
-        }
-        
-        let (lastStep, _) = medTracker.step(after: loggingStep, with: &taskResult)
-        XCTAssertNil(lastStep)
+        XCTAssertNil(seventhStep)
     }
     
     func testMedicationTrackingNavigation_FirstRun_CustomOrder() {
@@ -342,12 +330,8 @@ class MedicationTrackingNavigationTests: XCTestCase {
         
         taskResult.appendStepHistory(with: medB4Result())
         
-        let (fourthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
-        XCTAssertNotNil(fourthStep)
-        XCTAssertEqual(fourthStep?.identifier, "review")
-        
         // Next step after selection is review.
-        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
+        let (fifthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
         XCTAssertNotNil(fifthStep)
         
         guard let medA2DetailsStep = fifthStep as? SBATrackedMedicationDetailStepObject else {
@@ -374,9 +358,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertNil(medTracker.step(before: reviewStep2, with: &taskResult))
         XCTAssertEqual(reviewStep2.identifier, "review")
         XCTAssertFalse(medTracker.hasStep(before: reviewStep2, with: taskResult))
-        
-        XCTAssertTrue(medTracker.hasStep(after: reviewStep2, with: taskResult))
-        
+    
         // Next step after the review step will be the reminder step because nextStepIdentifier will be nil
         reviewStep2.nextStepIdentifier = nil
         let (seventhStep, _) = medTracker.step(after: reviewStep2, with: &taskResult)
@@ -395,36 +377,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
         taskResult.appendStepHistory(with: remindersResult(reminderStep: reminderStep))
         
         let (eigthStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
-        XCTAssertNotNil(eigthStep)
-        
-        guard let loggingStep = eigthStep as? SBAMedicationLoggingStepObject else {
-            XCTFail("Failed to return the loggingStep. Exiting. \(String(describing: eigthStep))")
-            return
-        }
-        // This should push to review step, like if the user tapped the "view medication list" button
-        loggingStep.nextStepIdentifier = reviewStep2.identifier
-        
-        let (ninethStep, _) = medTracker.step(after: loggingStep, with: &taskResult)
-        XCTAssertNotNil(ninethStep)
-        
-        guard let reviewStep3 = ninethStep as? SBATrackedMedicationReviewStepObject else {
-            XCTFail("Failed to return the reviewStep3. Exiting. \(String(describing: ninethStep))")
-            return
-        }
-        
-        // At this point the reminders step should be skipped to the loggin step, because there is already a reminders result
-        let (tenthStep, _) = medTracker.step(after: reviewStep3, with: &taskResult)
-        XCTAssertNotNil(tenthStep)
-        
-        guard let loggingStep2 = tenthStep as? SBAMedicationLoggingStepObject else {
-            XCTFail("Failed to return the loggingStep2. Exiting. \(String(describing: tenthStep))")
-            return
-        }
-        loggingStep2.nextStepIdentifier = nil
-        
-        // User logged their medications and task is complete
-        let (eleventhStep, _) = medTracker.step(after: loggingStep2, with: &taskResult)
-        XCTAssertNil(eleventhStep)
+        XCTAssertNil(eigthStep)
     }
     
     func testMedicationTrackingNavigation_FollowupRun() {
@@ -471,23 +424,14 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Step not found or not of expected type.")
         }
 
-        
-        // TODO: mdephillips 7/4/18 happy 4th! add the logging step back in once that is completed
-        
-//        var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "logMedications")
-        // For the case where the meds have been set, this should jump to logging the medication results.
-//        let (firstStep, _) = medTracker.step(after: nil, with: &taskResult)
-        
-//        guard let loggingStep = firstStep as? SBAMedicationLoggingStepObject else {
-//            XCTFail("First step not of expected type. For a follow-up run should start with logging step.")
-//            return
-//        }
-//
-//        XCTAssertEqual(loggingStep.result?.selectedAnswers.count, 2)
-//        XCTAssertFalse(medTracker.hasStep(after: loggingStep, with: taskResult))
-//        XCTAssertFalse(medTracker.hasStep(before: loggingStep, with: taskResult))
-//        XCTAssertNil(medTracker.step(before: loggingStep, with: &taskResult))
-//        XCTAssertNil(medTracker.step(after: loggingStep, with: &taskResult).step)
+        var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "medication")
+        let (firstStep, _) = medTracker.step(after: nil, with: &taskResult)
+        guard let loggingStep = firstStep as? SBAMedicationLoggingStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        XCTAssertNotNil(loggingStep)
+        XCTAssertEqual(loggingStep.result?.selectedAnswers.count, 2)
     }
     
     // MARK: Shared tests

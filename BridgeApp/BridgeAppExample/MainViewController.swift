@@ -58,6 +58,8 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
         return [trackingTaskGroup]
     }()
     
+    let scheduleManager = ClientDataScheduleManager()
+    
     // MARK: Table data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -85,12 +87,29 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
         let taskGroup = taskGroups[indexPath.section]
         let taskInfo = taskGroup.tasks[indexPath.row]
         guard let taskPath = taskGroup.instantiateTaskPath(for: taskInfo) else { return }
+        taskPath.trackingDelegate = scheduleManager
         let vc = RSDTaskViewController(taskPath: taskPath)
         vc.delegate = self
         self.present(vc, animated: true, completion: nil)
     }
     
     func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
+        
+        // The schedule activity manager does this using reflection, but for simplicity, let's find the last MedicationTrackingResult
+        var medTrackingResult: SBAMedicationTrackingResult?
+        for result in taskController.taskPath.result.stepHistory {
+            if let medTrackingResultUnwrapped = result as? SBAMedicationTrackingResult {
+                medTrackingResult = medTrackingResultUnwrapped
+            }
+        }
+        if let medTrackingResultUnwrapped = medTrackingResult {
+            do {
+                try scheduleManager.previousClientData[taskController.taskResult.identifier] = medTrackingResultUnwrapped.clientData()
+            } catch {
+                print(error)
+            }
+        }
+        
         // dismiss the view controller
         (taskController as? UIViewController)?.dismiss(animated: true) {
         }
@@ -110,6 +129,19 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
     func taskViewController(_ taskViewController: UIViewController, shouldShowTaskInfoFor step: Any) -> Bool {
         return false
     }
+}
+
+open class ClientDataScheduleManager: SBAScheduleManager {
     
+    /// The previous client data for the tasks
+    var previousClientData = [String : SBBJSONValue]()
+    
+    override open func clientData(with activityIdentifier: String) -> SBBJSONValue? {
+        return previousClientData[activityIdentifier]
+    }
+    
+    override open func fetchRequests() -> [FetchRequest] {
+        return []
+    }
 }
 

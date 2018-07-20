@@ -96,14 +96,22 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
         self.tableView.endUpdates()
     }
     
+    override open func goForward() {
+        if let loggingStep = self.step as? SBAMedicationLoggingStepObject {
+            loggingStep.nextStepIdentifier = nil
+        }
+        super.goForward()
+    }
+    
     /// Called when a user action on a cell or button is linked to a modal item.
     override open func didSelectModalItem(_ modalItem: RSDModalStepTableItem, at indexPath: IndexPath) {
         // We don't actually want to show a modal but send the user to the review step
         guard let navigator = (self.taskController.taskPath.task?.stepNavigator as? SBAMedicationTrackingStepNavigator),
-            let loggingStep = self.step as? SBAMedicationLoggingStepObject else {
+            let loggingStep = self.step as? SBAMedicationLoggingStepObject,
+            let reviewStep = navigator.getReviewStep() as? SBATrackedMedicationReviewStepObject else {
             return
         }
-        loggingStep.nextStepIdentifier = navigator.getReviewStep()?.identifier
+        loggingStep.nextStepIdentifier = reviewStep.identifier
         super.goForward()
     }
 }

@@ -39,12 +39,6 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         return self.step as? SBATrackedItemsReviewStepObject
     }
     
-    override open func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // This will clear any selected review cells
-        (self.step as? SBATrackedItemsReviewStepObject)?.nextStepIdentifier = nil
-    }
-    
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
         _registeredIdentifiers.insert(reuseIdentifier)
@@ -62,8 +56,14 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
         let selectedIdentifier = reviewDataSource.tableItem(at: indexPath)?.identifier {
             reviewDataSource.reviewItemSelected(identifier: selectedIdentifier)
-            self.goForward()
+            super.goForward()
         }
+    }
+    
+    override open func goForward() {
+        // Selecting a cell will call super go forward and ignore this
+        self.reviewStep?.nextStepIdentifier = nil
+        super.goForward()
     }
     
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
