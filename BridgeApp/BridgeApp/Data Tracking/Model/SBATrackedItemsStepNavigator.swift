@@ -276,8 +276,15 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
             }
         }
         else if let step = previousStep, let result = taskResult.findResult(for: step)  {
-            _inMemoryResult.updateDetails(from: result)
-        }        
+            if let removeItemResult = result as? SBARemoveTrackedItemsResultObject {
+                let removeIdentifiers = removeItemResult.items.map({ $0.identifier })
+                let existingidentifiers = self.items.map({ $0.identifier })
+                let newIdentifiers = existingidentifiers.filter({ !removeIdentifiers.contains($0) })
+                self.updateSelectedInMemoryResult(to: newIdentifiers, with: self.items)
+            } else {
+                _inMemoryResult.updateDetails(from: result)
+            }
+        }
     }
     
     /// Update the selected items for the in-memory result.

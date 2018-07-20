@@ -87,7 +87,7 @@
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9NR-dy-INI">
-                                        <rect key="frame" x="36" y="0.0" width="72.5" height="54"/>
+                                        <rect key="frame" x="36" y="-0.5" width="72.5" height="54"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Taken at" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NzJ-39-cT4">
                                                 <rect key="frame" x="0.0" y="0.0" width="72.5" height="21.5"/>
@@ -120,7 +120,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9lU-GV-kPA" userLabel="Undo Button" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                <rect key="frame" x="258" y="30" width="42" height="32.5"/>
+                                <rect key="frame" x="258" y="29.5" width="42" height="32.5"/>
                                 <state key="normal" title="Undo"/>
                                 <connections>
                                     <action selector="undoTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="UJe-Fi-ani"/>

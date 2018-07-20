@@ -132,7 +132,9 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     }
     
     @objc func removeMedicationTapped() {
-        let removeStep = SBARemoveMedicationStepObject(identifier: step.identifier)
+        let bodyText = String.init(format: Localization.localizedString("MEDICATION_REMOVE_TITLE_%@"), self.step.identifier)
+        let underlinedTextSegment = self.step.identifier
+        let removeStep = SBARemoveTrackedItemStepObject(identifier: self.step.identifier, bodyText: bodyText, underlinedBodyTextSegment: underlinedTextSegment, items: [RSDIdentifier(rawValue: self.step.identifier)])
         removeStep.actions = [.navigation(.goForward): RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_REMOVE_BUTTON_TEXT"))]
         var navigator = RSDConditionalStepNavigatorObject(with: [removeStep])
         navigator.progressMarkers = []

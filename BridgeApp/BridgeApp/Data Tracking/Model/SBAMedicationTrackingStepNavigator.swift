@@ -180,8 +180,8 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         return self.reminderStep
     }
     
-    open func step(after detailStep: SBATrackedMedicationDetailStepObject, result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection) {
-        if let _ = result.stepHistory.last as? SBARemoveMedicationResultObject {
+    open func step(after detailStep: SBATrackedMedicationDetailStepObject, result: RSDTaskResult) -> RSDStep? {
+        if let _ = result.stepHistory.last as? SBARemoveTrackedItemsResultObject {
             // Result of the step is to remove the medication
             let selectedIdentifiers = (result.findResult(for: self.selectionStep) as? SBATrackedItemsResult)?.selectedIdentifiers.filter({ $0 != detailStep.identifier })
             updateSelectedInMemoryResult(to: selectedIdentifiers, with: self.items)
