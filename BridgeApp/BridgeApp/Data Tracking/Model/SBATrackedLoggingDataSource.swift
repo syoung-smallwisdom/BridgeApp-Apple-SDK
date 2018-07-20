@@ -123,7 +123,7 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
     }
     
     /// Mark the item as logged.
-    open func updateLoggingDetails(for loggingItem: SBATrackedLoggingTableItem, at indexPath: IndexPath) -> (isSelected: Bool, reloadSection: Bool) {
+    @discardableResult open func updateLoggingDetails(for loggingItem: SBATrackedLoggingTableItem, at indexPath: IndexPath) -> (isSelected: Bool, reloadSection: Bool) {
         
         // Update the answers.
         let loggedResult = buildAnswer(for: loggingItem)

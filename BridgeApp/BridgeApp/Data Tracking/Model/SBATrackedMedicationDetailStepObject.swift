@@ -48,6 +48,25 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
         return false
     }
     
+    /// Default initializer.
+    /// - parameter identifier: The step identifier.
+    public override init(identifier: String) {
+        super.init(identifier: identifier)
+        _commonInit()
+    }
+    
+    /// Initializer required for copying the step.
+    public required init(identifier: String, type: RSDStepType?) {
+        super.init(identifier: identifier, type: type)
+        _commonInit()
+    }
+    
+    /// Initializer required for decoding the step.
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        _commonInit()
+    }
+    
     public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
         return SBATrackedMedicationDetailStepViewController(step: self)
     }
@@ -55,6 +74,17 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
     /// Override to return a `SBATrackedWeeklyScheduleDataSource`.
     open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
         return SBATrackedMedicationDetailsDataSource.init(identifier: identifier, step: self, taskPath: taskPath)
+    }
+    
+    private func _commonInit() {
+        // Set the default color theme.
+        if self.colorTheme == nil {
+            var colorTheme = RSDColorThemeElementObject()
+            colorTheme.setColorStyle(.darkBackground, for: .header)
+            colorTheme.setColorStyle(.darkBackground, for: .body)
+            colorTheme.setColorStyle(.lightBackground, for: .footer)
+            self.colorTheme = colorTheme
+        }
     }
 }
 

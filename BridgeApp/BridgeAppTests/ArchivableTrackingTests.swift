@@ -158,7 +158,7 @@ class ArchivableTrackingTests: XCTestCase {
         do {
             let clientData = try result.clientData() as? [String : Any]
             XCTAssertNotNil(clientData)
-            if let items = clientData!["items"] as? [[String : Any]] {
+            if let items = clientData?["items"] as? [[String : Any]] {
                 XCTAssertEqual(items.count, 2)
                 if let item = items.first {
                     XCTAssertEqual(item["identifier"] as? String, "medA3")
@@ -180,10 +180,10 @@ class ArchivableTrackingTests: XCTestCase {
             } else {
                 XCTFail("Client data 'items' missing or unexpected type. \(String(describing: clientData))")
             }
-            if let reminders = clientData!["reminders"] as? [Int] {
+            if let reminders = clientData?["reminders"] as? [Int] {
                 XCTAssertEqual(reminders.count, 2)
-                XCTAssertEqual(reminders[0], 45)
-                XCTAssertEqual(reminders[1], 60)
+                XCTAssertEqual(reminders.first, 45)
+                XCTAssertEqual(reminders.last, 60)
             } else {
                 XCTFail("Client data 'reminders' missing or unexpected type. \(String(describing: clientData))")
             }

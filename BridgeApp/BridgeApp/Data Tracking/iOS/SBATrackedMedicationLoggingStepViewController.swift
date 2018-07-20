@@ -33,7 +33,11 @@
 
 import UIKit
 
+/// `SBATrackedMedicationLoggingStepViewController` is the default view controller shown for a `SBAMedicationLoggingStepObject`.
+///
+/// - seealso: `SBAMedicationLoggingStepObject`
 open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewController {
+    
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
         _registeredIdentifiers.insert(reuseIdentifier)
@@ -122,7 +126,7 @@ extension SBATrackedMedicationLoggingStepViewController: SBAMedicationLoggingCel
             let loggingItem = cell.loggingTableItem else {
                 return
         }
-        (_,_) = source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
+        source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
     }
     
     public func logTapped(cell: SBAMedicationLoggingCell) {
@@ -130,7 +134,7 @@ extension SBATrackedMedicationLoggingStepViewController: SBAMedicationLoggingCel
             let loggingItem = cell.loggingTableItem else {
                 return
         }
-        (_,_) = source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
+        source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
     }
     
     public func undoTapped(cell: SBAMedicationLoggingCell) {
@@ -138,7 +142,7 @@ extension SBATrackedMedicationLoggingStepViewController: SBAMedicationLoggingCel
             let loggingItem = cell.loggingTableItem else {
                 return
         }
-        (_,_) = source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
+        source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
     }
 
     public func timeTapped(cell: SBAMedicationLoggingCell) {
@@ -152,6 +156,7 @@ extension SBATrackedMedicationLoggingStepViewController: SBAMedicationLoggingCel
 }
 
 public protocol SBAMedicationLoggingCellDelegate : class, NSObjectProtocol {
+    /// Called when the user taps the time button.
     func timeTapped(cell: SBAMedicationLoggingCell)
     func logTapped(cell: SBAMedicationLoggingCell)
     func undoTapped(cell: SBAMedicationLoggingCell)

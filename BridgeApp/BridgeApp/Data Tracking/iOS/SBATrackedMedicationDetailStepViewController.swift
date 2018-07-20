@@ -46,7 +46,6 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     override open func viewDidLoad() {
         super.viewDidLoad()
-        self.tableView.backgroundColor = UIColor.darkPrimaryTintColor
         self.createCustomNavigationHeader()
     }
     
@@ -353,7 +352,7 @@ open class SBATrackedTextfieldCell : RSDTableViewCell {
     
     override open func awakeFromNib() {
         super.awakeFromNib()
-        self.contentView.backgroundColor = UIColor.darkPrimaryTintColor
+        self.contentView.backgroundColor = UIColor.appBackgroundDark
     }
 }
 
@@ -385,7 +384,7 @@ open class SBARoundedButtonCell: RSDButtonCell {
     
     override open func awakeFromNib() {
         super.awakeFromNib()
-        self.contentView.backgroundColor = UIColor.darkPrimaryTintColor
+        self.contentView.backgroundColor = UIColor.appBackgroundDark
     }
 }
 
@@ -424,7 +423,7 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     
     override open func awakeFromNib() {
         super.awakeFromNib()
-        self.contentView.backgroundColor = UIColor.darkPrimaryTintColor
+        self.contentView.backgroundColor = UIColor.appBackgroundDark
         self.titleLabel.textColor = UIColor.rsd_headerTitleLabel
         for label in self.labels {
             label.textColor = UIColor.rsd_headerTitleLabel
