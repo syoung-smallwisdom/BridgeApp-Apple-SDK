@@ -395,7 +395,8 @@ class MedicationTrackingNavigationTests: XCTestCase {
         medC3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: [.sunday, .thursday])]
         //medC3.timestamps = [SBATimestamp(timingIdentifier: "20:00", loggedDate: <#T##Date#>)]
         initialResult.medications = [medA3, medC3]
-        initialResult.reminders = [] // this is how the previous answer of "no reminders please" looks
+        // This is how the previous answer of "no reminders please" looks.
+        initialResult.reminders = []
         
         let clientData = try! initialResult.clientData()
         
