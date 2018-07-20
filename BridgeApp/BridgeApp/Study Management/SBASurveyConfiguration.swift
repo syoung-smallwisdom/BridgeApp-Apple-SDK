@@ -90,7 +90,7 @@ open class SBASurveyConfiguration {
     
     /// Returns the progress markers for a given survey. Default = `nil`.
     open func progressMarkers(for survey: SBBSurvey) -> [String]? {
-        return nil
+        return survey.surveyElements.map { $0.identifier }
     }
     
     /// The actions for this step. By default, returns `nil`. Can be called by both the survey and the step.

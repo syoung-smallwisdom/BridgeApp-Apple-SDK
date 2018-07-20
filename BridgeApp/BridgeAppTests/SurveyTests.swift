@@ -53,11 +53,12 @@ class SurveyTests: XCTestCase {
         let inputStep = SBBSurveyQuestion()
         inputStep.identifier = "abc123"
         let inputSurvey = SBBSurvey()
+        inputSurvey.insertElements([inputStep], at: IndexSet(integer: 0))
         
         XCTAssertNil(inputSurvey.action(for: .navigation(.skip), on: inputStep))
         XCTAssertNil(inputSurvey.shouldHideAction(for: .navigation(.skip), on: inputStep))
         XCTAssertNil(inputSurvey.conditionalRule)
-        XCTAssertNil(inputSurvey.progressMarkers)
+        XCTAssertEqual(inputSurvey.progressMarkers, ["abc123"])
     }
     
     func testSurvey_Configuration_Overrides() {
@@ -65,8 +66,9 @@ class SurveyTests: XCTestCase {
         let testConfig = TestSurveyConfiguration()
         SBASurveyConfiguration.shared = testConfig
         let inputStep = SBBSurveyInfoScreen()
-        inputStep.identifier = "abc123"
+        inputStep.identifier = "a"
         let inputSurvey = SBBSurvey()
+        inputSurvey.insertElements([inputStep], at: IndexSet(integer: 0))
         
         XCTAssertNotNil(inputSurvey.action(for: .navigation(.skip), on: inputStep))
         XCTAssertNotNil(inputSurvey.shouldHideAction(for: .navigation(.skip), on: inputStep))
