@@ -245,7 +245,12 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     
     /// The in-memory result is the stored result that is used to set the current state before
     /// displaying any steps.
-    lazy private(set) var _inMemoryResult: SBATrackedItemsCollectionResult = {
+    /// The in-memory result is the stored result that is used to set the current state before
+    /// displaying any steps.
+    public final var inMemoryResult: SBATrackedItemsCollectionResult  {
+        return _inMemoryResult
+    }
+    lazy private var _inMemoryResult: SBATrackedItemsCollectionResult = {
         return instantiateLoggingResult()
     }()
     

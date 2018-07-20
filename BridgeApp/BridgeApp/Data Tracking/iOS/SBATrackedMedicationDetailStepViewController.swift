@@ -343,16 +343,18 @@ open class SBATrackedTextfieldCell : RSDTableViewCell {
     /// A line show below the text field.
     @IBOutlet weak var ruleView: UIView!
     
+    /// Override to set the content view background color to the color of the table background.
+    override open var tableBackgroundColor: UIColor! {
+        didSet {
+            self.contentView.backgroundColor = tableBackgroundColor
+        }
+    }
+    
     /// The nib to use with this cell. Default will instantiate a `SBATrackedMedicationDetailCell`.
     open class var nib: UINib {
         let bundle = Bundle(for: SBATrackedTextfieldCell.self)
         let nibName = String(describing: SBATrackedTextfieldCell.self)
         return UINib(nibName: nibName, bundle: bundle)
-    }
-    
-    override open func awakeFromNib() {
-        super.awakeFromNib()
-        self.contentView.backgroundColor = UIColor.appBackgroundDark
     }
 }
 
@@ -382,9 +384,11 @@ open class SBARoundedButtonCell: RSDButtonCell {
         return UINib(nibName: nibName, bundle: bundle)
     }
     
-    override open func awakeFromNib() {
-        super.awakeFromNib()
-        self.contentView.backgroundColor = UIColor.appBackgroundDark
+    /// Override to set the content view background color to the color of the table background.
+    override open var tableBackgroundColor: UIColor! {
+        didSet {
+            self.contentView.backgroundColor = tableBackgroundColor
+        }
     }
 }
 
@@ -423,7 +427,6 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     
     override open func awakeFromNib() {
         super.awakeFromNib()
-        self.contentView.backgroundColor = UIColor.appBackgroundDark
         self.titleLabel.textColor = UIColor.rsd_headerTitleLabel
         for label in self.labels {
             label.textColor = UIColor.rsd_headerTitleLabel

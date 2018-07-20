@@ -157,7 +157,6 @@ open class SBAMedicationRemindersStepObject: RSDUIStepObject, RSDFormUIStep, RSD
         case reminderChoices
     }
     
-    public var previousResult: [Int]?
     public var reminderChoices: [RSDChoiceObject<Int>]?
     
     open var inputFields: [RSDInputField] {
@@ -202,13 +201,6 @@ open class SBAMedicationRemindersStepObject: RSDUIStepObject, RSDFormUIStep, RSD
         formStep.title = formTitle
         formStep.actions = [.navigation(.goForward) : RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SAVE"))]
         return formStep
-    }
-    
-    // MARK: RSDNavigationSkipRule
-    
-    public func shouldSkipStep(with result: RSDTaskResult?, conditionalRule: RSDConditionalRule?, isPeeking: Bool) -> Bool {
-        // If this does not have a medication tracking result then it should be skipped.
-        return (result?.stepHistory ?? []).contains(where: { $0.identifier == self.identifier }) || self.previousResult != nil
     }
 }
 

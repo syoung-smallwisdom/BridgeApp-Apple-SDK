@@ -41,6 +41,10 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
     public private(set) var reminderStep: SBAMedicationRemindersStepObject?
     
+    var inMemoryTrackingResult: SBAMedicationTrackingResult? {
+        return super.inMemoryResult as? SBAMedicationTrackingResult
+    }
+    
     public required init(from decoder: Decoder) throws {
         try super.init(from: decoder)
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -158,12 +162,12 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         let returnValue = super.step(after: reviewStep, with: &result)
 
         if returnValue.step == nil {
-            if let reminderStepUnwrapped = getReminderStep(),
-                !reminderStepUnwrapped.shouldSkipStep(with: result, conditionalRule: nil, isPeeking: false) {
-                return reminderStepUnwrapped
-            } else if previousClientData != nil {
+            if previousClientData != nil {
                 // If we had existing client data, we should go to logging
                 return getLoggingStep()
+            } else if let reminderStepUnwrapped = getReminderStep(),
+                self.inMemoryTrackingResult?.reminders == nil {
+                return reminderStepUnwrapped
             } else {
                 return nil
             }
@@ -173,7 +177,6 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     }
     
     open func getReminderStep() -> SBAMedicationRemindersStepObject? {
-        self.reminderStep?.previousResult = (super._inMemoryResult as? SBAMedicationTrackingResult)?.reminders
         return self.reminderStep
     }
     
@@ -203,10 +206,10 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
     open func step(after loggingStep: SBAMedicationLoggingStepObject, result: inout RSDTaskResult) -> RSDStep? {
         updateInMemoryResult(from: &result, using: loggingStep)
+        super.updateResultToInMemoryResult(result: &result)
         if loggingStep.nextStepIdentifier == getReviewStep()?.identifier {
             return getReviewStep()
         }
-        super.updateResultToInMemoryResult(result: &result)
         return nil
     }
 }

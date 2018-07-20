@@ -241,7 +241,7 @@ class ArchivableTrackingTests: XCTestCase {
             XCTAssertEqual(lastItem.dosage, "3 mg")
 
             XCTAssertEqual(result.reminders?.count, 1)
-            XCTAssertEqual(result.reminders?[0], 45)
+            XCTAssertEqual(result.reminders?.first, 45)
         }
         catch let err {
             XCTFail("Failed to encode the result: \(err)")
