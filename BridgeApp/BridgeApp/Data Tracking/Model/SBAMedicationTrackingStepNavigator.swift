@@ -397,9 +397,14 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
-        if let clientDataMap = clientData as? [String : Any] {
-            self.reminders = clientDataMap[CodingKeys.reminders.stringValue] as? [Int]
-            if let medJson = clientDataMap[CodingKeys.medications.stringValue] as? SBBJSONValue {
+        var clientDataMap = clientData as? [String : Any]
+        if clientDataMap == nil {
+            // Also support a collection of tracking results, but grab the last one.
+            clientDataMap = (clientData as? [[String : Any]])?.last
+        }
+        if let clientDataMapUnwrapped = clientDataMap {
+            self.reminders = clientDataMapUnwrapped[CodingKeys.reminders.stringValue] as? [Int]
+            if let medJson = clientDataMapUnwrapped[CodingKeys.medications.stringValue] as? SBBJSONValue {
                 let decoder = SBAFactory.shared.createJSONDecoder()
                 let meds = try decoder.decode([SBAMedicationAnswer].self, from: medJson)
                 self.medications = meds.map { (input) in

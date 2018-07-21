@@ -143,6 +143,69 @@ class ArchivableTrackingTests: XCTestCase {
         }
     }
     
+    func testLoggingCollectionResultArchive_UpdateFromClientDataList() {
+        
+        let clientDataList: NSArray =
+            [[
+                "items" : [
+                    [
+                        "foo" : "goo",
+                        "detail" : "a detail",
+                        "identifier" : "itemA",
+                        "loggedDate" : "2018-06-04T13:24:39.772-07:00",
+                        "text" : "Item A"
+                    ],
+                    [
+                        "detail" : "b detail",
+                        "text" : "Item B",
+                        "identifier" : "itemB"
+                    ]
+                ],
+                "endDate" : "2018-06-04T13:25:39.772-07:00",
+                "startDate" : "2018-06-04T13:25:39.772-07:00",
+                "type" : "loggingCollection",
+                "identifier" : "logging"
+        ],
+             [
+                "items" : [
+                    [
+                        "foo" : "goo",
+                        "detail" : "a detail",
+                        "identifier" : "itemA",
+                        "loggedDate" : "2018-06-04T13:24:39.772-07:00",
+                        "text" : "Item A"
+                    ]
+                ],
+                "endDate" : "2018-06-04T13:25:39.772-07:00",
+                "startDate" : "2018-06-04T13:25:39.772-07:00",
+                "type" : "loggingCollection",
+                "identifier" : "logging"
+        ]]
+        
+        do {
+            
+            var result = SBATrackedLoggingCollectionResultObject(identifier: "logging")
+            try result.updateSelected(from: clientDataList, with: [])
+            
+            let selectedAnswers = result.selectedAnswers
+            XCTAssertEqual(selectedAnswers.count, 1)
+            
+            guard let firstItem = selectedAnswers.first as? SBATrackedLoggingResultObject
+                else {
+                    XCTFail("Items nil or not of expected type. \(selectedAnswers)")
+                    return
+            }
+            
+            XCTAssertEqual(firstItem.identifier, "itemA")
+            XCTAssertEqual(firstItem.text, "Item A")
+            XCTAssertEqual(firstItem.detail, "a detail")
+            XCTAssertNil(firstItem.loggedDate)
+        }
+        catch let err {
+            XCTFail("Failed to encode the result: \(err)")
+        }
+    }
+    
     func testMedicationResultArchive_ClientData() {
         
         var result = SBAMedicationTrackingResult(identifier: "logging")
