@@ -51,35 +51,19 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     }
     
     override open class func buildReviewStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep? {
-        let stepId = StepIdentifiers.review.stringValue
-        let step = SBATrackedMedicationReviewStepObject(identifier: stepId, items: items, sections: sections, type: .review)
-
-        // Set the default values for the title and subtitle to display depending upon state.
-        step.addDetailsTitle = Localization.localizedString("MEDICATION_ADD_DETAILS_TITLE")
-        step.addDetailsSubtitle = Localization.localizedString("MEDICATION_ADD_DETAILS_DETAIL")
-        step.reviewTitle = Localization.localizedString("MEDICATION_REVIEW_TITLE")
-        // Add the customization of the add more and go forward buttons.
-        let addMoreAction = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_EDIT_LIST_TITLE"))
-        let goForwardAction = RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SAVE"))
-        step.actions = [.navigation(.goForward) : goForwardAction,
-                        .addMore : addMoreAction]
-        
-        return step
+        return SBATrackedMedicationReviewStepObject(identifier: StepIdentifiers.review.stringValue, items: items, sections: sections, type: .review)
     }
     
     override open class func buildReminderStep() -> SBATrackedItemRemindersStepObject? {
-        return nil  // we provide the reminder step the the JSON decoder
+        return nil  // the reminder step is built by the JSON decoder
     }
     
     override open class func buildDetailSteps(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> [SBATrackedItemDetailsStep]? {
-        let detailStepObject = SBATrackedMedicationDetailStepObject(identifier: SBATrackedItemsStepNavigator.StepIdentifiers.addDetails.stringValue, type: .medicationDetails)
-        return [detailStepObject]
+        return [SBATrackedMedicationDetailStepObject(identifier: SBATrackedItemsStepNavigator.StepIdentifiers.addDetails.stringValue, type: .medicationDetails)]
     }
     
     override open class func buildLoggingStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep {
-        let loggingStep = SBAMedicationLoggingStepObject(identifier: StepIdentifiers.logging.stringValue, items: items, sections: sections)
-        loggingStep.actions = [.addMore: RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_VIEW_LIST"))]
-        return loggingStep
+        return SBAMedicationLoggingStepObject(identifier: StepIdentifiers.logging.stringValue, items: items, sections: sections)
     }
     
     override open func instantiateLoggingResult() -> SBATrackedItemsCollectionResult {

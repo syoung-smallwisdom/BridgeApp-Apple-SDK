@@ -74,12 +74,7 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         return cell
     }
     
-    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {        
-        guard let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource else {
-            dismiss(animated: true, completion: nil)
-            return
-        }
-
+    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {                
         dismiss(animated: true, completion: nil)
     }
     

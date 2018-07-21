@@ -47,6 +47,30 @@ open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RS
         return SBAMedicationLoggingDataSource(step: self, taskPath: taskPath)
     }
     
+    /// Initializer required for `copy(with:)` implementation.
+    public required init(identifier: String, type: RSDStepType?) {
+        super.init(identifier: identifier, type: type)
+        _commonInit()
+    }
+    
+    override public init(identifier: String, items: [SBATrackedItem], sections: [SBATrackedSection]? = nil, type: RSDStepType? = nil) {
+        super.init(identifier: identifier, items: items, sections: sections, type: type)
+        _commonInit()
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        _commonInit()
+    }
+    
+    private func _commonInit() {
+        if self.actions?[.addMore] == nil {
+            var actions = self.actions ?? [:]
+            actions[.addMore] = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_VIEW_LIST"))
+            self.actions = actions
+        }
+    }
+    
     // MARK: RSDNavigationSkipRule
     
     public func shouldSkipStep(with result: RSDTaskResult?, conditionalRule: RSDConditionalRule?, isPeeking: Bool) -> Bool {
