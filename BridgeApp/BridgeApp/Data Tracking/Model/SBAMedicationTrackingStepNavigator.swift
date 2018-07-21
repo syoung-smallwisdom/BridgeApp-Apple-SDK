@@ -35,10 +35,6 @@ import Foundation
 
 open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
 
-    var inMemoryTrackingResult: SBAMedicationTrackingResult? {
-        return super.inMemoryResult as? SBAMedicationTrackingResult
-    }
-
     override open class func decodeItems(from decoder: Decoder) throws -> (items: [SBATrackedItem], sections: [SBATrackedSection]?) {
         let container = try decoder.container(keyedBy: ItemsCodingKeys.self)
         let items = try container.decode([SBAMedicationItem].self, forKey: .items)
