@@ -85,6 +85,12 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
             colorTheme.setColorStyle(.lightBackground, for: .footer)
             self.colorTheme = colorTheme
         }
+        if self.actions?[.navigation(.cancel)] == nil {
+            var actions = self.actions ?? [:]
+            actions[.navigation(.cancel)] = RSDUIActionObject(iconName: "backArrowHeader",
+                                                              bundle: Bundle(identifier: "org.sagebionetworks.ResearchUI-iOS"))
+            self.actions = actions
+        }
     }
 }
 

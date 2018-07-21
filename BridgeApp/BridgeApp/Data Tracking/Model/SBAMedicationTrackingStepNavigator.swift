@@ -34,33 +34,11 @@
 import Foundation
 
 open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
-    
-    private enum CodingKeys : String, CodingKey {
-        case reminder
-    }
-    
-    public private(set) var reminderStep: SBAMedicationRemindersStepObject?
-    
+
     var inMemoryTrackingResult: SBAMedicationTrackingResult? {
         return super.inMemoryResult as? SBAMedicationTrackingResult
     }
-    
-    public required init(from decoder: Decoder) throws {
-        try super.init(from: decoder)
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let reminderStep: SBAMedicationRemindersStepObject? = try {
-            guard container.contains(.reminder) else { return nil }
-            let nestedDecoder = try container.superDecoder(forKey: .reminder)
-            return try decoder.factory.decodeStep(from: nestedDecoder) as? SBAMedicationRemindersStepObject
-        }()
-        self.reminderStep = (reminderStep ?? type(of: self).buildReminderStep())?.copy(with: RSDIdentifier.medicationReminders.stringValue)
-    }
-    
-    public required init(identifier: String, items: [SBATrackedItem], sections: [SBATrackedSection]?) {
-        self.reminderStep = type(of: self).buildReminderStep()
-        super.init(identifier: identifier, items: items, sections: sections)
-    }
-    
+
     override open class func decodeItems(from decoder: Decoder) throws -> (items: [SBATrackedItem], sections: [SBATrackedSection]?) {
         let container = try decoder.container(keyedBy: ItemsCodingKeys.self)
         let items = try container.decode([SBAMedicationItem].self, forKey: .items)
@@ -93,9 +71,8 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         return step
     }
     
-    /// @return a step that will be used to set medication reminders
-    open class func buildReminderStep() -> SBAMedicationRemindersStepObject? {
-        return nil
+    override open class func buildReminderStep() -> SBATrackedItemRemindersStepObject? {
+        return nil  // we provide the reminder step the the JSON decoder
     }
     
     override open class func buildDetailSteps(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> [SBATrackedItemDetailsStep]? {
@@ -111,107 +88,7 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
     override open func instantiateLoggingResult() -> SBATrackedItemsCollectionResult {
         return SBAMedicationTrackingResult(identifier: self.reviewStep!.identifier)
-    }
-    
-    override open func getDetailStep(with identifier: String) -> (RSDStep, SBATrackedItemAnswer)? {
-        let returnValue = super.getDetailStep(with: identifier)
-        if let detailStep = returnValue?.0 as? SBATrackedMedicationDetailStepObject {
-            // Because we can visit a details step multiple times, we need to make sure
-            // the previous answer is up to date for the step
-            detailStep.updatePreviousAnswer(answer: returnValue?.1)
-            detailStep.title = returnValue?.1.identifier
-        }
-        return returnValue
-    }
-    
-    override open func step(after step: RSDStep?, with result: inout RSDTaskResult) -> (step: RSDStep?, direction: RSDStepDirection) {
-        
-        // TODO: mdephillips 7/19/18 refactor this method's logic into base class
-        
-        guard let _ = step?.identifier else {
-            // TODO: mdephillips 7/3/18 remove this conditional once logging step is complete
-            return super.step(after: step, with: &result)
-        }
-        
-        // Check if it is a detail step, if so, reverse to the review step
-        if let detailStep = step as? SBATrackedMedicationDetailStepObject {
-            let nextStep = self.step(after: detailStep, result: &result)
-            return (nextStep.step, nextStep.direction)
-        }
-        
-        if let reviewStep = step as? SBATrackedItemsReviewStepObject {
-            let nextStep = self.step(after: reviewStep, result: &result)
-            return (nextStep, .forward)
-        }
-        
-        if let reminderStep = step as? SBAMedicationRemindersStepObject {
-            let nextStep = self.step(after: reminderStep, result: &result)
-            return (nextStep, .forward)
-        }
-        
-        if let medLoggingStep = step as? SBAMedicationLoggingStepObject {
-            let nextStep = self.step(after: medLoggingStep, result: &result)
-            return (nextStep, .forward)
-        }
-        
-        return super.step(after: step, with: &result)
-    }
-    
-    open func step(after reviewStep: SBATrackedItemsReviewStepObject, result: inout RSDTaskResult) -> RSDStep? {
-        super.updateResultToInMemoryResult(result: &result)
-        let returnValue = super.step(after: reviewStep, with: &result)
-
-        if returnValue.step == nil {
-            if previousClientData != nil {
-                // If we had existing client data, we should go to logging
-                return getLoggingStep()
-            } else if let reminderStepUnwrapped = getReminderStep(),
-                self.inMemoryTrackingResult?.reminders == nil {
-                return reminderStepUnwrapped
-            } else {
-                return nil
-            }
-        } else {
-            return returnValue.step
-        }
-    }
-    
-    open func getReminderStep() -> SBAMedicationRemindersStepObject? {
-        return self.reminderStep
-    }
-    
-    open func step(after detailStep: SBATrackedMedicationDetailStepObject, result: RSDTaskResult) -> RSDStep? {
-        if let _ = result.stepHistory.last as? SBARemoveTrackedItemsResultObject {
-            // Result of the step is to remove the medication
-            let selectedIdentifiers = (result.findResult(for: self.selectionStep) as? SBATrackedItemsResult)?.selectedIdentifiers.filter({ $0 != detailStep.identifier })
-            updateSelectedInMemoryResult(to: selectedIdentifiers, with: self.items)
-            if selectedIdentifiers?.count == 0 {
-                // If there are no more selected medications, go back to selection step
-                return (getSelectionStep(), .reverse)
-            } else {
-                return (getReviewStep(), .reverse)
-            }
-        } else {
-            // When moving forward, always update the in-memory result before continuing.
-            updateInMemoryResult(from: &result, using: detailStep)
-            return super.step(after: detailStep as RSDStep, with: &result)
-        }
-    }
-    
-    open func step(after reminderStep: SBAMedicationRemindersStepObject, result: inout RSDTaskResult) -> RSDStep? {
-        updateInMemoryResult(from: &result, using: reminderStep)
-        super.updateResultToInMemoryResult(result: &result)
-        return nil
-    }
-    
-    open func step(after loggingStep: SBAMedicationLoggingStepObject, result: inout RSDTaskResult) -> RSDStep? {
-        updateInMemoryResult(from: &result, using: loggingStep)
-        super.updateResultToInMemoryResult(result: &result)
-        if loggingStep.nextStepIdentifier == getReviewStep()?.identifier {
-            return getReviewStep()
-        }
-        return nil
-    }
+    }    
 }
 
 extension RSDIdentifier {

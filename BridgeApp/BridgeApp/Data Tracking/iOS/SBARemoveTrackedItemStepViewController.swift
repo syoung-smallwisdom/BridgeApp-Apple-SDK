@@ -1,5 +1,5 @@
 //
-//  SBARemoveMedicationStepViewController.swift
+//  SBARemoveTrackedItemStepViewController.swift
 //  BridgeApp (iOS)
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
@@ -48,24 +48,27 @@ open class SBARemoveTrackedItemStepViewController: RSDStepViewController {
     }
     
     @IBOutlet weak var titleLabel: UILabel?
+    @IBOutlet weak var textLabel: UILabel?
     
     override open func viewDidLoad() {
         super.viewDidLoad()
         
         if let removeStep = self.removeTrackedItemStep,
-            let bodyText = removeStep.bodyText {
-            if let underlinedSegment = removeStep.underlinedBodyTextSegment {
-                if let underlinedRange = bodyText.range(of: underlinedSegment) {
-                    let underlinedIndex = bodyText.distance(from: bodyText.startIndex, to: underlinedRange.lowerBound)
-                    let attributedText = NSMutableAttributedString(string: bodyText)
+            let title = removeStep.title {
+            if let underlinedSegment = removeStep.underlinedTitleSegment {
+                if let underlinedRange = title.range(of: underlinedSegment) {
+                    let underlinedIndex = title.distance(from: title.startIndex, to: underlinedRange.lowerBound)
+                    let attributedText = NSMutableAttributedString(string: title)
                     attributedText.addAttribute(NSAttributedStringKey.underlineStyle, value: NSUnderlineStyle.styleSingle.rawValue, range: NSMakeRange(underlinedIndex, underlinedSegment.count))
                     self.titleLabel?.attributedText = attributedText
                 }
             } else {
                 self.titleLabel?.attributedText = nil
-                self.titleLabel?.text = bodyText
+                self.titleLabel?.text = title
             }
         }
+        
+        self.textLabel?.text = self.removeTrackedItemStep?.text
     }
 }
 
@@ -78,14 +81,11 @@ open class SBARemoveTrackedItemStepObject: RSDUIStepObject, RSDStepViewControlle
     }
     
     private enum CodingKeys: String, CodingKey {
-        case bodyText, underlinedBodyTextSegment, items
+        case bodyText, underlinedTitleSegment, items
     }
     
-    /// The text that will be shown in the body of the step view controller.
-    public var bodyText: String?
-    
-    /// The phrase or text segment that will be underlined in the body text.
-    public var underlinedBodyTextSegment: String?
+    /// The phrase or text segment that will be underlined in the title
+    public var underlinedTitleSegment: String?
     
     /// The list of items to be removed
     public var items: [RSDIdentifier]
@@ -94,11 +94,11 @@ open class SBARemoveTrackedItemStepObject: RSDUIStepObject, RSDStepViewControlle
         return SBARemoveTrackedItemsResultObject(identifier: self.identifier, items: self.items)
     }
     
-    public init(identifier: String, bodyText: String, underlinedBodyTextSegment: String, items: [RSDIdentifier]) {
-        self.bodyText = bodyText
-        self.underlinedBodyTextSegment = underlinedBodyTextSegment
+    public init(identifier: String, title: String, underlinedTitleSegment: String, items: [RSDIdentifier]) {
         self.items = items
         super.init(identifier: identifier, type: .removeTrackedItem)
+        self.underlinedTitleSegment = underlinedTitleSegment
+        self.title = title
     }
     
     /// Initializer required for `copy(with:)` implementation.
@@ -114,8 +114,7 @@ open class SBARemoveTrackedItemStepObject: RSDUIStepObject, RSDStepViewControlle
             assertionFailure("Superclass implementation of the `copy(with:)` protocol should return an instance of this class.")
             return
         }
-        subclassCopy.bodyText = self.bodyText
-        subclassCopy.underlinedBodyTextSegment = self.underlinedBodyTextSegment
+        subclassCopy.underlinedTitleSegment = self.underlinedTitleSegment
         subclassCopy.items = self.items
     }
     
@@ -140,8 +139,7 @@ open class SBARemoveTrackedItemStepObject: RSDUIStepObject, RSDStepViewControlle
     public required init(from decoder: Decoder) throws {
         // Decode the body text and underlined body text segment.
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.bodyText = try container.decodeIfPresent(String.self, forKey: .bodyText)
-        self.underlinedBodyTextSegment = try container.decodeIfPresent(String.self, forKey: .underlinedBodyTextSegment)
+        self.underlinedTitleSegment = try container.decodeIfPresent(String.self, forKey: .underlinedTitleSegment)
         self.items = try container.decode([RSDIdentifier].self, forKey: .items)
         try super.init(from: decoder)
     }

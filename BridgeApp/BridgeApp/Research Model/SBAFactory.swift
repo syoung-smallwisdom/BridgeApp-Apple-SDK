@@ -96,7 +96,7 @@ open class SBAFactory : RSDFactory {
         case .removeTrackedItem:
             return try SBARemoveTrackedItemStepObject(from: decoder)
         case .medicationReminders:
-            return try SBAMedicationRemindersStepObject(from: decoder)
+            return try SBATrackedItemRemindersStepObject(from: decoder)
         case .medicationDetails:
             return try SBATrackedMedicationDetailStepObject(from: decoder)
         case .taskInfo:
