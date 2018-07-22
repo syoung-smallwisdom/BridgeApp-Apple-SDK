@@ -269,13 +269,10 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     
     /// Updates the in-memory result that is used to track the selection state.
     ///
-    /// - note: This is exposed publicly to allow subclasses of the navigator to call this method directly,
-    /// but this method should **only** be called by a subclass of `SBATrackedItemsStepNavigator`.
-    ///
     /// - parameters:
     ///     - taskResult: The current task result.
     ///     - previousStep: The previous step that was displayed and is triggering calling this function
-    public func updateInMemoryResult(from taskResult: inout RSDTaskResult, using previousStep: RSDStep?) {
+    func updateInMemoryResult(from taskResult: inout RSDTaskResult, using previousStep: RSDStep?) {
         
         guard let step = previousStep,
             let result = taskResult.findResult(for: step) else {
@@ -305,7 +302,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     }
     
     /// Update the selected items for the in-memory result by removing the items with the selected identifiers.
-    public func updateSelectedInMemoryResult(byRemoving identifiers: [String]?) {
+    func updateSelectedInMemoryResult(byRemoving identifiers: [String]?) {
         guard let identifiersToRemove = identifiers else { return }
         let selectedIdentifiers = _inMemoryResult.selectedIdentifiers
         let newIdentifiers = selectedIdentifiers.filter({ !identifiersToRemove.contains($0) })
@@ -313,7 +310,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     }
     
     /// Update the selected items for the in-memory result.
-    public func updateSelectedInMemoryResult(to selectedIdentifiers: [String]?, with items: [SBATrackedItem]) {
+    func updateSelectedInMemoryResult(to selectedIdentifiers: [String]?, with items: [SBATrackedItem]) {
         _inMemoryResult.updateSelected(to: selectedIdentifiers, with: self.items)
     }
     

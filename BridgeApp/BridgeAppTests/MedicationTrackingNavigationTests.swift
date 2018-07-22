@@ -534,21 +534,52 @@ class MedicationTrackingNavigationTests: XCTestCase {
         // When an item is removed, the navigation direction should flow in reverse, back to the review screen
         XCTAssertEqual(direction, .reverse)
         
-        guard let finalReviewStep = fourthStep as? SBATrackedItemsReviewStepObject else {
+        guard let reviewStep3 = fourthStep as? SBATrackedItemsReviewStepObject else {
             XCTFail("Failed to create the expected step. Exiting.")
             return
         }
-        finalReviewStep.nextStepIdentifier = nil
-        XCTAssertEqual(finalReviewStep.result?.selectedAnswers.count, 1)
+        reviewStep3.nextStepIdentifier = "medA3"
+        XCTAssertEqual(reviewStep3.result?.selectedAnswers.count, 1)
         
-        let (fifthStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
+        let (fifthStep, _) = medTracker.step(after: reviewStep3, with: &taskResult)
         XCTAssertNotNil(fifthStep)
-        guard let finalLoggingStep = fifthStep as? SBATrackedItemsLoggingStepObject else {
+        guard let detailStep2 = fifthStep as? SBATrackedMedicationDetailStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        taskResult.appendStepHistory(with: SBARemoveTrackedItemsResultObject(identifier: "medA3", items: [RSDIdentifier(rawValue: "medA3")]))
+        
+        let (sixthStep, direction2) = medTracker.step(after: detailStep2, with: &taskResult)
+        XCTAssertNotNil(sixthStep)
+        guard let selectionStep2 = sixthStep as? SBATrackedSelectionStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        XCTAssertEqual(direction2, .reverse)
+        
+        guard var firstSelectionResult = selectionStep2.instantiateStepResult() as? SBATrackedItemsResult else {
+            XCTFail("Failed to create the expected result. Exiting.")
+            return
+        }
+        firstSelectionResult.updateSelected(to: ["medA2"], with: selectionStep2.items)
+        taskResult.appendStepHistory(with: firstSelectionResult)
+        
+        let (seventhStep, _) = medTracker.step(after: selectionStep2, with: &taskResult)
+        XCTAssertNotNil(seventhStep) // review
+        let (eigthStep, _) = medTracker.step(after: seventhStep, with: &taskResult)
+        XCTAssertNotNil(eigthStep) // detail
+        taskResult.appendStepHistory(with: medA2Result())
+        let (ninthStep, _) = medTracker.step(after: eigthStep, with: &taskResult)
+        XCTAssertNotNil(ninthStep) // review
+        
+        let (tenthStep, _) = medTracker.step(after: ninthStep, with: &taskResult)
+        XCTAssertNotNil(tenthStep) // logging step
+        
+        guard let finalLoggingStep = tenthStep as? SBATrackedItemsLoggingStepObject else {
             XCTFail("Failed to create the expected step. Exiting.")
             return
         }
         finalLoggingStep.nextStepIdentifier = nil
-        
         let (exitStep, _) = medTracker.step(after: finalLoggingStep, with: &taskResult)
         XCTAssertNil(exitStep)
     }
