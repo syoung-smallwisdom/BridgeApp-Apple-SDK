@@ -181,7 +181,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     /// took the medication when scheduled to do so.
     public let loggingStep: SBATrackedItemsStep
     
-    /// The reminder step to display after the final review of the tracked item details.
+    /// The reminder step to display when the user chooseg when they should be reminded about the tracked items.
     public let reminderStep: SBATrackedItemRemindersStepObject?
     
     /// Build the selection step for this tracked data collection. Override to customize the step.
@@ -207,7 +207,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
         return SBATrackedItemsLoggingStepObject(identifier: stepId, items: items, sections: sections, type: .logging)
     }
     
-    /// Build the reminder step for this tracked data collection. Override to customize the steps.
+    /// Build the reminder step for this tracked data collection. Override to customize the step.
     open class func buildReminderStep() -> SBATrackedItemRemindersStepObject? {
         return nil
     }
@@ -312,10 +312,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     /// Update the selected items for the in-memory result.
     func updateSelectedInMemoryResult(to selectedIdentifiers: [String]?, with items: [SBATrackedItem]) {
         _inMemoryResult.updateSelected(to: selectedIdentifiers, with: self.items)
-    }
-    
-    func updateResultToInMemoryResult(result: inout RSDTaskResult) {
-        result.appendStepHistory(with: _inMemoryResult)
     }
     
     /// Instantiate the appropriate result that can be used for logging and review.

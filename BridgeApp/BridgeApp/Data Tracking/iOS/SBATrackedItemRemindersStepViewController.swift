@@ -33,6 +33,10 @@
 
 import UIKit
 
+/// `SBATrackedItemRemindersStepViewController` contains a prompt butotn cell that
+/// shows a form step view controller with the input fields from the form step.
+///
+/// - seealso: `RSDTableStepViewController`, `SBARemoveTrackedItemsResultObject`, `SBATrackedItemRemindersStepObject`
 open class SBATrackedItemRemindersStepViewController: RSDTableStepViewController {
     
     public var reminderStep: SBATrackedItemRemindersStepObject? {
@@ -89,6 +93,10 @@ extension SBATrackedItemRemindersStepViewController: RSDTaskViewControllerDelega
     }
 }
 
+/// `SBATrackedItemRemindersStepObject` is a wrapped form step view controller
+/// that contains a custom cell type that will launch the input fields of the step.
+///
+/// - seealso: `RSDFormUIStepObject`, `RSDStepViewControllerVendor`
 open class SBATrackedItemRemindersStepObject: RSDFormUIStepObject, RSDStepViewControllerVendor {
     
     enum CodingKeys : String, CodingKey {
@@ -166,6 +174,9 @@ open class SBATrackedItemRemindersStepObject: RSDFormUIStepObject, RSDStepViewCo
     }
 }
 
+/// `SBATrackedItemReminderDataSource` manages the reminder answer and building the table data sections.
+///
+/// - seealso: `RSDFormStepDataSourceObject`
 open class SBATrackedItemReminderDataSource : RSDFormStepDataSourceObject {
     
     fileprivate var reminderStep: SBATrackedItemRemindersStepObject? {

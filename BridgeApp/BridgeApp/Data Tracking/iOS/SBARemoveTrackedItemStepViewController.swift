@@ -33,6 +33,12 @@
 
 import UIKit
 
+/// `SBARemoveTrackedItemStepViewController` is a simple instruction view controller that
+/// will ask the user if they are sure they want to remove the tracked items.
+/// The user can cancel, or if they continue, a `SBARemoveTrackedItemsResultObject` will be
+/// appended to the step history
+///
+/// - seealso: `RSDStepViewController`, `SBARemoveTrackedItemsResultObject`
 open class SBARemoveTrackedItemStepViewController: RSDStepViewController {
     
     open class var nibName: String {
@@ -72,6 +78,8 @@ open class SBARemoveTrackedItemStepViewController: RSDStepViewController {
     }
 }
 
+/// `SBARemoveTrackedItemStepObject` is a simple instruction step that includes a title
+/// and the option to underline a text segment of the title.
 open class SBARemoveTrackedItemStepObject: RSDUIStepObject, RSDStepViewControllerVendor {
     
     public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
@@ -126,9 +134,8 @@ open class SBARemoveTrackedItemStepObject: RSDUIStepObject, RSDStepViewControlle
     ///        {
     ///            "identifier": "foo",
     ///            "type": "selection",
-    ///            "title": "Please select the items you wish to track",
-    ///            "bodyText": "Are you sure you want to remove this item from the list?",
-    ///            "underlinedBodyTextSegment": "this item",
+    ///            "title": "Please select the items you wish to remove",
+    ///            "underlinedTitleSegment": "the items",
     ///            "items": ["itemA", "itemB"]
     ///        }
     ///        """.data(using: .utf8)! // our data in native (JSON) format
