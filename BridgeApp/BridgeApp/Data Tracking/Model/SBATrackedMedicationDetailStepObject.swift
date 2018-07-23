@@ -302,6 +302,7 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     
     public func saveAnswer(_ answer: Any, at indexPath: IndexPath) throws {
         let i = 0
+        
     }
     
     public func selectAnswer(item: RSDTableItem, at indexPath: IndexPath) throws -> (isSelected: Bool, reloadSection: Bool) {

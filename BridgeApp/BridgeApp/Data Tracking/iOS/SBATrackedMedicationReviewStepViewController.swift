@@ -58,6 +58,7 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
             reviewDataSource.reviewItemSelected(identifier: selectedIdentifier)
             super.goForward()
         }
+        // TODO: syoung 07/23/2018 Refactor to add a result to the result set and use survey rules instead.
     }
     
     override open func goForward() {

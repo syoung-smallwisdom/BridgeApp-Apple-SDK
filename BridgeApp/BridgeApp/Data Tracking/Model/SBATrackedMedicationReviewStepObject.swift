@@ -116,7 +116,7 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingDataSource, RSDModa
         
         let actionType: RSDUIActionType = .addMore
         if let uiStep = step as? RSDUIActionHandler, let action = uiStep.action(for: actionType, on: step) {
-            let tableItem = SBAModalSelectionTableItem(identifier: actionType.stringValue, rowIndex: 0, reuseIdentifier: RSDFormUIHint.modalButton.stringValue, action: action)
+            let tableItem = SBAModalSelectionTableItem(identifier: actionType.stringValue, rowIndex: 0, reuseIdentifier: RSDFormUIHint.button.stringValue, action: action)
             itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: [tableItem]))
             sections.append(RSDTableSection(identifier: "addMore", sectionIndex: 1, tableItems: [tableItem]))
         }

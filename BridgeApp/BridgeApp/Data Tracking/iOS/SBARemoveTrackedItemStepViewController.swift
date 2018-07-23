@@ -62,6 +62,7 @@ open class SBARemoveTrackedItemStepViewController: RSDStepViewController {
         if let removeStep = self.removeTrackedItemStep,
             let title = removeStep.title {
             if let underlinedSegment = removeStep.underlinedTitleSegment {
+                // TODO: syoung 06/23/2018 Refactor to use HTML for underlining and to use a placeholder such as "%1$@" for range replacement.
                 if let underlinedRange = title.range(of: underlinedSegment) {
                     let underlinedIndex = title.distance(from: title.startIndex, to: underlinedRange.lowerBound)
                     let attributedText = NSMutableAttributedString(string: title)
@@ -78,76 +79,3 @@ open class SBARemoveTrackedItemStepViewController: RSDStepViewController {
     }
 }
 
-/// `SBARemoveTrackedItemStepObject` is a simple instruction step that includes a title
-/// and the option to underline a text segment of the title.
-open class SBARemoveTrackedItemStepObject: RSDUIStepObject, RSDStepViewControllerVendor {
-    
-    public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
-        let vc = SBARemoveTrackedItemStepViewController(nibName: SBARemoveTrackedItemStepViewController.nibName, bundle: SBARemoveTrackedItemStepViewController.bundle)
-        vc.step = self
-        return vc
-    }
-    
-    private enum CodingKeys: String, CodingKey {
-        case bodyText, underlinedTitleSegment, items
-    }
-    
-    /// The phrase or text segment that will be underlined in the title
-    public var underlinedTitleSegment: String?
-    
-    /// The list of items to be removed
-    public var items: [RSDIdentifier]
-    
-    override open func instantiateStepResult() -> RSDResult {
-        return SBARemoveTrackedItemsResultObject(identifier: self.identifier, items: self.items)
-    }
-    
-    public init(identifier: String, title: String, underlinedTitleSegment: String, items: [RSDIdentifier]) {
-        self.items = items
-        super.init(identifier: identifier, type: .removeTrackedItem)
-        self.underlinedTitleSegment = underlinedTitleSegment
-        self.title = title
-    }
-    
-    /// Initializer required for `copy(with:)` implementation.
-    public required init(identifier: String, type: RSDStepType?) {
-        self.items = [RSDIdentifier(rawValue: identifier)]
-        super.init(identifier: identifier, type: type ?? .removeTrackedItem)
-    }
-    
-    /// Override to set the properties of the subclass.
-    override open func copyInto(_ copy: RSDUIStepObject) {
-        super.copyInto(copy)
-        guard let subclassCopy = copy as? SBARemoveTrackedItemStepObject else {
-            assertionFailure("Superclass implementation of the `copy(with:)` protocol should return an instance of this class.")
-            return
-        }
-        subclassCopy.underlinedTitleSegment = self.underlinedTitleSegment
-        subclassCopy.items = self.items
-    }
-    
-    /// Initialize from a `Decoder`.
-    ///
-    /// - example:
-    /// ```
-    ///    let json = """
-    ///        {
-    ///            "identifier": "foo",
-    ///            "type": "selection",
-    ///            "title": "Please select the items you wish to remove",
-    ///            "underlinedTitleSegment": "the items",
-    ///            "items": ["itemA", "itemB"]
-    ///        }
-    ///        """.data(using: .utf8)! // our data in native (JSON) format
-    /// ```
-    ///
-    /// - parameter decoder: The decoder to use to decode this instance.
-    /// - throws: `DecodingError`
-    public required init(from decoder: Decoder) throws {
-        // Decode the body text and underlined body text segment.
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.underlinedTitleSegment = try container.decodeIfPresent(String.self, forKey: .underlinedTitleSegment)
-        self.items = try container.decode([RSDIdentifier].self, forKey: .items)
-        try super.init(from: decoder)
-    }
-}

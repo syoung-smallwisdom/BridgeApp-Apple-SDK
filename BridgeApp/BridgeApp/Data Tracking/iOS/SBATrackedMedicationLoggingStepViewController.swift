@@ -103,6 +103,7 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
     override open func goForward() {
         if let loggingStep = self.step as? SBAMedicationLoggingStepObject {
             loggingStep.nextStepIdentifier = nil
+            
         }
         super.goForward()
     }
@@ -117,6 +118,7 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
         }
         loggingStep.nextStepIdentifier = reviewStep.identifier
         super.goForward()
+        // TODO: syoung 07/23/2018 Refactor to add a result to the result set and use survey rules instead.
     }
 }
 
