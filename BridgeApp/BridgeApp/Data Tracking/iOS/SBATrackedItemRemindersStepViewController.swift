@@ -47,7 +47,7 @@ open class SBATrackedItemRemindersStepViewController: RSDTableStepViewController
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
         _registeredIdentifiers.insert(reuseIdentifier)
         
-        if reuseIdentifier == RSDFormUIHint.modalButton.rawValue {
+        if reuseIdentifier == RSDFormUIHint.button.rawValue {
             tableView.register(SBATrackedReminderModalButtonCell.nib, forCellReuseIdentifier: reuseIdentifier)
         } else {
             super.registerReuseIdentifierIfNeeded(reuseIdentifier)

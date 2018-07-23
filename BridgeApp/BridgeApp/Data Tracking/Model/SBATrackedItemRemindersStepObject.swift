@@ -124,7 +124,7 @@ open class SBATrackedItemReminderDataSource : RSDFormStepDataSourceObject {
     }
     
     override open func bulidSections() -> ([RSDTableSection], [RSDTableItemGroup]) {
-        let item = RSDTableItem(identifier: self.step.identifier, rowIndex: 0, reuseIdentifier: RSDFormUIHint.modalButton.rawValue)
+        let item = RSDTableItem(identifier: self.step.identifier, rowIndex: 0, reuseIdentifier: RSDFormUIHint.button.rawValue)
         let section = RSDTableSection(identifier: self.step.identifier, sectionIndex: 0, tableItems: [item])
         let group = RSDTableItemGroup(beginningRowIndex: 0, items: [item])
         return ([section], [group])

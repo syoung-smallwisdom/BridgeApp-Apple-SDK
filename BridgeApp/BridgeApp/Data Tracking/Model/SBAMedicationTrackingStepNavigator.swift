@@ -243,7 +243,7 @@ extension SBAMedicationAnswer : SBAMedication {
 public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionResult, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, type, startDate, endDate, medications = "items", reminders
+        case identifier, type, startDate, endDate, medications = "items", reminders, skipToIdentifier
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
@@ -283,6 +283,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         copy.type = self.type
         copy.medications = self.medications
         copy.reminders = self.reminders
+        copy.skipToIdentifier = self.skipToIdentifier
         return copy
     }
     

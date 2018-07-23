@@ -60,8 +60,10 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
                     return
             }
             navResult.skipToIdentifier = selectedIdentifier
+            self.taskController.taskPath.appendStepHistory(with: navResult)
             super.goForward()
         }
+        // TODO: syoung 07/23/2018 Refactor to add a result to the result set and use survey rules instead.
     }
     
     override open func goForward() {
@@ -71,6 +73,7 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
             return
         }
         navResult.skipToIdentifier = nil
+        self.taskController.taskPath.appendStepHistory(with: navResult)
         super.goForward()
     }
     

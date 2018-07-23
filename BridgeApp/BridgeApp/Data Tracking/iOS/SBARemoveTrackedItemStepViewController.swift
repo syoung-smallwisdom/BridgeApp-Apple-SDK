@@ -62,6 +62,7 @@ open class SBARemoveTrackedItemStepViewController: RSDStepViewController {
         if let removeStep = self.removeTrackedItemStep,
             let title = removeStep.title {
             if let underlinedSegment = removeStep.underlinedTitleSegment {
+                // TODO: syoung 06/23/2018 Refactor to use HTML for underlining and to use a placeholder such as "%1$@" for range replacement.
                 if let underlinedRange = title.range(of: underlinedSegment) {
                     let underlinedIndex = title.distance(from: title.startIndex, to: underlinedRange.lowerBound)
                     let attributedText = NSMutableAttributedString(string: title)

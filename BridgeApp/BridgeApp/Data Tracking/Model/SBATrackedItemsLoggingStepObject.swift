@@ -198,7 +198,7 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
 public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, text, detail, loggedDate
+        case identifier, text, detail, loggedDate, skipToIdentifier
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
