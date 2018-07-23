@@ -182,7 +182,7 @@
                             {
                             "identifier": "reminderChoices",
                             "inputPrompt": "Add reminders",
-                            "dataType": "multipleChoice.integer",
+                            "type": "multipleChoice.integer",
                             "choices": [
                                         {
                                         "text": "15 minutes before",
