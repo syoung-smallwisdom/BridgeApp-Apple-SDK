@@ -100,22 +100,29 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
         self.tableView.endUpdates()
     }
     
-    override open func goForward() {
-        if let loggingStep = self.step as? SBAMedicationLoggingStepObject {
-            loggingStep.nextStepIdentifier = nil
+    /// Called when a user action on a cell or button is linked to a modal item.
+    override open func didSelectModalItem(_ modalItem: RSDModalStepTableItem, at indexPath: IndexPath) {
+        // We don't actually want to show a modal but send the user to the review step
+        guard let source = tableData as? SBAMedicationLoggingDataSource,
+            let navigator = (self.taskController.taskPath.task?.stepNavigator as? SBAMedicationTrackingStepNavigator),
+            let reviewStep = navigator.getReviewStep() as? SBATrackedMedicationReviewStepObject else {
+            return
+        }
+        
+        if var navResult = source.trackingResult() as? RSDNavigationResult {
+            navResult.skipToIdentifier = reviewStep.identifier
         }
         super.goForward()
     }
     
-    /// Called when a user action on a cell or button is linked to a modal item.
-    override open func didSelectModalItem(_ modalItem: RSDModalStepTableItem, at indexPath: IndexPath) {
+    override open func goForward() {
         // We don't actually want to show a modal but send the user to the review step
-        guard let navigator = (self.taskController.taskPath.task?.stepNavigator as? SBAMedicationTrackingStepNavigator),
-            let loggingStep = self.step as? SBAMedicationLoggingStepObject,
-            let reviewStep = navigator.getReviewStep() as? SBATrackedMedicationReviewStepObject else {
+        guard let source = tableData as? SBAMedicationLoggingDataSource else {
             return
         }
-        loggingStep.nextStepIdentifier = reviewStep.identifier
+        if var navResult = source.trackingResult() as? RSDNavigationResult {
+            navResult.skipToIdentifier = nil
+        }
         super.goForward()
     }
 }

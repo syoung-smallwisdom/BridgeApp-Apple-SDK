@@ -82,7 +82,7 @@ extension RSDResultType {
 }
 
 /// `SBATrackedLoggingCollectionResultObject` is used include multiple logged items in a single logging result.
-public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Codable, SBATrackedItemsCollectionResult {
+public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Codable, SBATrackedItemsCollectionResult, RSDNavigationResult {
     
     /// The identifier associated with the task, step, or asynchronous action.
     public let identifier: String
@@ -108,6 +108,9 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
             loggingItems = newValue.compactMap { $0 as? SBATrackedLoggingResultObject }
         }
     }
+    
+    /// The step identifier to skip to after this result.
+    public var skipToIdentifier: String?
     
     /// Default initializer for this object.
     ///
@@ -192,7 +195,7 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
 }
 
 /// `SBATrackedLoggingResultObject` is used include multiple results associated with a tracked item.
-public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
+public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
         case identifier, text, detail, loggedDate
@@ -228,6 +231,10 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
     /// The list of input results associated with this step. These are generally assumed to be answers to
     /// field inputs, but they are not required to implement the `RSDAnswerResult` protocol.
     public var inputResults: [RSDResult]
+    
+    /// The identifier for the step to go to following this result. If non-nil, then this will be used in
+    /// navigation handling.
+    public var skipToIdentifier: String?
     
     /// Default initializer for this object.
     ///

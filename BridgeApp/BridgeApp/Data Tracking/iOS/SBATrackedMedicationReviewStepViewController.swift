@@ -55,14 +55,22 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         tableView.deselectRow(at: indexPath, animated: true)
         if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
         let selectedIdentifier = reviewDataSource.tableItem(at: indexPath)?.identifier {
-            reviewDataSource.reviewItemSelected(identifier: selectedIdentifier)
+            guard let source = self.tableData as? SBATrackedMedicationReviewDataSource,
+                var navResult = source.trackingResult() as? RSDNavigationResult else {
+                    return
+            }
+            navResult.skipToIdentifier = selectedIdentifier
             super.goForward()
         }
     }
     
     override open func goForward() {
         // Selecting a cell will call super go forward and ignore this
-        self.reviewStep?.nextStepIdentifier = nil
+        guard let source = self.tableData as? SBATrackedMedicationReviewDataSource,
+            var navResult = source.trackingResult() as? RSDNavigationResult else {
+            return
+        }
+        navResult.skipToIdentifier = nil
         super.goForward()
     }
     

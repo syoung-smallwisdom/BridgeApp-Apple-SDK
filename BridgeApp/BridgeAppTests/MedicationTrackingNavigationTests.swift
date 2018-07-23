@@ -218,16 +218,16 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertFalse(medTracker.hasStep(before: initialReviewStep, with: taskResult))
         XCTAssertTrue(medTracker.hasStep(after: initialReviewStep, with: taskResult))
         
-        guard let secondResult = initialReviewStep.instantiateStepResult() as? SBAMedicationTrackingResult else {
+        guard var secondResult = initialReviewStep.instantiateStepResult() as? SBAMedicationTrackingResult else {
             XCTFail("Failed to create the expected result. Exiting.")
             return
         }
         XCTAssertEqual(secondResult.selectedAnswers.count, 2)
         XCTAssertFalse(secondResult.hasRequiredValues)
+        secondResult.skipToIdentifier = "medA2"
         
         taskResult.appendStepHistory(with: secondResult)
-        
-        (secondStep as? SBATrackedItemsReviewStepObject)?.nextStepIdentifier = "medA2"
+
         let (thirdStep, _) = medTracker.step(after: secondStep, with: &taskResult)
         XCTAssertNotNil(thirdStep)
         XCTAssertEqual(thirdStep?.identifier, "medA2")
@@ -269,19 +269,18 @@ class MedicationTrackingNavigationTests: XCTestCase {
             return
         }
         
-        guard let finalResult = finalReviewStep.instantiateStepResult() as? SBAMedicationTrackingResult else {
+        guard var finalResult = finalReviewStep.instantiateStepResult() as? SBAMedicationTrackingResult else {
             XCTFail("Failed to create the expected result. Exiting.")
             return
         }
         XCTAssertEqual(finalResult.selectedAnswers.count, 2)
         XCTAssertTrue(finalResult.hasRequiredValues)
-        
+        finalResult.skipToIdentifier = nil
         taskResult.appendStepHistory(with: finalResult)
         
         XCTAssertNil(medTracker.step(before: finalReviewStep, with: &taskResult))
         XCTAssertEqual(finalReviewStep.identifier, initialReviewStep.identifier)
         XCTAssertFalse(medTracker.hasStep(before: finalReviewStep, with: taskResult))
-        finalReviewStep.nextStepIdentifier = nil
         
         let (seventhStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
         XCTAssertNil(seventhStep)
@@ -315,15 +314,13 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Failed to create the initial review step. Exiting.")
             return
         }
-        guard let secondResult = reviewStep1.instantiateStepResult() as? SBAMedicationTrackingResult else {
+        guard var secondResult = reviewStep1.instantiateStepResult() as? SBAMedicationTrackingResult else {
             XCTFail("Failed to create the expected result. Exiting.")
             return
         }
-        
-        taskResult.appendStepHistory(with: secondResult)
-        
         // Set up the review step with a custom order by setting the next step identifier
-        reviewStep1.nextStepIdentifier = "medB4"
+        secondResult.skipToIdentifier = "medB4"
+        taskResult.appendStepHistory(with: secondResult)
         
         let (thirdStep, _) = medTracker.step(after: reviewStep1, with: &taskResult)
 
@@ -364,21 +361,20 @@ class MedicationTrackingNavigationTests: XCTestCase {
             return
         }
         
-        guard let reviewResult2 = reviewStep2.instantiateStepResult() as? SBAMedicationTrackingResult else {
+        guard var reviewResult2 = reviewStep2.instantiateStepResult() as? SBAMedicationTrackingResult else {
             XCTFail("Failed to create the expected result. Exiting.")
             return
         }
         XCTAssertEqual(reviewResult2.selectedAnswers.count, 2)
         XCTAssertTrue(reviewResult2.hasRequiredValues)
+        reviewResult2.skipToIdentifier = nil
         
         taskResult.appendStepHistory(with: reviewResult2)
         
         XCTAssertNil(medTracker.step(before: reviewStep2, with: &taskResult))
         XCTAssertEqual(reviewStep2.identifier, "review")
         XCTAssertFalse(medTracker.hasStep(before: reviewStep2, with: taskResult))
-    
-        // Next step after the review step will be the reminder step because nextStepIdentifier will be nil
-        reviewStep2.nextStepIdentifier = nil
+
         let (seventhStep, _) = medTracker.step(after: reviewStep2, with: &taskResult)
         XCTAssertNotNil(seventhStep)
         
@@ -510,7 +506,13 @@ class MedicationTrackingNavigationTests: XCTestCase {
         XCTAssertNotNil(loggingStep)
         XCTAssertEqual(loggingStep.result?.selectedAnswers.count, 2)
         
-        loggingStep.nextStepIdentifier = medTracker.getReviewStep()?.identifier
+        guard var loggingResult = loggingStep.instantiateStepResult() as? SBATrackedLoggingCollectionResultObject else {
+            XCTFail("Failed to create the expected result. Exiting.")
+            return
+        }
+        loggingResult.skipToIdentifier = medTracker.getReviewStep()?.identifier
+        taskResult.appendStepHistory(with: loggingResult)
+        
         let (secondStep, _) = medTracker.step(after: loggingStep, with: &taskResult)
         XCTAssertNotNil(secondStep)
         
@@ -518,7 +520,12 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Failed to create the expected step. Exiting.")
             return
         }
-        reviewStep2.nextStepIdentifier = "medC3"
+        guard var reviewStepResult2 = reviewStep2.instantiateStepResult() as? SBAMedicationTrackingResult else {
+            XCTFail("Failed to create the expected result. Exiting.")
+            return
+        }
+        reviewStepResult2.skipToIdentifier = "medC3"
+        taskResult.appendStepHistory(with: reviewStepResult2)
         
         let (thirdStep, _) = medTracker.step(after: reviewStep2, with: &taskResult)
         XCTAssertNotNil(thirdStep)
@@ -538,7 +545,12 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Failed to create the expected step. Exiting.")
             return
         }
-        reviewStep3.nextStepIdentifier = "medA3"
+        guard var reviewStepResult3 = reviewStep3.instantiateStepResult() as? SBAMedicationTrackingResult else {
+            XCTFail("Failed to create the expected result. Exiting.")
+            return
+        }
+        reviewStepResult3.skipToIdentifier = "medA3"
+        taskResult.appendStepHistory(with: reviewStepResult3)
         XCTAssertEqual(reviewStep3.result?.selectedAnswers.count, 1)
         
         let (fifthStep, _) = medTracker.step(after: reviewStep3, with: &taskResult)
@@ -566,11 +578,26 @@ class MedicationTrackingNavigationTests: XCTestCase {
         
         let (seventhStep, _) = medTracker.step(after: selectionStep2, with: &taskResult)
         XCTAssertNotNil(seventhStep) // review
+        
+        guard let reviewStep4 = seventhStep as? SBATrackedItemsReviewStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        guard var reviewStepResult4 = reviewStep4.instantiateStepResult() as? SBAMedicationTrackingResult else {
+            XCTFail("Failed to create the expected result. Exiting.")
+            return
+        }
+        reviewStepResult4.skipToIdentifier = nil
+        taskResult.appendStepHistory(with: reviewStepResult4)
+        
         let (eigthStep, _) = medTracker.step(after: seventhStep, with: &taskResult)
         XCTAssertNotNil(eigthStep) // detail
         taskResult.appendStepHistory(with: medA2Result())
         let (ninthStep, _) = medTracker.step(after: eigthStep, with: &taskResult)
         XCTAssertNotNil(ninthStep) // review
+        if let ninthStepUnwrapped = ninthStep {
+            taskResult.appendStepHistory(with: ninthStepUnwrapped.instantiateStepResult())
+        }
         
         let (tenthStep, _) = medTracker.step(after: ninthStep, with: &taskResult)
         XCTAssertNotNil(tenthStep) // logging step
@@ -579,7 +606,13 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Failed to create the expected step. Exiting.")
             return
         }
-        finalLoggingStep.nextStepIdentifier = nil
+        guard var finalLoggingResult = finalLoggingStep.instantiateStepResult() as? SBATrackedLoggingCollectionResultObject else {
+            XCTFail("Failed to create the expected result. Exiting.")
+            return
+        }
+        finalLoggingResult.skipToIdentifier = nil
+        taskResult.appendStepHistory(with: finalLoggingResult)
+        
         let (exitStep, _) = medTracker.step(after: finalLoggingStep, with: &taskResult)
         XCTAssertNil(exitStep)
     }

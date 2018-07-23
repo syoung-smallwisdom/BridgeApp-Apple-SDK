@@ -240,7 +240,7 @@ extension SBAMedicationAnswer : SBAMedication {
 
 /// A medication tracking result which can be used to track the selected medications and details for each
 /// medication.
-public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionResult {
+public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionResult, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
         case identifier, type, startDate, endDate, medications = "items", reminders
@@ -268,6 +268,9 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     
     /// A list of minutes before the medication scheduled times that a user should be reminded about each medication
     public var reminders: [Int]?
+    
+    /// The step identifier of the next step to skip to after this one.
+    public var skipToIdentifier: String?
     
     public init(identifier: String) {
         self.identifier = identifier
