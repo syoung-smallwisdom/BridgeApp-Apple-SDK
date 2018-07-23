@@ -45,28 +45,52 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
             actionType == .navigation(.skip) {
             return true
         }
-        // TODO: mdephillips 6/27/18 make X button be a back button
         return false
+    }
+    
+    /// Default initializer.
+    /// - parameter identifier: The step identifier.
+    public override init(identifier: String) {
+        super.init(identifier: identifier)
+        _commonInit()
+    }
+    
+    /// Initializer required for copying the step.
+    public required init(identifier: String, type: RSDStepType?) {
+        super.init(identifier: identifier, type: type)
+        _commonInit()
+    }
+    
+    /// Initializer required for decoding the step.
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        _commonInit()
     }
     
     public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
         return SBATrackedMedicationDetailStepViewController(step: self)
     }
     
-    /// Override and return an `SBAMedicationAnswer`.
-    override open func answer(from taskResult: RSDTaskResult) -> SBATrackedItemAnswer? {
-        guard let detailsResult = taskResult.findResult(for: self) as? SBAMedicationDetailsResultObject else { return nil }
-        var medication = SBAMedicationAnswer(identifier: self.identifier)
-        medication.dosage = detailsResult.dosage
-        if let schedulesUnwrapped = detailsResult.schedules {
-            medication.scheduleItems = Set(schedulesUnwrapped)
-        }
-        return medication
-    }
-    
     /// Override to return a `SBATrackedWeeklyScheduleDataSource`.
     open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
         return SBATrackedMedicationDetailsDataSource.init(identifier: identifier, step: self, taskPath: taskPath)
+    }
+    
+    private func _commonInit() {
+        // Set the default color theme.
+        if self.colorTheme == nil {
+            var colorTheme = RSDColorThemeElementObject()
+            colorTheme.setColorStyle(.darkBackground, for: .header)
+            colorTheme.setColorStyle(.darkBackground, for: .body)
+            colorTheme.setColorStyle(.lightBackground, for: .footer)
+            self.colorTheme = colorTheme
+        }
+        if self.actions?[.navigation(.cancel)] == nil {
+            var actions = self.actions ?? [:]
+            actions[.navigation(.cancel)] = RSDUIActionObject(iconName: "backArrowHeader",
+                                                              bundle: Bundle(identifier: "org.sagebionetworks.ResearchUI-iOS"))
+            self.actions = actions
+        }
     }
 }
 
@@ -169,9 +193,10 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     /// Adds a schedule item to the schedules section.
     /// While not strictly enforced, this should not be called if any existing
     /// schedule items are set to schedule at anytime.
-    public func addScheduleItem() {
+    /// - returns: The index path of the section that was added.
+    @discardableResult public func addScheduleItem() -> IndexPath? {
         guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first else {
-            return
+            return nil
         }
         let newIndex = schedulesSection.tableItems.count
         let scheduleTableItem = SBATrackedWeeklyScheduleTableItem(identifier:
@@ -180,28 +205,31 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
         newTableItems.append(scheduleTableItem)
         let newSchedulesSection = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: newTableItems)
         sections[FieldIdentifiers.schedules.sectionIndex()] = newSchedulesSection
+        return IndexPath(item: newIndex, section: FieldIdentifiers.schedules.sectionIndex())
     }
     
     
     /// Call this method when the user has selected that they schedule this at anytime.
     /// This will reduce the schedule section to 1 element.
-    public func scheduleAtAnytimeChanged(selected: Bool) {
-        guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first,
-            schedulesSection.tableItems.count > 0 else {
-            return
+    /// - returns:
+    ///        - itemsRemoved: The index paths of the items that were removed.
+    ///        - sectionAdded: `true` if the "add schedule" section was added; `false` if it was removed.
+    @discardableResult public func scheduleAtAnytimeChanged(selected: Bool) -> (itemsRemoved: [IndexPath], sectionAdded: Bool)? {
+        guard let schedulesSection = sections.first(where: {$0.identifier == FieldIdentifiers.schedules.stringValue}),
+            let scheduleItem = schedulesSection.tableItems.last as? SBATrackedWeeklyScheduleTableItem else {
+                return nil
         }
-        let lastIndex = schedulesSection.tableItems.count - 1
-        let tableItem = schedulesSection.tableItems[lastIndex]
-        guard let scheduleItem = tableItem as? SBATrackedWeeklyScheduleTableItem else { return }
         if (selected) {
             scheduleItem.time = nil
-            scheduleItem.weekdays = nil
+            scheduleItem.weekdays = Array(RSDWeekday.all)
         } else {
             scheduleItem.time = Calendar.current.date(bySetting: .hour, value: 7, of: Date().startOfDay())
-            scheduleItem.weekdays = [.friday]
+            scheduleItem.weekdays = Array(RSDWeekday.all)
         }
-        let newSchedulesSection = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: [scheduleItem])
-        sections[FieldIdentifiers.schedules.sectionIndex()] = newSchedulesSection
+        
+        let schedulesSectionIndex = FieldIdentifiers.schedules.sectionIndex()
+        let newSchedulesSection = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: schedulesSectionIndex, tableItems: [scheduleItem])
+        sections[schedulesSectionIndex] = newSchedulesSection
         
         // If the anytime field is selected, hide the add schedule button
         if !selected {
@@ -215,10 +243,22 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
                 self.sections.remove(at: FieldIdentifiers.addSchedule.sectionIndex())
             }
         }
+        
+        var itemsRemoved = [IndexPath]()
+        let lastIndex = schedulesSection.tableItems.count - 1
+        if selected && lastIndex >= 1 {
+            let schedulesIndex = FieldIdentifiers.schedules.sectionIndex()
+            for i in 1...lastIndex {
+                itemsRemoved.append(IndexPath(item: i, section: schedulesIndex))
+            }
+        }
+        
+        return (itemsRemoved, !selected)
     }
     
     public func appendRemoveMedicationToTaskPath() {
-        let stepResult = SBARemoveMedicationResultObject(identifier: step.identifier)
+        var stepResult = SBARemoveTrackedItemsResultObject(identifier: self.step.identifier)
+        stepResult.items = [RSDIdentifier(rawValue: self.step.identifier)]
         self.taskPath.appendStepHistory(with: stepResult)
     }
     
@@ -352,11 +392,9 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
     ///     - rowIndex: The index of this item relative to all rows in the section in which this item resides.
     ///     - reuseIdentifier: The string to use as the reuse identifier.
     public init(identifier: String, rowIndex: Int, reuseIdentifier: String = SBATrackedWeeklyScheduleCell.reuseId) {
-        var weekdays = Set<RSDWeekday>()
-        weekdays.insert(.friday)
         let date = Calendar.current.date(bySetting: .hour, value: 7, of: Date().startOfDay())
         let timeOfDay = RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.string(from: date!)
-        self.result = RSDWeeklyScheduleObject(timeOfDayString: timeOfDay, daysOfWeek: weekdays)
+        self.result = RSDWeeklyScheduleObject(timeOfDayString: timeOfDay, daysOfWeek: RSDWeekday.all)
         super.init(identifier: identifier, rowIndex: rowIndex, reuseIdentifier: reuseIdentifier)
     }
     
@@ -372,22 +410,5 @@ open class SBATrackedWeeklyScheduleTableItem : RSDModalStepTableItem {
     
     private static func resultIdentifier(identifier: String, rowIndex: Int) -> String {
         return String(format: "%@%d", identifier, rowIndex)
-    }
-}
-
-open class SBARemoveMedicationResultObject: RSDResult {
-    public var identifier: String
-    
-    public var type: RSDResultType
-    
-    public var startDate: Date
-    
-    public var endDate: Date
-    
-    public init(identifier: String) {
-        self.identifier = identifier
-        type = .navigation
-        startDate = Date()
-        endDate = Date()
     }
 }

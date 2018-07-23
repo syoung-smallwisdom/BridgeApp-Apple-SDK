@@ -47,6 +47,47 @@ open class SBATrackedMedicationReviewStepObject : SBATrackedItemsReviewStepObjec
     open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
         return SBATrackedMedicationReviewDataSource(step: self, taskPath: taskPath)
     }
+    
+    /// Initializer required for `copy(with:)` implementation.
+    public required init(identifier: String, type: RSDStepType?) {
+        super.init(identifier: identifier, type: type)
+        _commonInit()
+    }
+    
+    override public init(identifier: String, items: [SBATrackedItem], sections: [SBATrackedSection]? = nil, type: RSDStepType? = nil) {
+        super.init(identifier: identifier, items: items, sections: sections, type: type)
+        _commonInit()
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        _commonInit()
+    }
+    
+    private func _commonInit() {
+        // Set the default values for the title and subtitle to display depending upon state.
+        if self.addDetailsTitle == nil {
+            self.addDetailsTitle = Localization.localizedString("MEDICATION_ADD_DETAILS_TITLE")
+        }
+        if self.addDetailsSubtitle == nil {
+            self.addDetailsSubtitle = Localization.localizedString("MEDICATION_ADD_DETAILS_DETAIL")
+        }
+        if self.reviewTitle == nil {
+            self.reviewTitle = Localization.localizedString("MEDICATION_REVIEW_TITLE")
+        }
+        
+        if self.actions?[.addMore] == nil {
+            var actions = self.actions ?? [:]
+            actions[.addMore] = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_EDIT_LIST_TITLE"))
+            self.actions = actions
+        }
+        
+        if self.actions?[.navigation(.goForward)] == nil {
+            var actions = self.actions ?? [:]
+            actions[.navigation(.goForward)] = RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SAVE"))
+            self.actions = actions
+        }
+    }
 }
 
 /// A data source used to handle tracked medication review.
@@ -179,6 +220,10 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingDataSource, RSDModa
             stepResult.updateSelected(to: result.selectedIdentifiers, with: trackedStep.items)
             self.taskPath.appendStepHistory(with: stepResult)
             let changes = self.reloadDataSource(with: result)
+            
+            if let stepNavigator = self.taskPath.task?.stepNavigator as? SBAMedicationTrackingStepNavigator {
+                stepNavigator.updateSelectedInMemoryResult(to: result.selectedIdentifiers, with: trackedStep.items)
+            }
             
             // reload the table delegate.
             self.delegate?.tableDataSourceDidEndUpdate(self, addedRows: changes.addedRows, removedRows: changes.removedRows)

@@ -338,7 +338,7 @@ public struct SBATrackedItemsResultObject : SBATrackedItemsResult, Codable {
         self.items = sort(selectedIdentifiers, with: items).map { RSDIdentifier(rawValue: $0) }
     }
     
-    mutating public func updateDetails(to newValue: SBATrackedItemAnswer) {
+    mutating public func updateDetails(from result: RSDResult) {
         // Do nothing
     }
 }
@@ -396,5 +396,37 @@ extension RSDIdentifier : SBATrackedItem {
     
     public var imageVendor: RSDImageVendor? {
         return nil
+    }
+}
+
+/// This class will be treated as a request to remove the selected items
+public struct SBARemoveTrackedItemsResultObject : RSDResult {
+    
+    private enum CodingKeys : String, CodingKey {
+        case identifier, type, startDate, endDate, items
+    }
+    
+    /// The identifier associated with the task, step, or asynchronous action.
+    public let identifier: String
+    
+    /// A String that indicates the type of the result. This is used to decode the result using a `RSDFactory`.
+    public private(set) var type: RSDResultType = "removeTrackedItems"
+    
+    /// The start date timestamp for the result.
+    public var startDate: Date = Date()
+    
+    /// The end date timestamp for the result.
+    public var endDate: Date = Date()
+    
+    /// The list of items that should be removed.
+    public var items: [RSDIdentifier] = []
+    
+    public init(identifier: String) {
+        self.identifier = identifier
+    }
+    
+    public init(identifier: String, items: [RSDIdentifier]) {
+        self.identifier = identifier
+        self.items = items
     }
 }

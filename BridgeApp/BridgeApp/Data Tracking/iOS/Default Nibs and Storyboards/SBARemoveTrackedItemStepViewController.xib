@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SBARemoveTrackedItemStepViewController" customModule="BridgeApp" customModuleProvider="target">
+            <connections>
+                <outlet property="navigationFooter" destination="QgQ-II-cS8" id="oue-Ys-EkE"/>
+                <outlet property="textLabel" destination="H1V-Zd-ISm" id="xq0-np-s1N"/>
+                <outlet property="titleLabel" destination="QNQ-m3-fK5" id="K9r-dF-kjc"/>
+                <outlet property="view" destination="GgN-TV-x40" id="OBf-MG-d1D"/>
+            </connections>
+        </placeholder>
+        <view contentMode="scaleToFill" id="GgN-TV-x40" customClass="RSDStepNavigationView" customModule="ResearchUI">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RiL-Fv-bVP" userLabel="Status Background" customClass="RSDStatusBarBackgroundView" customModule="ResearchUI">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="20"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="FxV-e7-xYd"/>
+                    </constraints>
+                </view>
+                <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1eV-SJ-AqP" customClass="MCTCompletionGradient" customModule="MotorControl">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="263"/>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xZv-dQ-yG7" userLabel="Header">
+                    <rect key="frame" x="0.0" y="20" width="375" height="225"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" image="removeInstruction" translatesAutoresizingMaskIntoConstraints="NO" id="rFc-xd-Xcd">
+                            <rect key="frame" x="32" y="32" width="311" height="161"/>
+                            <color key="backgroundColor" red="0.50980392159999999" green="0.8980392157" blue="0.71372549019999998" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" red="0.93333333330000001" green="0.37647058820000001" blue="0.43921568630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="rFc-xd-Xcd" secondAttribute="bottom" constant="32" id="FRP-Ox-T3n"/>
+                        <constraint firstItem="rFc-xd-Xcd" firstAttribute="leading" secondItem="xZv-dQ-yG7" secondAttribute="leading" constant="32" id="Pj5-hP-Zjj"/>
+                        <constraint firstAttribute="trailing" secondItem="rFc-xd-Xcd" secondAttribute="trailing" constant="32" id="qPF-UY-86v"/>
+                        <constraint firstItem="rFc-xd-Xcd" firstAttribute="top" secondItem="xZv-dQ-yG7" secondAttribute="top" constant="32" id="vdY-7E-Wyh"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QgQ-II-cS8" customClass="RSDGenericNavigationFooterView" customModule="ResearchUI">
+                    <rect key="frame" x="0.0" y="570" width="375" height="97"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="97" placeholder="YES" id="SzU-7j-9fP"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="isBackHidden" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="1000" text="Are you sure you want to remove Sinemet from your current medication list?" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNQ-m3-fK5">
+                    <rect key="frame" x="32" y="293" width="311" height="86"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="igy-yO-sNq" userLabel="Back Button">
+                    <rect key="frame" x="15" y="30" width="32" height="32"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="igy-yO-sNq" secondAttribute="height" multiplier="1:1" id="4L1-p5-M6d"/>
+                        <constraint firstAttribute="width" constant="32" id="KPh-N0-AVH"/>
+                    </constraints>
+                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <state key="normal" image="closeActivity"/>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="950" text="Removing this medication will remove it from your Medications list. If you wish to re-add it, it will not be saved." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H1V-Zd-ISm">
+                    <rect key="frame" x="32" y="397" width="311" height="64.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="1eV-SJ-AqP" firstAttribute="leading" secondItem="itt-wk-qNg" secondAttribute="leading" id="3Ik-wc-Mic"/>
+                <constraint firstItem="1eV-SJ-AqP" firstAttribute="trailing" secondItem="itt-wk-qNg" secondAttribute="trailing" id="3Xa-E6-Yt6"/>
+                <constraint firstItem="1eV-SJ-AqP" firstAttribute="top" secondItem="RiL-Fv-bVP" secondAttribute="top" id="BIe-mI-j91"/>
+                <constraint firstItem="RiL-Fv-bVP" firstAttribute="top" secondItem="GgN-TV-x40" secondAttribute="top" id="C8Y-av-9aK"/>
+                <constraint firstItem="igy-yO-sNq" firstAttribute="width" secondItem="igy-yO-sNq" secondAttribute="height" multiplier="1:1" id="EuM-Cl-K81"/>
+                <constraint firstItem="QNQ-m3-fK5" firstAttribute="leading" secondItem="itt-wk-qNg" secondAttribute="leading" constant="32" id="ITp-XI-B88"/>
+                <constraint firstItem="xZv-dQ-yG7" firstAttribute="top" secondItem="RiL-Fv-bVP" secondAttribute="bottom" id="Ll0-K7-dKt"/>
+                <constraint firstItem="H1V-Zd-ISm" firstAttribute="leading" secondItem="itt-wk-qNg" secondAttribute="leading" constant="32" id="Oes-hp-PfW"/>
+                <constraint firstItem="QgQ-II-cS8" firstAttribute="bottom" secondItem="itt-wk-qNg" secondAttribute="bottom" id="QPr-Qj-CFl"/>
+                <constraint firstItem="igy-yO-sNq" firstAttribute="leading" secondItem="itt-wk-qNg" secondAttribute="leading" constant="15" id="SXV-8F-W5B"/>
+                <constraint firstAttribute="trailing" secondItem="RiL-Fv-bVP" secondAttribute="trailing" id="VD2-9m-RyE"/>
+                <constraint firstItem="QNQ-m3-fK5" firstAttribute="top" secondItem="xZv-dQ-yG7" secondAttribute="bottom" constant="48" id="b3T-sL-hdV"/>
+                <constraint firstItem="xZv-dQ-yG7" firstAttribute="trailing" secondItem="itt-wk-qNg" secondAttribute="trailing" id="cBM-mM-Q2i"/>
+                <constraint firstItem="QNQ-m3-fK5" firstAttribute="top" secondItem="1eV-SJ-AqP" secondAttribute="bottom" constant="30" id="dv9-CC-bzb"/>
+                <constraint firstItem="QgQ-II-cS8" firstAttribute="trailing" secondItem="itt-wk-qNg" secondAttribute="trailing" id="eFf-J9-Aqv"/>
+                <constraint firstItem="RiL-Fv-bVP" firstAttribute="leading" secondItem="GgN-TV-x40" secondAttribute="leading" id="efy-Bz-m7U"/>
+                <constraint firstItem="xZv-dQ-yG7" firstAttribute="leading" secondItem="itt-wk-qNg" secondAttribute="leading" id="gI4-eI-mbo"/>
+                <constraint firstItem="QgQ-II-cS8" firstAttribute="leading" secondItem="itt-wk-qNg" secondAttribute="leading" id="mMo-MX-k8I"/>
+                <constraint firstItem="QgQ-II-cS8" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H1V-Zd-ISm" secondAttribute="bottom" constant="10" id="nJM-AN-FtS"/>
+                <constraint firstItem="itt-wk-qNg" firstAttribute="trailing" secondItem="H1V-Zd-ISm" secondAttribute="trailing" constant="32" id="qkV-wg-roX"/>
+                <constraint firstItem="H1V-Zd-ISm" firstAttribute="top" secondItem="QNQ-m3-fK5" secondAttribute="bottom" constant="18" id="v4f-Mx-LBw"/>
+                <constraint firstItem="itt-wk-qNg" firstAttribute="trailing" secondItem="QNQ-m3-fK5" secondAttribute="trailing" constant="32" id="xu3-hU-JIn"/>
+                <constraint firstItem="igy-yO-sNq" firstAttribute="top" secondItem="itt-wk-qNg" secondAttribute="top" constant="10" id="yRx-bV-j4F"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="itt-wk-qNg"/>
+            <connections>
+                <outlet property="cancelButton" destination="igy-yO-sNq" id="7qf-Gt-7gv"/>
+            </connections>
+        </view>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+    </objects>
+    <resources>
+        <image name="closeActivity" width="32" height="32"/>
+        <image name="removeInstruction" width="190" height="161"/>
+    </resources>
+</document>

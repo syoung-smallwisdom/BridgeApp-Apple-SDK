@@ -244,12 +244,8 @@ class MedicationTrackingNavigationTests: XCTestCase {
 
         taskResult.appendStepHistory(with: medA2Result())
         
-        let (fourthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
-        XCTAssertNotNil(fourthStep)
-        XCTAssertEqual(fourthStep?.identifier, "review")
-        
         // Next step after selection is review.
-        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
+        let (fifthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
         XCTAssertNotNil(fifthStep)
         
         guard let medB4DetailsStep = fifthStep as? SBATrackedMedicationDetailStepObject else {
@@ -273,13 +269,22 @@ class MedicationTrackingNavigationTests: XCTestCase {
             return
         }
         
+        guard let finalResult = finalReviewStep.instantiateStepResult() as? SBAMedicationTrackingResult else {
+            XCTFail("Failed to create the expected result. Exiting.")
+            return
+        }
+        XCTAssertEqual(finalResult.selectedAnswers.count, 2)
+        XCTAssertTrue(finalResult.hasRequiredValues)
+        
+        taskResult.appendStepHistory(with: finalResult)
+        
         XCTAssertNil(medTracker.step(before: finalReviewStep, with: &taskResult))
         XCTAssertEqual(finalReviewStep.identifier, initialReviewStep.identifier)
         XCTAssertFalse(medTracker.hasStep(before: finalReviewStep, with: taskResult))
+        finalReviewStep.nextStepIdentifier = nil
         
-        // TODO: mdephillips 7/12/18 add unit tests for logging
-//        let (lastStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
-//        XCTAssertNil(lastStep)
+        let (seventhStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
+        XCTAssertNil(seventhStep)
     }
     
     func testMedicationTrackingNavigation_FirstRun_CustomOrder() {
@@ -306,11 +311,11 @@ class MedicationTrackingNavigationTests: XCTestCase {
         taskResult.appendStepHistory(with: selectionResult)
         
         let (step2, _) = medTracker.step(after: selectionStep, with: &taskResult)
-        guard let initialReviewStep = step2 as? SBATrackedItemsReviewStepObject else {
+        guard let reviewStep1 = step2 as? SBATrackedItemsReviewStepObject else {
             XCTFail("Failed to create the initial review step. Exiting.")
             return
         }
-        guard let secondResult = initialReviewStep.instantiateStepResult() as? SBAMedicationTrackingResult else {
+        guard let secondResult = reviewStep1.instantiateStepResult() as? SBAMedicationTrackingResult else {
             XCTFail("Failed to create the expected result. Exiting.")
             return
         }
@@ -318,9 +323,9 @@ class MedicationTrackingNavigationTests: XCTestCase {
         taskResult.appendStepHistory(with: secondResult)
         
         // Set up the review step with a custom order by setting the next step identifier
-        initialReviewStep.nextStepIdentifier = "medB4"
+        reviewStep1.nextStepIdentifier = "medB4"
         
-        let (thirdStep, _) = medTracker.step(after: initialReviewStep, with: &taskResult)
+        let (thirdStep, _) = medTracker.step(after: reviewStep1, with: &taskResult)
 
         XCTAssertNotNil(thirdStep)
         XCTAssertEqual(thirdStep?.identifier, "medB4")
@@ -334,12 +339,8 @@ class MedicationTrackingNavigationTests: XCTestCase {
         
         taskResult.appendStepHistory(with: medB4Result())
         
-        let (fourthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
-        XCTAssertNotNil(fourthStep)
-        XCTAssertEqual(fourthStep?.identifier, "review")
-        
         // Next step after selection is review.
-        let (fifthStep, _) = medTracker.step(after: fourthStep, with: &taskResult)
+        let (fifthStep, _) = medTracker.step(after: thirdStep, with: &taskResult)
         XCTAssertNotNil(fifthStep)
         
         guard let medA2DetailsStep = fifthStep as? SBATrackedMedicationDetailStepObject else {
@@ -358,36 +359,43 @@ class MedicationTrackingNavigationTests: XCTestCase {
         let (sixthStep, _) = medTracker.step(after: fifthStep, with: &taskResult)
         XCTAssertNotNil(fifthStep)
         
-        guard let finalReviewStep = sixthStep as? SBATrackedItemsReviewStepObject else {
+        guard let reviewStep2 = sixthStep as? SBATrackedItemsReviewStepObject else {
             XCTFail("Failed to return the final review step. Exiting. \(String(describing: sixthStep))")
             return
         }
         
-        XCTAssertNil(medTracker.step(before: finalReviewStep, with: &taskResult))
-        XCTAssertEqual(finalReviewStep.identifier, "review")
-        XCTAssertFalse(medTracker.hasStep(before: finalReviewStep, with: taskResult))
+        guard let reviewResult2 = reviewStep2.instantiateStepResult() as? SBAMedicationTrackingResult else {
+            XCTFail("Failed to create the expected result. Exiting.")
+            return
+        }
+        XCTAssertEqual(reviewResult2.selectedAnswers.count, 2)
+        XCTAssertTrue(reviewResult2.hasRequiredValues)
         
-        XCTAssertTrue(medTracker.hasStep(after: finalReviewStep, with: taskResult))
+        taskResult.appendStepHistory(with: reviewResult2)
         
+        XCTAssertNil(medTracker.step(before: reviewStep2, with: &taskResult))
+        XCTAssertEqual(reviewStep2.identifier, "review")
+        XCTAssertFalse(medTracker.hasStep(before: reviewStep2, with: taskResult))
+    
         // Next step after the review step will be the reminder step because nextStepIdentifier will be nil
-        finalReviewStep.nextStepIdentifier = nil
-        let (seventhStep, _) = medTracker.step(after: finalReviewStep, with: &taskResult)
+        reviewStep2.nextStepIdentifier = nil
+        let (seventhStep, _) = medTracker.step(after: reviewStep2, with: &taskResult)
         XCTAssertNotNil(seventhStep)
         
-        guard let reminderStep = seventhStep as? SBAMedicationRemindersStepObject else {
+        guard let reminderStep = seventhStep as? SBATrackedItemRemindersStepObject else {
             XCTFail("Failed to return the reminderStep. Exiting. \(String(describing: seventhStep))")
             return
         }
         XCTAssertEqual(reminderStep.identifier, "reminder")
         XCTAssertEqual(reminderStep.title, "reminder title")
         XCTAssertEqual(reminderStep.detail, "reminder detail")
-        XCTAssertNotNil(reminderStep.reminderChoices)
+        XCTAssertNotNil(reminderStep.inputFields)
         
         XCTAssertNotNil(reminderStep.reminderChoicesStep())
+        taskResult.appendStepHistory(with: remindersResult(reminderStep: reminderStep))
         
-        // TODO: mdephillips 7/12/18 add unit tests for logging
-        let (lastStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
-        XCTAssertNil(lastStep)
+        let (eigthStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
+        XCTAssertNil(eigthStep)
     }
     
     func testMedicationTrackingNavigation_FollowupRun() {
@@ -403,14 +411,22 @@ class MedicationTrackingNavigationTests: XCTestCase {
         var medC3 = SBAMedicationAnswer(identifier: "medC3")
         medC3.dosage = "1"
         medC3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: [.sunday, .thursday])]
+        //medC3.timestamps = [SBATimestamp(timingIdentifier: "20:00", loggedDate: <#T##Date#>)]
         initialResult.medications = [medA3, medC3]
+        // This is how the previous answer of "no reminders please" looks.
+        initialResult.reminders = []
+        
         let clientData = try! initialResult.clientData()
         
         medTracker.previousClientData = clientData
         
         // Check initial state
-        XCTAssertNotNil(medTracker.getSelectionStep())
-        XCTAssertNotNil(medTracker.getReviewStep())
+        let selectionStep = medTracker.getSelectionStep() as? SBATrackedSelectionStepObject
+        XCTAssertNotNil(selectionStep)
+        XCTAssertEqual(selectionStep?.result?.selectedAnswers.count, 2)
+        
+        let reviewStep = medTracker.getReviewStep() as? SBATrackedMedicationReviewStepObject
+        XCTAssertNotNil(reviewStep)        
         
         if let detailsStep = medTracker.step(with: "medA3") as? SBATrackedItemDetailsStepObject {
             XCTAssertNotNil(detailsStep.trackedItem)
@@ -427,22 +443,145 @@ class MedicationTrackingNavigationTests: XCTestCase {
             XCTFail("Step not found or not of expected type.")
         }
 
-        // TODO: mdephillips 7/4/18 happy 4th! add the logging step back in once that is completed
+        var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "medication")
+        let (firstStep, _) = medTracker.step(after: nil, with: &taskResult)
+        guard let loggingStep = firstStep as? SBAMedicationLoggingStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        XCTAssertNotNil(loggingStep)
+        XCTAssertEqual(loggingStep.result?.selectedAnswers.count, 2)
         
-//        var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "logMedications")
-        // For the case where the meds have been set, this should jump to logging the medication results.
-//        let (firstStep, _) = medTracker.step(after: nil, with: &taskResult)
+        let (exitStep, _) = medTracker.step(after: firstStep, with: &taskResult)
+        XCTAssertNil(exitStep)
+    }
+    
+    func testMedicationTrackingNavigation_FollowupRun_CustomOrder() {
+        NSLocale.setCurrentTest(Locale(identifier: "en_US"))
         
-//        guard let loggingStep = firstStep as? SBAMedicationLoggingStepObject else {
-//            XCTFail("First step not of expected type. For a follow-up run should start with logging step.")
-//            return
-//        }
-//
-//        XCTAssertEqual(loggingStep.result?.selectedAnswers.count, 2)
-//        XCTAssertFalse(medTracker.hasStep(after: loggingStep, with: taskResult))
-//        XCTAssertFalse(medTracker.hasStep(before: loggingStep, with: taskResult))
-//        XCTAssertNil(medTracker.step(before: loggingStep, with: &taskResult))
-//        XCTAssertNil(medTracker.step(after: loggingStep, with: &taskResult).step)
+        let (items, sections) = buildMedicationItems()
+        let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: sections)
+        
+        var initialResult = SBAMedicationTrackingResult(identifier: medTracker.reviewStep!.identifier)
+        var medA3 = SBAMedicationAnswer(identifier: "medA3")
+        medA3.dosage = "1"
+        medA3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "08:00", daysOfWeek: [.monday, .wednesday, .friday])]
+        var medC3 = SBAMedicationAnswer(identifier: "medC3")
+        medC3.dosage = "1"
+        medC3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: [.sunday, .thursday])]
+        //medC3.timestamps = [SBATimestamp(timingIdentifier: "20:00", loggedDate: <#T##Date#>)]
+        initialResult.medications = [medA3, medC3]
+        // This is how the previous answer of "no reminders please" looks.
+        initialResult.reminders = []
+        
+        let clientData = try! initialResult.clientData()
+        
+        medTracker.previousClientData = clientData
+        
+        // Check initial state
+        let selectionStep = medTracker.getSelectionStep() as? SBATrackedSelectionStepObject
+        XCTAssertNotNil(selectionStep)
+        XCTAssertEqual(selectionStep?.result?.selectedAnswers.count, 2)
+        
+        let reviewStep = medTracker.getReviewStep() as? SBATrackedMedicationReviewStepObject
+        XCTAssertNotNil(reviewStep)
+        
+        if let detailsStep = medTracker.step(with: "medA3") as? SBATrackedItemDetailsStepObject {
+            XCTAssertNotNil(detailsStep.trackedItem)
+            XCTAssertNotNil(detailsStep.previousAnswer)
+            XCTAssertEqual(detailsStep.previousAnswer?.hasRequiredValues, true)
+        } else {
+            XCTFail("Step not found or not of expected type.")
+        }
+        if let detailsStep = medTracker.step(with: "medC3") as? SBATrackedItemDetailsStepObject {
+            XCTAssertNotNil(detailsStep.trackedItem)
+            XCTAssertNotNil(detailsStep.previousAnswer)
+            XCTAssertEqual(detailsStep.previousAnswer?.hasRequiredValues, true)
+        } else {
+            XCTFail("Step not found or not of expected type.")
+        }
+        
+        var taskResult: RSDTaskResult = RSDTaskResultObject(identifier: "medication")
+        let (firstStep, _) = medTracker.step(after: nil, with: &taskResult)
+        guard let loggingStep = firstStep as? SBAMedicationLoggingStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        XCTAssertNotNil(loggingStep)
+        XCTAssertEqual(loggingStep.result?.selectedAnswers.count, 2)
+        
+        loggingStep.nextStepIdentifier = medTracker.getReviewStep()?.identifier
+        let (secondStep, _) = medTracker.step(after: loggingStep, with: &taskResult)
+        XCTAssertNotNil(secondStep)
+        
+        guard let reviewStep2 = secondStep as? SBATrackedItemsReviewStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        reviewStep2.nextStepIdentifier = "medC3"
+        
+        let (thirdStep, _) = medTracker.step(after: reviewStep2, with: &taskResult)
+        XCTAssertNotNil(thirdStep)
+        
+        guard let detailStep = thirdStep as? SBATrackedMedicationDetailStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        taskResult.appendStepHistory(with: SBARemoveTrackedItemsResultObject(identifier: "medC3", items: [RSDIdentifier(rawValue: "medC3")]))
+        
+        let (fourthStep, direction) = medTracker.step(after: detailStep, with: &taskResult)
+        XCTAssertNotNil(fourthStep)
+        // When an item is removed, the navigation direction should flow in reverse, back to the review screen
+        XCTAssertEqual(direction, .reverse)
+        
+        guard let reviewStep3 = fourthStep as? SBATrackedItemsReviewStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        reviewStep3.nextStepIdentifier = "medA3"
+        XCTAssertEqual(reviewStep3.result?.selectedAnswers.count, 1)
+        
+        let (fifthStep, _) = medTracker.step(after: reviewStep3, with: &taskResult)
+        XCTAssertNotNil(fifthStep)
+        guard let detailStep2 = fifthStep as? SBATrackedMedicationDetailStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        taskResult.appendStepHistory(with: SBARemoveTrackedItemsResultObject(identifier: "medA3", items: [RSDIdentifier(rawValue: "medA3")]))
+        
+        let (sixthStep, direction2) = medTracker.step(after: detailStep2, with: &taskResult)
+        XCTAssertNotNil(sixthStep)
+        guard let selectionStep2 = sixthStep as? SBATrackedSelectionStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        XCTAssertEqual(direction2, .reverse)
+        
+        guard var firstSelectionResult = selectionStep2.instantiateStepResult() as? SBATrackedItemsResult else {
+            XCTFail("Failed to create the expected result. Exiting.")
+            return
+        }
+        firstSelectionResult.updateSelected(to: ["medA2"], with: selectionStep2.items)
+        taskResult.appendStepHistory(with: firstSelectionResult)
+        
+        let (seventhStep, _) = medTracker.step(after: selectionStep2, with: &taskResult)
+        XCTAssertNotNil(seventhStep) // review
+        let (eigthStep, _) = medTracker.step(after: seventhStep, with: &taskResult)
+        XCTAssertNotNil(eigthStep) // detail
+        taskResult.appendStepHistory(with: medA2Result())
+        let (ninthStep, _) = medTracker.step(after: eigthStep, with: &taskResult)
+        XCTAssertNotNil(ninthStep) // review
+        
+        let (tenthStep, _) = medTracker.step(after: ninthStep, with: &taskResult)
+        XCTAssertNotNil(tenthStep) // logging step
+        
+        guard let finalLoggingStep = tenthStep as? SBATrackedItemsLoggingStepObject else {
+            XCTFail("Failed to create the expected step. Exiting.")
+            return
+        }
+        finalLoggingStep.nextStepIdentifier = nil
+        let (exitStep, _) = medTracker.step(after: finalLoggingStep, with: &taskResult)
+        XCTAssertNil(exitStep)
     }
     
     // MARK: Shared tests
@@ -554,6 +693,20 @@ func medA2Result() -> SBAMedicationDetailsResultObject {
     return result
 }
 
+func remindersResult(reminderStep: SBATrackedItemRemindersStepObject) -> RSDCollectionResultObject {
+    var result = RSDCollectionResultObject(identifier: reminderStep.identifier)
+    var answerResult = RSDAnswerResultObject(identifier: reminderStep.identifier,
+                                             answerType: RSDAnswerResultType(baseType: .integer,
+                                                                             sequenceType: .array,
+                                                                             formDataType: .collection(.multipleChoice, .integer),
+                                                                             dateFormat: nil,
+                                                                             unit: nil,
+                                                                             sequenceSeparator: nil))
+    answerResult.value = [45, 60]
+    result.inputResults = [answerResult]
+    return result
+}
+
 func buildMedicationItems() -> (items: [SBAMedicationItem], sections: [SBATrackedSection]) {
     let items = [   SBAMedicationItem(identifier: "medA1", sectionIdentifier: "section1"),
                     SBAMedicationItem(identifier: "medA2", sectionIdentifier: "section2"),
@@ -583,11 +736,13 @@ func buildMedicationItems() -> (items: [SBAMedicationItem], sections: [SBATracke
 
 open class SBAMedicationTrackingStepNavigatorWithReminders: SBAMedicationTrackingStepNavigator {
     /// @return a step that will be used to set medication reminders
-    override open class func buildReminderStep() -> SBAMedicationRemindersStepObject? {
-        let step = SBAMedicationRemindersStepObject(identifier: "reminder", type: .medicationReminders)
+    override open class func buildReminderStep() -> SBATrackedItemRemindersStepObject? {
+        guard let inputFields = try? [RSDChoiceInputFieldObject(identifier: "choices", choices: [RSDChoiceObject(value: 15), RSDChoiceObject(value: 30)], dataType: .collection(.multipleChoice, .integer))] else {
+            return nil
+        }
+        let step = SBATrackedItemRemindersStepObject(identifier: "reminder", inputFields: inputFields, type: .medicationReminders)
         step.title = "reminder title"
         step.detail = "reminder detail"
-        step.reminderChoices = try? [RSDChoiceObject(value: 15), RSDChoiceObject(value: 30)]
         return step
     }
 }

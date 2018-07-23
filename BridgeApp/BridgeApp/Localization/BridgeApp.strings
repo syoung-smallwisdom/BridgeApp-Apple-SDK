@@ -64,10 +64,13 @@
 "MEDICATION_REMOVE_BUTTON_TEXT" = "Yes, remove medication";
 "MEDICATION_REMOVE_MEDICATION" = "Remove medication";
 "MEDICATION_REMOVE_TITLE_%@" = "Are you sure you want to remove %@ from your current medication list?";
-"MEDICATION_REMINDER_CHOICES_TITLE" = "When do you want us to remind you?";
+"TRACKED_ITEM_REMINDER_MODAL_TITLE" = "When do you want us to remind you?";
 "MEDICATION_REMINDER_ADD" = "Add reminders";
-"MEDICATION_REMINDER_CHOICES_NONE_SET" = "(no reminders set)";
+"TRACKED_REMINDER_CHOICES_NONE_SET" = "(no reminders set)";
 "MEDICATION_REMINDER_CHOICES_%@" = "%@ minutes before medication time.";
+"MEDICATION_LOGGING_TIME_EDIT_%@" = "%@ - Edit";
+"MEDICATION_VIEW_LIST" = "View medication list";
+"MEDICATION_REMOVE_TEXT" = "Removing this medication will remove it from your Medications list. If you wish to re-add it, it will not be saved.";
 
 
 /* Failure messages */

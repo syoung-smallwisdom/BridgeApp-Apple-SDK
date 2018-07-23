@@ -175,27 +175,36 @@
             },
             "actions" : { "goForward": { "type": "default", "buttonTitle": "Submit" }},
             "shouldHideActions":["skip", "goBackward"],
-            "reminderChoices": [
-                        {
-                        "text": "15 minutes before",
-                        "value": 15
-                        },
-                        {
-                        "text": "30 minutes before",
-                        "value": 30
-                        },
-                        {
-                        "text": "45 minutes before",
-                        "value": 45
-                        },
-                        {
-                        "text": "60 minutes before",
-                        "value": 60
-                        },
-                        {
-                        "text": "No reminder",
-                        "isExclusive": true
-                        },
-                        ]
+            "modalTitle": "When do you want to be reminded?",
+            "noReminderSetText": "(no reminder set)",
+            "descriptionFormat": "%@ minutes before medication time",
+            "inputFields": [
+                            {
+                            "identifier": "reminderChoices",
+                            "inputPrompt": "Add reminders",
+                            "dataType": "multipleChoice.integer",
+                            "choices": [
+                                        {
+                                        "text": "15 minutes before",
+                                        "value": 15
+                                        },
+                                        {
+                                        "text": "30 minutes before",
+                                        "value": 30
+                                        },
+                                        {
+                                        "text": "45 minutes before",
+                                        "value": 45
+                                        },
+                                        {
+                                        "text": "60 minutes before",
+                                        "value": 60
+                                        },
+                                        {
+                                        "text": "No reminder",
+                                        "isExclusive": true
+                                        },
+                                        ]
+                            }]
     },
 }

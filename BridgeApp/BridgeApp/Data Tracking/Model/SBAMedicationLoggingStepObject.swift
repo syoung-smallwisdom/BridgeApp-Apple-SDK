@@ -36,9 +36,39 @@ import Foundation
 /// The medication logging step is used to log information about each item that is being tracked.
 open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RSDNavigationSkipRule {
     
+    #if !os(watchOS)
+    override open func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
+        return SBATrackedMedicationLoggingStepViewController(step: self)
+    }
+    #endif
+    
     /// Override to return a `SBAMedicationLoggingDataSource`.
     open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
         return SBAMedicationLoggingDataSource(step: self, taskPath: taskPath)
+    }
+    
+    /// Initializer required for `copy(with:)` implementation.
+    public required init(identifier: String, type: RSDStepType?) {
+        super.init(identifier: identifier, type: type)
+        _commonInit()
+    }
+    
+    override public init(identifier: String, items: [SBATrackedItem], sections: [SBATrackedSection]? = nil, type: RSDStepType? = nil) {
+        super.init(identifier: identifier, items: items, sections: sections, type: type)
+        _commonInit()
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        _commonInit()
+    }
+    
+    private func _commonInit() {
+        if self.actions?[.addMore] == nil {
+            var actions = self.actions ?? [:]
+            actions[.addMore] = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_VIEW_LIST"))
+            self.actions = actions
+        }
     }
     
     // MARK: RSDNavigationSkipRule
@@ -105,6 +135,12 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
     }
 }
 
+extension RSDFormUIHint {
+    
+    /// Display a cell appropriate to logging a timestamp.
+    public static let medicationLogging: RSDFormUIHint = "medicationLogging"
+}
+
 struct MedicationTiming {
     let medication : SBAMedicationAnswer
     let timeOfDay: Date
@@ -166,7 +202,7 @@ extension SBAMedicationAnswer {
             }
             
             let rowIndex = isCurrent ? currentItems.count : missedItems.count
-            let tableItem = SBATrackedLoggingTableItem(rowIndex: rowIndex, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString)
+            let tableItem = SBATrackedMedicationLoggingTableItem(rowIndex: rowIndex, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString, groupCount: scheduleItems.count)
             tableItem.title = self.longTitle
             tableItem.detail = (scheduleTime == nil) ?
                 Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
@@ -186,6 +222,20 @@ extension SBAMedicationAnswer {
         }
     
         return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: currentItems, missedItems: missedItems)
+    }
+}
+
+open class SBATrackedMedicationLoggingTableItem: SBATrackedLoggingTableItem {
+    
+    /// The number of items in this item's subgrouping (for schedules that are grouped).
+    public private(set) var groupCount: Int
+    
+    /// Used to keep track of the state of editing the display time
+    public var isEditingDisplayTime = false
+    
+    public init(rowIndex: Int, itemIdentifier: String, timingIdentifier: String? = nil, timeOfDayString: String? = nil, groupCount: Int, uiHint: RSDFormUIHint = .medicationLogging) {
+        self.groupCount = groupCount
+        super.init(rowIndex: rowIndex, itemIdentifier: itemIdentifier, timingIdentifier: timingIdentifier, timeOfDayString: timeOfDayString, uiHint: uiHint)
     }
 }
 
