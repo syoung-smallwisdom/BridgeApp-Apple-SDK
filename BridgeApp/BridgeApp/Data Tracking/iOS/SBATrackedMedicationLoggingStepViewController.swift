@@ -105,24 +105,12 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
         // We don't actually want to show a modal but send the user to the review step
         guard let source = tableData as? SBAMedicationLoggingDataSource,
             let navigator = (self.taskController.taskPath.task?.stepNavigator as? SBAMedicationTrackingStepNavigator),
-            let reviewStep = navigator.getReviewStep() as? SBATrackedMedicationReviewStepObject,
-            var navResult = source.trackingResult() as? RSDNavigationResult else {
+            let reviewStep = navigator.getReviewStep() as? SBATrackedMedicationReviewStepObject else {
             return
         }
-        navResult.skipToIdentifier = reviewStep.identifier
-        self.taskController.taskPath.appendStepHistory(with: navResult)
-        super.goForward()
-    }
-    
-    override open func goForward() {
-        // We don't actually want to show a modal but send the user to the review step
-        guard let source = tableData as? SBAMedicationLoggingDataSource,
-            var navResult = source.trackingResult() as? RSDNavigationResult else {
-            return
-        }
-        navResult.skipToIdentifier = nil
-        self.taskController.taskPath.appendStepHistory(with: navResult)
-        super.goForward()
+        self.assignSkipToIdentifier(reviewStep.identifier)
+        self.taskController.taskPath.appendStepHistory(with: source.trackingResult())
+        self.goForward()
     }
 }
 

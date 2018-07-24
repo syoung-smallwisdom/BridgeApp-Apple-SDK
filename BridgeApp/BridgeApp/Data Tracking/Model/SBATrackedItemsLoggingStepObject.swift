@@ -195,7 +195,7 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
 }
 
 /// `SBATrackedLoggingResultObject` is used include multiple results associated with a tracked item.
-public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable, RSDNavigationResult {
+public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
 
     private enum CodingKeys : String, CodingKey {
         case identifier, text, detail, loggedDate
@@ -231,10 +231,6 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable, RSDN
     /// The list of input results associated with this step. These are generally assumed to be answers to
     /// field inputs, but they are not required to implement the `RSDAnswerResult` protocol.
     public var inputResults: [RSDResult]
-    
-    /// The identifier for the step to go to following this result. If non-nil, then this will be used in
-    /// navigation handling.
-    public var skipToIdentifier: String? = nil
     
     /// Default initializer for this object.
     ///

@@ -55,26 +55,11 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         tableView.deselectRow(at: indexPath, animated: true)
         if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
         let selectedIdentifier = reviewDataSource.tableItem(at: indexPath)?.identifier {
-            guard let source = self.tableData as? SBATrackedMedicationReviewDataSource,
-                var navResult = source.trackingResult() as? RSDNavigationResult else {
-                    return
-            }
-            navResult.skipToIdentifier = selectedIdentifier
-            self.taskController.taskPath.appendStepHistory(with: navResult)
-            super.goForward()
+            guard let source = self.tableData as? SBATrackedMedicationReviewDataSource else { return }
+            self.assignSkipToIdentifier(selectedIdentifier)
+            self.taskController.taskPath.appendStepHistory(with: source.trackingResult())
+            self.goForward()
         }
-        // TODO: syoung 07/23/2018 Refactor to add a result to the result set and use survey rules instead.
-    }
-    
-    override open func goForward() {
-        // Selecting a cell will call super go forward and ignore this
-        guard let source = self.tableData as? SBATrackedMedicationReviewDataSource,
-            var navResult = source.trackingResult() as? RSDNavigationResult else {
-            return
-        }
-        navResult.skipToIdentifier = nil
-        self.taskController.taskPath.appendStepHistory(with: navResult)
-        super.goForward()
     }
     
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
