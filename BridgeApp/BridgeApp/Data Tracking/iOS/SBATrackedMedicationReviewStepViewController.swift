@@ -55,9 +55,7 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         tableView.deselectRow(at: indexPath, animated: true)
         if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
         let selectedIdentifier = reviewDataSource.tableItem(at: indexPath)?.identifier {
-            guard let source = self.tableData as? SBATrackedMedicationReviewDataSource else { return }
             self.assignSkipToIdentifier(selectedIdentifier)
-            self.taskController.taskPath.appendStepHistory(with: source.trackingResult())
             self.goForward()
         }
     }
