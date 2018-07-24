@@ -109,7 +109,7 @@ class TrackingNavigatorTests: XCTestCase {
                 return
         }
         
-        var initialResult = SBATrackedLoggingCollectionResultObject(identifier: taskPath.task!.identifier)
+        var initialResult = SBATrackedLoggingCollectionResultObject(identifier: RSDIdentifier.trackedItemsResult.identifier)
         initialResult.updateSelected(to: ["itemA2", "itemB1", "itemC3"], with: tracker.items)
         let clientData = try! initialResult.clientData()
         tracker.previousClientData = clientData

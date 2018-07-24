@@ -372,6 +372,10 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     public func clientData() throws -> SBBJSONValue? {
+        guard identifier == RSDIdentifier.trackedItemsResult.stringValue
+            else {
+                return nil
+        }
         let dictionary = try self.rsd_jsonEncodedDictionary()
         return
             [CodingKeys.medications.stringValue : dictionary[CodingKeys.medications.stringValue],

@@ -138,6 +138,12 @@ extension SBATrackedItemsResult {
     }
 }
 
+extension RSDIdentifier {
+    
+    /// Identifier key used to explicitly identify the consolidated tracked items result.
+    public static let trackedItemsResult: RSDIdentifier = "trackedItems"
+}
+
 public protocol SBATrackedItemsCollectionResult : SBATrackedItemsResult, SBAClientDataResult {
     
     /// Update the result from the given client data.
@@ -148,8 +154,7 @@ extension SBATrackedItemsCollectionResult {
     
     /// Build the archiveable or uploadable data for this result.
     public func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
-        guard let stepId = SBATrackedItemsStepNavigator.StepIdentifiers(rawValue: self.identifier),
-            (stepId == .logging || stepId == .review) else {
+        guard self.identifier == RSDIdentifier.trackedItemsResult.stringValue else {
                 return nil
         }
         let data = try self.rsd_jsonEncodedData()
