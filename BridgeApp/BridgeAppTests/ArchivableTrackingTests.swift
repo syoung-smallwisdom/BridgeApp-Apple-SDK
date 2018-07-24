@@ -48,7 +48,8 @@ class ArchivableTrackingTests: XCTestCase {
     
     func testLoggingCollectionResultArchive_ClientData() {
         
-        var result = SBATrackedLoggingCollectionResultObject(identifier: "logging")
+        let identifier = RSDIdentifier.trackedItemsResult.identifier
+        var result = SBATrackedLoggingCollectionResultObject(identifier: identifier)
         var loggedResultA = SBATrackedLoggingResultObject(identifier: "itemA", text: "Item A", detail: "a detail")
         loggedResultA.loggedDate = Date().addingTimeInterval(-60)
         var answerResult = RSDAnswerResultObject(identifier: "foo", answerType: .string)
@@ -61,7 +62,7 @@ class ArchivableTrackingTests: XCTestCase {
             let clientData = try result.clientData()
             XCTAssertNotNil(clientData)
             if let clientData = clientData as? [String : Any] {
-                XCTAssertEqual(clientData["identifier"] as? String, "logging")
+                XCTAssertEqual(clientData["identifier"] as? String, identifier)
                 if let items = clientData["items"] as? [[String : Any]] {
                     XCTAssertEqual(items.count, 2)
                     if let item = items.first {
@@ -208,7 +209,8 @@ class ArchivableTrackingTests: XCTestCase {
     
     func testMedicationResultArchive_ClientData() {
         
-        var result = SBAMedicationTrackingResult(identifier: "logging")
+        let identifier = RSDIdentifier.trackedItemsResult.identifier
+        var result = SBAMedicationTrackingResult(identifier: identifier)
         var medA3 = SBAMedicationAnswer(identifier: "medA3")
         medA3.dosage = "1 ml"
         medA3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "08:00", daysOfWeek: [.monday, .wednesday, .friday])]

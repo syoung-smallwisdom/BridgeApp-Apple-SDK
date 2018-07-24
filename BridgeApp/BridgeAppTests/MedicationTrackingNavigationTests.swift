@@ -404,7 +404,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
         let (items, sections) = buildMedicationItems()
         let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: sections)
         
-        var initialResult = SBAMedicationTrackingResult(identifier: medTracker.reviewStep!.identifier)
+        var initialResult = SBAMedicationTrackingResult(identifier: RSDIdentifier.trackedItemsResult.identifier)
         var medA3 = SBAMedicationAnswer(identifier: "medA3")
         medA3.dosage = "1"
         medA3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "08:00", daysOfWeek: [.monday, .wednesday, .friday])]
@@ -462,7 +462,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
         let (items, sections) = buildMedicationItems()
         let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: sections)
         
-        var initialResult = SBAMedicationTrackingResult(identifier: medTracker.reviewStep!.identifier)
+        var initialResult = SBAMedicationTrackingResult(identifier: RSDIdentifier.trackedItemsResult.identifier)
         var medA3 = SBAMedicationAnswer(identifier: "medA3")
         medA3.dosage = "1"
         medA3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "08:00", daysOfWeek: [.monday, .wednesday, .friday])]
