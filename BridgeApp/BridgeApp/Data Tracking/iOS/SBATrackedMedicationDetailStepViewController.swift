@@ -534,17 +534,18 @@ open class SBATrackedMedicationNavigationHeaderView: RSDTableStepHeaderView {
     
     override open func updateVerticalConstraints(currentLastView: UIView?) -> (firstView: UIView?, lastView: UIView?) {
         addUnderlinedButtonIfNeeded()
-        var results = super.updateVerticalConstraints(currentLastView: currentLastView)
         
         // Remove existing constraints for the underlined button
         NSLayoutConstraint.deactivate(_underlinedButtonContraints)
         _underlinedButtonContraints.removeAll()
         
+        var results = super.updateVerticalConstraints(currentLastView: currentLastView)
+        
         // Add the underlined button under the title label
         if let underlinedButtonUnwrapped = self.underlinedButton,
-            let titleLabelUnwrapped = super.titleLabel {
+            let lastViewUnwrapped = results.lastView {
             _underlinedButtonContraints.append(contentsOf:
-                underlinedButtonUnwrapped.rsd_alignBelow(view: titleLabelUnwrapped, padding: constants.verticalSpacing))
+                underlinedButtonUnwrapped.rsd_alignBelow(view: lastViewUnwrapped, padding: constants.verticalSpacing))
         }
         
         results.lastView = underlinedButton

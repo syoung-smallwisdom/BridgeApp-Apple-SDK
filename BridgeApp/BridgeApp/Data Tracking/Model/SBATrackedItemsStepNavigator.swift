@@ -333,12 +333,16 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
         }
         if let step = _detailSteps[identifier] {
             if let detailStep = step as? SBATrackedItemDetailsStepObject {
+                detailStep.title = selectedAnswer.text
                 detailStep.updatePreviousAnswer(answer: selectedAnswer)
             }
             // return the previously created instance if there is one.            
             return (step, selectedAnswer)
         } else if let template = self.detailStepTemplates?.first(where: { $0.identifier == detailsId }),
             let step = template.copy(from: item, with: selectedAnswer) {
+            if let detailStep = step as? SBATrackedItemDetailsStepObject {
+                detailStep.title = selectedAnswer.text
+            }
             // save the created step for future calls.
             _detailSteps[identifier] = step
             return (step, selectedAnswer)
