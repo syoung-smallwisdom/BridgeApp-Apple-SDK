@@ -161,7 +161,7 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     /// Build the client data for this result.
     public func clientData() throws -> SBBJSONValue? {
         // Only include the client data for the logging result and not the selection result.
-        guard identifier == SBATrackedItemsStepNavigator.StepIdentifiers.logging.stringValue
+        guard identifier == RSDIdentifier.trackedItemsResult.stringValue
             else {
                 return nil
         }

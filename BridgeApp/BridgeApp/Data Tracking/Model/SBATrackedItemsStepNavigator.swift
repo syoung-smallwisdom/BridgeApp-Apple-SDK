@@ -298,7 +298,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
             _inMemoryResult.updateDetails(from: result)
         }
         
-        taskResult.appendAsyncResult(with: _inMemoryResult)
+        taskResult.appendAsyncResult(with: _inMemoryResult.copy(with: RSDIdentifier.trackedItemsResult.stringValue))
     }
     
     /// Update the selected items for the in-memory result by removing the items with the selected identifiers.
