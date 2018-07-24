@@ -121,7 +121,8 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     /// - returns: The appropriate tracking result.
     open func trackingResult() -> SBATrackedItemsResult {
         if let trackingResult = taskPath.result.stepHistory.rsd_last(where: { $0.identifier == step.identifier }) as? SBATrackedItemsResult {
-            return trackingResult
+            // A copy here will clear out any single-use variables, like skipToIdentifier.
+            return trackingResult.copy(with: trackingResult.identifier)
         }
         else {
             return instantiateTrackingResult()

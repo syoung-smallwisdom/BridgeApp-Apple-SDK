@@ -106,7 +106,7 @@ open class SBATrackedItemDetailsStepObject : RSDFormUIStepObject, SBATrackedItem
         let copy = self.copy(with: trackedItem.identifier)
         copy.trackedItem = trackedItem
         copy.previousAnswer = previousAnswer
-        copy.title = self.title ?? trackedItem.title
+        copy.title = trackedItem.text
         return copy
     }
 

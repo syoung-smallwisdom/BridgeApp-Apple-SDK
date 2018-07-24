@@ -55,16 +55,9 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         tableView.deselectRow(at: indexPath, animated: true)
         if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
         let selectedIdentifier = reviewDataSource.tableItem(at: indexPath)?.identifier {
-            reviewDataSource.reviewItemSelected(identifier: selectedIdentifier)
-            super.goForward()
+            self.assignSkipToIdentifier(selectedIdentifier)
+            self.goForward()
         }
-        // TODO: syoung 07/23/2018 Refactor to add a result to the result set and use survey rules instead.
-    }
-    
-    override open func goForward() {
-        // Selecting a cell will call super go forward and ignore this
-        self.reviewStep?.nextStepIdentifier = nil
-        super.goForward()
     }
     
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

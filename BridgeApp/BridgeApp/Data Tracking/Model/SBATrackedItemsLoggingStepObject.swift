@@ -82,7 +82,7 @@ extension RSDResultType {
 }
 
 /// `SBATrackedLoggingCollectionResultObject` is used include multiple logged items in a single logging result.
-public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Codable, SBATrackedItemsCollectionResult {
+public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Codable, SBATrackedItemsCollectionResult, RSDNavigationResult {
     
     /// The identifier associated with the task, step, or asynchronous action.
     public let identifier: String
@@ -108,6 +108,9 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
             loggingItems = newValue.compactMap { $0 as? SBATrackedLoggingResultObject }
         }
     }
+    
+    /// The step identifier to skip to after this result.
+    public var skipToIdentifier: String?
     
     /// Default initializer for this object.
     ///

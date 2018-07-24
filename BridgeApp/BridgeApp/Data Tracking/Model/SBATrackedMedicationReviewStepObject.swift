@@ -150,16 +150,6 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingDataSource, RSDModa
         let reviewItem = SBATrackedMedicationReviewItem(medication: medAnswer, rowIndex: rowIndex, reuseIdentifier: SBATrackedMedicationReviewCell.reuseId)
         return reviewItem
     }
-    
-    /// Call when a review item is selected, this will add a details result to the step history
-    /// that will be used to create the correct details step.
-    func reviewItemSelected(identifier: String) {
-        if let currentResult = self.mostRecentResult,
-            let existingDetailsResult = currentResult.medications.first(where: { $0.identifier == identifier }),
-            let reviewStep = self.step as? SBATrackedMedicationReviewStepObject {
-            reviewStep.nextStepIdentifier = existingDetailsResult.identifier
-        }
-    }
 
     /// Returns the selection step.
     open func step(for tableItem: RSDModalStepTableItem) -> RSDStep {

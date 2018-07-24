@@ -78,4 +78,3 @@ open class SBARemoveTrackedItemStepViewController: RSDStepViewController {
         self.textLabel?.text = self.removeTrackedItemStep?.text
     }
 }
-

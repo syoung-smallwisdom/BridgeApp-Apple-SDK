@@ -1,6 +1,6 @@
 //
 //  SBATrackedItemRemindersStepViewController.swift
-//  mPower2
+//  BridgeApp (iOS)
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
@@ -92,7 +92,6 @@ extension SBATrackedItemRemindersStepViewController: RSDTaskViewControllerDelega
         return nil
     }
 }
-
 
 open class SBATrackedReminderModalButtonCell : RSDButtonCell {
     

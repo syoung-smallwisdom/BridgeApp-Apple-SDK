@@ -95,18 +95,20 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
     
     func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
         
-        // The schedule activity manager does this using reflection, but for simplicity, let's find the last MedicationTrackingResult
-        var medTrackingResult: SBAMedicationTrackingResult?
-        for result in taskController.taskPath.result.stepHistory {
-            if let medTrackingResultUnwrapped = result as? SBAMedicationTrackingResult {
-                medTrackingResult = medTrackingResultUnwrapped
+        if reason == .completed {
+            // The schedule activity manager does this using reflection, but for simplicity, let's find the last MedicationTrackingResult
+            var medTrackingResult: SBAMedicationTrackingResult?
+            for result in taskController.taskPath.result.stepHistory {
+                if let medTrackingResultUnwrapped = result as? SBAMedicationTrackingResult {
+                    medTrackingResult = medTrackingResultUnwrapped
+                }
             }
-        }
-        if let medTrackingResultUnwrapped = medTrackingResult {
-            do {
-                try scheduleManager.previousClientData[taskController.taskResult.identifier] = medTrackingResultUnwrapped.clientData()
-            } catch {
-                print(error)
+            if let medTrackingResultUnwrapped = medTrackingResult {
+                do {
+                    try scheduleManager.previousClientData[taskController.taskResult.identifier] = medTrackingResultUnwrapped.clientData()
+                } catch {
+                    print(error)
+                }
             }
         }
         

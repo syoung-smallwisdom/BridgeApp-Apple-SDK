@@ -104,7 +104,7 @@ open class SBATrackedItemRemindersStepObject: RSDFormUIStepObject, RSDStepViewCo
         subclassCopy.noReminderSetText = self.noReminderSetText
     }
     
-    /// Returns the reminder choice step
+    /// Returns the reminder choice step.
     public func reminderChoicesStep() -> RSDStep? {
         let identifier = String(describing: modalIdentifier)
         let formStep = RSDFormUIStepObject(identifier: identifier, inputFields: self.inputFields)
@@ -141,7 +141,6 @@ open class SBATrackedItemReminderDataSource : RSDFormStepDataSourceObject {
         }
     }
     
-    /// - parameter result: The most recent result
     /// - returns : The description of the selected reminders.
     open func reminderDescription() -> String? {
         guard let answerResult = self.collectionResult().inputResults.last as? RSDAnswerResultObject else {

@@ -89,8 +89,8 @@ open class SBARemoveTrackedItemStepObject: RSDUIStepObject, RSDStepViewControlle
     ///        {
     ///            "identifier": "foo",
     ///            "type": "selection",
-    ///            "title": "Are you sure you want to remove the items",
-    ///            "underlinedTitleSegment": "the items",
+    ///            "title": "Are you sure you want to remove itemA and itemB?",
+    ///            "underlinedTitleSegment": "itemA and itemB",
     ///            "items": ["itemA", "itemB"]
     ///        }
     ///        """.data(using: .utf8)! // our data in native (JSON) format

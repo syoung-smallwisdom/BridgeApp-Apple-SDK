@@ -297,7 +297,7 @@ public struct SBATrackedItemObject : Codable, SBATrackedItem, RSDEmbeddedIconVen
 
 
 /// Simple tracking object for the case where only the identifier is being tracked.
-public struct SBATrackedItemsResultObject : SBATrackedItemsResult, Codable {
+public struct SBATrackedItemsResultObject : SBATrackedItemsResult, Codable, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
         case identifier, type, startDate, endDate, items
@@ -317,6 +317,9 @@ public struct SBATrackedItemsResultObject : SBATrackedItemsResult, Codable {
     
     /// The list of items that are currently selected.
     public var items: [RSDIdentifier] = []
+    
+    /// The step identifier to skip to after this result.
+    public var skipToIdentifier: String? = nil
     
     /// Return the list of identifiers.
     public var selectedAnswers: [SBATrackedItemAnswer] {
