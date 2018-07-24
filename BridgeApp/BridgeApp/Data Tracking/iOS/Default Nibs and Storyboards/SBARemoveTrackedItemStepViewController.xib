@@ -14,6 +14,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SBARemoveTrackedItemStepViewController" customModule="BridgeApp" customModuleProvider="target">
             <connections>
                 <outlet property="navigationFooter" destination="QgQ-II-cS8" id="oue-Ys-EkE"/>
+                <outlet property="statusBarBackgroundView" destination="RiL-Fv-bVP" id="Q53-NQ-1bd"/>
                 <outlet property="textLabel" destination="H1V-Zd-ISm" id="xq0-np-s1N"/>
                 <outlet property="titleLabel" destination="QNQ-m3-fK5" id="K9r-dF-kjc"/>
                 <outlet property="view" destination="GgN-TV-x40" id="OBf-MG-d1D"/>
@@ -29,9 +30,11 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="FxV-e7-xYd"/>
                     </constraints>
-                </view>
-                <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1eV-SJ-AqP" customClass="MCTCompletionGradient" customModule="MotorControl">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="263"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="color" keyPath="overlayColor">
+                            <color key="value" red="0.93333333330000001" green="0.37647058820000001" blue="0.43921568630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xZv-dQ-yG7" userLabel="Header">
                     <rect key="frame" x="0.0" y="20" width="375" height="225"/>
@@ -80,9 +83,6 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="1eV-SJ-AqP" firstAttribute="leading" secondItem="itt-wk-qNg" secondAttribute="leading" id="3Ik-wc-Mic"/>
-                <constraint firstItem="1eV-SJ-AqP" firstAttribute="trailing" secondItem="itt-wk-qNg" secondAttribute="trailing" id="3Xa-E6-Yt6"/>
-                <constraint firstItem="1eV-SJ-AqP" firstAttribute="top" secondItem="RiL-Fv-bVP" secondAttribute="top" id="BIe-mI-j91"/>
                 <constraint firstItem="RiL-Fv-bVP" firstAttribute="top" secondItem="GgN-TV-x40" secondAttribute="top" id="C8Y-av-9aK"/>
                 <constraint firstItem="igy-yO-sNq" firstAttribute="width" secondItem="igy-yO-sNq" secondAttribute="height" multiplier="1:1" id="EuM-Cl-K81"/>
                 <constraint firstItem="QNQ-m3-fK5" firstAttribute="leading" secondItem="itt-wk-qNg" secondAttribute="leading" constant="32" id="ITp-XI-B88"/>
@@ -93,7 +93,6 @@
                 <constraint firstAttribute="trailing" secondItem="RiL-Fv-bVP" secondAttribute="trailing" id="VD2-9m-RyE"/>
                 <constraint firstItem="QNQ-m3-fK5" firstAttribute="top" secondItem="xZv-dQ-yG7" secondAttribute="bottom" constant="48" id="b3T-sL-hdV"/>
                 <constraint firstItem="xZv-dQ-yG7" firstAttribute="trailing" secondItem="itt-wk-qNg" secondAttribute="trailing" id="cBM-mM-Q2i"/>
-                <constraint firstItem="QNQ-m3-fK5" firstAttribute="top" secondItem="1eV-SJ-AqP" secondAttribute="bottom" constant="30" id="dv9-CC-bzb"/>
                 <constraint firstItem="QgQ-II-cS8" firstAttribute="trailing" secondItem="itt-wk-qNg" secondAttribute="trailing" id="eFf-J9-Aqv"/>
                 <constraint firstItem="RiL-Fv-bVP" firstAttribute="leading" secondItem="GgN-TV-x40" secondAttribute="leading" id="efy-Bz-m7U"/>
                 <constraint firstItem="xZv-dQ-yG7" firstAttribute="leading" secondItem="itt-wk-qNg" secondAttribute="leading" id="gI4-eI-mbo"/>
