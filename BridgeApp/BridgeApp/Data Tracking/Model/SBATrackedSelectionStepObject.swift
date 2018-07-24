@@ -300,7 +300,7 @@ public struct SBATrackedItemObject : Codable, SBATrackedItem, RSDEmbeddedIconVen
 public struct SBATrackedItemsResultObject : SBATrackedItemsResult, Codable, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, type, startDate, endDate, items, skipToIdentifier
+        case identifier, type, startDate, endDate, items
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
@@ -319,7 +319,7 @@ public struct SBATrackedItemsResultObject : SBATrackedItemsResult, Codable, RSDN
     public var items: [RSDIdentifier] = []
     
     /// The step identifier to skip to after this result.
-    public var skipToIdentifier: String?
+    public var skipToIdentifier: String? = nil
     
     /// Return the list of identifiers.
     public var selectedAnswers: [SBATrackedItemAnswer] {
@@ -333,7 +333,6 @@ public struct SBATrackedItemsResultObject : SBATrackedItemsResult, Codable, RSDN
     public func copy(with identifier: String) -> SBATrackedItemsResultObject {
         var copy = SBATrackedItemsResultObject(identifier: identifier)
         copy.items = self.items
-        copy.skipToIdentifier = self.skipToIdentifier
         return copy
     }
     

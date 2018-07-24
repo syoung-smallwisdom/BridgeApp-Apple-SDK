@@ -243,7 +243,7 @@ extension SBAMedicationAnswer : SBAMedication {
 public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionResult, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, type, startDate, endDate, medications = "items", reminders, skipToIdentifier
+        case identifier, type, startDate, endDate, medications = "items", reminders
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
@@ -270,7 +270,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     public var reminders: [Int]?
     
     /// The step identifier of the next step to skip to after this one.
-    public var skipToIdentifier: String?
+    public var skipToIdentifier: String? = nil
     
     public init(identifier: String) {
         self.identifier = identifier
@@ -283,7 +283,6 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         copy.type = self.type
         copy.medications = self.medications
         copy.reminders = self.reminders
-        copy.skipToIdentifier = self.skipToIdentifier
         return copy
     }
     

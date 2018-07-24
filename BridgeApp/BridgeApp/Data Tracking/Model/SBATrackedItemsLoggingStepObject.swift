@@ -198,7 +198,7 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
 public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, text, detail, loggedDate, skipToIdentifier
+        case identifier, text, detail, loggedDate
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
@@ -234,7 +234,7 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable, RSDN
     
     /// The identifier for the step to go to following this result. If non-nil, then this will be used in
     /// navigation handling.
-    public var skipToIdentifier: String?
+    public var skipToIdentifier: String? = nil
     
     /// Default initializer for this object.
     ///
