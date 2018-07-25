@@ -57,7 +57,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         let surveyStep = inputStep
         
         let nextStepIdentifier = surveyStep.nextStepIdentifier(with: nil, conditionalRule: nil, isPeeking: false)
-        XCTAssertEqual(nextStepIdentifier, "exit")
+        XCTAssertEqual(nextStepIdentifier, "nextSection")
     }
     
     // MARK: BooleanConstraints
@@ -98,7 +98,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         taskResult.appendStepHistory(with: stepResult)
         
         let identifierNo = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
-        XCTAssertEqual(identifierNo, "exit")
+        XCTAssertEqual(identifierNo, "nextSection")
         
         // Set the answer to "skip"
         answerResult.value = nil
@@ -156,7 +156,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         taskResult.appendStepHistory(with: stepResult)
         
         let identifierNo = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
-        XCTAssertEqual(identifierNo, "exit")
+        XCTAssertEqual(identifierNo, "nextSection")
         
         // Set the answer to "maybe"
         answerResult.value = "maybe"
