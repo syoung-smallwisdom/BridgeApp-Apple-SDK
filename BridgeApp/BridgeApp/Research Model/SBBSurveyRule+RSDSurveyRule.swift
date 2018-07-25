@@ -115,7 +115,7 @@ extension SBBSurveyRule : RSDComparableSurveyRule {
     }
     
     public var skipToIdentifier: String? {
-        return self.endSurveyValue ? RSDIdentifier.exit.stringValue : self.skipTo
+        return self.endSurveyValue ? RSDIdentifier.nextSection.stringValue : self.skipTo
     }
     
     public var ruleOperator: RSDSurveyRuleOperator? {
