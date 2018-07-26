@@ -153,8 +153,8 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     }
     
     /// Update the details to the new value. This is only valid for a new value that is an `RSDResult`.
-    public mutating func updateDetails(from result: RSDResult) {
-        guard let result = result as? SBATrackedLoggingResultObject else {
+    public mutating func updateDetails(from result: RSDResult) {        
+        guard result is SBATrackedLoggingResultObject || result is SBATrackedLoggingCollectionResultObject else {
             assertionFailure("This is not a valid tracked item answer type. Cannot map to a result.")
             return
         }
