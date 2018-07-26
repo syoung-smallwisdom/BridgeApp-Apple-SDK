@@ -44,7 +44,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     
     /// Publicly accessible coding keys for the steps used by this navigator.
     public enum StepIdentifiers : String, CodingKey {
-        case selection, review, addDetails, logging, reminder
+        case selection, review, addDetails, logging, reminder, introduction
     }
     
     public enum RequiredStepCodingKeys : String, CodingKey {
@@ -116,6 +116,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
         self.detailStepTemplates = type(of: self).buildDetailSteps(items: items, sections: sections)
         self.loggingStep = type(of: self).buildLoggingStep(items: items, sections: sections)
         self.reminderStep = type(of: self).buildReminderStep()
+        self.introductionStep = type(of: self).buildIntroductionStep()
     }
     
     
@@ -156,6 +157,15 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
         }
         let reminderStepBuild = type(of: self).buildReminderStep()
         self.reminderStep = (reminderStepDecoded ?? reminderStepBuild)?.copy(with: RSDIdentifier.medicationReminders.stringValue)
+        
+        // Build the decoder optional introduction step
+        var introductionStepDecoded: RSDStep?
+        if container.contains(.introduction) {
+            let nestedDecoder = try container.superDecoder(forKey: .introduction)
+            introductionStepDecoded = try decoder.factory.decodeStep(from: nestedDecoder)
+        }
+        let introductionStepBuild = type(of: self).buildIntroductionStep()
+        self.introductionStep = introductionStepDecoded ?? introductionStepBuild
     }
     
     open class func decodeItems(from decoder: Decoder) throws -> (items: [SBATrackedItem], sections: [SBATrackedSection]?) {
@@ -184,6 +194,9 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     /// The reminder step to display when the user chooseg when they should be reminded about the tracked items.
     public let reminderStep: SBATrackedItemRemindersStepObject?
     
+    /// The introduction step to display only once before the user selects their tracked items.
+    public let introductionStep: RSDStep?
+    
     /// Build the selection step for this tracked data collection. Override to customize the step.
     open class func buildSelectionStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep {
         let stepId = StepIdentifiers.selection.stringValue
@@ -209,6 +222,11 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     
     /// Build the reminder step for this tracked data collection. Override to customize the step.
     open class func buildReminderStep() -> SBATrackedItemRemindersStepObject? {
+        return nil
+    }
+    
+    /// Build the introduction step for this tracked data collection. Override to customize the step.
+    open class func buildIntroductionStep() -> RSDStep? {
         return nil
     }
     
@@ -275,7 +293,8 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     func updateInMemoryResult(from taskResult: inout RSDTaskResult, using previousStep: RSDStep?) {
         
         guard let step = previousStep,
-            let result = taskResult.findResult(for: step) else {
+            let result = taskResult.findResult(for: step),
+            step.identifier != self.introductionStep?.identifier else {
             return
         }
         
@@ -489,9 +508,15 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
             // Otherwise, return the selection step.
             if (previousClientData != nil), _inMemoryResult.selectedAnswers.count > 0 {
                 return getLoggingStep()
+            } else if self.introductionStep != nil {
+                return self.introductionStep
             } else {
                 return getSelectionStep()
             }
+        }
+        
+        if identifier == self.introductionStep?.identifier {
+            return getSelectionStep()
         }
         
         var nextStepPerNavigationRule: RSDStep?
