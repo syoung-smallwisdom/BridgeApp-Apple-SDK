@@ -886,19 +886,26 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     }
     
     /// Finalize the upload of all the created archives.
-    public func encryptAndUpload(taskPath: RSDTaskPath, dataArchives: [RSDDataArchive], completion: @escaping (() -> Void)) {
+    public final func encryptAndUpload(taskPath: RSDTaskPath, dataArchives: [RSDDataArchive], completion: @escaping (() -> Void)) {
+        let archives: [SBBDataArchive] = dataArchives.compactMap {
+            guard let archive = $0 as? SBBDataArchive, self.shouldUpload(archive: archive) else { return nil }
+            return archive
+        }
         #if DEBUG
-        dataArchives.forEach {
+        archives.forEach {
             guard let archive = $0 as? SBAScheduledActivityArchive else { return }
             self.copyTestArchive(archive: archive)
         }
         #endif
-        let archives: [SBBDataArchive] = dataArchives.compactMap {
-            guard let archive = $0 as? SBBDataArchive else { return nil }
-            return !archive.isEmpty() ? archive : nil
-        }
         SBBDataArchive.encryptAndUploadArchives(archives)
         completion()
+    }
+    
+    /// This method is called during `encryptAndUpload()` to allow subclasses to cancel uploading an archive.
+    ///
+    /// - returns: Whether or not to upload. Default is to return `true` if the archive is not empty.
+    open func shouldUpload(archive: SBBDataArchive) -> Bool {
+        return !archive.isEmpty()
     }
     
     /// By default, if an archive fails, the error is printed and that's all that is done.
