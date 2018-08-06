@@ -71,7 +71,7 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
         self.schedule = schedule
         self.schemaInfo = schemaInfo
         self.isPlaceholder = isPlaceholder
-        super.init(reference: identifier, jsonValidationMapping: nil)
+        super.init(reference: schemaInfo.schemaIdentifier ?? identifier, jsonValidationMapping: nil)
         
         // set info values.
         self.setArchiveInfoObject(NSNumber(value: schemaInfo.schemaVersion), forKey: kSchemaRevisionKey)
