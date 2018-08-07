@@ -40,6 +40,9 @@ open class SBASurveyConfiguration {
     /// The shared singleton.
     public static var shared = SBASurveyConfiguration()
     
+    public init() {
+    }
+    
     /// Allow customization of the step type for a given survey element.
     ///
     /// Default implementation will check the `stepTypeMap` for a guid and return that value if found.
