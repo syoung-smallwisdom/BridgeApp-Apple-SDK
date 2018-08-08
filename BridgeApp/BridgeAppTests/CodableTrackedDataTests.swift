@@ -460,6 +460,47 @@ class CodableTrackedDataTests: XCTestCase {
         }
     }
     
+    func testTrackedLoggingResultObject_Encodable() {
+        
+        var result = SBATrackedLoggingResultObject(identifier: "foo")
+        result.itemIdentifier = "bah"
+        result.timingIdentifier = "09:00"
+        result.text = "Text string"
+        result.detail = "Detail string"
+        result.loggedDate = Date()
+        let values = [("a", 1), ("b", 2), ("c", 3)]
+        result.inputResults = values.map { (value) -> RSDAnswerResult in
+            var answer = RSDAnswerResultObject(identifier: value.0, answerType: .integer)
+            answer.value = value.1
+            return answer
+        }
+        
+        do {
+            
+            let object = result
+            let jsonData = try encoder.encode(object)
+            guard let dictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String : Any]
+                else {
+                    XCTFail("Encoded object is not a dictionary")
+                    return
+            }
+            
+            XCTAssertEqual(dictionary["identifier"] as? String, "foo")
+            XCTAssertEqual(dictionary["itemIdentifier"] as? String, "bah")
+            XCTAssertEqual(dictionary["timingIdentifier"] as? String, "09:00")
+            XCTAssertEqual(dictionary["text"] as? String, "Text string")
+            XCTAssertEqual(dictionary["detail"] as? String, "Detail string")
+            XCTAssertNotNil(dictionary["loggedDate"] as? String)
+            XCTAssertEqual(dictionary["a"] as? Int, 1)
+            XCTAssertEqual(dictionary["b"] as? Int, 2)
+            XCTAssertEqual(dictionary["c"] as? Int, 3)
+            
+        } catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
+    
     func testTriggersJSON() {
         let resourceTransformer = RSDResourceTransformerObject(resourceName: "Triggers")
         do {

@@ -254,6 +254,46 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         }
     }
     
+    func testTrackedLoggingCollectionResultObject_updateDetails() {
+        
+        var resultFoo = SBATrackedLoggingResultObject(identifier: "foo")
+        resultFoo.loggedDate = Date()
+        let fooValues = [("a", 1), ("b", 2), ("c", 3)]
+        resultFoo.inputResults = fooValues.map { (value) -> RSDAnswerResult in
+            var answer = RSDAnswerResultObject(identifier: value.0, answerType: .integer)
+            answer.value = value.1
+            return answer
+        }
+        
+        var resultGoo = SBATrackedLoggingResultObject(identifier: "goo")
+        resultGoo.loggedDate = Date()
+        let gooValues = [("a", 4), ("b", 5), ("c", 6)]
+        resultGoo.inputResults = gooValues.map { (value) -> RSDAnswerResult in
+            var answer = RSDAnswerResultObject(identifier: value.0, answerType: .integer)
+            answer.value = value.1
+            return answer
+        }
+        
+        var loggingResult = SBATrackedLoggingCollectionResultObject(identifier: "test")
+        loggingResult.loggingItems = [resultFoo, resultGoo]
+        
+        var inMemoryResult = SBATrackedLoggingCollectionResultObject(identifier: "hooloo")
+        inMemoryResult.updateDetails(from: loggingResult)
+        
+        XCTAssertEqual(inMemoryResult.loggingItems.count, loggingResult.loggingItems.count)
+        
+        if let firstResult = inMemoryResult.loggingItems.first {
+            XCTAssertEqual(firstResult.identifier, "foo")
+            XCTAssertEqual(firstResult.loggedDate, resultFoo.loggedDate)
+            XCTAssertEqual(firstResult.inputResults.count, 3)
+            let answerA = firstResult.findAnswerResult(with: "a")
+            XCTAssertNotNil(answerA)
+            XCTAssertEqual(answerA?.value as? Int, 1)
+        }
+        else {
+            XCTFail("In memory result does not have the expected logging items")
+        }
+    }
     
     // Helper methods
     
