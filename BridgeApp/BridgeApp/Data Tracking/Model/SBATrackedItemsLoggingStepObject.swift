@@ -153,12 +153,16 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     }
     
     /// Update the details to the new value. This is only valid for a new value that is an `RSDResult`.
-    public mutating func updateDetails(from result: RSDResult) {        
-        guard result is SBATrackedLoggingResultObject || result is SBATrackedLoggingCollectionResultObject else {
-            assertionFailure("This is not a valid tracked item answer type. Cannot map to a result.")
-            return
+    public mutating func updateDetails(from result: RSDResult) {
+        if let loggingResult = result as? SBATrackedLoggingResultObject {
+            self.appendInputResults(with: loggingResult)
         }
-        self.appendInputResults(with: result)
+        else if let collectionResult = result as? SBATrackedLoggingCollectionResultObject {
+            self.loggingItems = collectionResult.loggingItems
+        }
+        else {
+            assertionFailure("This is not a valid tracked item answer type. Cannot map to a result.")
+        }
     }
     
     /// Build the client data for this result.
@@ -198,7 +202,7 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
 public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, text, detail, loggedDate
+        case identifier, text, detail, loggedDate, itemIdentifier, timingIdentifier
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
@@ -251,6 +255,8 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.identifier = try container.decode(String.self, forKey: .identifier)
+        self.itemIdentifier = try container.decodeIfPresent(String.self, forKey: .itemIdentifier)
+        self.timingIdentifier = try container.decodeIfPresent(String.self, forKey: .timingIdentifier)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.detail = try container.decodeIfPresent(String.self, forKey: .detail)
         self.loggedDate = try container.decodeIfPresent(Date.self, forKey: .loggedDate)
@@ -262,15 +268,18 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
     /// - parameter encoder: The encoder to use to encode this instance.
     /// - throws: `EncodingError`
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: AnyCodingKey.self)
-        try container.encode(identifier, forKey: AnyCodingKey(stringValue: CodingKeys.identifier.stringValue)!)
-        try container.encodeIfPresent(text, forKey: AnyCodingKey(stringValue: CodingKeys.text.stringValue)!)
-        try container.encodeIfPresent(detail, forKey: AnyCodingKey(stringValue: CodingKeys.detail.stringValue)!)
-        try container.encodeIfPresent(loggedDate, forKey: AnyCodingKey(stringValue: CodingKeys.loggedDate.stringValue)!)
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(identifier, forKey: .identifier)
+        try container.encodeIfPresent(itemIdentifier, forKey: .itemIdentifier)
+        try container.encodeIfPresent(timingIdentifier, forKey: .timingIdentifier)
+        try container.encodeIfPresent(text, forKey: .text)
+        try container.encodeIfPresent(detail, forKey: .detail)
+        try container.encodeIfPresent(loggedDate, forKey: .loggedDate)
 
+        var anyContainer = encoder.container(keyedBy: AnyCodingKey.self)
         for result in inputResults {
             let key = AnyCodingKey(stringValue: result.identifier)!
-            let nestedEncoder = container.superEncoder(forKey: key)
+            let nestedEncoder = anyContainer.superEncoder(forKey: key)
             guard let answerResult = result as? RSDAnswerResult else {
                 let context = EncodingError.Context(codingPath: nestedEncoder.codingPath, debugDescription: "Result does not conform to RSDAnswerResult protocol")
                 throw EncodingError.invalidValue(result, context)
