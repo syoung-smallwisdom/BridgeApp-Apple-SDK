@@ -70,6 +70,11 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         return BridgeSDK.activityManager
     }
     
+    /// Pointer to the shared participant to use.
+    public var participant: SBBStudyParticipant? {
+        return SBAParticipantManager.shared.studyParticipant
+    }
+    
     public override init() {
         super.init()
         
