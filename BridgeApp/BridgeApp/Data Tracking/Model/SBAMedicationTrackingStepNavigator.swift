@@ -68,7 +68,7 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
     override open func instantiateLoggingResult() -> SBATrackedItemsCollectionResult {
         return SBAMedicationTrackingResult(identifier: self.reviewStep!.identifier)
-    }    
+    }
 }
 
 extension RSDIdentifier {
@@ -347,23 +347,30 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         loggingResult.loggingItems.forEach {
             let loggingResult = $0
             guard let itemIdentifier = loggingResult.itemIdentifier,
-                let timingIdentifier = loggingResult.timingIdentifier,
-                let idx = medications.index(where: { $0.identifier == itemIdentifier })
+                let timingIdentifier = loggingResult.timingIdentifier
                 else {
                     return
             }
-            // If this is a timestamp logging then add/remove timestamp.
-            var medication = self.medications[idx]
-            var timestamps: [SBATimestamp] = medication.timestamps ?? []
-            timestamps.remove(where: { $0.timingIdentifier == timingIdentifier })
-            if let loggedDate = loggingResult.loggedDate {
-                let newTimestamp = SBATimestamp(timingIdentifier: timingIdentifier, loggedDate: loggedDate)
-                timestamps.append(newTimestamp)
-            }
-            medication.timestamps = timestamps
-            self.medications.remove(at: idx)
-            self.medications.insert(medication, at: idx)
+            self.updateLogging(itemIdentifier: itemIdentifier, timingIdentifier: timingIdentifier, loggedDate: loggingResult.loggedDate)
         }
+    }
+    
+    mutating func updateLogging(itemIdentifier: String, timingIdentifier: String, loggedDate: Date?) {
+        guard let idx = medications.index(where: { $0.identifier == itemIdentifier })
+            else {
+                return
+        }
+        // If this is a timestamp logging then add/remove timestamp.
+        var medication = self.medications[idx]
+        var timestamps: [SBATimestamp] = medication.timestamps ?? []
+        timestamps.remove(where: { $0.timingIdentifier == timingIdentifier })
+        if let loggedDate = loggedDate {
+            let newTimestamp = SBATimestamp(timingIdentifier: timingIdentifier, loggedDate: loggedDate)
+            timestamps.append(newTimestamp)
+        }
+        medication.timestamps = timestamps
+        self.medications.remove(at: idx)
+        self.medications.insert(medication, at: idx)
     }
     
     mutating func updateReminders(from result: RSDResult) {

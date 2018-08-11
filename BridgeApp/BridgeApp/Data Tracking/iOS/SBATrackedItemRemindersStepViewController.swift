@@ -32,6 +32,8 @@
 //
 
 import UIKit
+import UserNotifications
+
 
 /// `SBATrackedItemRemindersStepViewController` contains a prompt butotn cell that
 /// shows a form step view controller with the input fields from the form step.
@@ -74,6 +76,38 @@ open class SBATrackedItemRemindersStepViewController: RSDTableStepViewController
             self.present(vc, animated: true, completion: nil)
         }
     }
+    
+    open override func goForward() {
+        
+        let shouldSetReminder : Bool = {
+            guard let stepResult = self.taskController.taskResult.findResult(for: self.step),
+                let value = stepResult.firstAnswerResult()?.value
+                else {
+                    return false
+            }
+            return ((value as? [Any])?.count ?? 1) > 0
+        }()
+        
+        // Check if there is a no reminders flag to **not** set the local notification.
+        if shouldSetReminder {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .alert, .sound]) { (granted, _) in
+                DispatchQueue.main.async {
+                    if !granted {
+                        // TODO: syoung 07/19/2018 Localize and word-smith
+                        self.presentAlertWithOk(title: nil, message: "You have turned off notifications. To allow us to remind you, you will need to change this from the Settings app.", actionHandler: { (_) in
+                            super.goForward()
+                        })
+                    }
+                    else {
+                        super.goForward()
+                    }
+                }
+            }
+        }
+        else {
+            super.goForward()
+        }
+    }
 }
 
 extension SBATrackedItemRemindersStepViewController: RSDTaskViewControllerDelegate {
@@ -102,5 +136,12 @@ open class SBATrackedReminderModalButtonCell : RSDButtonCell {
         let bundle = Bundle(for: SBATrackedReminderModalButtonCell.self)
         let nibName = String(describing: SBATrackedReminderModalButtonCell.self)
         return UINib(nibName: nibName, bundle: bundle)
+    }
+}
+
+extension RSDResult {
+    
+    func firstAnswerResult() -> RSDAnswerResult? {
+        return ((self as? RSDCollectionResult)?.inputResults.first ?? self) as? RSDAnswerResult
     }
 }

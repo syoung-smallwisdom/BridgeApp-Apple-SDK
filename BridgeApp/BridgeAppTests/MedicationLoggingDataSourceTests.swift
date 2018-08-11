@@ -102,19 +102,20 @@ class MedicationLoggingDataSourceTests: XCTestCase {
         medA4.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "07:30", daysOfWeek: [.monday, .wednesday, .friday]),
                                RSDWeeklyScheduleObject(timeOfDayString: "10:30", daysOfWeek: [.monday, .wednesday, .friday])]
         
-        let timeOfDay = buildDate(weekday: .monday, hour: 10, minute: 0)
+        let timeOfDay = buildDate(weekday: .monday, hour: 10, minute: 5)
         guard let medTiming = medA4.availableMedications(at: timeOfDay) else {
             XCTFail("Unexpected nil")
             return
         }
         
-        XCTAssertEqual(medTiming.currentItems.count, 1)
+        XCTAssertEqual(medTiming.currentItems.count, 2)
         XCTAssertEqual(medTiming.missedItems.count, 0)
+        XCTAssertEqual(medTiming.upcomingItems.count, 0)
     }
     
     func testBuildSections_Morning_NoMedsTaken_Before1030() {
         
-        let timeOfDay = buildDate(weekday: .monday, hour: 10, minute: 0)
+        let timeOfDay = buildDate(weekday: .monday, hour: 10, minute: 5)
         let result = buildMedicationResult(identifier: "review")
         let meds = buildMedicationItems()
         let step = SBAMedicationLoggingStepObject(identifier: "logging", items: meds.items, sections: meds.sections, type: .logging)
@@ -130,12 +131,13 @@ class MedicationLoggingDataSourceTests: XCTestCase {
         }
         
         XCTAssertEqual(firstSection.title, "Morning medications")
-        XCTAssertEqual(firstSection.tableItems.count, 3)
+        XCTAssertEqual(firstSection.tableItems.count, 4)
         
-        guard firstSection.tableItems.count >= 3,
+        guard firstSection.tableItems.count >= 4,
             let medA3Item1 = firstSection.tableItems[0] as? SBATrackedLoggingTableItem,
             let medA4Item1 = firstSection.tableItems[1] as? SBATrackedLoggingTableItem,
-            let medA5Item1 = firstSection.tableItems[2] as? SBATrackedLoggingTableItem
+            let medA4Item2 = firstSection.tableItems[2] as? SBATrackedLoggingTableItem,
+            let medA5Item1 = firstSection.tableItems[3] as? SBATrackedLoggingTableItem
             else {
                 XCTFail("Table items weren't build. \(firstSection)")
                 return
@@ -159,14 +161,24 @@ class MedicationLoggingDataSourceTests: XCTestCase {
         XCTAssertEqual(medA4Item1.detail, "Mon, Wed, Fri")
         XCTAssertNil(medA4Item1.loggedDate)
         
+        XCTAssertEqual(medA4Item2.title, "medA4 40 mg")
+        XCTAssertEqual(medA4Item2.groupIndex, 1)
+        XCTAssertEqual(medA4Item2.rowIndex, 2)
+        XCTAssertEqual(medA4Item2.itemIdentifier, "medA4")
+        XCTAssertEqual(medA4Item2.timingIdentifier, "10:30")
+        XCTAssertEqual(medA4Item2.timeText, "10:30 AM")
+        XCTAssertEqual(medA4Item2.detail, "Mon, Wed, Fri")
+        XCTAssertNil(medA4Item2.loggedDate)
+        
         XCTAssertEqual(medA5Item1.title, "medA5 5 ml")
         XCTAssertEqual(medA5Item1.groupIndex, 0)
-        XCTAssertEqual(medA5Item1.rowIndex, 2)
+        XCTAssertEqual(medA5Item1.rowIndex, 3)
         XCTAssertEqual(medA5Item1.itemIdentifier, "medA5")
         XCTAssertEqual(medA5Item1.timingIdentifier, "morning")
         XCTAssertNil(medA5Item1.timeText)
         XCTAssertEqual(medA5Item1.detail, "Anytime")
         XCTAssertNil(medA5Item1.loggedDate)
+        
     }
     
     func testBuildSections_Morning_NoMedsTaken_After1030() {

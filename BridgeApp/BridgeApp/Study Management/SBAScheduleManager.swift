@@ -75,6 +75,11 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         return SBAParticipantManager.shared.studyParticipant
     }
     
+    /// Pointer to the default factory to use for serialization.
+    open var factory: RSDFactory {
+        return SBAFactory.shared
+    }
+    
     public override init() {
         super.init()
         
@@ -233,7 +238,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
                         }
                     }
                     let schedules: [SBBScheduledActivity] = scheduleMap.values.map { $0 }
-                    //print("\n---\(self.identifier):\n\(schedules)")
+                    print("\n---\(self.identifier):\n\(schedules)")
 
                     DispatchQueue.main.async {
                         self.update(fetchedActivities: schedules)
@@ -269,12 +274,15 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     ///
     /// - parameter fetchedActivities: The list of activities returned by the service.
     open func update(fetchedActivities: [SBBScheduledActivity]) {
-        //print("\n\n--- Update called for \(self.identifier) with:\n\(fetchedActivities)")
-        if (fetchedActivities != self.scheduledActivities) {
-            self.scheduledActivities = fetchedActivities
-            let previous = self.scheduledActivities
-            self.didUpdateScheduledActivities(from: previous)
-        }
+        guard hasChanges(fetchedActivities) else { return }
+        print("\n\n--- Update called for \(self.identifier) with:\n\(fetchedActivities)")
+        let previous = self.scheduledActivities
+        self.scheduledActivities = fetchedActivities
+        self.didUpdateScheduledActivities(from: previous)
+    }
+    
+    func hasChanges(_ fetchedActivities: [SBBScheduledActivity]) -> Bool {
+        return fetchedActivities != self.scheduledActivities
     }
     
     /// Called on the main thread before sending the given schedules to the server for update. The default
@@ -515,6 +523,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             // saved. So these changes should **not** be commited. Throw them out.
             SBAFactory.shared.trackingRules.remove(where: { $0 is DataGroupsTrackingRule})
             let rule = DataGroupsTrackingRule(initialCohorts: participant.dataGroups ?? [])
+            rule.taskRunUUID = taskPath.result.taskRunUUID
             SBAFactory.shared.trackingRules.append(rule)
         } else {
             debugPrint("WARNING: Missing a study particpant. Cannot get the data groups.")
@@ -544,6 +553,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// Subclass the cohorts tracking rule so that we can use casting to check for an existing
     /// tracking rule.
     class DataGroupsTrackingRule : RSDCohortTrackingRule {
+        var taskRunUUID : UUID!
     }
     
     // MARK: RSDTaskViewControllerDelegate
@@ -563,18 +573,20 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     
     /// Call from the view controller that is used to display the task when the task is ready to save.
     open func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
-        
+        self.saveResults(from: taskPath)
+    }
+    
+    /// Allow saving the results from a given task path.
+    open func saveResults(from taskPath: RSDTaskPath, _ completionHandler: (() -> Void)? = nil) {
         // Update the schedule on the server but only if the survey was not ended early. In that case, only
         // send the archive but do not mark the task as finished or update the data groups.
-        if !taskPath.didExitEarly {
-            self.offMainQueue.async {
+        self.offMainQueue.async {
+            if !taskPath.didExitEarly {
                 self.updateDataGroups(for: taskPath)
                 self.updateSchedules(for: taskPath)
-                self.archiveAndUpload(taskPath: taskPath)
             }
-        }
-        else {
             self.archiveAndUpload(taskPath: taskPath)
+            completionHandler?()
         }
     }
     
@@ -589,7 +601,9 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     ///
     /// - parameter taskPath: The task path for the task which has just run.
     open func updateDataGroups(for taskPath: RSDTaskPath) {
-        let rules = SBAFactory.shared.trackingRules.remove(where: { $0 is DataGroupsTrackingRule})
+        let rules = SBAFactory.shared.trackingRules.remove {
+            ($0 as? DataGroupsTrackingRule)?.taskRunUUID == taskPath.result.taskRunUUID
+        }
         guard let rule = rules.first as? DataGroupsTrackingRule,
             rule.initialCohorts != rule.currentCohorts
             else {
@@ -625,7 +639,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             }
         }
         appendSchedule(taskPath.result, taskPath.scheduleIdentifier)
-
+        
         // Send message to server that the scheduled activites were updated.
         self.sendUpdated(for: schedules, taskPath: taskPath)
     }
@@ -817,6 +831,8 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         NotificationCenter.default.post(name: .SBAWillSendUpdatedScheduledActivities,
                                         object: self,
                                         userInfo: [NotificationKey.updatedActivities : schedules])
+        
+        print("\n\n-- Sending update to schedules: \(schedules)")
         
         self.activityManager.updateScheduledActivities(schedules) { (_, _) in
             // Post notification that the schedules were updated.
