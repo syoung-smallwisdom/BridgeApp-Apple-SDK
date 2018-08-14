@@ -84,7 +84,7 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
         return [category]
     }
 
-    /// Override to set up to get most recent finished medication task
+    /// Override to set up to get most recent finished medication task.
     override open func fetchRequests() -> [FetchRequest] {
         let predicate = self.historyPredicate(for: .medicationTask)
         let sortDescriptors = [SBBScheduledActivity.finishedOnSortDescriptor(ascending: false)]
@@ -93,11 +93,6 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
     
     open func instantiateMedicationTrackingResult() -> SBAMedicationTrackingResult {
         return SBAMedicationTrackingResult(identifier: RSDIdentifier.trackedItemsResult.stringValue)
-    }
-    
-    /// Expose internally for testing.
-    func now() -> Date {
-        return Date()
     }
     
     public func setupNotifications() {
@@ -223,7 +218,7 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
                     let reminderRequests: [UNNotificationRequest] = reminders.compactMap { (reminderTimeInterval) -> UNNotificationRequest? in
                         let identifier = self.getLocalNotificationIdentifier(med, timeOfDay, dateComponents, reminderTimeInterval)
                         if pendingRequestIds.remove(where: { $0 == identifier }).count > 0 {
-                            // If there is an unchaged pending request, then remove it from this list
+                            // If there is an unchanged pending request, then remove it from this list
                             // and do not create a new reminder for it.
                             return nil
                         }

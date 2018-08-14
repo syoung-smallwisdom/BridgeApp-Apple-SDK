@@ -80,6 +80,12 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         return SBAFactory.shared
     }
     
+    /// This is an internal function that can be used in testing instead of using `Date()` directly. It can
+    /// then be overridden by a test subclass of this manager in order to return a known date.
+    func now() -> Date {
+        return Date()
+    }
+    
     public override init() {
         super.init()
         
@@ -238,7 +244,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
                         }
                     }
                     let schedules: [SBBScheduledActivity] = scheduleMap.values.map { $0 }
-                    print("\n---\(self.identifier):\n\(schedules)")
+                    //print("\n---\(self.identifier):\n\(schedules)")
 
                     DispatchQueue.main.async {
                         self.update(fetchedActivities: schedules)
@@ -275,7 +281,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// - parameter fetchedActivities: The list of activities returned by the service.
     open func update(fetchedActivities: [SBBScheduledActivity]) {
         guard hasChanges(fetchedActivities) else { return }
-        print("\n\n--- Update called for \(self.identifier) with:\n\(fetchedActivities)")
+        //print("\n\n--- Update called for \(self.identifier) with:\n\(fetchedActivities)")
         let previous = self.scheduledActivities
         self.scheduledActivities = fetchedActivities
         self.didUpdateScheduledActivities(from: previous)
@@ -329,7 +335,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     /// - returns: The message to display in an alert for a schedule that is not currently available.
     open func messageForUnavailableSchedule(_ schedule: SBBScheduledActivity) -> String {
         var scheduledTime: String!
-        if schedule.scheduledOn < Date().startOfDay().addingNumberOfDays(1) {
+        if schedule.scheduledOn < now().startOfDay().addingNumberOfDays(1) {
             scheduledTime = schedule.scheduledTime
         }
         else {
@@ -832,8 +838,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
                                         object: self,
                                         userInfo: [NotificationKey.updatedActivities : schedules])
         
-        print("\n\n-- Sending update to schedules: \(schedules)")
-        
+        //print("\n\n-- Sending update to schedules: \(schedules)")
         self.activityManager.updateScheduledActivities(schedules) { (_, _) in
             // Post notification that the schedules were updated.
             NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
