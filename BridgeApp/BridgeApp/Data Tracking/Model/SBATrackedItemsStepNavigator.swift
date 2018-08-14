@@ -317,7 +317,17 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
             _inMemoryResult.updateDetails(from: result)
         }
         
-        taskResult.appendAsyncResult(with: _inMemoryResult.copy(with: RSDIdentifier.trackedItemsResult.stringValue))
+        let updatedResult = _inMemoryResult.copy(with: RSDIdentifier.trackedItemsResult.stringValue)
+        taskResult.appendAsyncResult(with: updatedResult)
+        DispatchQueue.main.async {
+            self.didUpdateTrackingResult(to: updatedResult)
+        }
+    }
+    
+    /// This is an overridable hook that subclasses can use to perform custom actions after the results have
+    /// been updated for tracking purposes. This method is called asynchronously on the main  thread. Default
+    /// does nothing.
+    open func didUpdateTrackingResult(to result: SBATrackedItemsCollectionResult) {
     }
     
     /// Update the selected items for the in-memory result by removing the items with the selected identifiers.

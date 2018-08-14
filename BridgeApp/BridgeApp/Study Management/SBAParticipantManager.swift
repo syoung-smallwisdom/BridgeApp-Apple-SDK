@@ -260,7 +260,7 @@ public final class SBAParticipantManager : NSObject {
     fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date) {
         let pingDate = Date()
         BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .fallBackToCached) { (obj, error) in
-            // print("\n\n---Fetch Results pingDate:\(pingDate) from:\(fromDate) to:\(toDate)\n\(String(describing: obj))")
+            //print("\n\n---Fetch Results pingDate:\(pingDate) from:\(fromDate) to:\(toDate)\n\(String(describing: obj))")
             self.updateQueue.addOperation {
                 self.handleLoadedActivities(pingDate: pingDate,
                                             scheduledActivities: obj as? [SBBScheduledActivity],

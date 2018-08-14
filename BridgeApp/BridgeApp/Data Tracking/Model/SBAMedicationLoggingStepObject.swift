@@ -106,6 +106,7 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
         let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay) }
         let currentItems = medTimings.flatMap { $0.currentItems }
         let missedItems = medTimings.flatMap { $0.missedItems }
+        let upcomingItems = medTimings.flatMap { $0.upcomingItems }
         
         var itemGroups = [RSDTableItemGroup]()
         var sections = [RSDTableSection]()
@@ -130,6 +131,13 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
             sections.append(section)
             itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: missedItems))
         }
+        
+        if upcomingItems.count > 0 {
+            let section = RSDTableSection(identifier: "upcoming", sectionIndex: sections.count, tableItems: upcomingItems)
+            section.title = Localization.localizedString("UPCOMING_MEDICATION_SECTION_TITLE")
+            sections.append(section)
+            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: upcomingItems))
+        }
 
         return (sections, itemGroups)
     }
@@ -146,6 +154,7 @@ struct MedicationTiming {
     let timeOfDay: Date
     let currentItems : [SBATrackedLoggingTableItem]
     let missedItems : [SBATrackedLoggingTableItem]
+    let upcomingItems : [SBATrackedLoggingTableItem]
 }
 
 extension SBAMedicationAnswer {
@@ -169,12 +178,15 @@ extension SBAMedicationAnswer {
         
         let timeRange = timeOfDay.timeRange()
         let dayOfWeek = RSDWeekday(date: timeOfDay)
+        let upcomingTimeInterval: TimeInterval = 30 * 60  // 30 minutes
+        let upcomingTimeOfDay = timeOfDay.addingTimeInterval(upcomingTimeInterval)
         
         let formatter = RSDWeeklyScheduleFormatter()
         formatter.style = .short
         
         var currentItems = [SBATrackedLoggingTableItem]()
         var missedItems = [SBATrackedLoggingTableItem]()
+        var upcomingItems = [SBATrackedLoggingTableItem]()
         
         scheduleItems.forEach { (schedule) in
             // Only include if the day of the week is valid.
@@ -185,43 +197,46 @@ extension SBAMedicationAnswer {
             
             // Only include if the schedule time is either "anytime" or before now.
             let scheduleTime = schedule.timeOfDay(on: timeOfDay)
-            guard scheduleTime == nil || scheduleTime! <= timeOfDay
+            let isCurrent = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
+            guard isCurrent || scheduleTime! <= upcomingTimeOfDay
                 else {
                     return
             }
             
             let timingIdentifier = schedule.timeOfDayString ?? timeRange.rawValue
             let loggedDate = self.timestamps?.first(where: { $0.timingIdentifier == timingIdentifier })?.loggedDate
-            let isCurrent = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
+            let isUpcoming = (scheduleTime != nil && scheduleTime! > timeOfDay)
             
             // Only include the schedule if either it has not been marked *or* the marked timestamp is within
             // the time range.
-            guard loggedDate == nil || (includeLogged && isCurrent)
+            guard loggedDate == nil || (includeLogged && (isCurrent || isUpcoming))
                 else {
                     return
             }
             
-            let rowIndex = isCurrent ? currentItems.count : missedItems.count
-            let tableItem = SBATrackedMedicationLoggingTableItem(rowIndex: rowIndex, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString, groupCount: scheduleItems.count)
-            tableItem.title = self.longTitle
-            tableItem.detail = (scheduleTime == nil) ?
-                Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
-            tableItem.loggedDate = loggedDate
+            func appendItem(to items: inout [SBATrackedLoggingTableItem]) {
+                let tableItem = SBATrackedMedicationLoggingTableItem(rowIndex: items.count, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString, groupCount: scheduleItems.count)
+                tableItem.title = self.longTitle
+                tableItem.detail = (scheduleTime == nil) ?
+                    Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
+                tableItem.loggedDate = loggedDate
+                items.append(tableItem)
+            }
             
-            if isCurrent {
-                currentItems.append(tableItem)
+            if isCurrent || isUpcoming {
+                appendItem(to: &currentItems)
             }
             else {
-                missedItems.append(tableItem)
+                appendItem(to: &missedItems)
             }
         }
         
         // Only return available times if there are any in either the window or missed times.
-        guard currentItems.count > 0 || missedItems.count > 0 else {
+        guard currentItems.count > 0 || missedItems.count > 0 || upcomingItems.count > 0 else {
             return nil
         }
     
-        return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: currentItems, missedItems: missedItems)
+        return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: currentItems, missedItems: missedItems, upcomingItems: upcomingItems)
     }
 }
 

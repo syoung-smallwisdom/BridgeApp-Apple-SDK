@@ -55,6 +55,7 @@
 "AFTERNOON_MEDICATION_SECTION_TITLE" = "Afternoon medications";
 "EVENING_MEDICATION_SECTION_TITLE" = "Evening medications";
 "MISSED_MEDICATION_SECTION_TITLE" = "Missed medications";
+"UPCOMING_MEDICATION_SECTION_TITLE" = "Upcoming medications";
 "MEDICATION_ANYTIME" = "Anytime";
 "MEDICATION_DAY_OF_WEEK_%@" = "On which days do you want to take %@";
 "MEDICATION_SCHEDULE_EVERYDAY" = "Every day";
