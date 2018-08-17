@@ -56,7 +56,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         inputStep.add(afterRulesObject: rule)
         let surveyStep = inputStep
         
-        let nextStepIdentifier = surveyStep.nextStepIdentifier(with: nil, conditionalRule: nil, isPeeking: false)
+        let nextStepIdentifier = surveyStep.nextStepIdentifier(with: nil, isPeeking: false)
         XCTAssertEqual(nextStepIdentifier, "nextSection")
     }
     
@@ -89,7 +89,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifierYes = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifierYes = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierYes, "keepGoing")
         
         // Set the answer to "no"
@@ -97,7 +97,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifierNo = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifierNo = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierNo, "nextSection")
         
         // Set the answer to "skip"
@@ -105,7 +105,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifierSkip = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifierSkip = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifierSkip)
         
         // Now, add a skip rule
@@ -114,7 +114,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         ruleSkip.skipTo = "skipToMaLoo"
         constraints.addRulesObject(ruleSkip)
         
-        let identifierSkipWithRule = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifierSkipWithRule = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierSkipWithRule, "skipToMaLoo")
     }
 
@@ -147,7 +147,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifierYes = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifierYes = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierYes, "keepGoing")
         
         // Set the answer to "no"
@@ -155,7 +155,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifierNo = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifierNo = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierNo, "nextSection")
         
         // Set the answer to "maybe"
@@ -163,7 +163,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifierMaybe = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifierMaybe = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifierMaybe)
         
         // Set the answer to "skip"
@@ -171,7 +171,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifierSkip = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifierSkip = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifierSkip)
         
         // Now, add a skip rule
@@ -180,7 +180,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         ruleSkip.skipTo = "skipToMaLoo"
         constraints.addRulesObject(ruleSkip)
         
-        let identifierSkipWithRule = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifierSkipWithRule = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierSkipWithRule, "skipToMaLoo")
     }
 
@@ -235,7 +235,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifier1 = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifier1 = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifier1)
         
         // Set the answer to valid
@@ -243,7 +243,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifier2 = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifier2 = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifier2, "correct")
     }
     
@@ -269,7 +269,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifier1 = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifier1 = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifier1)
         
         // Set the answer to valid
@@ -277,7 +277,7 @@ class SurveyNavigationRuleTests: XCTestCase {
         stepResult.appendInputResults(with: answerResult)
         taskResult.appendStepHistory(with: stepResult)
         
-        let identifier2 = surveyStep.nextStepIdentifier(with: taskResult, conditionalRule: nil, isPeeking: false)
+        let identifier2 = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifier2, "correct")
     }
     

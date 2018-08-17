@@ -86,11 +86,6 @@ open class SBASurveyConfiguration {
         return nil
     }
     
-    /// A conditional rule to return for this task. Default = `nil`.
-    open func conditionalRule(for survey: SBBSurvey) -> RSDConditionalRule? {
-        return nil
-    }
-    
     /// Returns the progress markers for a given survey. Default = `nil`.
     open func progressMarkers(for survey: SBBSurvey) -> [String]? {
         return survey.surveyElements.map { $0.identifier }

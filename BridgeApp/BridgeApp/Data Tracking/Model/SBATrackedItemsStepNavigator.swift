@@ -443,7 +443,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     open func shouldSkip(step: RSDStep?, with result: RSDTaskResult) -> Bool {
         if self.taskPath?.parentPath != nil,
             let navigableStep = step as? RSDNavigationSkipRule {
-            return navigableStep.shouldSkipStep(with: result, conditionalRule: nil, isPeeking: false)
+            return navigableStep.shouldSkipStep(with: result, isPeeking: false)
         }
         else {
             return false
@@ -531,7 +531,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
         
         var nextStepPerNavigationRule: RSDStep?
         if let navStep = step as? RSDNavigationRule,
-            let nextId = navStep.nextStepIdentifier(with: result, conditionalRule: nil, isPeeking: false),
+            let nextId = navStep.nextStepIdentifier(with: result, isPeeking: false),
             let nextStep = self.step(with: nextId) {
             nextStepPerNavigationRule = nextStep
         }

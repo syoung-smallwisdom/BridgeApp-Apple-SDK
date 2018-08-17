@@ -73,7 +73,7 @@ open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RS
     
     // MARK: RSDNavigationSkipRule
     
-    public func shouldSkipStep(with result: RSDTaskResult?, conditionalRule: RSDConditionalRule?, isPeeking: Bool) -> Bool {
+    public func shouldSkipStep(with result: RSDTaskResult?, isPeeking: Bool) -> Bool {
         // If this does not have a medication tracking result then it should be skipped.
         guard let medicationResult = self.result as? SBAMedicationTrackingResult
             else {

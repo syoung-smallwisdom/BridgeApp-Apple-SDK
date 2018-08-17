@@ -57,7 +57,6 @@ class SurveyTests: XCTestCase {
         
         XCTAssertNil(inputSurvey.action(for: .navigation(.skip), on: inputStep))
         XCTAssertNil(inputSurvey.shouldHideAction(for: .navigation(.skip), on: inputStep))
-        XCTAssertNil(inputSurvey.conditionalRule)
         XCTAssertEqual(inputSurvey.progressMarkers, ["abc123"])
     }
     
@@ -72,7 +71,6 @@ class SurveyTests: XCTestCase {
         
         XCTAssertNotNil(inputSurvey.action(for: .navigation(.skip), on: inputStep))
         XCTAssertNotNil(inputSurvey.shouldHideAction(for: .navigation(.skip), on: inputStep))
-        XCTAssertNotNil(inputSurvey.conditionalRule)
         XCTAssertNotNil(inputSurvey.progressMarkers)
     }
 }

@@ -136,10 +136,6 @@ extension SBBSurvey : RSDConditionalStepNavigator {
         return self.surveyElements
     }
     
-    public var conditionalRule: RSDConditionalRule? {
-        return SBASurveyConfiguration.shared.conditionalRule(for: self)
-    }
-    
     public var progressMarkers: [String]? {
         return SBASurveyConfiguration.shared.progressMarkers(for: self)
     }
