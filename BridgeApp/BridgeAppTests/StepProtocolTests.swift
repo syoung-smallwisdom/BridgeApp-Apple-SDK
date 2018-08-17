@@ -742,17 +742,6 @@ struct TestResult : RSDResult {
     }
 }
 
-struct TestConditionalRule : RSDConditionalRule {
-    
-    func skipToStepIdentifier(before step: RSDStep, with result: RSDTaskResult?, isPeeking: Bool) -> String? {
-        return nil
-    }
-    
-    func nextStepIdentifier(after step: RSDStep?, with result: RSDTaskResult?, isPeeking: Bool) -> String? {
-        return nil
-    }
-}
-
 struct TestAsyncActionConfiguration : RSDAsyncActionConfiguration {
     var permissionTypes: [RSDPermissionType] = []
     var identifier: String = "foo"
@@ -786,10 +775,6 @@ class TestSurveyConfiguration : SBASurveyConfiguration {
     var colorTheme : RSDColorThemeElement = RSDColorThemeElementObject(backgroundColorName: "goo")
     override func colorTheme(for surveyElement: SBBSurveyElement) -> RSDColorThemeElement? {
         return RSDColorThemeElementObject(backgroundColorName: "goo")
-    }
-    
-    override func conditionalRule(for survey: SBBSurvey) -> RSDConditionalRule? {
-        return TestConditionalRule()
     }
     
     override func progressMarkers(for survey: SBBSurvey) -> [String]? {

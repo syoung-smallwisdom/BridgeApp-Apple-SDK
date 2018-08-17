@@ -69,7 +69,7 @@ extension SBBSurveyElement : RSDCohortNavigationStep {
 extension SBBSurveyInfoScreen : RSDNavigationRule {
     
     /// Only applicable rule for a survey info screen is direct navigation.
-    public func nextStepIdentifier(with result: RSDTaskResult?, conditionalRule: RSDConditionalRule?, isPeeking: Bool) -> String? {
+    public func nextStepIdentifier(with result: RSDTaskResult?, isPeeking: Bool) -> String? {
         return self.nextStepIdentifier
     }
 }
@@ -86,7 +86,7 @@ extension SBBSurveyQuestion : RSDSurveyNavigationStep {
     }
     
     /// Look for a `nextStepIdentifier` and if nil, evaluate the remaining survey rules
-    public func nextStepIdentifier(with result: RSDTaskResult?, conditionalRule: RSDConditionalRule?, isPeeking: Bool) -> String? {
+    public func nextStepIdentifier(with result: RSDTaskResult?, isPeeking: Bool) -> String? {
         return self.nextStepIdentifier ?? self.evaluateSurveyRules(with: result, isPeeking: isPeeking)
     }
 }
