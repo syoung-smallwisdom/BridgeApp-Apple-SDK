@@ -34,6 +34,20 @@
 import Foundation
 import BridgeSDK
 
+// https://stackoverflow.com/a/48173579
+struct DecodingHelper: Decodable {
+    private let decoder: Decoder
+    
+    init(from decoder: Decoder) throws {
+        self.decoder = decoder
+    }
+    
+    func decode(to type: Decodable.Type) throws -> Decodable {
+        let decodable = try type.init(from: decoder)
+        return decodable
+    }
+}
+
 /// `SBABridgeConfiguration` is used as a wrapper for combining task group and task info objects that are
 /// singletons with the `SBBActivity` objects that contain a subset of the information used to implement
 /// the `RSDTaskInfo` protocol.
@@ -70,6 +84,63 @@ open class SBABridgeConfiguration {
         return studyDuration
     }()
     
+    public var profileManager: SBAProfileManagerProtocol & NSObject & Decodable = SBAProfileManager()
+    public var profileDataSource: SBAProfileDataSource & NSObject & Decodable = SBAProfileDataSourceObject()
+    
+    private func decodeProfileManager(from jsonData: SBBJSONValue, with decoder: JSONDecoder) {
+        guard let clientData = jsonData as? [String: SBBJSONValue]
+            else {
+                debugPrint("AppConfig.clientData is not a JSON object blob as expected")
+                return
+        }
+        guard let profileData = clientData["profile"] as? [String : SBBJSONValue]
+            else {
+                debugPrint("AppConfig.clientData.profile is not a JSON object blob as expected")
+                return
+        }
+        if let profileManagerData = profileData["model"] as? [String : SBBJSONValue],
+            let profileManagerTypeName = profileManagerData["type"] as? String {
+            guard let profileManagerClass = NSClassFromString(profileManagerTypeName) as? (SBAProfileManagerProtocol & NSObject & Decodable).Type
+                else {
+                    debugPrint("Profile Manager type \(profileManagerTypeName) must derive from NSObject and conform to the SBAProfileManagerProtocol and Decodable protocols.")
+                    return
+            }
+            do {
+                let decodingHelper = try decoder.decode(DecodingHelper.self, from: profileManagerData as SBBJSONValue)
+                self.profileManager = try decodingHelper.decode(to: profileManagerClass) as! NSObject & SBAProfileManagerProtocol & Decodable
+            } catch let err {
+                debugPrint("Failed to decode the Profile Manager object: \(err)")
+            }
+        }
+    }
+    
+    private func decodeProfileDataSource(from jsonData: SBBJSONValue, with decoder: JSONDecoder) {
+        guard let clientData = jsonData as? [String: SBBJSONValue]
+            else {
+                debugPrint("AppConfig.clientData is not a JSON object blob as expected")
+                return
+        }
+        guard let profileData = clientData["profile"] as? [String : SBBJSONValue]
+            else {
+                debugPrint("AppConfig.clientData.profile is not a JSON object blob as expected")
+                return
+        }
+        if let profileDataSourceData = profileData["layout"] as? [String : SBBJSONValue],
+            let profileDataSourceTypeName = profileDataSourceData["type"] as? String {
+            guard let profileDataSourceClass = NSClassFromString(profileDataSourceTypeName) as? (SBAProfileDataSource & NSObject & Decodable).Type
+                else {
+                    debugPrint("Profile Data Source type \(profileDataSourceTypeName) must derive from NSObject and conform to the SBAProfileDataSource and Decodable protocols.")
+                    return
+            }
+            do {
+                let decodingHelper = try decoder.decode(DecodingHelper.self, from: profileDataSourceData as SBBJSONValue)
+                self.profileDataSource = try decodingHelper.decode(to: profileDataSourceClass) as! NSObject & SBAProfileDataSource & Decodable
+            } catch let err {
+                debugPrint("Failed to decode the Profile Data Source object: \(err)")
+            }
+        }
+    }
+
     public init() {
     }
     
@@ -152,6 +223,8 @@ open class SBABridgeConfiguration {
                 mappingObject.reportMappings?.forEach {
                     self.addMapping(with: $0.key, to: $0.value)
                 }
+                
+                self.decodeProfileManager(from: clientData, with: decoder)
             } catch let err {
                 debugPrint("Failed to decode the clientData object: \(err)")
                 // Attempt refreshing the app config in case the cached version is out-of-date.

@@ -1,8 +1,8 @@
 //
-//  BridgeApp.h
-//  BridgeApp
+//  SBAProfileSection.m
+//  BridgeAppSDK
 //
-//  Copyright © 2018 Sage Bionetworks. All rights reserved.
+//  Copyright © 2017 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -31,22 +31,10 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-@import UIKit;
-@import ResearchUI;
-@import Research;
-@import BridgeSDK;
+#import "SBAProfileSection.h"
 
-//! Project version number for BridgeApp.
-FOUNDATION_EXPORT double BridgeAppVersionNumber;
-
-//! Project version string for BridgeApp.
-FOUNDATION_EXPORT const unsigned char BridgeAppVersionString[];
-
-#if defined(__cplusplus)
-#  define ENUM_EXTERN extern "C" __attribute__((visibility("default")))
-#else
-#  define ENUM_EXTERN extern __attribute__((visibility("default")))
-#endif
-
-#import <BridgeApp/SBAProfileItem.h>
-#import <BridgeApp/SBAProfileSection.h>
+SBAProfileOnSelectedAction const SBAProfileOnSelectedActionNoAction = @"noAction";
+SBAProfileOnSelectedAction const SBAProfileOnSelectedActionShowHTML = @"showHTML";
+SBAProfileOnSelectedAction const SBAProfileOnSelectedActionShowResource = @"showResource";
+SBAProfileOnSelectedAction const SBAProfileOnSelectedActionEditProfileItem = @"editProfileItem";
+SBAProfileOnSelectedAction const SBAProfileOnSelectedActionShowWithdrawal = @"showWithdrawal";

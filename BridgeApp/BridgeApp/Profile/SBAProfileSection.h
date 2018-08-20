@@ -1,8 +1,8 @@
 //
-//  BridgeApp.h
-//  BridgeApp
+//  SBAProfileSection.h
+//  BridgeAppSDK
 //
-//  Copyright © 2018 Sage Bionetworks. All rights reserved.
+//  Copyright © 2017 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -31,22 +31,17 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-@import UIKit;
-@import ResearchUI;
-@import Research;
-@import BridgeSDK;
+#import <Foundation/Foundation.h>
+#import "BridgeApp.h"
 
-//! Project version number for BridgeApp.
-FOUNDATION_EXPORT double BridgeAppVersionNumber;
+NS_ASSUME_NONNULL_BEGIN
 
-//! Project version string for BridgeApp.
-FOUNDATION_EXPORT const unsigned char BridgeAppVersionString[];
+typedef NSString * SBAProfileOnSelectedAction NS_EXTENSIBLE_STRING_ENUM;
 
-#if defined(__cplusplus)
-#  define ENUM_EXTERN extern "C" __attribute__((visibility("default")))
-#else
-#  define ENUM_EXTERN extern __attribute__((visibility("default")))
-#endif
+ENUM_EXTERN SBAProfileOnSelectedAction const SBAProfileOnSelectedActionNoAction;
+ENUM_EXTERN SBAProfileOnSelectedAction const SBAProfileOnSelectedActionShowHTML;
+ENUM_EXTERN SBAProfileOnSelectedAction const SBAProfileOnSelectedActionShowResource;
+ENUM_EXTERN SBAProfileOnSelectedAction const SBAProfileOnSelectedActionEditProfileItem;
+ENUM_EXTERN SBAProfileOnSelectedAction const SBAProfileOnSelectedActionShowWithdrawal;
 
-#import <BridgeApp/SBAProfileItem.h>
-#import <BridgeApp/SBAProfileSection.h>
+NS_ASSUME_NONNULL_END
