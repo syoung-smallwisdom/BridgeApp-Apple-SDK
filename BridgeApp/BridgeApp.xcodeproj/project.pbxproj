@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0356943A20EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */; };
-		6007757C20DDB450006C6096 /* SBANameDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6007756720DDB450006C6096 /* SBANameDataSource.swift */; };
 		60D9611B20BF161300B5CFEB /* SBAProfileSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 60D9611320BF161200B5CFEB /* SBAProfileSection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		60D9611C20BF161300B5CFEB /* SBAProfileItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 60D9611420BF161200B5CFEB /* SBAProfileItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		60D9611D20BF161300B5CFEB /* SBAProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611520BF161200B5CFEB /* SBAProfileSection.swift */; };
@@ -280,7 +279,6 @@
 
 /* Begin PBXFileReference section */
 		0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATrackedItemRemindersStepViewController.swift; sourceTree = "<group>"; };
-		6007756720DDB450006C6096 /* SBANameDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBANameDataSource.swift; sourceTree = "<group>"; };
 		60D9611320BF161200B5CFEB /* SBAProfileSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBAProfileSection.h; sourceTree = "<group>"; };
 		60D9611420BF161200B5CFEB /* SBAProfileItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBAProfileItem.h; sourceTree = "<group>"; };
 		60D9611520BF161200B5CFEB /* SBAProfileSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileSection.swift; sourceTree = "<group>"; };
@@ -431,7 +429,6 @@
 		60D9611220BF161200B5CFEB /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				6007756720DDB450006C6096 /* SBANameDataSource.swift */,
 				60D9611320BF161200B5CFEB /* SBAProfileSection.h */,
 				60D9611420BF161200B5CFEB /* SBAProfileItem.h */,
 				60D9611520BF161200B5CFEB /* SBAProfileSection.swift */,
@@ -1122,7 +1119,6 @@
 				F8E4A4FB20A4D9F00046577B /* JSONDecoder+Utilities.swift in Sources */,
 				F899D0E520D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift in Sources */,
 				F886FD1320351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift in Sources */,
-				6007757C20DDB450006C6096 /* SBANameDataSource.swift in Sources */,
 				F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */,
 				F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */,
 				F847951F207FEA9D0024A230 /* SBAMedicationTrackingStepNavigator.swift in Sources */,
