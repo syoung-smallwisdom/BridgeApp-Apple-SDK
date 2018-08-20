@@ -1,8 +1,8 @@
 //
 //  SBAProfileSection.h
-//  BridgeAppSDK
+//  BridgeApp
 //
-//  Copyright © 2017 Sage Bionetworks. All rights reserved.
+//  Copyright © 2017-2018 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:

@@ -1,6 +1,6 @@
 //
 //  SBAProfileItemType.swift
-//  BridgeApp (iOS)
+//  BridgeApp
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
