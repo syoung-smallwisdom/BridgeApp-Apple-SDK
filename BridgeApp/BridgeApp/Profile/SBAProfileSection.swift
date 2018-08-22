@@ -34,7 +34,7 @@
 import Foundation
 import HealthKit
 
-/// The type of the profile table item. This is used to decode the item in a factory.
+/// The type of a profile table item. This is used to decode the item in a factory.
 public struct SBAProfileTableItemType : RawRepresentable, Codable {
     public typealias RawValue = String
     
@@ -91,23 +91,57 @@ extension SBAProfileTableItemType {
     }
 }
 
+/// A protocol for defining a section of a profile table.
 public protocol SBAProfileSection {
+    /// The title text to show for the section.
     var title: String? { get }
+    
+    /// An icon to show in the section header.
     var icon: String? { get }
+    
+    /// A list of profile table items to show in the section.
     var items: [SBAProfileTableItem] { get }
 }
 
+/// A protocol for defining items to be shown in a profile table.
 public protocol SBAProfileTableItem {
+    /// The title text to show for the item.
     var title: String { get }
+    
+    /// Detail text to show for the item.
     var detail: String? { get }
+    
+    /// Is the table item editable?
     var isEditable: Bool { get }
+    
+    /// A set of cohorts (data groups) the participant must be in, in order to show this item in its containing profile section.
+    var inCohorts: Set<String> { get }
+    
+    /// A set of cohorts (data groups) the participant must **not** be in, in order to show this item in its containing profile section.
+    var notInCohorts: Set<String> { get }
+    
+    /// The action to perform when the item is selected.
     var onSelected: SBAProfileOnSelectedAction { get }
 }
 
-open class SBAProfileSectionObject: Decodable, SBAProfileSection {
+/// A concrete implementation of the `SBAProfileSection` protocol which implements the Decodable protocol so it can be described in JSON.
+open class SBAProfileSectionObject: SBAProfileSection, Decodable {
     open var title: String?
     open var icon: String?
-    open var items: [SBAProfileTableItem] = []
+    private var allItems: [SBAProfileTableItem] = []
+    open var items: [SBAProfileTableItem] {
+        get {
+            let cohorts = SBAParticipantManager.shared.studyParticipant?.dataGroups ?? Set<String>()
+            return allItems.filter({ (tableItem) -> Bool in
+                // return true if participant data groups include all of the inCohorts and none of the notInCohorts
+                return (tableItem.inCohorts.intersection(cohorts) == tableItem.inCohorts &&
+                        tableItem.notInCohorts.isDisjoint(with: cohorts))
+            })
+        }
+        set {
+            allItems = newValue
+        }
+    }
     
     // MARK: Decoder
     private enum CodingKeys: String, CodingKey {
@@ -176,11 +210,14 @@ open class SBAProfileSectionObject: Decodable, SBAProfileSection {
 
 }
 
-open class SBAProfileTableItemBase: SBAProfileTableItem {
+/// A concrete base class implementation of the `SBAProfileTableItem` protocol which implements the Decodable protocol so it can be described in JSON.
+open class SBAProfileTableItemBase: SBAProfileTableItem, Decodable {
     open var title: String
     private var _detail: String?
     open var detail: String? { return _detail }
     open var isEditable: Bool
+    open var inCohorts: Set<String>
+    open var notInCohorts: Set<String>
     private var onSelectedExplicitlySet: SBAProfileOnSelectedAction? = nil
     open var onSelected: SBAProfileOnSelectedAction {
         get {
@@ -190,7 +227,7 @@ open class SBAProfileTableItemBase: SBAProfileTableItem {
             onSelectedExplicitlySet = newValue
         }
     }
-    
+
     /// Override this in subclasses to set a default onSelected action if not otherwise specified.
     /// - returns: the default action to perform when the item is selected, if onSelected is not explicitly set.
     open func defaultOnSelectedAction() -> SBAProfileOnSelectedAction {
@@ -199,7 +236,7 @@ open class SBAProfileTableItemBase: SBAProfileTableItem {
     
     // MARK: Decoder
     private enum CodingKeys: String, CodingKey {
-        case title, detail, isEditable, onSelected
+        case title, detail, isEditable, onSelected, inCohorts, notInCohorts
     }
     
     public required init(from decoder: Decoder) throws {
@@ -208,7 +245,9 @@ open class SBAProfileTableItemBase: SBAProfileTableItem {
         title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
         _detail = try container.decodeIfPresent(String.self, forKey: .detail)
         isEditable = try container.decodeIfPresent(Bool.self, forKey: .isEditable) ?? false
-        
+        inCohorts = try container.decodeIfPresent(Set<String>.self, forKey: .inCohorts) ?? Set<String>()
+        notInCohorts = try container.decodeIfPresent(Set<String>.self, forKey: .notInCohorts) ?? Set<String>()
+
         // only override the default value if explicitly set in the decoder
         if let onSelectedDecodedString = try container.decodeIfPresent(String.self, forKey: .onSelected) {
             onSelected = SBAProfileOnSelectedAction(rawValue: onSelectedDecodedString)
@@ -216,8 +255,9 @@ open class SBAProfileTableItemBase: SBAProfileTableItem {
     }
 }
 
+/// A profile table item that displays HTML when selected.
 open class SBAHTMLProfileTableItem: SBAProfileTableItemBase {
-    /// Override to return .showHTML as the default onSelected action.
+    /// Overridden to return .showHTML as the default onSelected action.
     override open func defaultOnSelectedAction() -> SBAProfileOnSelectedAction {
         return .showHTML
     }
@@ -389,8 +429,9 @@ open class SBAProfileItemProfileTableItem: SBAProfileTableItemBase {
 }
  */
 
+/// A profile table item that opens a resource (for example, a task defined in JSON) when selected.
 open class SBAResourceProfileTableItem: SBAProfileTableItemBase {
-    /// Override to return .showResource as the default onSelected action.
+    /// Overridden to return .showResource as the default onSelected action.
     override open func defaultOnSelectedAction() -> SBAProfileOnSelectedAction {
         return .showResource
     }
