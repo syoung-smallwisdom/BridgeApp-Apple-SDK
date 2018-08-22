@@ -389,11 +389,6 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
              CodingKeys.reminders.stringValue : dictionary[CodingKeys.reminders.stringValue]] as SBBJSONValue
     }
     
-    /// Returns `true` to replace the results of a previous run.
-    public func shouldReplacePreviousClientData() -> Bool {
-        return true
-    }
-    
     mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
         var clientDataMap = clientData as? [String : Any]
         if clientDataMap == nil {
