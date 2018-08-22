@@ -33,9 +33,56 @@
 
 import Foundation
 
-public var SBAProfileItemsJSONFilename = "ProfileItems"
-public var SBAProfileQuestionsJSONFilename = "ProfileQuestions"
-public var SBAProfileManagerClassType = "ProfileManager"
+/// The type of a profile manager. This is used to decode the manager in a factory.
+public struct SBAProfileManagerType : RawRepresentable, Codable {
+    public typealias RawValue = String
+    
+    public private(set) var rawValue: String
+    
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+    
+    /// Defaults to creating a `SBAProfileManagerObject`.
+    public static let profileManager: SBAProfileManagerType = "profileManager"
+    
+    /// List of all the standard types.
+    public static func allStandardTypes() -> [SBAProfileManagerType] {
+        return [.profileManager]
+    }
+}
+
+extension SBAProfileManagerType : Equatable {
+    public static func ==(lhs: SBAProfileManagerType, rhs: SBAProfileManagerType) -> Bool {
+        return lhs.rawValue == rhs.rawValue
+    }
+    public static func ==(lhs: String, rhs: SBAProfileManagerType) -> Bool {
+        return lhs == rhs.rawValue
+    }
+    public static func ==(lhs: SBAProfileManagerType, rhs: String) -> Bool {
+        return lhs.rawValue == rhs
+    }
+}
+
+extension SBAProfileManagerType : Hashable {
+    public var hashValue : Int {
+        return self.rawValue.hashValue
+    }
+}
+
+extension SBAProfileManagerType : ExpressibleByStringLiteral {
+    public typealias StringLiteralType = String
+    
+    public init(stringLiteral value: String) {
+        self.init(rawValue: value)
+    }
+}
+
+extension SBAProfileManagerType {
+    static func allCodingKeys() -> [String] {
+        return allStandardTypes().map{ $0.rawValue }
+    }
+}
 
 /// Profile manager error types.
 public enum SBAProfileManagerErrorType {
@@ -54,7 +101,8 @@ public class SBAProfileManagerError: NSObject, Error {
     }
 }
 
-public protocol SBAProfileManagerProtocol: NSObjectProtocol {
+/// A protocol for defining a Profile Manager.
+public protocol SBAProfileManager : class {
 
     /// Get a list of the profile keys defined for this app.
     /// - returns: A String array of profile item keys.
@@ -79,9 +127,10 @@ public protocol SBAProfileManagerProtocol: NSObjectProtocol {
 
 }
 
-open class SBAProfileManager: NSObject, SBAProfileManagerProtocol, Decodable {
+/// Concrete implementation of the SBAProfileManager protocol.
+open class SBAProfileManagerObject: SBAProfileManager, Decodable {
     /// Return the shared instance of the Profile Manager from the shared Bridge configuration.
-    public static let shared: SBAProfileManagerProtocol = {
+    public static let shared: SBAProfileManager = {
         return SBABridgeConfiguration.shared.profileManager
     }()
 
@@ -187,7 +236,7 @@ open class SBAProfileManager: NSObject, SBAProfileManagerProtocol, Decodable {
         case items
     }
     
-    public override init() {
+    public init() {
     }
     
     private enum TypeKeys: String, CodingKey {
@@ -208,7 +257,6 @@ open class SBAProfileManager: NSObject, SBAProfileManagerProtocol, Decodable {
     }
 
     public required init(from decoder: Decoder) throws {
-        super.init()
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         if container.contains(.items) {
@@ -236,9 +284,9 @@ open class SBAProfileManager: NSObject, SBAProfileManagerProtocol, Decodable {
     open func decodeItem(from decoder:Decoder, with type:SBAProfileItemType) throws -> SBAProfileItem? {
         
         switch (type) {
+/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
         case .userDefaults:
             return try SBAUserDefaultsProfileItem(from: decoder)
-/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
         case .keychain:
             return try SBAKeychainProfileItem(from: decoder)
         case .participant:

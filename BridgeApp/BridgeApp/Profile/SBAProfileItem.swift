@@ -498,6 +498,7 @@ extension NSDate: PlistValue {}
 extension Data: PlistValue {}
 extension Date: PlistValue {}
 
+/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 open class SBAUserDefaultsProfileItem: SBAProfileItemBase {
     private enum CodingKeys: String, CodingKey {
         case userDefaultsSuiteName
@@ -562,7 +563,6 @@ open class SBAUserDefaultsProfileItem: SBAProfileItemBase {
 
 }
 
-/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 enum SBAProfileParticipantSourceKey: String {
     case firstName
     case lastName

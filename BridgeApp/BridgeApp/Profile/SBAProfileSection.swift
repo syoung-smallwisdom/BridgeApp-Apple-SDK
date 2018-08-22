@@ -171,7 +171,7 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
         title = try container.decodeIfPresent(String.self, forKey: .title)
         icon = try container.decodeIfPresent(String.self, forKey: .icon)
         if container.contains(.items) {
-            var items: [SBAProfileTableItem] = self.items
+            var items: [SBAProfileTableItem] = []
             var nestedContainer = try container.nestedUnkeyedContainer(forKey: .items)
             while !nestedContainer.isAtEnd {
                 let itemDecoder = try nestedContainer.superDecoder()
@@ -213,6 +213,8 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
 /// A concrete base class implementation of the `SBAProfileTableItem` protocol which implements the Decodable protocol so it can be described in JSON.
 open class SBAProfileTableItemBase: SBAProfileTableItem, Decodable {
     open var title: String
+    
+    // this weirdness allows subclasses to make detail be read-only and non-optional if need be
     private var _detail: String?
     open var detail: String? { return _detail }
     open var isEditable: Bool
