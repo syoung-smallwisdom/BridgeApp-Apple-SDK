@@ -38,7 +38,7 @@ extension Notification.Name {
     /// Notification name posted by the `SBAReportManager` when the reports have been updated.
     public static let SBAUpdatedReports = Notification.Name(rawValue: "SBAUpdatedReports")
     
-    /// Notification name posted by the `SBAReportManager` when a report will be save to the server.
+    /// Notification name posted by the `SBAReportManager` when a report will be saved to the server.
     public static let SBAWillSaveReports = Notification.Name(rawValue: "SBAWillSentReport")
 }
 
@@ -74,7 +74,6 @@ public struct SBAReport : Hashable {
 public let SBAReportSingletonDate: Date = Date(timeIntervalSinceReferenceDate: 0)
 
 /// Default data source handler for reports. This manager is used to get and store `SBBReportData` objects.
-///
 open class SBAReportManager: NSObject {
     
     /// List of keys used in the notifications sent by this manager.
@@ -177,7 +176,7 @@ open class SBAReportManager: NSObject {
     }
     private var _reloadingReports = Set<ReportQuery>()
     
-    /// Load the scheduled activities from cache using the `fetchRequests()` for this schedule manager.
+    /// Load the reports using the `reportQueries()` for this schedule manager.
     public final func loadReports() {
         DispatchQueue.main.async {
             if self.isReloading { return }
@@ -231,7 +230,7 @@ open class SBAReportManager: NSObject {
     
     // MARK: Data handling
 
-    /// Called on the main thread if updating the scheduled activities fails.
+    /// Called on the main thread if updating fails.
     open func updateFailed(_ error: Error) {
         debugPrint("WARNING: Failed to fetch cached objects: \(error)")
     }
@@ -332,8 +331,8 @@ open class SBAReportManager: NSObject {
                                         userInfo: [NotificationKey.newReports: newReports])
     }
     
-    /// Update the values on the scheduled activity. By default, this will recurse through the task path
-    /// and its children, looking for a schedule associated with the subtask path.
+    /// Build and save the report `clientData` for the completed task. This should only be called for the
+    /// top-level path.
     ///
     /// - parameter taskPath: The task path for the task which has just run.
     public func saveReports(for taskPath: RSDTaskPath) {

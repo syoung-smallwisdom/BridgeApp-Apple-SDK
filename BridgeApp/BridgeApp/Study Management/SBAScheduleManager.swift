@@ -52,7 +52,6 @@ extension Notification.Name {
 /// activities, but will *not* cache them all in memory. Instead, it will filter out those activites that are
 /// valid for today and the most recent finished activity (if any) for each activity identifier where the
 /// "activity identifier" refers to an `SBBActivity` object's associated `SBAActivityReference`.
-///
 open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrackingDelegate {
 
     /// List of keys used in the notifications sent by this manager.
