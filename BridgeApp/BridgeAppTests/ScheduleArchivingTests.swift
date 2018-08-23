@@ -154,25 +154,15 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         }
     }
     
-    func testGetClientData_CompoundTask() {
-        shouldReplacePrevious = false
+    func testBuildClientData_CompoundTask() {
 
         let taskPath = runCompoundTask()
         guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
             XCTFail("Fails assumption. Could not retrieve child task path.")
             return
         }
-        
-        // Create an associated schedule for the inserted task and the top level task
-        let schedules = self.createSchedules(identifiers: [mainTaskIdentifier, insertTaskIdentifier],
-                                             clientData: nil)
-        guard let topSchedule = schedules[mainTaskIdentifier],
-            let subtaskSchedule = schedules[insertTaskIdentifier] else {
-                XCTFail("Fails assumption. Did not create expected schedules.")
-                return
-        }
-        
-        let topClientData = self.scheduleManager.buildClientData(from: taskPath.result, for: topSchedule)?.clientData
+
+        let topClientData = self.scheduleManager.buildClientData(from: taskPath.result)
         XCTAssertNotNil(topClientData)
         if let dictionary = topClientData as? NSDictionary {
             let expectedDictionary : NSDictionary = [
@@ -189,7 +179,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             XCTFail("\(String(describing: topClientData)) is not a Dictionary.")
         }
         
-        let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath.result, for: subtaskSchedule)?.clientData
+        let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath.result)
         XCTAssertNotNil(insertedClientData)
         if let stringValue = insertedClientData as? String {
             XCTAssertEqual(stringValue, "insertStep")
@@ -197,54 +187,6 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         else {
             XCTFail("\(String(describing: insertedClientData)) is not a String.")
         }
-    }
-    
-    func testAppendClientData_ShouldReplaceIsFalse() {
-        shouldReplacePrevious = false
-        
-        let taskPath = runCompoundTask()
-        guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
-            XCTFail("Fails assumption. Could not retrieve child task path.")
-            return
-        }
-        
-        // Create an associated schedule for the inserted task and the top level task
-        let schedules = self.createSchedules(identifiers: [mainTaskIdentifier, insertTaskIdentifier],
-                                             clientData: nil)
-        guard let schedule = schedules[insertTaskIdentifier] else {
-                XCTFail("Fails assumption. Did not create expected schedules.")
-                return
-        }
-        
-        self.scheduleManager.appendClientData(from: subtaskPath.result, to: schedule)
-        XCTAssertEqual(schedule.clientData as? [String], ["insertStep"])
-        
-        self.scheduleManager.appendClientData(from: subtaskPath.result, to: schedule)
-        XCTAssertEqual(schedule.clientData as? [String], ["insertStep", "insertStep"])
-    }
-    
-    func testAppendClientData_ShouldReplaceIsTrue() {
-        shouldReplacePrevious = true
-        
-        let taskPath = runCompoundTask()
-        guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
-            XCTFail("Fails assumption. Could not retrieve child task path.")
-            return
-        }
-        
-        // Create an associated schedule for the inserted task and the top level task
-        let schedules = self.createSchedules(identifiers: [mainTaskIdentifier, insertTaskIdentifier],
-                                             clientData: nil)
-        guard let schedule = schedules[insertTaskIdentifier] else {
-            XCTFail("Fails assumption. Did not create expected schedules.")
-            return
-        }
-        
-        self.scheduleManager.appendClientData(from: subtaskPath.result, to: schedule)
-        XCTAssertEqual(schedule.clientData as? [String], ["insertStep"])
-        
-        self.scheduleManager.appendClientData(from: subtaskPath.result, to: schedule)
-        XCTAssertEqual(schedule.clientData as? [String], ["insertStep"])
     }
     
     func testUpdateSchedules() {
@@ -273,11 +215,9 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         XCTAssertNotNil(topSchedule.finishedOn)
         XCTAssertNotNil(topSchedule.startedOn)
-        XCTAssertNotNil(topSchedule.clientData)
         
         XCTAssertNotNil(subtaskSchedule.finishedOn)
         XCTAssertNotNil(subtaskSchedule.startedOn)
-        XCTAssertNotNil(subtaskSchedule.clientData)
     }
     
     
@@ -318,17 +258,11 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     }
 }
 
-var shouldReplacePrevious = false
-
 extension RSDAnswerResultObject : SBAClientDataResult {
     
     public func clientData() throws -> SBBJSONValue? {
         guard self.answerType == .string else { return nil }
         return self.value as? NSString
-    }
-    
-    public func shouldReplacePreviousClientData() -> Bool {
-        return shouldReplacePrevious
     }
     
     public func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {

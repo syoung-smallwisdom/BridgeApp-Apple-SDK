@@ -52,17 +52,11 @@ extension Notification.Name {
 /// activities, but will *not* cache them all in memory. Instead, it will filter out those activites that are
 /// valid for today and the most recent finished activity (if any) for each activity identifier where the
 /// "activity identifier" refers to an `SBBActivity` object's associated `SBAActivityReference`.
-///
-open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDelegate {
+open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrackingDelegate {
 
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
         case previousActivities, updatedActivities, updateScheduleGuids
-    }
-    
-    /// Pointer to the shared configuration to use.
-    public var configuration: SBABridgeConfiguration {
-        return SBABridgeConfiguration.shared
     }
     
     /// Pointer to the shared activity manager to use.
@@ -70,20 +64,9 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         return BridgeSDK.activityManager
     }
     
-    /// Pointer to the shared participant to use.
-    public var participant: SBBStudyParticipant? {
-        return SBAParticipantManager.shared.studyParticipant
-    }
-    
     /// Pointer to the default factory to use for serialization.
     open var factory: RSDFactory {
         return SBAFactory.shared
-    }
-    
-    /// This is an internal function that can be used in testing instead of using `Date()` directly. It can
-    /// then be overridden by a test subclass of this manager in order to return a known date.
-    func now() -> Date {
-        return Date()
     }
     
     public override init() {
@@ -214,21 +197,25 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     }
     
     /// State management for whether or not the schedules are reloading.
-    public private(set) var isReloading: Bool = false
+    override public var isReloading: Bool {
+        return super.isReloading || _isReloadingScheduledActivities
+    }
+    private var _isReloadingScheduledActivities: Bool = false
     
     /// A serial queue used to manage data crunching.
     public let offMainQueue = DispatchQueue(label: "org.sagebionetworks.BridgeApp.SBAScheduleManager")
     
     /// Reload the data by fetching changes to the scheduled activities.
-    open func reloadData() {
+    override open func reloadData() {
         loadScheduledActivities()
+        super.reloadData()
     }
     
     /// Load the scheduled activities from cache using the `fetchRequests()` for this schedule manager.
     public final func loadScheduledActivities() {
         DispatchQueue.main.async {
-            if self.isReloading { return }
-            self.isReloading = true
+            if self._isReloadingScheduledActivities { return }
+            self._isReloadingScheduledActivities = true
             
             self.offMainQueue.async {
                 do {
@@ -248,13 +235,13 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
 
                     DispatchQueue.main.async {
                         self.update(fetchedActivities: schedules)
-                        self.isReloading = false
+                        self._isReloadingScheduledActivities = false
                     }
                 }
                 catch let error {
                     DispatchQueue.main.async {
                         self.updateFailed(error)
-                        self.isReloading = false
+                        self._isReloadingScheduledActivities = false
                     }
                 }
             }
@@ -270,11 +257,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
 
     
     // MARK: Data handling
-    
-    /// Called on the main thread if updating the scheduled activities fails.
-    open func updateFailed(_ error: Error) {
-        debugPrint("WARNING: Failed to fetch cached schedules: \(error)")
-    }
     
     /// Called on the main thread once Bridge returns the requested scheduled activities.
     ///
@@ -342,12 +324,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             scheduledTime = DateFormatter.localizedString(from: schedule.scheduledOn, dateStyle: .medium, timeStyle: .none)
         }
         return Localization.localizedStringWithFormatKey("ACTIVITY_SCHEDULE_MESSAGE_%@", scheduledTime)
-    }
-    
-    /// Get the schema info associated with the given activity identifier. By default, this looks at the
-    /// shared bridge configuration's schema reference map.
-    open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
-        return self.configuration.schemaInfo(for: activityIdentifier)
     }
     
     /// Get the scheduled activity that is associated with this schedule identifier and task result.
@@ -540,7 +516,12 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     ///
     /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
     /// - returns: The client data JSON (if any) associated with this activity identifier.
-    open func clientData(with activityIdentifier: String) -> SBBJSONValue? {
+    override open func clientData(with activityIdentifier: String) -> SBBJSONValue? {
+        // Check first if the client data is on a report.
+        if let ret = super.clientData(with: activityIdentifier) {
+            return ret
+        }
+        
         // Get the clientData from the most recent finished schedule with the same activity identifier.
         var clientData: SBBJSONValue?
         var currentFinishedOn = Date.distantPast
@@ -590,6 +571,7 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
             if !taskPath.didExitEarly {
                 self.updateDataGroups(for: taskPath)
                 self.updateSchedules(for: taskPath)
+                self.saveReports(for: taskPath)
             }
             self.archiveAndUpload(taskPath: taskPath)
             completionHandler?()
@@ -661,164 +643,8 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         
         schedule.startedOn = taskResult.startDate
         schedule.finishedOn = taskResult.endDate
-        self.appendClientData(from: taskResult, to: schedule)
         
         return schedule
-    }
-    
-    /// Append the client data to the schedule.
-    ///
-    /// - parameters:
-    ///     - taskResult: The task result for the task which has just run.
-    ///     - schedule: The schedule associated with this task segment.
-    open func appendClientData(from taskResult: RSDTaskResult, to schedule: SBBScheduledActivity) {
-        guard let (clientData, shouldReplace) = self.buildClientData(from: taskResult, for: schedule) else { return }
-        if !shouldReplace, let existingClientData = schedule.clientData {
-            
-            // If there is previous client data, then append this to that object.
-            var array: [Any] = (existingClientData as? [Any]) ?? [existingClientData]
-            if let newArray = clientData as? [Any] {
-                array.append(contentsOf: newArray)
-            } else {
-                array.append(clientData)
-            }
-            schedule.clientData = array as NSArray
-        }
-        else {
-
-            // If there isn't previous client data or the previous data should be replaced, then set the
-            // client data to either an array or dictionary (the allowed top-level JSON objects).
-            schedule.clientData = {
-                if let array = clientData as? NSArray {
-                    return array
-                }
-                else if shouldReplace, let dictionary = clientData as? NSDictionary {
-                    return dictionary
-                }
-                else {
-                    return [clientData] as NSArray
-                }
-            }()
-        }
-    }
-    
-    /// Build the client data from the given task path.
-    ///
-    /// - parameters:
-    ///     - taskResult: The task result for the task which has just run.
-    ///     - schedule: The schedule associated with this task segment.
-    /// - returns: The client data built for this task path (if any).
-    open func buildClientData(from taskResult: RSDTaskResult, for schedule: SBBScheduledActivity) -> (clientData: SBBJSONValue, shouldReplacePrevious: Bool)? {
-        do {
-            let clientData = try recursiveGetClientData(from: taskResult, isTopLevel: true)
-            if clientData != nil {
-                return clientData
-            }
-            else {
-                let answerMap = self.buildSurveyAnswerMap(from: taskResult, for: schedule)
-                if answerMap.count > 0 {
-                    return (answerMap as NSDictionary, true)
-                }
-                else {
-                    return nil
-                }
-            }
-        }
-        catch let err {
-            assertionFailure("Failed to encode client data: \(err)")
-            return nil
-        }
-    }
-    
-    /// Build a simple answer map for this task result.
-    /// - note: This can be used to create client data for surveys.
-    open func buildSurveyAnswerMap(from taskResult: RSDTaskResult, for schedule: SBBScheduledActivity) -> [String : Any] {
-        var answers = [String : Any]()
-        
-        func appendValue(_ value: Any?, forKey key: String) {
-            answers[key] = (value as? SBBJSONValue) ?? (value as? RSDJSONValue)?.jsonObject()
-        }
-        
-        func appendResult(_ result: RSDResult) {
-            if let answers = (result as? RSDCollectionResult)?.answers() {
-                answers.forEach {
-                    appendValue($0.value, forKey: $0.key)
-                }
-            }
-            else if let answerResult = result as? RSDAnswerResult {
-                appendValue(answerResult.value, forKey: answerResult.identifier)
-            }
-        }
-        
-        taskResult.stepHistory.forEach { appendResult($0) }
-        taskResult.asyncResults?.forEach { appendResult($0) }
-        
-        return answers
-    }
-    
-    private func recursiveGetClientData(from taskResult: RSDTaskResult, isTopLevel: Bool) throws  -> (SBBJSONValue, Bool)? {
-        // Verify that this task result is not associated with a different schema.
-        guard isTopLevel || (taskResult.schemaInfo ?? self.schemaInfo(for: taskResult.identifier) == nil)
-            else {
-                return nil
-        }
-        
-        var dataResults: [SBBJSONValue] = []
-        var shouldReplacePrevious = false
-        if let (data, shouldReplace) = try recursiveGetClientData(from: taskResult.stepHistory) {
-            dataResults.append(data)
-            shouldReplacePrevious = shouldReplace || shouldReplacePrevious
-        }
-        if let asyncResults = taskResult.asyncResults,
-            let (data, shouldReplace) = try recursiveGetClientData(from: asyncResults) {
-            dataResults.append(data)
-            shouldReplacePrevious = shouldReplace || shouldReplacePrevious
-
-        }
-        
-        if let clientData = dataResults.count <= 1 ? dataResults.first : (dataResults as NSArray) {
-            return (clientData, shouldReplacePrevious)
-        }
-        else {
-            return nil
-        }
-    }
-    
-    private func recursiveGetClientData(from results: [RSDResult]) throws -> (SBBJSONValue, Bool)? {
-        
-        func getClientData(_ result: RSDResult) throws -> (SBBJSONValue, Bool)? {
-            if let clientResult = result as? SBAClientDataResult,
-                let clientData = try clientResult.clientData() {
-                return (clientData, clientResult.shouldReplacePreviousClientData())
-            }
-            else if let taskResult = result as? RSDTaskResult {
-                return try self.recursiveGetClientData(from: taskResult, isTopLevel: false)
-            }
-            else if let collectionResult = result as? RSDCollectionResult {
-                return try self.recursiveGetClientData(from: collectionResult.inputResults)
-            }
-            else {
-                return nil
-            }
-        }
-        
-        var shouldReplacePrevious: Bool = false
-        let dictionary = try results.rsd_filteredDictionary { (result) throws -> (String, SBBJSONValue)? in
-            guard let (data, shouldReplace) = try getClientData(result) else { return nil }
-            shouldReplacePrevious = shouldReplace || shouldReplacePrevious
-            return (result.identifier, data)
-        }
-        
-        // Return the "most appropriate" value for the combined results.
-        if dictionary.count == 0 {
-            return nil
-        }
-        else if dictionary.sba_uniqueCount() == 1 || shouldReplacePrevious {
-            return (dictionary.first!.value, shouldReplacePrevious)
-        }
-        else {
-            return (dictionary as NSDictionary, false)
-        }
     }
     
     /// Send message to Bridge server to update the given schedules. This includes both the task
@@ -830,7 +656,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
     ///     - taskPath: The task path (if available) for the task run that triggered this update.
     open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
         
-        // Copy the schedule objects to ensure that these changes
         let guids = schedules.map { $0.guid }
         
         // Post notification that the schedules were updated.
@@ -892,7 +717,6 @@ open class SBAScheduleManager: NSObject, RSDDataArchiveManager, RSDTrackingDeleg
         guard (currentArchive == nil) || (schema != nil) else {
             return currentArchive
         }
-        
         
         let schemaInfo = schema ?? RSDSchemaInfoObject(identifier: taskResult.identifier, revision: 1)
         let archiveIdentifier = schemaInfo.schemaIdentifier ?? taskResult.identifier

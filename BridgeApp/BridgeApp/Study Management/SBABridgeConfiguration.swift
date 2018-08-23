@@ -60,6 +60,9 @@ open class SBABridgeConfiguration {
     /// A mapping of task identifier to schema identifier.
     fileprivate var taskToSchemaIdentifierMap : [String : String] = [:]
     
+    /// A mapping of report identifier to report category.
+    fileprivate var reportMap : [String : SBAReportCategory] = [:]
+    
     /// The duration of the study. Default = 1 year.
     open var studyDuration : DateComponents = {
         var studyDuration = DateComponents()
@@ -146,6 +149,9 @@ open class SBABridgeConfiguration {
                 mappingObject.taskToSchemaIdentifierMap?.forEach {
                     self.addMapping(from: $0.key, to: $0.value)
                 }
+                mappingObject.reportMappings?.forEach {
+                    self.addMapping(with: $0.key, to: $0.value)
+                }
             } catch let err {
                 debugPrint("Failed to decode the clientData object: \(err)")
                 // Attempt refreshing the app config in case the cached version is out-of-date.
@@ -189,6 +195,11 @@ open class SBABridgeConfiguration {
             self.addMapping(with: activityInfo)
         }
         self.taskMap[task.identifier] = task
+    }
+    
+    /// Update the mapping of a report identifier to a given category.
+    open func addMapping(with reportIdentifier: String, to category: SBAReportCategory) {
+        self.reportMap[reportIdentifier] = category
     }
     
     /// Update the mapping from the activity identifier to the matching schema identifier.
@@ -284,6 +295,18 @@ open class SBABridgeConfiguration {
         }
     }
     
+    /// Return a task step appropriate for the given activity identifier.
+    open func taskStep(for activityIdentifier: String) -> RSDTaskInfoStep? {
+        if let surveyReference = self.surveyReferenceMap[activityIdentifier] {
+            return surveyReference as RSDTaskInfoStep
+        }
+        else if let transformer = self.instantiateTaskTransformer(for: activityIdentifier) {
+            let taskInfo: RSDTaskInfo = self.activityInfo(for: activityIdentifier) ?? RSDTaskInfoObject(with: activityIdentifier)
+            return RSDTaskInfoStepObject(with: taskInfo, taskTransformer: transformer)
+        }
+        return nil
+    }
+    
     /// Listing of all the installed activity groups.
     open var installedGroups: [SBAActivityGroup] {
         return self.activityGroupMap.values.map { $0 }
@@ -304,6 +327,11 @@ open class SBABridgeConfiguration {
     open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
         let schemaIdentifier = self.taskToSchemaIdentifierMap[activityIdentifier] ?? activityIdentifier
         return self.schemaReferenceMap[schemaIdentifier]
+    }
+    
+    /// Get the report category for a given report identifier.
+    open func reportCategory(for reportIdentifier: String) -> SBAReportCategory? {
+        return self.reportMap[reportIdentifier]
     }
 }
 
@@ -378,6 +406,7 @@ struct SBAActivityMappingObject : Decodable {
     let activityList : [SBAActivityInfoObject]?
     let tasks : [RSDTaskObject]?
     let taskToSchemaIdentifierMap : [String : String]?
+    let reportMappings : [String : SBAReportCategory]?
 }
 
 /// `SBAActivityGroupObject` is a `Decodable` implementation of a `SBAActivityGroup`.

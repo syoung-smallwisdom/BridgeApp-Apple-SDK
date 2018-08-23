@@ -175,11 +175,6 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
         return try self.rsd_jsonEncodedDictionary() as NSDictionary
     }
     
-    /// Returns `false` to save the results of previous runs.
-    public func shouldReplacePreviousClientData() -> Bool {
-        return false
-    }
-    
     /// Update the selection from the client data.
     mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
         guard let dictionary = (clientData as? NSDictionary) ?? (clientData as? [NSDictionary])?.last

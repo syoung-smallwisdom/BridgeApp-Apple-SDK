@@ -39,6 +39,7 @@
 		F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1AB02036410C00FEA16D /* SBABridgeConfiguration.swift */; };
 		F83906FB20325D13005FC0BA /* BridgeInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = F83906FA20325D13005FC0BA /* BridgeInfo.plist */; };
 		F83906FE20325E70005FC0BA /* sample-study.pem in Resources */ = {isa = PBXBuildFile; fileRef = F83906FD20325E70005FC0BA /* sample-study.pem */; };
+		F8398C9A212C868A005DE6E0 /* SBAReportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8398C99212C868A005DE6E0 /* SBAReportManager.swift */; };
 		F83B44AF2032467D002825AE /* BridgeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44A52032467D002825AE /* BridgeApp.framework */; };
 		F83B44B62032467D002825AE /* BridgeApp.h in Headers */ = {isa = PBXBuildFile; fileRef = F83B44A82032467D002825AE /* BridgeApp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F83B44FB203247A7002825AE /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44D42032473D002825AE /* BridgeSDK.framework */; };
@@ -307,6 +308,7 @@
 		F82B1AB02036410C00FEA16D /* SBABridgeConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBABridgeConfiguration.swift; sourceTree = "<group>"; };
 		F83906FA20325D13005FC0BA /* BridgeInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BridgeInfo.plist; sourceTree = "<group>"; };
 		F83906FD20325E70005FC0BA /* sample-study.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "sample-study.pem"; sourceTree = "<group>"; };
+		F8398C99212C868A005DE6E0 /* SBAReportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAReportManager.swift; sourceTree = "<group>"; };
 		F83B44A52032467D002825AE /* BridgeApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BridgeApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F83B44A82032467D002825AE /* BridgeApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeApp.h; sourceTree = "<group>"; };
 		F83B44A92032467D002825AE /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
@@ -706,6 +708,7 @@
 				F8A5CE6E20A36B0700E9FD75 /* SBAScheduleManager.swift */,
 				F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */,
 				F8BF02EF20B71F580016C343 /* SBAScheduledActivityArchive.swift */,
+				F8398C99212C868A005DE6E0 /* SBAReportManager.swift */,
 			);
 			path = "Study Management";
 			sourceTree = "<group>";
@@ -1028,6 +1031,7 @@
 				CB267A9D20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */,
 				F8C7D3F6209285A8007490BC /* SBASymptomLoggingStepObject.swift in Sources */,
 				F8479521207FEA9D0024A230 /* SBATrackedItemsLoggingStepObject.swift in Sources */,
+				F8398C9A212C868A005DE6E0 /* SBAReportManager.swift in Sources */,
 				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,
 				F8A5CE9020A3837100E9FD75 /* SBAParticipantManager.swift in Sources */,
 				F8479527207FEA9D0024A230 /* SBATrackingDataSource.swift in Sources */,
