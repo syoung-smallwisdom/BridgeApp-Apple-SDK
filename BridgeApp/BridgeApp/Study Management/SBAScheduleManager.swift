@@ -570,8 +570,8 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
         self.offMainQueue.async {
             if !taskPath.didExitEarly {
                 self.updateDataGroups(for: taskPath)
-                self.updateSchedules(for: taskPath)
                 self.saveReports(for: taskPath)
+                self.updateSchedules(for: taskPath)
             }
             self.archiveAndUpload(taskPath: taskPath)
             completionHandler?()
