@@ -323,7 +323,7 @@ open class SBAReportManager: NSObject {
             newReports.count == 1 {
             self.reports.remove(previous)
         }
-        self.reports.formUnion(newReports)        
+        self.reports.formUnion(newReports)
     }
     
     /// Post notification that the reports were updated.
