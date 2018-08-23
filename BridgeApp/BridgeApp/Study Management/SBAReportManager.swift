@@ -317,8 +317,10 @@ open class SBAReportManager: NSObject {
     }
     
     func unionReports(_ newReports: [SBAReport], query: ReportQuery) {
+        guard newReports.count > 0 else { return }
         if query.queryType == .mostRecent,
-            let previous = self.reports.first(where: { $0.identifier == query.identifier }) {
+            let previous = self.reports.first(where: { $0.identifier == query.identifier }),
+            newReports.count == 1 {
             self.reports.remove(previous)
         }
         self.reports.formUnion(newReports)
