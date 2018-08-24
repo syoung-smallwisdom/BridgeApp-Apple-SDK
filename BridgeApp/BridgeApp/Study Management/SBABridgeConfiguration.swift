@@ -34,6 +34,20 @@
 import Foundation
 import BridgeSDK
 
+// https://stackoverflow.com/a/48173579
+struct DecodingHelper: Decodable {
+    private let decoder: Decoder
+    
+    init(from decoder: Decoder) throws {
+        self.decoder = decoder
+    }
+    
+    func decode(to type: Decodable.Type) throws -> Decodable {
+        let decodable = try type.init(from: decoder)
+        return decodable
+    }
+}
+
 /// `SBABridgeConfiguration` is used as a wrapper for combining task group and task info objects that are
 /// singletons with the `SBBActivity` objects that contain a subset of the information used to implement
 /// the `RSDTaskInfo` protocol.
@@ -69,6 +83,61 @@ open class SBABridgeConfiguration {
         studyDuration.year = 1
         return studyDuration
     }()
+    
+    public var profileManager: SBAProfileManager = SBAProfileManagerObject()
+    public var profileDataSource: SBAProfileDataSource = SBAProfileDataSourceObject()
+    
+    private func decodeProfileManager(from profileData: [String: SBBJSONValue], with decoder: JSONDecoder) {
+        if let profileManagerData = profileData["manager"] as? [String : SBBJSONValue],
+            let typeName = profileManagerData["type"] as? String {
+            guard let type: Decodable.Type = self.profileManagerClass(from: SBAProfileManagerType(rawValue: typeName))
+                else {
+                    return
+            }
+            do {
+                let decodingHelper = try decoder.decode(DecodingHelper.self, from: profileManagerData as SBBJSONValue)
+                self.profileManager = try decodingHelper.decode(to: type) as! SBAProfileManager
+            } catch let err {
+                debugPrint("Failed to decode the Profile Data Source object: \(err)")
+            }
+        }
+    }
+    
+    open func profileManagerClass(from type: SBAProfileManagerType) -> Decodable.Type? {
+        switch type {
+        case .profileManager:
+            return SBAProfileManagerObject.self
+        default:
+            assertionFailure("Attempt to decode a ProfileManager with unknown type \(type.rawValue)")
+            return nil
+        }
+    }
+    
+    private func decodeProfileDataSource(from profileData: [String: SBBJSONValue], with decoder: JSONDecoder) {
+        if let profileDataSourceData = profileData["dataSource"] as? [String : SBBJSONValue],
+            let typeName = profileDataSourceData["type"] as? String {
+            guard let type: Decodable.Type = self.profileDataSourceClass(from: SBAProfileDataSourceType(rawValue: typeName))
+                else {
+                    return
+            }
+            do {
+                let decodingHelper = try decoder.decode(DecodingHelper.self, from: profileDataSourceData as SBBJSONValue)
+                self.profileDataSource = try decodingHelper.decode(to: type) as! SBAProfileDataSource
+            } catch let err {
+                debugPrint("Failed to decode the Profile Data Source object: \(err)")
+            }
+        }
+    }
+
+    open func profileDataSourceClass(from type: SBAProfileDataSourceType) -> Decodable.Type? {
+        switch type {
+        case .profileDataSource:
+            return SBAProfileDataSourceObject.self
+        default:
+            assertionFailure("Attempt to decode a ProfileDataSource with unknown type \(type.rawValue)")
+            return nil
+        }
+    }
     
     public init() {
     }
@@ -151,6 +220,12 @@ open class SBABridgeConfiguration {
                 }
                 mappingObject.reportMappings?.forEach {
                     self.addMapping(with: $0.key, to: $0.value)
+                }
+                
+                if let clientDict = clientData as? [String: SBBJSONValue],
+                    let profileData = clientDict["profile"] as? [String: SBBJSONValue] {
+                        self.decodeProfileManager(from: profileData, with: decoder)
+                        self.decodeProfileDataSource(from: profileData, with: decoder)
                 }
             } catch let err {
                 debugPrint("Failed to decode the clientData object: \(err)")
