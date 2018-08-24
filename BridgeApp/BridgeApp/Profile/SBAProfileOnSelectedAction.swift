@@ -1,5 +1,5 @@
 //
-//  SBAProfileItem.m
+//  SBAProfileOnSelectedAction.swift
 //  BridgeApp
 //
 //  Copyright © 2017-2018 Sage Bionetworks. All rights reserved.
@@ -31,19 +31,44 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#import "SBAProfileItem.h"
+public struct SBAProfileOnSelectedAction : RawRepresentable, Codable {
+    public typealias RawValue = String
+    
+    public private(set) var rawValue: String
+    
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+    
+    public static let noAction: SBAProfileOnSelectedAction = "noAction"
+    public static let showHTML: SBAProfileOnSelectedAction = "showHTML"
+    public static let showResource: SBAProfileOnSelectedAction = "showResource"
+    public static let editProfileItem: SBAProfileOnSelectedAction = "editProfileItem"
+    public static let showWithdrawal: SBAProfileOnSelectedAction = "showWithdrawal"
+}
 
-SBAProfileTypeIdentifier const SBAProfileTypeIdentifierString = @"String";
-SBAProfileTypeIdentifier const SBAProfileTypeIdentifierNumber = @"Number";
-SBAProfileTypeIdentifier const SBAProfileTypeIdentifierBool = @"Bool";
-SBAProfileTypeIdentifier const SBAProfileTypeIdentifierDate = @"Date";
-SBAProfileTypeIdentifier const SBAProfileTypeIdentifierHKBiologicalSex = @"HKBiologicalSex";
-SBAProfileTypeIdentifier const SBAProfileTypeIdentifierHKQuantity = @"HKQuantity";
-SBAProfileTypeIdentifier const SBAProfileTypeIdentifierArray = @"Array";
-SBAProfileTypeIdentifier const SBAProfileTypeIdentifierSet = @"Set";
-SBAProfileTypeIdentifier const SBAProfileTypeIdentifierDictionary = @"Dictionary";
+extension SBAProfileOnSelectedAction : Equatable {
+    public static func ==(lhs: SBAProfileOnSelectedAction, rhs: SBAProfileOnSelectedAction) -> Bool {
+        return lhs.rawValue == rhs.rawValue
+    }
+    public static func ==(lhs: String, rhs: SBAProfileOnSelectedAction) -> Bool {
+        return lhs == rhs.rawValue
+    }
+    public static func ==(lhs: SBAProfileOnSelectedAction, rhs: String) -> Bool {
+        return lhs.rawValue == rhs
+    }
+}
 
-SBAProfileSourceKey const SBAProfileSourceKeyGivenName = @"firstName";
-SBAProfileSourceKey const SBAProfileSourceKeyFamilyName = @"lastName";
-SBAProfileSourceKey const SBAProfileSourceKeyFullName = @"fullName";
-SBAProfileSourceKey const SBAProfileSourceKeyPreferredName = @"preferredName";
+extension SBAProfileOnSelectedAction : Hashable {
+    public var hashValue : Int {
+        return self.rawValue.hashValue
+    }
+}
+
+extension SBAProfileOnSelectedAction : ExpressibleByStringLiteral {
+    public typealias StringLiteralType = String
+    
+    public init(stringLiteral value: String) {
+        self.init(rawValue: value)
+    }
+}

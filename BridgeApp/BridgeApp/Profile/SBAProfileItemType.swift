@@ -44,20 +44,14 @@ public struct SBAProfileItemType : RawRepresentable, Codable {
         self.rawValue = rawValue
     }
     
-    /// Defaults to creating a `SBAKeychainProfileItem`.
-    public static let keychain: SBAProfileItemType = "keychain"
-    
-    /// Defaults to creating a `SBAUserDefaultsProfileItem`.
-    public static let userDefaults: SBAProfileItemType = "userDefaults"
-    
     /// Defaults to creating a `SBAStudyParticipantProfileItem`.
     public static let participant: SBAProfileItemType = "participant"
     
     /// Defaults to creating a `SBAStudyParticipantCustomAttributesProfileItem`.
     public static let participantCustomAttributes: SBAProfileItemType = "participantCustomAttributes"
     
-    /// Defaults to creating a `SBAClientDataProfileItem`.
-    public static let clientData: SBAProfileItemType = "clientData"
+    /// Defaults to creating a `SBAReportProfileItem`.
+    public static let report: SBAProfileItemType = "report"
     
     /// Defaults to creating a `SBAFullNameProfileItem`.
     public static let fullName: SBAProfileItemType = "fullName"
@@ -67,7 +61,7 @@ public struct SBAProfileItemType : RawRepresentable, Codable {
     
     /// List of all the standard types.
     public static func allStandardTypes() -> [SBAProfileItemType] {
-        return [.keychain, .userDefaults, .participant, .participantCustomAttributes, .fullName, .birthDate]
+        return [.participant, .participantCustomAttributes, .report, .fullName, .birthDate]
     }
 }
 

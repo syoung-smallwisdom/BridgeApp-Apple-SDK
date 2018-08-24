@@ -47,6 +47,3 @@ FOUNDATION_EXPORT const unsigned char BridgeAppVersionString[];
 #else
 #  define ENUM_EXTERN extern __attribute__((visibility("default")))
 #endif
-
-#import <BridgeApp/SBAProfileItem.h>
-#import <BridgeApp/SBAProfileSection.h>

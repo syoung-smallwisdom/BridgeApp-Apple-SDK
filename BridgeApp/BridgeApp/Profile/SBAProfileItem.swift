@@ -97,13 +97,15 @@ extension SBAProfileItem {
             
         case SBAProfileTypeIdentifier.date:
             return (val as? NSDate)?.iso8601String() as NSString?
-            
+       
+/* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
         case SBAProfileTypeIdentifier.hkBiologicalSex:
             return (val as? HKBiologicalSex)?.rawValue as NSNumber?
             
         case SBAProfileTypeIdentifier.hkQuantity:
             guard let quantity = val as? HKQuantity else { return nil }
             return NSNumber(value: quantity.doubleValue(for: self.unit ?? commonDefaultUnit()))
+ */
             
         case SBAProfileTypeIdentifier.dictionary, SBAProfileTypeIdentifier.array:
             return (val as? RSDJSONValue)?.jsonObject() as? SBBJSONValue
@@ -151,6 +153,7 @@ extension SBAProfileItem {
                 else { return nil }
             itemValue = dateVal
             
+/* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
         case SBAProfileTypeIdentifier.hkBiologicalSex:
             guard let val = value! as? Int else { return nil }
             itemValue = HKBiologicalSex(rawValue: val)
@@ -158,6 +161,7 @@ extension SBAProfileItem {
         case SBAProfileTypeIdentifier.hkQuantity:
             guard let val = value! as? NSNumber else { return nil }
             itemValue = HKQuantity(unit: self.unit ?? commonDefaultUnit(), doubleValue: val.doubleValue)
+ */
             
         case SBAProfileTypeIdentifier.dictionary:
             guard let dictionary = value! as? [AnyHashable : Any] else { return nil }
@@ -212,9 +216,11 @@ extension SBAProfileItem {
     
     func commonDemographicJsonValue() -> SBBJSONValue? {
         guard let jsonVal = self.commonJsonValueGetter() else { return nil }
+/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
         if self.itemType == .hkBiologicalSex {
             return (self.value as? HKBiologicalSex)?.demographicDataValue
         }
+ */
         
         return jsonVal
     }
@@ -241,12 +247,14 @@ extension SBAProfileItem {
         case SBAProfileTypeIdentifier.date:
             return newValue as? NSDate != nil
             
-        case SBAProfileTypeIdentifier.hkBiologicalSex:
+/* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
+       case SBAProfileTypeIdentifier.hkBiologicalSex:
             return newValue as? HKBiologicalSex != nil
             
         case SBAProfileTypeIdentifier.hkQuantity:
             guard let quantity = newValue as? HKQuantity else { return false }
             return quantity.is(compatibleWith: self.unit ?? commonDefaultUnit())
+ */
             
         case SBAProfileTypeIdentifier.dictionary:
             return newValue as? RSDJSONValue != nil
@@ -377,92 +385,6 @@ open class SBAProfileItemBase: SBAProfileItem, Decodable {
     }
 }
 
-/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
-extension SBAKeychainWrapper: SBAKeychainWrapperProtocol {
-}
-
-open class SBAKeychainProfileItem: SBAProfileItemBase {
-    
-    private enum CodingKeys: String, CodingKey {
-        case keychainService, keychainAccessGroup
-    }
-
-    var keychain: SBAKeychainWrapperProtocol
-    
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        // Look to see if this item uses a different keychain service or access group
-        // than the default and instantiate if it does.
-        let keychainService = try container.decodeIfPresent(String.self, forKey: .keychainService)
-        let keychainAccessGroup = try container.decodeIfPresent(String.self, forKey: .keychainAccessGroup)
-        
-        if (keychainService != nil || keychainAccessGroup != nil) {
-            keychain = SBAKeychainWrapper(service: keychainService, accessGroup: keychainAccessGroup)
-        }
-        else {
-            // Otherwise, use the default
-            keychain = SBAProfileManager.keychain
-        }
-        
-        try super.init(from: decoder)
-    }
-
-    override open func storedValue(forKey key: String) -> Any? {
-        var err: NSError?
-        let obj = keychain.object(forKey: key, error: &err)
-        if let error = err {
-            print("Error accessing keychain \(key): \(error.code) \(error)")
-        }
-        return self.typedValue(from: obj)
-    }
-    
-    override open func setStoredValue(_ newValue: Any?) {
-        do {
-            if newValue == nil {
-                try keychain.removeObject(forKey: sourceKey)
-            } else {
-                if !self.commonCheckTypeCompatible(newValue: newValue) {
-                    assertionFailure("Error setting \(sourceKey) (\(profileKey)): \(String(describing: newValue)) not compatible with specified type \(itemType.rawValue)")
-                    return
-                }
-                guard let secureVal = secureCodingValue(of: newValue) else {
-                    assertionFailure("Error setting \(sourceKey) (\(profileKey)) in keychain: don't know how to convert \(String(describing: newValue))) to NSSecureCoding")
-                    return
-                }
-                try keychain.setObject(secureVal, forKey: sourceKey)
-            }
-        }
-        catch let error {
-            assert(false, "Failed to set \(sourceKey) (\(profileKey)): \(String(describing: error))")
-        }
-    }
-    
-    open func secureCodingValue(of anyValue: Any?) -> NSSecureCoding? {
-        guard anyValue != nil else { return nil }
-        var retVal = anyValue as? NSSecureCoding
-        if self.itemType == .hkBiologicalSex {
-            // HKBiologicalSexObject exists and is NSSecureCoding, but iOS doesn't give
-            // us any way to create one and set its value so we're stuck using NSNumber
-            guard let sex = anyValue as? HKBiologicalSex else { return retVal }
-            retVal = sex.rawValue as NSNumber
-        }
-        
-        return retVal
-    }
-    
-    open func typedValue(from secureCodingValue: NSSecureCoding?) -> Any? {
-        var retVal: Any? = secureCodingValue
-        if self.itemType == .hkBiologicalSex {
-            guard let intVal = secureCodingValue as? Int else { return nil }
-            retVal = HKBiologicalSex(rawValue: intVal)
-        }
-        
-        return retVal
-    }
-}
- */
-
 public protocol PlistValue {
     // empty, just used to mark types as suitable for use in plists (and user defaults)
 }
@@ -499,70 +421,6 @@ extension Data: PlistValue {}
 extension Date: PlistValue {}
 
 /* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
-open class SBAUserDefaultsProfileItem: SBAProfileItemBase {
-    private enum CodingKeys: String, CodingKey {
-        case userDefaultsSuiteName
-    }
-    
-    var defaults: UserDefaults
-    
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        let userDefaultsSuiteName = try container.decodeIfPresent(String.self, forKey: .userDefaultsSuiteName)
-        
-        if let customDefaults = UserDefaults(suiteName: userDefaultsSuiteName) {
-            defaults = customDefaults
-        }
-        else {
-            defaults = SBAProfileManager.userDefaults
-        }
-        
-        try super.init(from: decoder)
-    }
-    
-    override open func storedValue(forKey key: String) -> Any? {
-        return typedValue(from: defaults.object(forKey: key) as? PlistValue)
-    }
-    
-    override open func setStoredValue(_ newValue: Any?) {
-        if newValue == nil {
-            defaults.removeObject(forKey: sourceKey)
-        } else {
-            if !self.commonCheckTypeCompatible(newValue: newValue) {
-                assertionFailure("Error setting \(sourceKey) (\(profileKey)): \(String(describing: newValue)) not compatible with specified type\(itemType.rawValue)")
-                return
-            }
-            guard let plistVal = pListValue(of: newValue) else {
-                assertionFailure("Error setting \(sourceKey) (\(profileKey)) in user defaults: don't know how to convert \(String(describing: newValue)) to PlistValue")
-                return
-            }
-            defaults.set(plistVal, forKey: sourceKey)
-        }
-    }
-    
-    open func pListValue(of anyValue: Any?) -> PlistValue? {
-        guard anyValue != nil else { return nil }
-        var retVal = anyValue! as? PlistValue
-        if self.itemType == .hkBiologicalSex {
-            retVal = (anyValue as? HKBiologicalSex)?.rawValue
-        }
-        
-        return retVal
-    }
-    
-    open func typedValue(from pListValue: PlistValue?) -> Any? {
-        var retVal: Any? = pListValue
-        if self.itemType == .hkBiologicalSex {
-            guard let intVal = pListValue as? Int else { return nil }
-            retVal = HKBiologicalSex(rawValue: intVal)
-        }
-        
-        return retVal
-    }
-
-}
-
 enum SBAProfileParticipantSourceKey: String {
     case firstName
     case lastName

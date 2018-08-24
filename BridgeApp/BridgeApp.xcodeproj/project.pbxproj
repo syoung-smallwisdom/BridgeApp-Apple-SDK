@@ -8,13 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		0356943A20EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */; };
-		60D9611B20BF161300B5CFEB /* SBAProfileSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 60D9611320BF161200B5CFEB /* SBAProfileSection.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		60D9611C20BF161300B5CFEB /* SBAProfileItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 60D9611420BF161200B5CFEB /* SBAProfileItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6090544821308CF7002D1895 /* SBAProfileOnSelectedAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090544621308CF7002D1895 /* SBAProfileOnSelectedAction.swift */; };
+		6090544921308CF7002D1895 /* SBAProfileTypeIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090544721308CF7002D1895 /* SBAProfileTypeIdentifier.swift */; };
 		60D9611D20BF161300B5CFEB /* SBAProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611520BF161200B5CFEB /* SBAProfileSection.swift */; };
 		60D9611E20BF161300B5CFEB /* SBAProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611620BF161200B5CFEB /* SBAProfileItem.swift */; };
 		60D9611F20BF161300B5CFEB /* SBAProfileDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */; };
-		60D9612020BF161300B5CFEB /* SBAProfileItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611820BF161200B5CFEB /* SBAProfileItem.m */; };
-		60D9612120BF161300B5CFEB /* SBAProfileSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611920BF161200B5CFEB /* SBAProfileSection.m */; };
 		60D9612220BF161300B5CFEB /* SBAProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611A20BF161200B5CFEB /* SBAProfileManager.swift */; };
 		60E84E5C20D306A9000DDCB1 /* SBAProfileItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E84E5B20D306A9000DDCB1 /* SBAProfileItemType.swift */; };
 		60E86E21212B30780073C69C /* SBAResourceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E86E0C212B30780073C69C /* SBAResourceFinder.swift */; };
@@ -279,13 +277,11 @@
 
 /* Begin PBXFileReference section */
 		0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATrackedItemRemindersStepViewController.swift; sourceTree = "<group>"; };
-		60D9611320BF161200B5CFEB /* SBAProfileSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBAProfileSection.h; sourceTree = "<group>"; };
-		60D9611420BF161200B5CFEB /* SBAProfileItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBAProfileItem.h; sourceTree = "<group>"; };
+		6090544621308CF7002D1895 /* SBAProfileOnSelectedAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileOnSelectedAction.swift; sourceTree = "<group>"; };
+		6090544721308CF7002D1895 /* SBAProfileTypeIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileTypeIdentifier.swift; sourceTree = "<group>"; };
 		60D9611520BF161200B5CFEB /* SBAProfileSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileSection.swift; sourceTree = "<group>"; };
 		60D9611620BF161200B5CFEB /* SBAProfileItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileItem.swift; sourceTree = "<group>"; };
 		60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileDataSource.swift; sourceTree = "<group>"; };
-		60D9611820BF161200B5CFEB /* SBAProfileItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBAProfileItem.m; sourceTree = "<group>"; };
-		60D9611920BF161200B5CFEB /* SBAProfileSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBAProfileSection.m; sourceTree = "<group>"; };
 		60D9611A20BF161200B5CFEB /* SBAProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileManager.swift; sourceTree = "<group>"; };
 		60E84E5B20D306A9000DDCB1 /* SBAProfileItemType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAProfileItemType.swift; sourceTree = "<group>"; };
 		60E86E0C212B30780073C69C /* SBAResourceFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAResourceFinder.swift; sourceTree = "<group>"; };
@@ -429,14 +425,12 @@
 		60D9611220BF161200B5CFEB /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				60D9611320BF161200B5CFEB /* SBAProfileSection.h */,
-				60D9611420BF161200B5CFEB /* SBAProfileItem.h */,
+				6090544621308CF7002D1895 /* SBAProfileOnSelectedAction.swift */,
+				6090544721308CF7002D1895 /* SBAProfileTypeIdentifier.swift */,
 				60D9611520BF161200B5CFEB /* SBAProfileSection.swift */,
 				60E84E5B20D306A9000DDCB1 /* SBAProfileItemType.swift */,
 				60D9611620BF161200B5CFEB /* SBAProfileItem.swift */,
 				60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */,
-				60D9611820BF161200B5CFEB /* SBAProfileItem.m */,
-				60D9611920BF161200B5CFEB /* SBAProfileSection.m */,
 				60D9611A20BF161200B5CFEB /* SBAProfileManager.swift */,
 			);
 			path = Profile;
@@ -777,8 +771,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F83B44B62032467D002825AE /* BridgeApp.h in Headers */,
-				60D9611C20BF161300B5CFEB /* SBAProfileItem.h in Headers */,
-				60D9611B20BF161300B5CFEB /* SBAProfileSection.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1090,9 +1082,8 @@
 				F886FD2D2035244F00EF2248 /* NSPredicate+Utilities.swift in Sources */,
 				0356943A20EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift in Sources */,
 				CB185396210650670076EFBB /* SBARemoveTrackedItemStepObject.swift in Sources */,
-				60D9612020BF161300B5CFEB /* SBAProfileItem.m in Sources */,
-				60D9612120BF161300B5CFEB /* SBAProfileSection.m in Sources */,
 				F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */,
+				6090544921308CF7002D1895 /* SBAProfileTypeIdentifier.swift in Sources */,
 				60D9611E20BF161300B5CFEB /* SBAProfileItem.swift in Sources */,
 				F8479525207FEA9D0024A230 /* SBATrackedSelectionDataSource.swift in Sources */,
 				F89B3DEC20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift in Sources */,
@@ -1119,6 +1110,7 @@
 				F8E4A4FB20A4D9F00046577B /* JSONDecoder+Utilities.swift in Sources */,
 				F899D0E520D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift in Sources */,
 				F886FD1320351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift in Sources */,
+				6090544821308CF7002D1895 /* SBAProfileOnSelectedAction.swift in Sources */,
 				F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */,
 				F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */,
 				F847951F207FEA9D0024A230 /* SBAMedicationTrackingStepNavigator.swift in Sources */,

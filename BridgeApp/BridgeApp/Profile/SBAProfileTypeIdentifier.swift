@@ -1,5 +1,5 @@
 //
-//  SBAProfileSection.m
+//  SBAProfileTypeIdentifier.swift
 //  BridgeApp
 //
 //  Copyright © 2017-2018 Sage Bionetworks. All rights reserved.
@@ -31,10 +31,46 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#import "SBAProfileSection.h"
+public struct SBAProfileTypeIdentifier : RawRepresentable, Codable {
+    public typealias RawValue = String
+    
+    public private(set) var rawValue: String
+    
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+    
+    public static let string: SBAProfileTypeIdentifier = "string"
+    public static let number: SBAProfileTypeIdentifier = "number"
+    public static let bool: SBAProfileTypeIdentifier = "bool"
+    public static let date: SBAProfileTypeIdentifier = "date"
+    public static let array: SBAProfileTypeIdentifier = "array"
+    public static let set: SBAProfileTypeIdentifier = "set"
+    public static let dictionary: SBAProfileTypeIdentifier = "dictionary"
+}
 
-SBAProfileOnSelectedAction const SBAProfileOnSelectedActionNoAction = @"noAction";
-SBAProfileOnSelectedAction const SBAProfileOnSelectedActionShowHTML = @"showHTML";
-SBAProfileOnSelectedAction const SBAProfileOnSelectedActionShowResource = @"showResource";
-SBAProfileOnSelectedAction const SBAProfileOnSelectedActionEditProfileItem = @"editProfileItem";
-SBAProfileOnSelectedAction const SBAProfileOnSelectedActionShowWithdrawal = @"showWithdrawal";
+extension SBAProfileTypeIdentifier : Equatable {
+    public static func ==(lhs: SBAProfileTypeIdentifier, rhs: SBAProfileTypeIdentifier) -> Bool {
+        return lhs.rawValue == rhs.rawValue
+    }
+    public static func ==(lhs: String, rhs: SBAProfileTypeIdentifier) -> Bool {
+        return lhs == rhs.rawValue
+    }
+    public static func ==(lhs: SBAProfileTypeIdentifier, rhs: String) -> Bool {
+        return lhs.rawValue == rhs
+    }
+}
+
+extension SBAProfileTypeIdentifier : Hashable {
+    public var hashValue : Int {
+        return self.rawValue.hashValue
+    }
+}
+
+extension SBAProfileTypeIdentifier : ExpressibleByStringLiteral {
+    public typealias StringLiteralType = String
+    
+    public init(stringLiteral value: String) {
+        self.init(rawValue: value)
+    }
+}
