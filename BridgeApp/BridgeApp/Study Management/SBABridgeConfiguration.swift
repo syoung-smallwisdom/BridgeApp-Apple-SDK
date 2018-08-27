@@ -408,6 +408,21 @@ open class SBABridgeConfiguration {
     open func reportCategory(for reportIdentifier: String) -> SBAReportCategory? {
         return self.reportMap[reportIdentifier]
     }
+    
+    /// Listing of all the surveys included in the reference mapping.
+    public func allSurveys() -> [SBBSurveyReference] {
+        return surveyReferenceMap.map { $0.value }
+    }
+    
+    /// Listing of all the schemas included in the reference mapping.
+    public func allSchemas() -> [SBBSchemaReference] {
+        return schemaReferenceMap.map { $0.value }
+    }
+    
+    /// Listing of all the activity groups in the reference mapping.
+    public func allActivityGroups() -> [SBAActivityGroup] {
+        return activityGroupMap.map { $0.value }
+    }
 }
 
 /// A light-weight pointer to a stored task.
