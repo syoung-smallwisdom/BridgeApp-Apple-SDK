@@ -66,6 +66,11 @@ extension RSDStepType {
     public static let medicationDetails: RSDStepType = "medicationDetails"
 }
 
+extension RSDResultType {
+    
+    public static let medication: RSDResultType = "medication"
+}
+
 open class SBAFactory : RSDFactory {
     
     public var configuration : SBABridgeConfiguration {
