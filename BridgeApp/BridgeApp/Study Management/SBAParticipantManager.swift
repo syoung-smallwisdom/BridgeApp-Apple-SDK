@@ -210,17 +210,28 @@ public final class SBAParticipantManager : NSObject {
         self.isReloading = false
         self._timerReload = false
         
-        // Failed to ping server, try again in 5 minutes.
-        guard error == nil, let scheduledActivities = scheduledActivities else {
-            // ...unless the participant is not consented, in which case don't spam the server logs with 412s
-            // https://sagebionetworks.jira.com/browse/IA-711
-            // note that we check for (a) the case where we bypassed calling Bridge because we believe we are not consented,
-            // and also (b) the case where we hit Bridge thinking we were consented but it turns out we in fact are not.
-            guard error as? InternalError != .unconsented,
-                    (error! as NSError).code != SBBErrorCode.serverPreconditionNotMet.rawValue
-                else {
-                    return
+        // If the participant is not consented, don't spam the server logs with 412s by retrying every 5 minutes.
+        // https://sagebionetworks.jira.com/browse/IA-711
+        // Note that we check for (a) the case where we bypassed calling Bridge because we believe we are not consented,
+        // and also (b) the case where we hit Bridge thinking we were consented but it turns out we in fact are not.
+        let isConsentError: Bool  = {
+            if let err = error as? InternalError, err == .unconsented {
+                return true
             }
+            else if let err = error, (err as NSError).code == SBBErrorCode.serverPreconditionNotMet.rawValue {
+                return true
+            }
+            else {
+                return false
+            }
+        }()
+        
+        guard !isConsentError else {
+            return
+        }
+
+        // Failed to ping server for some other reason; try again in 5 minutes.
+        guard error == nil, let scheduledActivities = scheduledActivities else {
             self._timerReload = true
             let delay = DispatchTime.now() + .seconds(5 * 60)
             DispatchQueue.main.asyncAfter(deadline: delay) {
