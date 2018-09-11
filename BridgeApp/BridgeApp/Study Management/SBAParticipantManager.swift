@@ -64,6 +64,9 @@ public final class SBAParticipantManager : NSObject {
     /// Is the participant authenticated?
     public private(set) var isAuthenticated: Bool = false
     
+    /// Has the participant signed any and all required consents?
+    public private(set) var isConsented: Bool = false
+    
     /// Is this a test user?
     internal var isTestUser: Bool {
         return self.studyParticipant?.dataGroups?.contains("test_user") ?? false
@@ -84,10 +87,13 @@ public final class SBAParticipantManager : NSObject {
                 fatalError("Expecting a non-nil user session info")
             }
             let authenticated = info.authenticated?.boolValue ?? false
+            let consented = info.consentedValue ?? false
             let hasChanges = (authenticated && !self.isAuthenticated) ||
+                consented != self.isConsented ||
                 !RSDObjectEquality(info.studyParticipant.dataGroups, self.studyParticipant?.dataGroups)
             self.studyParticipant = info.studyParticipant
             self.isAuthenticated = authenticated
+            self.isConsented = consented
             if hasChanges {
                 self.reload(allFuture: true)
             }
@@ -204,7 +210,27 @@ public final class SBAParticipantManager : NSObject {
         self.isReloading = false
         self._timerReload = false
         
-        // Failed to ping server, try again in 5 minutes.
+        // If the participant is not consented, don't spam the server logs with 412s by retrying every 5 minutes.
+        // https://sagebionetworks.jira.com/browse/IA-711
+        // Note that we check for (a) the case where we bypassed calling Bridge because we believe we are not consented,
+        // and also (b) the case where we hit Bridge thinking we were consented but it turns out we in fact are not.
+        let isConsentError: Bool  = {
+            if let err = error as? InternalError, err == .unconsented {
+                return true
+            }
+            else if let err = error, (err as NSError).code == SBBErrorCode.serverPreconditionNotMet.rawValue {
+                return true
+            }
+            else {
+                return false
+            }
+        }()
+        
+        guard !isConsentError else {
+            return
+        }
+
+        // Failed to ping server for some other reason; try again in 5 minutes.
         guard error == nil, let scheduledActivities = scheduledActivities else {
             self._timerReload = true
             let delay = DispatchTime.now() + .seconds(5 * 60)
@@ -256,9 +282,22 @@ public final class SBAParticipantManager : NSObject {
         }
     }
     
+    private enum InternalError: Error {
+        case unconsented
+    }
+    
     /// Convenience method for wrapping the call to BridgeSDK.
     fileprivate func fetchScheduledActivities(from fromDate: Date, to toDate: Date) {
         let pingDate = Date()
+        guard self.isConsented else {
+            // don't hit Bridge for scheduled activities when we are pretty sure we are not consented--
+            // but still call the handler
+            let error = InternalError.unconsented
+            self.updateQueue.addOperation {
+                self.handleLoadedActivities(pingDate: pingDate, scheduledActivities: nil, error: error)
+            }
+            return
+        }
         BridgeSDK.activityManager.getScheduledActivities(from: fromDate, to: toDate, cachingPolicy: .fallBackToCached) { (obj, error) in
             //print("\n\n---Fetch Results pingDate:\(pingDate) from:\(fromDate) to:\(toDate)\n\(String(describing: obj))")
             self.updateQueue.addOperation {
