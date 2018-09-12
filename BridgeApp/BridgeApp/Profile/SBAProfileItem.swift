@@ -313,17 +313,17 @@ open class SBAProfileItemBase: SBAProfileItem, Decodable {
         }
     }
 
-    open let profileKey: String
+    public let profileKey: String
     
-    open let sourceKey: String
+    public let sourceKey: String
     
-    open let demographicSchema: String?
+    public let demographicSchema: String?
     
-    open let demographicKey: String
+    public let demographicKey: String
     
-    open let fallbackKey: String?
+    public let fallbackKey: String?
     
-    open let itemType: SBAProfileTypeIdentifier
+    public let itemType: SBAProfileTypeIdentifier
     
     open var jsonValue: SBBJSONValue? {
         get {
@@ -339,11 +339,11 @@ open class SBAProfileItemBase: SBAProfileItem, Decodable {
         return self.commonDemographicJsonValue()
     }
     
-    open let readonly: Bool
+    public let readonly: Bool
     
-    open let unit: HKUnit?
+    public let unit: HKUnit?
     
-    open let type: SBAProfileItemType
+    public let type: SBAProfileItemType
     
     open func storedValue(forKey key: String) -> Any? {
         return _value

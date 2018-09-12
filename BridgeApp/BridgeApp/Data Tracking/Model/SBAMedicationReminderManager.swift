@@ -266,7 +266,7 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
             let timeString = DateFormatter.localizedString(from: date, dateStyle: .none, timeStyle: .short)
             content.body = "Take your \(medTitle) at \(timeString)"
         }
-        content.sound = UNNotificationSound.default()
+        content.sound = UNNotificationSound.default
         content.badge = UIApplication.shared.applicationIconBadgeNumber + 1 as NSNumber;
         content.categoryIdentifier = SBAMedicationNotificationCategory
         content.threadIdentifier = timeOfDay

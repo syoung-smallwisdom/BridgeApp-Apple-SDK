@@ -52,7 +52,7 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
         return SBABridgeConfiguration()
     }
     
-    open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization before application launch.
         
         // Set up bridge.
