@@ -349,7 +349,7 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager {
             }
             else {
                 let activityGuid = SBBScheduledActivity.activityGuid(from: scheduleGuid)
-                return self.scheduledActivities.rsd_last(where: {
+                return self.scheduledActivities.last(where: {
                     $0.activity.guid == activityGuid && todayPredicate.evaluate(with: $0)
                 })
             }
@@ -363,7 +363,7 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager {
         
         // Look for a schedule that matches the given schema identifier.
         let taskIdentifier = taskResult.identifier
-        let taskSchedule = self.scheduledActivities.rsd_last(where: {
+        let taskSchedule = self.scheduledActivities.last(where: {
             $0.activityIdentifier == taskIdentifier &&
             todayPredicate.evaluate(with: $0)
         })
@@ -489,7 +489,7 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager {
         let todaySchedules = self.scheduledActivities.filter {
             taskPredicate.evaluate(with: $0) && (($0.scheduledOn.timeIntervalSinceNow < 0) && !$0.isExpired)
         }
-        let schedule = todaySchedules.rsd_last(where: { $0.isCompleted == false }) ?? todaySchedules.last
+        let schedule = todaySchedules.last(where: { $0.isCompleted == false }) ?? todaySchedules.last
         
         return schedule
     }
