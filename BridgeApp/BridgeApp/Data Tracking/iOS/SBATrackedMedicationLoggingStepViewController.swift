@@ -103,7 +103,7 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
     /// Called when a user action on a cell or button is linked to a modal item.
     override open func didSelectModalItem(_ modalItem: RSDModalStepTableItem, at indexPath: IndexPath) {
         // We don't actually want to show a modal but send the user to the review step
-        guard let navigator = (self.taskController.taskPath.task?.stepNavigator as? SBAMedicationTrackingStepNavigator),
+        guard let navigator = (self.stepViewModel.parentTaskPath?.task?.stepNavigator as? SBAMedicationTrackingStepNavigator),
             let reviewStep = navigator.getReviewStep() as? SBATrackedMedicationReviewStepObject else {
             return
         }

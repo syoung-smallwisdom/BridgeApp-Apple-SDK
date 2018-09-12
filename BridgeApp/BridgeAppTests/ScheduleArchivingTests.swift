@@ -33,6 +33,7 @@
 
 import XCTest
 @testable import BridgeApp
+@testable import Research
 
 class ScheduleArchivingTests: SBAScheduleManagerTests {
     
@@ -62,7 +63,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         }
         
         // The subtask will be run without a linked schedule identifier.
-        let schedule = self.scheduleManager.scheduledActivity(for: subtaskPath.result, scheduleIdentifier: nil)
+        let schedule = self.scheduleManager.scheduledActivity(for: subtaskPath.taskResult, scheduleIdentifier: nil)
         
         XCTAssertNotNil(schedule)
         XCTAssertEqual(schedule, expectedSchedule)
@@ -75,7 +76,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         let schedules = self.createSchedules(identifiers: [mainTaskIdentifier, insertTaskIdentifier],
                                              clientData: nil)
 
-        let topResult = taskPath.result
+        let topResult = taskPath.taskResult
         guard let archive = self.scheduleManager.dataArchiver(for: topResult,
                                                         scheduleIdentifier: schedules[mainTaskIdentifier]?.guid,
                                                         currentArchive: nil) as? SBAScheduledActivityArchive
@@ -87,7 +88,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         XCTAssertEqual(archive.schedule, schedules[mainTaskIdentifier])
         
         if let sectionPath = taskPath.childPaths["step2"] {
-            let childArchive = self.scheduleManager.dataArchiver(for: sectionPath.result,
+            let childArchive = self.scheduleManager.dataArchiver(for: sectionPath.taskResult,
                                                                  scheduleIdentifier: nil,
                                                                  currentArchive: archive)
             XCTAssertTrue(archive === childArchive, "Child archive did not return non-unique parent archive.")
@@ -97,7 +98,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         }
         
         if let subtaskPath = taskPath.childPaths[insertTaskIdentifier] {
-            let childArchive = self.scheduleManager.dataArchiver(for: subtaskPath.result,
+            let childArchive = self.scheduleManager.dataArchiver(for: subtaskPath.taskResult,
                                                                  scheduleIdentifier: nil,
                                                                  currentArchive: archive)
             XCTAssertFalse(archive === childArchive, "Child archive for a subtask did not return new archive.")
@@ -117,7 +118,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     func testDataArchiver_CompoundTask_NoSchedules() {
         let taskPath = runCompoundTask()
         
-        let topResult = taskPath.result
+        let topResult = taskPath.taskResult
         guard let archive = self.scheduleManager.dataArchiver(for: topResult,
                                                               scheduleIdentifier: nil,
                                                               currentArchive: nil) as? SBAScheduledActivityArchive
@@ -128,7 +129,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         XCTAssertEqual(archive.schemaInfo.schemaIdentifier, mainTaskSchemaIdentifier)
         
         if let sectionPath = taskPath.childPaths["step2"] {
-            let childArchive = self.scheduleManager.dataArchiver(for: sectionPath.result,
+            let childArchive = self.scheduleManager.dataArchiver(for: sectionPath.taskResult,
                                                                  scheduleIdentifier: nil,
                                                                  currentArchive: archive)
             XCTAssertTrue(archive === childArchive, "Child archive did not return non-unique parent archive.")
@@ -138,7 +139,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         }
         
         if let subtaskPath = taskPath.childPaths[insertTaskIdentifier] {
-            let childArchive = self.scheduleManager.dataArchiver(for: subtaskPath.result,
+            let childArchive = self.scheduleManager.dataArchiver(for: subtaskPath.taskResult,
                                                                  scheduleIdentifier: nil,
                                                                  currentArchive: archive)
             XCTAssertFalse(archive === childArchive, "Child archive for a subtask did not return new archive.")
@@ -162,7 +163,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             return
         }
 
-        let topClientData = self.scheduleManager.buildClientData(from: taskPath.result)
+        let topClientData = self.scheduleManager.buildClientData(from: taskPath.taskResult)
         XCTAssertNotNil(topClientData)
         if let dictionary = topClientData as? NSDictionary {
             let expectedDictionary : NSDictionary = [
@@ -179,7 +180,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             XCTFail("\(String(describing: topClientData)) is not a Dictionary.")
         }
         
-        let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath.result)
+        let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath.taskResult)
         XCTAssertNotNil(insertedClientData)
         if let stringValue = insertedClientData as? String {
             XCTAssertEqual(stringValue, "insertStep")
@@ -193,7 +194,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         // Before calling the readyToSave method of the task controller, the task path is copied. The copy
         // does not include pointers to objects that are used to run the task and **only** includes properties
         // used to archive the task result.
-        let taskPath = runCompoundTask().copy() as! RSDTaskPath
+        let taskPath = runCompoundTask()
         let schedules = self.createSchedules(identifiers: [mainTaskIdentifier, insertTaskIdentifier],
                                              clientData: nil)
         guard let topSchedule = schedules[mainTaskIdentifier],
@@ -233,7 +234,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     
     let tempTaskIdentifier = "tempTask"
     
-    func runCompoundTask() -> RSDTaskPath {
+    func runCompoundTask() -> RSDTaskViewModel {
         
         // Create a task to be inserted into the parent task.
         let insertStep = TestStep(identifier: "insertStep")
@@ -251,10 +252,10 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         task.schemaInfo = RSDSchemaInfoObject(identifier: mainTaskSchemaIdentifier, revision: mainTaskSchemaRevision)
         
         let taskController = TestTaskController()
-        taskController.topLevelTask = task
+        taskController.task = task
         let _ = taskController.test_stepTo("completion")
         
-        return taskController.taskPath!
+        return taskController.taskViewModel!
     }
 }
 

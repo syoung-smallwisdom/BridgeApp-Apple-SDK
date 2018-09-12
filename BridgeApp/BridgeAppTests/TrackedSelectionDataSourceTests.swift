@@ -117,18 +117,18 @@ class TrackedSelectionDataSourceTests: XCTestCase {
         do {
             // Select the answer
             let _ = try dataSource.selectAnswer(item: choiceItem, at: indexPath)
-            if let result = dataSource.taskPath.result.findResult(with: dataSource.step.identifier) as? SBATrackedItemsResult {
+            if let result = dataSource.taskResult.findResult(with: dataSource.step.identifier) as? SBATrackedItemsResult {
                 XCTAssertEqual(result.selectedIdentifiers, ["medC1"])
             } else {
-                XCTFail("Failed to get expected result. \(dataSource.taskPath.result)")
+                XCTFail("Failed to get expected result. \(dataSource.taskResult)")
             }
             
             // Deselect the answer
             let _ = try dataSource.selectAnswer(item: choiceItem, at: indexPath)
-            if let result = dataSource.taskPath.result.findResult(with: dataSource.step.identifier) as? SBATrackedItemsResult {
+            if let result = dataSource.taskResult.findResult(with: dataSource.step.identifier) as? SBATrackedItemsResult {
                 XCTAssertEqual(result.selectedIdentifiers, [])
             } else {
-                XCTFail("Failed to get expected result. \(dataSource.taskPath.result)")
+                XCTFail("Failed to get expected result. \(dataSource.taskResult)")
             }
             
         } catch let err {
@@ -142,7 +142,7 @@ class TrackedSelectionDataSourceTests: XCTestCase {
         let (items, sections) = buildMedicationItems()
         let medTracker = SBAMedicationTrackingStepNavigator(identifier: "Test", items: items, sections: usingSections ? sections : nil)
         let task = RSDTaskObject(identifier: "medication", stepNavigator: medTracker)
-        let taskPath = RSDTaskPath(task: task)
+        let taskPath = RSDTaskViewModel(task: task)
         
         guard let selectionStep = medTracker.selectionStep as? SBATrackedSelectionStepObject else {
             XCTFail("Selection step not of expected type. Exiting.")

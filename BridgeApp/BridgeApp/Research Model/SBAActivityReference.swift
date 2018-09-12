@@ -53,9 +53,6 @@ public protocol SBASingleActivityReference : SBAActivityReference, RSDTaskInfoSt
     
     /// Optional schema info for this activity reference.
     var schemaInfo: RSDSchemaInfo? { get }
-    
-    /// A pointer that can be used to retain an instance of a `RSDTaskTransformer`.
-    var transformer: Any? { get set }
 }
 
 extension SBAActivityReference {
@@ -84,6 +81,14 @@ extension SBAActivityReference {
     public var imageVendor: RSDImageVendor? {
         return self.activityInfo?.imageVendor
     }
+    
+    /// The resource transformer on `RSDTaskInfo` is used in cases where the transformer is
+    /// loaded from a resource by the task info (when decoded). In the case of Bridge objects,
+    /// this does not apply. Instead, the bridge objects defer to the app configuation singletons.
+    /// - returns: `nil`
+    public var resourceTransformer: RSDTaskTransformer? {
+        return nil
+    }
 }
 
 extension SBASingleActivityReference {
@@ -106,25 +111,6 @@ extension SBASingleActivityReference {
     /// Instantiates a `RSDTaskResultObject`.
     public func instantiateStepResult() -> RSDResult {
         return RSDTaskResultObject(identifier: identifier, schemaInfo: schemaInfo)
-    }
-    
-    /// The resource transformer on `RSDTaskInfo` is used in cases where the transformer is
-    /// loaded from a resource by the task info (when decoded). In the case of Bridge objects,
-    /// this does not apply. Instead, the bridge objects defer to the app configuation singletons.
-    /// - returns: `nil`
-    public var resourceTransformer: RSDTaskTransformer? {
-        return nil
-    }
-    
-    /// Checks to see if the `transformer` is holding an instance of a `RSDTaskTransformer` and
-    /// if not then calls the shared config and sets the transformer returned by the config.
-    public var taskTransformer: RSDTaskTransformer! {
-        /// If the task transformer is nil, then look to the shared configuration to instantiate
-        /// a transformer and assign it to the readwrite transformer property.
-        if self.transformer == nil {
-            self.transformer = SBABridgeConfiguration.shared.instantiateTaskTransformer(for: self)
-        }
-        return self.transformer as? RSDTaskTransformer
     }
 }
 
@@ -195,10 +181,6 @@ extension SBBCompoundActivity : SBAActivityReference {
     /// Return nil. Does not apply to a combo task.
     public var schemaInfo: RSDSchemaInfo? {
         return nil
-    }
-    
-    public var resourceTransformer: RSDTaskTransformer? {
-        return self
     }
     
     public var stepType: RSDStepType {
@@ -288,19 +270,6 @@ extension SBBCompoundActivity : RSDTask {
     
     public func instantiateTaskResult() -> RSDTaskResult {
         return RSDTaskResultObject(identifier: identifier)
-    }
-}
-
-extension SBBCompoundActivity : RSDTaskTransformer {
-    
-    public var estimatedFetchTime: TimeInterval {
-        return 0
-    }
-    
-    public func fetchTask(with factory: RSDFactory, taskIdentifier: String, schemaInfo: RSDSchemaInfo?, callback: @escaping RSDTaskFetchCompletionHandler) {
-        DispatchQueue.main.async {
-            callback(taskIdentifier, self, nil)
-        }
     }
 }
 

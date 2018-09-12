@@ -37,14 +37,14 @@ import Foundation
 open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RSDNavigationSkipRule {
     
     #if !os(watchOS)
-    override open func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
-        return SBATrackedMedicationLoggingStepViewController(step: self)
+    open override func instantiateViewController(with parent: RSDPathComponent?) -> (UIViewController & RSDStepController)? {
+        return SBATrackedMedicationLoggingStepViewController(step: self, parent: parent)
     }
     #endif
     
     /// Override to return a `SBAMedicationLoggingDataSource`.
-    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
-        return SBAMedicationLoggingDataSource(step: self, taskPath: taskPath)
+    open override func instantiateDataSource(with parent: RSDPathComponent?, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
+        return SBAMedicationLoggingDataSource(step: self, parent: parent)
     }
     
     /// Initializer required for `copy(with:)` implementation.

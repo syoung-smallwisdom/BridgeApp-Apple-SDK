@@ -120,6 +120,7 @@
 		F8F063DA20BF7E4C00DB7D9C /* SBAClientDataResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */; };
 		F8F063F220BFB51B00DB7D9C /* ArchivableTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */; };
 		F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7241D203D007800AC0E5B /* SurveyTests.swift */; };
+		F8FD5681214714A000BA2FA6 /* SBATaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -256,6 +257,13 @@
 			remoteGlobalIDString = F81BE77820B4951F00EE57D3;
 			remoteInfo = "BridgeSDK-Test";
 		};
+		F8FD5694214714A200BA2FA6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F83B44E82032476F002825AE /* Research.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F8BE123521370931000AAB1E;
+			remoteInfo = "Research (macOS)";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -385,6 +393,7 @@
 		F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAClientDataResult.swift; sourceTree = "<group>"; };
 		F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivableTrackingTests.swift; sourceTree = "<group>"; };
 		F8F7241D203D007800AC0E5B /* SurveyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyTests.swift; sourceTree = "<group>"; };
+		F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATaskViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -587,6 +596,7 @@
 				F83B44F22032476F002825AE /* Research.framework */,
 				F83B44F62032476F002825AE /* Research.framework */,
 				F83B44F82032476F002825AE /* Research.framework */,
+				F8FD5695214714A200BA2FA6 /* Research.framework */,
 				F83B44F42032476F002825AE /* ResearchTests_iOS.xctest */,
 				F875578C2080850900235078 /* Research_UnitTest.framework */,
 			);
@@ -707,6 +717,7 @@
 			isa = PBXGroup;
 			children = (
 				F84794F7207FDEED0024A230 /* SBAFactory.swift */,
+				F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */,
 				F87D69692037956B00409087 /* SBAActivityReference.swift */,
 				F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */,
 				F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */,
@@ -1002,6 +1013,13 @@
 			remoteRef = F8BF02B320B60F740016C343 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		F8FD5695214714A200BA2FA6 /* Research.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Research.framework;
+			remoteRef = F8FD5694214714A200BA2FA6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1072,6 +1090,7 @@
 				F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */,
 				F847951E207FEA9D0024A230 /* SBATrackedItem.swift in Sources */,
 				F8F063DA20BF7E4C00DB7D9C /* SBAClientDataResult.swift in Sources */,
+				F8FD5681214714A000BA2FA6 /* SBATaskViewModel.swift in Sources */,
 				F80F17A32033CB1B00352C3E /* SBBSurvey+RSDTask.swift in Sources */,
 				F8A5CE4A20A2AE7100E9FD75 /* SBARootViewController.swift in Sources */,
 				F8A5CE4C20A2B5C400E9FD75 /* SBAAppDelegate.swift in Sources */,

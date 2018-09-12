@@ -105,9 +105,8 @@ open class SBAFactory : RSDFactory {
         case .medicationDetails:
             return try SBATrackedMedicationDetailStepObject(from: decoder)
         case .taskInfo:
-            if let taskInfo = try? SBAActivityInfoObject(from: decoder),
-                let transformer = self.configuration.instantiateTaskTransformer(for: taskInfo) {
-                return RSDTaskInfoStepObject(with: taskInfo, taskTransformer: transformer)
+            if let taskInfo = try? SBAActivityInfoObject(from: decoder) {
+                return RSDTaskInfoStepObject(with: taskInfo)
             }
             else {
                 return try super.decodeStep(from: decoder, with: type)

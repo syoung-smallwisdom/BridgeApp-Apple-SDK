@@ -33,7 +33,7 @@
 
 import UIKit
 
-open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewController, RSDTaskViewControllerDelegate, SBATrackedMedicationNavigationHeaderViewDelegate {
+open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewController, SBATrackedMedicationNavigationHeaderViewDelegate {
     
     var selectedIndexPath: IndexPath?
     
@@ -167,64 +167,59 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
         super.textFieldDidEndEditing(textField)
     }
     
-    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
+    open override func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
         
         // the user selected the "remove notification" instead of an indexPath schedule cell
         if self.selectedIndexPath == nil {
             if reason == .completed {
                 if let source = tableData as? SBATrackedMedicationDetailsDataSource {
-                    source.appendRemoveMedicationToTaskPath()
+                    source.appendRemoveMedicationToTaskResult()
                 }
                 super.jumpForward()
             }
         } else {
             self.selectedIndexPath = nil
             if reason == .completed {
-                weak var weakSelf = self
-                dismiss(animated: true, completion: {
-                    weakSelf?.tableView.reloadData()
-                })
+                dismiss(animated: true) { [weak self] in
+                    self?.tableView.reloadData()
+                }
                 return
             }
         }
         dismiss(animated: true, completion: nil)
     }
     
-    public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
-        if let source = tableData as? SBATrackedMedicationDetailsDataSource,
+    open override func taskController(_ taskController: RSDTaskController, readyToSave taskViewModel: RSDTaskViewModel) {
+        guard let source = tableData as? SBATrackedMedicationDetailsDataSource,
             let indexPath = self.selectedIndexPath,
-            let selectedTableItem = source.sections[indexPath.section].tableItems[indexPath.row] as? SBATrackedWeeklyScheduleTableItem {
-            if taskPath.result.stepHistory.count > 0,
-                let collectionResult = taskPath.result.stepHistory[0] as? RSDCollectionResultObject {
-                var weekdaysSelected = [RSDWeekday]()
-                for weekdayResult in collectionResult.inputResults {
-                    if let weekdayAnswerResult = weekdayResult as? RSDAnswerResultObject,
-                        let weekdayValueArray = weekdayAnswerResult.value as? [Int] {
-                        for weekdayInt in weekdayValueArray {
-                            if let weekday = RSDWeekday(rawValue: weekdayInt) {
-                                weekdaysSelected.append(weekday)
-                            }
-                        }
+            let selectedTableItem = source.sections[indexPath.section].tableItems[indexPath.row] as? SBATrackedWeeklyScheduleTableItem,
+            let collectionResult = taskViewModel.taskResult.stepHistory.first as? RSDCollectionResultObject
+            else {
+                return
+        }
+        var weekdaysSelected = [RSDWeekday]()
+        for weekdayResult in collectionResult.inputResults {
+            if let weekdayAnswerResult = weekdayResult as? RSDAnswerResultObject,
+                let weekdayValueArray = weekdayAnswerResult.value as? [Int] {
+                for weekdayInt in weekdayValueArray {
+                    if let weekday = RSDWeekday(rawValue: weekdayInt) {
+                        weekdaysSelected.append(weekday)
                     }
                 }
-                selectedTableItem.weekdays = weekdaysSelected
             }
         }
+        selectedTableItem.weekdays = weekdaysSelected
     }
     
     override open func actionTapped(with actionType: RSDUIActionType) -> Bool {
         if actionType == .navigation(.goForward),
             let source = tableData as? SBATrackedMedicationDetailsDataSource {
-            source.appendStepResultToTaskPathAndFinish(with: self)
+            source.appendStepResultToTaskResultAndFinish(with: self)
         } else if actionType == .navigation(.cancel) {
             super.goBack()
             return true
         }
         return super.actionTapped(with: actionType)
-    }
-    
-    public func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
-        return nil
     }
     
     private var _activeIndexPath: IndexPath?
@@ -270,10 +265,9 @@ extension SBATrackedMedicationDetailStepViewController : SBATrackedWeeklySchedul
             var navigator = RSDConditionalStepNavigatorObject(with: [step])
             navigator.progressMarkers = []
             let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
-            let path = RSDTaskPath(task: task)
-            path.appendStepHistory(with: previousResult)
-            let taskVc = RSDTaskViewController(task: task)
-            taskVc.taskPath = path
+            let path = RSDTaskViewModel(task: task)
+            path.taskResult.appendStepHistory(with: previousResult)
+            let taskVc = RSDTaskViewController(taskViewModel: path)
             taskVc.delegate = self
             self.present(taskVc, animated: true, completion: nil)
         }

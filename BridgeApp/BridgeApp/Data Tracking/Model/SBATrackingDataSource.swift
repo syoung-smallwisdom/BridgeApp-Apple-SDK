@@ -34,18 +34,10 @@
 import Foundation
 
 /// `SBATrackingDataSource` is an abstract class for handling shared data tracking.
-open class SBATrackingDataSource : NSObject, RSDTableDataSource {
+open class SBATrackingDataSource : RSDStepViewModel, RSDTableDataSource {
     
     /// The delegate associated with this data source.
     open weak var delegate: RSDTableDataSourceDelegate?
-    
-    /// The step associated with this data source.
-    public var step: RSDStep {
-        return trackedStep
-    }
-    
-    /// The current task path.
-    public private(set) var taskPath: RSDTaskPath!
     
     /// The table sections for this data source.
     public private(set) var sections: [RSDTableSection]
@@ -57,30 +49,33 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     public let initialResult: SBATrackedItemsResult?
     
     // The tracked step for this source.
-    public let trackedStep: SBATrackedItemsStep
+    public var trackedStep: SBATrackedItemsStep {
+        return self.step as! SBATrackedItemsStep
+    }
     
     /// Initialize a new `RSDFormStepDataSourceObject`.
     /// - parameters:
     ///     - step:             The `SBATrackedItemsStep` for this data source.
-    ///     - taskPath:         The current task path for this data source.
-    public init(step: SBATrackedItemsStep, taskPath: RSDTaskPath) {
-        self.trackedStep = step
-        self.taskPath = taskPath
+    ///     - taskViewModel:         The current task path for this data source.
+    public init(step: SBATrackedItemsStep, parent: RSDPathComponent?) {
         
-        // Look for an initial result in either the taskPath or on self.
+        // Look for an initial result in either the taskViewModel or on self.
         var initialResult: SBATrackedItemsResult?
         if let result = step.result {
             initialResult = result
         }
-        else if let previousResult = taskPath.previousResults?.rsd_last(where: { $0.identifier == step.identifier }) as? SBATrackedItemsResult {
+        else if let taskViewModel = parent as? RSDHistoryPathComponent,
+            let previousResult = taskViewModel.previousResult(for: step) as? SBATrackedItemsResult {
             initialResult = previousResult
         }
-        self.initialResult = initialResult
-
+        
         // build the sections and groups
         let (sections, groups) = type(of: self).buildSections(step: step, initialResult: initialResult)
+
         self.sections = sections
         self.itemGroups = groups
+        self.initialResult = initialResult
+        super.init(step: step, parent: parent)
     }
     
     /// Reload the sections and groups for this table.
@@ -115,12 +110,12 @@ open class SBATrackingDataSource : NSObject, RSDTableDataSource {
     // MARK: Selection management
     
     /// The tracking result associated with this data source. The default implementation is to search the
-    /// `taskPath` for a matching result and if that fails to return a new instance created using
+    /// `taskViewModel` for a matching result and if that fails to return a new instance created using
     /// `instantiateTrackingResult()`.
     ///
     /// - returns: The appropriate tracking result.
     open func trackingResult() -> SBATrackedItemsResult {
-        if let trackingResult = taskPath.result.stepHistory.rsd_last(where: { $0.identifier == step.identifier }) as? SBATrackedItemsResult {
+        if let trackingResult = taskResult.stepHistory.rsd_last(where: { $0.identifier == step.identifier }) as? SBATrackedItemsResult {
             // A copy here will clear out any single-use variables, like skipToIdentifier.
             return trackingResult.copy(with: trackingResult.identifier)
         }

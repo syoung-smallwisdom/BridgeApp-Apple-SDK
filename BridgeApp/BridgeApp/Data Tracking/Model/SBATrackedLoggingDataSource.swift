@@ -48,7 +48,7 @@ extension RSDUIActionType {
 /// `SBATrackedLoggingDataSource` is a concrete implementation of the `RSDTableDataSource` protocol
 /// that is designed to be used with a `SBATrackedItemsStep` intended for logging of items that were
 /// selected in a previous step.
-open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepDataSource, RSDModalStepTaskControllerDelegate {
+open class SBATrackedLoggingDataSource : SBATrackingReviewDataSource {
 
     /// Overridable class function for building the sections of the table.
     /// - parameters:
@@ -129,7 +129,7 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         let loggedResult = buildAnswer(for: loggingItem)
         var stepResult = self.trackingResult()
         stepResult.updateDetails(from: loggedResult)
-        self.taskPath.appendStepHistory(with: stepResult)
+        self.taskResult.appendStepHistory(with: stepResult)
         
         // Inform delegate that answers have changed.
         delegate?.tableDataSource(self, didChangeAnswersIn: indexPath.section)
@@ -151,81 +151,66 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         return self.trackingResult().selectedAnswers.reduce(false, { $0 || $1.hasRequiredValues })
     }
     
-    // MARK: RSDModalStepDataSource
+}
+
+open class SBATrackingReviewDataSource : SBATrackingDataSource, RSDModalStepDataSource {
     
-    /// Returns the selection step.
-    open func step(for tableItem: RSDModalStepTableItem) -> RSDStep {
-        guard let step = (self.taskPath.task?.stepNavigator as? SBATrackedItemsStepNavigator)?.getSelectionStep() as? SBATrackedItemsStep
+    open func taskViewModel(for tableItem: RSDModalStepTableItem) -> RSDTaskViewModel? {
+        guard let step = self.step(for: tableItem) else {
+            assertionFailure("Unknown table item. Cannot show modal for \(tableItem)")
+            return nil
+        }
+
+        var navigator = RSDConditionalStepNavigatorObject(with: [step])
+        navigator.progressMarkers = []
+        let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
+        let taskViewModel = SBAModalTaskViewModel(task: task, parentViewModel: self)
+        if let previousResult = self.previousResult(for: tableItem, with: step) {
+            taskViewModel.append(previousResult: previousResult)
+        }
+        return taskViewModel
+    }
+    
+    open func step(for tableItem: RSDModalStepTableItem) -> RSDStep? {
+        guard let _ = tableItem as? SBAModalSelectionTableItem,
+            let task = self.parentTaskPath?.task,
+            let navigator = task.stepNavigator as? SBATrackedItemsStepNavigator,
+            let step = navigator.getSelectionStep() as? SBATrackedItemsStep
             else {
-                assertionFailure("Expecting the task navigator to be a tracked items navigator.")
-            return RSDUIStepObject(identifier: tableItem.identifier)
+                return nil
         }
         step.result = self.trackingResult()
         return step
     }
     
-    /// The calling table view controller will present a step view controller for the modal step. This method
-    /// should set up the task controller for the step and handle any other task management required before
-    /// presenting the step.
-    ///
-    /// - parameters:
-    ///     - stepController: The step controller that was instantiated to run the step.
-    ///     - tableItem: The table item that was selected.
-    open func willPresent(_ stepController: RSDStepController, from tableItem: RSDModalStepTableItem) {
-        guard let task = taskPath.task else {
-            assertionFailure("Failed to set the task controller because the current task is nil.")
-            return
+    open func previousResult(for tableItem: RSDModalStepTableItem, with step: RSDStep) -> RSDResult? {
+        return self.trackingResult().copy(with: step.identifier)
+    }
+    
+    /// Save an answer for a specific IndexPath.
+    open func saveAnswer(for tableItem: RSDModalStepTableItem, from taskViewModel: RSDTaskViewModel) {
+        guard let result = taskViewModel.taskResult.stepHistory.first as? SBATrackedItemsResult
+            else {
+                return
+        }
+            
+        // Let the delegate know that things are changing.
+        self.delegate?.tableDataSourceWillBeginUpdate(self)
+        
+        // Update the result set for this source.
+        var stepResult = self.trackingResult()
+        stepResult.updateSelected(to: result.selectedIdentifiers, with: trackedStep.items)
+        self.taskResult.appendStepHistory(with: stepResult)
+        let changes = self.reloadDataSource(with: result)
+        self.delegate?.tableDataSource(self, didAddRows: changes.addedRows, with: .none)
+        self.delegate?.tableDataSource(self, didRemoveRows: changes.removedRows, with: .none)
+        
+        if let stepNavigator = self.parentTaskPath?.task?.stepNavigator as? SBATrackedItemsStepNavigator {
+            stepNavigator.updateSelectedInMemoryResult(to: result.selectedIdentifiers, with: trackedStep.items)
         }
         
-        // Set up the path and the task controller for the current step. For this case, we want a new task
-        // path that uses the task from *this* taskPath as it's source, but which does not directly edit this
-        // task path.
-        let path = RSDTaskPath(task: task)
-        setupModal(stepController, path: path, tableItem: tableItem)
-    }
-    
-    internal func setupModal(_ stepController: RSDStepController, path: RSDTaskPath, tableItem: RSDModalStepTableItem) {
-        path.currentStep = stepController.step
-        let taskController = RSDModalStepTaskController()
-        _currentTaskController = taskController
-        _currentTableItem = tableItem
-        taskController.taskPath = path
-        taskController.stepController = stepController
-        taskController.delegate = self
-        stepController.taskController = taskController
-    }
-    
-    internal var _currentTaskController: RSDModalStepTaskController?
-    internal var _currentTableItem: RSDModalStepTableItem?
-    
-    // MARK: RSDModalStepTaskControllerDelegate
-    
-    open func goForward(with taskController: RSDModalStepTaskController) {
-        if let _ = _currentTableItem as? SBAModalSelectionTableItem,
-            let result = taskController.taskPath.result.findResult(for: taskController.stepController.step) as? SBATrackedItemsResult {
-
-            // Let the delegate know that things are changing.
-            self.delegate?.tableDataSourceWillBeginUpdate(self)
-            
-            // Update the result set for this source.
-            var stepResult = self.trackingResult()
-            stepResult.updateSelected(to: result.selectedIdentifiers, with: trackedStep.items)
-            self.taskPath.appendStepHistory(with: stepResult)
-            let changes = self.reloadDataSource(with: result)
-
-            // reload the table delegate.
-            self.delegate?.tableDataSourceDidEndUpdate(self, addedRows: changes.addedRows, removedRows: changes.removedRows)
-        }
-        self.delegate?.tableDataSource(self, didFinishWith: taskController.stepController)
-        _currentTaskController = nil
-        _currentTableItem = nil
-    }
-    
-    /// Default behavior is to dismiss the view controller without changes.
-    open func goBack(with taskController: RSDModalStepTaskController) {
-        self.delegate?.tableDataSource(self, didFinishWith: taskController.stepController)
-        _currentTaskController = nil
-        _currentTableItem = nil
+        // reload the table delegate.
+        self.delegate?.tableDataSourceDidEndUpdate(self)
     }
 }
 

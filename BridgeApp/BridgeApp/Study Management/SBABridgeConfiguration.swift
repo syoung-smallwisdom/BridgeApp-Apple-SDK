@@ -48,6 +48,31 @@ struct DecodingHelper: Decodable {
     }
 }
 
+/// Override the default task repository to include transforming from surveys, compound activities, and other
+/// tasks defined by the Bridge configuration.
+open class SBATaskRepository : RSDTaskRepository {
+    
+    override open func taskTransformer(for taskInfo: RSDTaskInfo) throws -> RSDTaskTransformer {
+        if let transformer = taskInfo.resourceTransformer {
+            return transformer
+        }
+        else if let surveyReference = taskInfo as? SBBSurveyReference {
+            return SBASurveyLoader(surveyReference: surveyReference)
+        }
+        else if let combo = taskInfo as? SBBCompoundActivity {
+            return SBAConfigurationTaskTransformer(task: combo)
+        }
+        else {
+            let activityIdentifier = (taskInfo as? SBAActivityInfo)?.moduleId?.stringValue ?? taskInfo.identifier
+            return SBABridgeConfiguration.shared.taskTransformer(for: activityIdentifier)
+        }
+    }
+    
+    override open func schemaInfo(for taskInfo: RSDTaskInfo) -> RSDSchemaInfo? {
+        return SBABridgeConfiguration.shared.schemaInfo(for: taskInfo.identifier) ?? taskInfo.schemaInfo
+    }
+}
+
 /// `SBABridgeConfiguration` is used as a wrapper for combining task group and task info objects that are
 /// singletons with the `SBBActivity` objects that contain a subset of the information used to implement
 /// the `RSDTaskInfo` protocol.
@@ -146,6 +171,8 @@ open class SBABridgeConfiguration {
     open func setupBridge(with factory: RSDFactory, setupBlock: (()->Void)? = nil) {
         guard !_hasInitialized else { return }
         _hasInitialized = true
+        
+        RSDTaskRepository.shared = SBATaskRepository()
         
         // Insert this bundle into the list of localized bundles.
         Localization.insert(bundle: LocalizationBundle(Bundle(for: SBABridgeConfiguration.self)),
@@ -281,110 +308,23 @@ open class SBABridgeConfiguration {
     open func addMapping(from activityIdentifier: String, to schemaIdentifier: String) {
         self.taskToSchemaIdentifierMap[activityIdentifier] = schemaIdentifier
     }
-    
-    /// Instantiate a new instance of a task path for the given task info and schedule.
-    open func instantiateTaskPath(for taskInfo: RSDTaskInfo, using schedule: SBBScheduledActivity?) -> RSDTaskPath {
-        let taskPath: RSDTaskPath
-        if let activityReference = schedule?.activity.activityReference {
-            if let taskInfoStep = activityReference as? RSDTaskInfoStep {
-                taskPath = RSDTaskPath(taskInfo: taskInfoStep)
-            }
-            else {
-                let taskInfoStep = RSDTaskInfoStepObject(with: activityReference)
-                taskPath = RSDTaskPath(taskInfo: taskInfoStep)
-            }
-        }
-        else if let task = self.task(for: taskInfo.identifier) {
-            taskPath = RSDTaskPath(task: task)
-        }
-        else if let transformer = taskInfo.resourceTransformer ?? self.instantiateTaskTransformer(for: taskInfo.identifier) {
-            let taskInfoStep = RSDTaskInfoStepObject(with: taskInfo, taskTransformer: transformer)
-            taskPath = RSDTaskPath(taskInfo: taskInfoStep)
-        }
-        else {
-            assertionFailure("Failed to instantiate the task for this task info.")
-            let task = RSDTaskObject(identifier: taskInfo.identifier, stepNavigator: RSDConditionalStepNavigatorObject(with: []))
-            taskPath = RSDTaskPath(task: task)
-        }
-        return taskPath
-    }
-    
-    /// Instantiate the task transformer for the given task info.
-    open func instantiateTaskTransformer(for taskInfo: RSDTaskInfo) -> RSDTaskTransformer? {
-        if let transformer = taskInfo.resourceTransformer {
-            return transformer
-        } else {
-            let moduleId = (taskInfo as? SBAActivityInfo)?.moduleId ?? SBAModuleIdentifier(rawValue: taskInfo.identifier)
-            return self.instantiateTaskTransformer(for: moduleId)
-        }
-    }
-    
-    /// Instantiate the task transformer for the given activity reference.
-    open func instantiateTaskTransformer(for activityReference: SBASingleActivityReference) -> RSDTaskTransformer? {
-        // Exit early if this is a survey reference or if the activity info uses an embedded resource.
-        if let surveyReference = activityReference as? SBBSurveyReference {
-            return SBASurveyLoader(surveyReference: surveyReference)
-        } else if let resourceTransformer = activityReference.activityInfo?.resourceTransformer {
-            return resourceTransformer
-        }
 
-        // Next look for a moduleId.
-        let moduleId = activityReference.activityInfo?.moduleId ?? SBAModuleIdentifier(rawValue: activityReference.identifier)
-        return self.instantiateTaskTransformer(for: moduleId)
-    }
-    
-    fileprivate func instantiateTaskTransformer(for activityIdentifier: String) -> RSDTaskTransformer? {
-        return self.instantiateTaskTransformer(for: SBAModuleIdentifier(rawValue: activityIdentifier))
-    }
-    
     /// Override this method to return a task transformer for a given task. This method is intended
     /// to be able to run active tasks such as "tapping" or "tremor" where the task module is described
     /// in another github repository.
-    open func instantiateTaskTransformer(for moduleId: SBAModuleIdentifier) -> RSDTaskTransformer? {
-        if let transformer = moduleId.taskTransformer() {
-            return transformer
-        }
-        else if let task = self.task(for: moduleId.rawValue) {
+    open func taskTransformer(for activityIdentifier: String) -> RSDTaskTransformer {
+        if let task = self.task(for: activityIdentifier) {
             return SBAConfigurationTaskTransformer(task: task)
         }
-        else if let surveyReference = self.surveyReferenceMap[moduleId.stringValue] {
+        else if let surveyReference = self.survey(for: activityIdentifier) {
             return SBASurveyLoader(surveyReference: surveyReference)
         }
+        else if let transformer = self.activityInfo(for: activityIdentifier)?.resourceTransformer {
+            return transformer
+        }
         else {
-            return RSDResourceTransformerObject(resourceName: moduleId.stringValue)
+            return RSDResourceTransformerObject(resourceName: activityIdentifier)
         }
-    }
-    
-    /// Get the task to return for the given identifier.
-    open func task(for activityIdentifier: String) -> RSDTask? {
-
-        // Look for a mapped task identifier.
-        let storedTask = self.taskMap[activityIdentifier]
-        let schemaInfo = self.schemaInfo(for: activityIdentifier)
-        
-        // Copy if option available.
-        if let copyableTask = storedTask as? RSDCopyTask {
-            return copyableTask.copy(with: activityIdentifier, schemaInfo: schemaInfo)
-        } else {
-            return storedTask
-        }
-    }
-    
-    /// Return a task step appropriate for the given activity identifier.
-    open func taskStep(for activityIdentifier: String) -> RSDTaskInfoStep? {
-        if let surveyReference = self.surveyReferenceMap[activityIdentifier] {
-            return surveyReference as RSDTaskInfoStep
-        }
-        else if let transformer = self.instantiateTaskTransformer(for: activityIdentifier) {
-            let taskInfo: RSDTaskInfo = self.activityInfo(for: activityIdentifier) ?? RSDTaskInfoObject(with: activityIdentifier)
-            return RSDTaskInfoStepObject(with: taskInfo, taskTransformer: transformer)
-        }
-        return nil
-    }
-    
-    /// Listing of all the installed activity groups.
-    open var installedGroups: [SBAActivityGroup] {
-        return self.activityGroupMap.values.map { $0 }
     }
     
     /// Get the activity group with the given identifier.
@@ -397,11 +337,31 @@ open class SBABridgeConfiguration {
         return self.activityInfoMap[activityIdentifier]
     }
     
+    /// Get the task to return for the given identifier.
+    open func task(for activityIdentifier: String) -> RSDTask? {
+        
+        // Look for a mapped task identifier.
+        let storedTask = self.taskMap[activityIdentifier]
+        let schemaInfo = self.schemaInfo(for: activityIdentifier)
+        
+        // Copy if option available.
+        if let copyableTask = storedTask as? RSDCopyTask {
+            return copyableTask.copy(with: activityIdentifier, schemaInfo: schemaInfo)
+        } else {
+            return storedTask
+        }
+    }
+    
     /// Get the schema info associated with the given activity identifier. By default, this looks at the
     /// shared bridge configuration's schema reference map.
     open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
         let schemaIdentifier = self.taskToSchemaIdentifierMap[activityIdentifier] ?? activityIdentifier
         return self.schemaReferenceMap[schemaIdentifier]
+    }
+    
+    /// Get the survey with the given identifier.
+    open func survey(for surveyIdentifier: String) -> SBBSurveyReference? {
+        return self.surveyReferenceMap[surveyIdentifier]
     }
     
     /// Get the report category for a given report identifier.
@@ -427,6 +387,7 @@ open class SBABridgeConfiguration {
 
 /// A light-weight pointer to a stored task.
 class SBAConfigurationTaskTransformer : RSDTaskTransformer {
+    
     let task: RSDTask
     init(task: RSDTask) {
         self.task = task
@@ -436,12 +397,12 @@ class SBAConfigurationTaskTransformer : RSDTaskTransformer {
         return 0
     }
     
-    func fetchTask(with factory: RSDFactory, taskIdentifier: String, schemaInfo: RSDSchemaInfo?, callback: @escaping RSDTaskFetchCompletionHandler) {
+    func fetchTask(with taskIdentifier: String, schemaInfo: RSDSchemaInfo?, callback: @escaping RSDTaskFetchCompletionHandler) {
         DispatchQueue.main.async {
             if let copyableTask = self.task as? RSDCopyTask {
-                callback(taskIdentifier, copyableTask.copy(with: taskIdentifier, schemaInfo: schemaInfo), nil)
+                callback(copyableTask.copy(with: taskIdentifier, schemaInfo: schemaInfo), nil)
             } else {
-                callback(taskIdentifier, self.task, nil)
+                callback(self.task, nil)
             }
         }
     }
@@ -606,7 +567,7 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
     
     /// Returns nil. This task group is intended to allow using a shared codable configuration
     /// and does not directly implement instantiating a task path.
-    public func instantiateTaskPath(for taskInfo: RSDTaskInfo) -> RSDTaskPath? {
+    public func instantiateTaskViewModel(for taskInfo: RSDTaskInfo) -> RSDTaskViewModel? {
         return nil
     }
     

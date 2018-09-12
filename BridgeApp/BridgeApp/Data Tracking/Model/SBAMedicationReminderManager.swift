@@ -159,9 +159,9 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
             medicationTrackingResult.updateLogging(itemIdentifier: reminder.itemIdentifier,
                                                    timingIdentifier: reminder.timingIdentifier,
                                                    loggedDate: timestamp)
-            let taskPath = self.instantiateTaskPath(for: schedule)
-            taskPath.appendAsyncResult(with: medicationTrackingResult)
-            self.saveResults(from: taskPath, completionHandler)
+            let taskViewModel = self.instantiateTaskViewModel(for: schedule)
+            taskViewModel.taskResult.appendAsyncResult(with: medicationTrackingResult)
+            self.saveResults(from: taskViewModel, completionHandler)
             DispatchQueue.main.async {
                 UIApplication.shared.applicationIconBadgeNumber -= 1;
             }

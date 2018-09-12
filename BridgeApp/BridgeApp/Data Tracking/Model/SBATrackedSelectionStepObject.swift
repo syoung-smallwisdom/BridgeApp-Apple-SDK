@@ -185,9 +185,9 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
     }
     
     /// Override the default selector to return a tracked selection data source.
-    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
+    open override func instantiateDataSource(with parent: RSDPathComponent?, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
         guard supportedHints.contains(.list) else { return nil }
-        return SBATrackedSelectionDataSource(step: self, taskPath: taskPath)
+        return SBATrackedSelectionDataSource(step: self, parent: parent)
     }
 }
 

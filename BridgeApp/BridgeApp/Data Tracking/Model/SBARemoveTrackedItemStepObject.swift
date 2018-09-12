@@ -37,11 +37,13 @@ import Foundation
 /// and the option to underline a text segment of the title.
 open class SBARemoveTrackedItemStepObject: RSDUIStepObject, RSDStepViewControllerVendor {
     
-    public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
+    #if !os(watchOS)
+    open func instantiateViewController(with parent: RSDPathComponent?) -> (UIViewController & RSDStepController)? {
         let vc = SBARemoveTrackedItemStepViewController(nibName: SBARemoveTrackedItemStepViewController.nibName, bundle: SBARemoveTrackedItemStepViewController.bundle)
-        vc.step = self
+        vc.stepViewModel = vc.instantiateStepViewModel(for: self, with: parent)
         return vc
     }
+    #endif
     
     private enum CodingKeys: String, CodingKey {
         case bodyText, underlinedTitleSegment, items

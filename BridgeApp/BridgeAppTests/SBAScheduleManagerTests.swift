@@ -138,7 +138,7 @@ class TestScheduleManager : SBAScheduleManager {
     var updateFailed_error: Error?
     var update_fetchedActivities:[SBBScheduledActivity]?
     var sendUpdated_schedules: [SBBScheduledActivity]?
-    var sendUpdated_taskPath: RSDTaskPath?
+    var sendUpdated_taskPath: RSDTaskViewModel?
     
     override func updateFailed(_ error: Error) {
         updateFailed_error = error
@@ -179,9 +179,9 @@ class TestScheduleManager : SBAScheduleManager {
         return ret
     }
     
-    override func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath?) {
+    override func sendUpdated(for schedules: [SBBScheduledActivity], taskViewModel: RSDTaskViewModel?) {
         self.sendUpdated_schedules = schedules
-        self.sendUpdated_taskPath = taskPath
+        self.sendUpdated_taskPath = taskViewModel
     }
 }
 

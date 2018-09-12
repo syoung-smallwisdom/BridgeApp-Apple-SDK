@@ -33,7 +33,7 @@
 
 import Foundation
 
-open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewController, RSDTaskViewControllerDelegate {
+open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewController {
     
     open var reviewStep: SBATrackedItemsReviewStepObject? {
         return self.step as? SBATrackedItemsReviewStepObject
@@ -66,19 +66,6 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
         cell.selectedBackgroundView?.backgroundColor = UIColor.rsd_choiceCellBackgroundHighlighted
         cell.selectionStyle = .gray
         return cell
-    }
-    
-    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {                
-        dismiss(animated: true, completion: nil)
-    }
-    
-    public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
-        // no-op
-    }
-    
-    public func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
-        // no-op
-        return nil
     }
 }
 

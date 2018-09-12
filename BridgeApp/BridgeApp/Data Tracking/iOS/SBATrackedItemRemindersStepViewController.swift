@@ -80,7 +80,7 @@ open class SBATrackedItemRemindersStepViewController: RSDTableStepViewController
     open override func goForward() {
         
         let shouldSetReminder : Bool = {
-            guard let stepResult = self.taskController.taskResult.findResult(for: self.step),
+            guard let stepResult = self.stepViewModel.taskResult.findResult(for: self.step),
                 let value = stepResult.firstAnswerResult()?.value
                 else {
                     return false
@@ -108,22 +108,12 @@ open class SBATrackedItemRemindersStepViewController: RSDTableStepViewController
             super.goForward()
         }
     }
-}
-
-extension SBATrackedItemRemindersStepViewController: RSDTaskViewControllerDelegate {
-    public func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
-        dismiss(animated: true, completion: nil)
-    }
     
-    public func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
+    override open func taskController(_ taskController: RSDTaskController, readyToSave taskViewModel: RSDTaskViewModel) {
         if let dataSource = self.tableData as? SBATrackedItemReminderDataSource {
-            dataSource.updateAnswer(from: taskPath, with: taskController.taskResult.identifier)
+            dataSource.updateAnswer(from: taskViewModel, with: taskViewModel.taskResult.identifier)
             self.tableView.reloadData()
         }
-    }
-    
-    public func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
-        return nil
     }
 }
 

@@ -84,7 +84,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
         }
         
         // Test fresh data source with no previous details
-        let taskPath = RSDTaskPath(task: RSDTaskObject(identifier: "medTracking", stepNavigator: medTracker))
+        let taskPath = RSDTaskViewModel(task: RSDTaskObject(identifier: "medTracking", stepNavigator: medTracker))
         if let dataSource = detailStep.instantiateDataSource(with: taskPath, for: Set()) as? SBATrackedMedicationDetailsDataSource {
             XCTAssertEqual(dataSource.sections.count, 3)
             XCTAssertEqual(dataSource.sections[0].identifier, "dosage")

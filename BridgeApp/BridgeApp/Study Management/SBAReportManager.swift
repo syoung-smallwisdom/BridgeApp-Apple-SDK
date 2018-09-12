@@ -116,6 +116,20 @@ open class SBAReportManager: NSObject {
         self.loadReports()
     }
     
+    /// Instantiate a new instance of a task view model from the given information. At least one of the input
+    /// parameters should be non-nil or this with throw an exception.
+    open func instantiateTaskViewModel(task: RSDTask?, taskInfo: RSDTaskInfo?) throws -> SBATaskViewModel {
+        if let task = task {
+            return SBATaskViewModel(task: task, reportManager: self)
+        }
+        else if let taskInfo = taskInfo {
+            return SBATaskViewModel(taskInfo: taskInfo, reportManager: self)
+        }
+        else {
+            throw RSDValidationError.unexpectedNullObject("Either the task or task info must be non-nil")
+        }
+    }
+    
     public var reports = Set<SBAReport>()
     
     /// The report query is used to describe the type of report being requested.
@@ -336,15 +350,15 @@ open class SBAReportManager: NSObject {
     /// Build and save the report `clientData` for the completed task. This should only be called for the
     /// top-level path.
     ///
-    /// - parameter taskPath: The task path for the task which has just run.
-    public func saveReports(for taskPath: RSDTaskPath) {
-        guard taskPath.parentPath == nil else {
+    /// - parameter taskViewModel: The task path for the task which has just run.
+    public func saveReports(for taskViewModel: RSDTaskViewModel) {
+        guard taskViewModel.parent == nil else {
             assertionFailure("This method should **only** be called for the top-level task path.")
             return
         }
         
         // Exit early if there are no reports for this task.
-        guard let newReports = buildReports(from: taskPath.result) else { return }
+        guard let newReports = buildReports(from: taskViewModel.taskResult) else { return }
         
         // Post notification that reports have been created.
         NotificationCenter.default.post(name: .SBAWillSaveReports,

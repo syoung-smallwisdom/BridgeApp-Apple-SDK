@@ -149,15 +149,6 @@ class ActivityReferenceTests: XCTestCase {
         let schemaF = config.schemaInfo(for: "taskF")
         XCTAssertNotNil(schemaF)
         XCTAssertEqual(schemaF?.schemaIdentifier, "goo")
-        
-        if let taskInfo = taskInfoF {
-            let taskPath = config.instantiateTaskPath(for: taskInfo, using: nil)
-            XCTAssertNotNil(taskPath.task)
-            XCTAssertEqual(taskPath.identifier, "taskF")
-        }
-        else {
-            XCTFail("Failed to instantiate task info for taskF.")
-        }
     }
     
     func testActivityInfo_Codable_ModuleId() {

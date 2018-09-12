@@ -86,9 +86,8 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let taskGroup = taskGroups[indexPath.section]
         let taskInfo = taskGroup.tasks[indexPath.row]
-        guard let taskPath = taskGroup.instantiateTaskPath(for: taskInfo) else { return }
-        taskPath.trackingDelegate = scheduleManager
-        let vc = RSDTaskViewController(taskPath: taskPath)
+        let (taskPath, _) = scheduleManager.instantiateTaskViewModel(for: taskInfo, in: nil)
+        let vc = RSDTaskViewController(taskViewModel: taskPath)
         vc.delegate = self
         self.present(vc, animated: true, completion: nil)
     }
@@ -98,14 +97,14 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
         if reason == .completed {
             // The schedule activity manager does this using reflection, but for simplicity, let's find the last MedicationTrackingResult
             var medTrackingResult: SBAMedicationTrackingResult?
-            for result in taskController.taskPath.result.stepHistory {
+            for result in taskController.taskViewModel.taskResult.stepHistory {
                 if let medTrackingResultUnwrapped = result as? SBAMedicationTrackingResult {
                     medTrackingResult = medTrackingResultUnwrapped
                 }
             }
             if let medTrackingResultUnwrapped = medTrackingResult {
                 do {
-                    try scheduleManager.previousClientData[taskController.taskResult.identifier] = medTrackingResultUnwrapped.clientData()
+                    try scheduleManager.previousClientData[taskController.taskViewModel.taskResult.identifier] = medTrackingResultUnwrapped.clientData()
                 } catch {
                     print(error)
                 }
@@ -117,15 +116,11 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
         }
         
         print("\n\n=== Completed: \(reason) error:\(String(describing: error))")
-        print(taskController.taskPath.result)
+        print(taskController.taskViewModel.taskResult)
     }
     
-    func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
+    func taskController(_ taskController: RSDTaskController, readyToSave taskViewModel: RSDTaskViewModel) {
         
-    }
-    
-    func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
-        return nil
     }
     
     func taskViewController(_ taskViewController: UIViewController, shouldShowTaskInfoFor step: Any) -> Bool {

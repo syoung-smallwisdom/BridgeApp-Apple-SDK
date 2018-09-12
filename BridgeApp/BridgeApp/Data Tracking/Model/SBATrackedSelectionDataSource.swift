@@ -132,7 +132,7 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
         // Update the answers
         var stepResult = self.trackingResult()
         stepResult.updateSelected(to: selectedIdentifiers, with: items)
-        self.taskPath.appendStepHistory(with: stepResult)
+        self.taskResult.appendStepHistory(with: stepResult)
         
         // inform delegate that answers have changed
         delegate?.tableDataSource(self, didChangeAnswersIn: indexPath.section)

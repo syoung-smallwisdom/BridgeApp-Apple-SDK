@@ -34,7 +34,7 @@
 import Foundation
 
 open class SBASurveyLoader: RSDTaskTransformer {
-    
+
     /// The pointer to the survey reference.
     public let surveyReference: SBBSurveyReference
     
@@ -49,12 +49,12 @@ open class SBASurveyLoader: RSDTaskTransformer {
     
     private var urlSessionTask: URLSessionTask?
     
-    public func fetchTask(with factory: RSDFactory, taskIdentifier: String, schemaInfo: RSDSchemaInfo?, callback: @escaping RSDTaskFetchCompletionHandler) {
+    public func fetchTask(with taskIdentifier: String, schemaInfo: RSDSchemaInfo?, callback: @escaping RSDTaskFetchCompletionHandler) {
         self.urlSessionTask = SBBSurveyManager.default().getSurveyByRef(surveyReference.href) { [weak self] (response, error) in
             self?.urlSessionTask = nil
             let survey = self?.instantiateSurveyWrapper(for: response as? SBBSurvey)
             DispatchQueue.main.async {
-                callback(taskIdentifier, survey, error)
+                callback(survey, error)
             }
         }
     }

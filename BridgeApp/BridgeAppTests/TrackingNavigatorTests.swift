@@ -56,7 +56,7 @@ class TrackingNavigatorTests: XCTestCase {
             return
         }
 
-        let (firstStep, _) = tracker.step(after: nil, with: &taskPath.result)
+        let (firstStep, _) = tracker.step(after: nil, with: &taskPath.taskResult)
         XCTAssertNotNil(firstStep)
         XCTAssertEqual(firstStep?.identifier, "selection")
 
@@ -65,9 +65,9 @@ class TrackingNavigatorTests: XCTestCase {
             return
         }
 
-        XCTAssertFalse(tracker.hasStep(before: selectionStep, with: taskPath.result))
-        XCTAssertTrue(tracker.hasStep(after: selectionStep, with: taskPath.result))
-        XCTAssertNil(tracker.step(before: selectionStep, with: &taskPath.result))
+        XCTAssertFalse(tracker.hasStep(before: selectionStep, with: taskPath.taskResult))
+        XCTAssertTrue(tracker.hasStep(after: selectionStep, with: taskPath.taskResult))
+        XCTAssertNil(tracker.step(before: selectionStep, with: &taskPath.taskResult))
 
         guard let firstResult = selectionStep.instantiateStepResult() as? SBATrackedItemsResult else {
             XCTFail("Failed to create the expected result. Exiting.")
@@ -75,9 +75,9 @@ class TrackingNavigatorTests: XCTestCase {
         }
         var selectionResult = firstResult
         selectionResult.updateSelected(to: ["itemA2", "itemB1", "itemC3"], with: selectionStep.items)
-        taskPath.result.appendStepHistory(with: selectionResult)
+        taskPath.taskResult.appendStepHistory(with: selectionResult)
 
-        let (secondStep, _) = tracker.step(after: selectionStep, with: &taskPath.result)
+        let (secondStep, _) = tracker.step(after: selectionStep, with: &taskPath.taskResult)
         XCTAssertNotNil(secondStep)
         XCTAssertEqual(secondStep?.identifier, "logging")
 
@@ -87,10 +87,10 @@ class TrackingNavigatorTests: XCTestCase {
         }
 
         XCTAssertEqual(loggingStep.result?.selectedAnswers.count, 3)
-        XCTAssertFalse(tracker.hasStep(after: loggingStep, with: taskPath.result))
-        XCTAssertFalse(tracker.hasStep(before: loggingStep, with: taskPath.result))
-        XCTAssertNil(tracker.step(before: loggingStep, with: &taskPath.result))
-        XCTAssertNil(tracker.step(after: loggingStep, with: &taskPath.result).step)
+        XCTAssertFalse(tracker.hasStep(after: loggingStep, with: taskPath.taskResult))
+        XCTAssertFalse(tracker.hasStep(before: loggingStep, with: taskPath.taskResult))
+        XCTAssertNil(tracker.step(before: loggingStep, with: &taskPath.taskResult))
+        XCTAssertNil(tracker.step(after: loggingStep, with: &taskPath.taskResult).step)
         
         // The logging should use the "Submit" title for forward navigation.
         if let action = loggingStep.action(for: .navigation(.goForward), on: loggingStep) {
@@ -114,7 +114,7 @@ class TrackingNavigatorTests: XCTestCase {
         let clientData = try! initialResult.clientData()
         tracker.previousClientData = clientData
         
-        let (firstStep, _) = tracker.step(after: nil, with: &taskPath.result)
+        let (firstStep, _) = tracker.step(after: nil, with: &taskPath.taskResult)
         XCTAssertNotNil(firstStep)
         XCTAssertEqual(firstStep?.identifier, "logging")
         
@@ -124,10 +124,10 @@ class TrackingNavigatorTests: XCTestCase {
         }
         
         XCTAssertEqual(loggingStep.result?.selectedAnswers.count, 3)
-        XCTAssertFalse(tracker.hasStep(after: loggingStep, with: taskPath.result))
-        XCTAssertFalse(tracker.hasStep(before: loggingStep, with: taskPath.result))
-        XCTAssertNil(tracker.step(before: loggingStep, with: &taskPath.result))
-        XCTAssertNil(tracker.step(after: loggingStep, with: &taskPath.result).step)
+        XCTAssertFalse(tracker.hasStep(after: loggingStep, with: taskPath.taskResult))
+        XCTAssertFalse(tracker.hasStep(before: loggingStep, with: taskPath.taskResult))
+        XCTAssertNil(tracker.step(before: loggingStep, with: &taskPath.taskResult))
+        XCTAssertNil(tracker.step(after: loggingStep, with: &taskPath.taskResult).step)
         
         // The logging should use the "Submit" title for forward navigation.
         if let action = loggingStep.action(for: .navigation(.goForward), on: loggingStep) {
@@ -139,7 +139,7 @@ class TrackingNavigatorTests: XCTestCase {
     
     // Helper method
     
-    func buildSimpleItemTracker() -> RSDTaskPath? {
+    func buildSimpleItemTracker() -> RSDTaskViewModel? {
         
         let json = """
             {
@@ -169,7 +169,7 @@ class TrackingNavigatorTests: XCTestCase {
                 XCTFail("Failed to decode the step navigator. Exiting.")
                 return nil
             }
-            return RSDTaskPath(task: task)
+            return RSDTaskViewModel(task: task)
             
         } catch let err {
             XCTFail("Failed to decode/encode object: \(err)")

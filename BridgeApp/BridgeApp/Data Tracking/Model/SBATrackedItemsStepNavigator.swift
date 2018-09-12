@@ -35,7 +35,7 @@ import Foundation
 
 /// `SBATrackedItemsStepNavigator` is a general-purpose navigator designed to be used for selecting tracked
 /// data such as medication, triggers, or symptoms.
-open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
+open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
 
     /// Publicly accessible coding keys for the default structure for decoding items and sections.
     public enum ItemsCodingKeys : String, CodingKey {
@@ -92,13 +92,14 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     }
     
     /// The task path associated with the current run of the task.
-    public private(set) weak var taskPath: RSDTaskPath?
+    public private(set) weak var taskPath: RSDPathComponent?
     
     /// Setup data tracking for this task.
-    open func setupTracking(with taskPath: RSDTaskPath) {
+    open func setupTracking(with taskPath: RSDPathComponent) {
         self.taskPath = taskPath
-        guard let scheduleManager = taskPath.trackingDelegate as? SBAScheduleManager,
-            let clientData = scheduleManager.clientData(with: self.activityIdentifier.stringValue)
+        guard let root = taskPath.rootPathComponent as? SBATaskViewModel,
+            let reportManager = root.reportManager,
+            let clientData = reportManager.clientData(with: self.activityIdentifier.stringValue)
             else {
                 return
         }
@@ -441,7 +442,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDTrackingStepNavigator {
     /// of another task (such as including medication logging in a tapping test) **and** the skip rule
     /// on the step returns true or there are no selected answers.
     open func shouldSkip(step: RSDStep?, with result: RSDTaskResult) -> Bool {
-        if self.taskPath?.parentPath != nil,
+        if self.taskPath?.parent != nil,
             let navigableStep = step as? RSDNavigationSkipRule {
             return navigableStep.shouldSkipStep(with: result, isPeeking: false)
         }
