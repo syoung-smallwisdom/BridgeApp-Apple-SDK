@@ -194,7 +194,7 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
                             self.addNotifications(for: medicationResult)
                         }
                     }
-                case .authorized:
+                case .authorized, .provisional:
                     self.addNotifications(for: medicationResult)
                 }
             }
