@@ -43,6 +43,7 @@ class TestBridgeInfo: NSObject, SBBBridgeInfoProtocol {
     var usesStandardUserDefaults: Bool = true
     var userDefaultsSuiteName: String? = nil
     var appGroupIdentifier: String? = nil
+    var keychainAccessGroup: String? = nil
 }
 
 class SBAScheduleManagerTests: XCTestCase {
