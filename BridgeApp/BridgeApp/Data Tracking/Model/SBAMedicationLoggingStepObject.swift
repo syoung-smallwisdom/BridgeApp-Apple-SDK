@@ -87,6 +87,12 @@ open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RS
 
 open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
     
+    open override var isForwardEnabled: Bool {
+        // Always allow the user to "Submit" their responses.
+        // TODO: syoung 08/13/2018 UX redesign to allow users to submit "did *not* take" for logging meds.
+        return true
+    }
+    
     /// Build the logging sections of the table. This is called by `buildSections(step:initialResult)` to get
     /// the logging sections of the table. That method will then append an `.addMore` section if appropriate.
     override open class func buildLoggingSections(step: SBATrackedItemsStep, result: SBATrackedItemsResult) -> (sections: [RSDTableSection], itemGroups: [RSDTableItemGroup]) {

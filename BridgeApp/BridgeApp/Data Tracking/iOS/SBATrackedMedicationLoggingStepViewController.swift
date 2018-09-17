@@ -110,12 +110,6 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
         self.assignSkipToIdentifier(reviewStep.identifier)
         self.goForward()
     }
-    
-    open override var isForwardEnabled: Bool {
-        // Always allow the user to "Submit" their responses.
-        // TODO: syoung 08/13/2018 UX redesign to allow users to submit "did *not* take" for logging meds.
-        return true
-    }
 }
 
 extension SBATrackedMedicationLoggingStepViewController: SBAMedicationLoggingCellDelegate {

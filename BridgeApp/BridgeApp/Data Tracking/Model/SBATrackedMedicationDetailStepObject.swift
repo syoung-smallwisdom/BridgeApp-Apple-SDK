@@ -119,6 +119,10 @@ open class SBATrackedMedicationDetailsDataSource : RSDStepViewModel, RSDTableDat
         return self.sections[FieldIdentifiers.schedules.sectionIndex()]
     }
     
+    override open var isForwardEnabled: Bool {
+        return super.isForwardEnabled && allAnswersValid()
+    }
+    
     open var dosageTableItem: RSDTextInputTableItem? {
         return self.sections[FieldIdentifiers.dosage.sectionIndex()].tableItems.first as? RSDTextInputTableItem
     }

@@ -37,13 +37,6 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     
     var selectedIndexPath: IndexPath?
     
-    override open var isForwardEnabled: Bool {
-        if let source = tableData as? SBATrackedMedicationDetailsDataSource {
-            return source.allAnswersValid()
-        }
-        return true
-    }
-    
     override open func viewDidLoad() {
         super.viewDidLoad()
         self.createCustomNavigationHeader()

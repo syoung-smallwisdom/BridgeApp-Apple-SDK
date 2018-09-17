@@ -53,6 +53,11 @@ open class SBATrackingDataSource : RSDStepViewModel, RSDTableDataSource {
         return self.step as! SBATrackedItemsStep
     }
     
+    /// Forward is enabled if all answers are valid and super is enabled.
+    open override var isForwardEnabled: Bool {
+        return super.isForwardEnabled && allAnswersValid()
+    }
+    
     /// Initialize a new `RSDFormStepDataSourceObject`.
     /// - parameters:
     ///     - step:             The `SBATrackedItemsStep` for this data source.
