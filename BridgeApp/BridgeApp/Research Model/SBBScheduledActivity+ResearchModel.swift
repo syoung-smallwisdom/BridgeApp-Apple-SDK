@@ -42,40 +42,4 @@ extension SBBScheduledActivity {
         }
         return SBABridgeConfiguration.shared.schemaInfo(for: activityIdentifier)
     }
-    
-    /// Instantiate a new instance of a task path for this schedule.
-    public func instantiateTaskPath() -> RSDTaskPath {
-        if let task = self.activity.activityReference as? RSDTask {
-            return RSDTaskPath(task: task)
-        }
-        else if let taskInfoStep = self.taskInfoStep() {
-            return RSDTaskPath(taskInfo: taskInfoStep)
-        }
-        else {
-            assertionFailure("Missing activity reference: \(self)")
-            return RSDTaskPath.emptyPath()
-        }
-    }
-    
-    /// Get or instantiate a task info step for this schedule.
-    public func taskInfoStep() -> RSDTaskInfoStep? {
-        if let taskInfoStep = self.activity.activityReference as? RSDTaskInfoStep {
-            return taskInfoStep
-        }
-        else if let transformer = self.activity.activityReference as? RSDTaskTransformer {
-            return RSDTaskInfoStepObject(with: self.activity.activityReference!, taskTransformer: transformer)
-        }
-        else {
-            assertionFailure("Missing activity reference: \(self)")
-            return nil
-        }
-    }
-}
-
-extension RSDTaskPath {
-    
-    /// Create an empty task path.
-    static func emptyPath() -> RSDTaskPath {
-        return RSDTaskPath(task: RSDTaskObject(identifier: "NULL", stepNavigator: RSDConditionalStepNavigatorObject(with: [])))
-    }
 }

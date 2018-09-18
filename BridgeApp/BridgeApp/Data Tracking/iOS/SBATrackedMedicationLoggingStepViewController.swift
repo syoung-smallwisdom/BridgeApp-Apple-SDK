@@ -103,18 +103,12 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
     /// Called when a user action on a cell or button is linked to a modal item.
     override open func didSelectModalItem(_ modalItem: RSDModalStepTableItem, at indexPath: IndexPath) {
         // We don't actually want to show a modal but send the user to the review step
-        guard let navigator = (self.taskController.taskPath.task?.stepNavigator as? SBAMedicationTrackingStepNavigator),
+        guard let navigator = (self.stepViewModel.parentTaskPath?.task?.stepNavigator as? SBAMedicationTrackingStepNavigator),
             let reviewStep = navigator.getReviewStep() as? SBATrackedMedicationReviewStepObject else {
             return
         }
         self.assignSkipToIdentifier(reviewStep.identifier)
         self.goForward()
-    }
-    
-    open override var isForwardEnabled: Bool {
-        // Always allow the user to "Submit" their responses.
-        // TODO: syoung 08/13/2018 UX redesign to allow users to submit "did *not* take" for logging meds.
-        return true
     }
 }
 

@@ -38,14 +38,14 @@ open class SBASymptomLoggingStepObject : SBATrackedItemsLoggingStepObject {
     
     #if !os(watchOS)
     /// Override to return a symptom logging step view controller.
-    override open func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
-        return SBASymptomLoggingStepViewController(step: self)
+    open override func instantiateViewController(with parent: RSDPathComponent?) -> (UIViewController & RSDStepController)? {
+        return SBASymptomLoggingStepViewController(step: self, parent: parent)
     }
     #endif
     
     /// Override to return a `SBASymptomLoggingDataSource`.
-    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
-        return SBASymptomLoggingDataSource(step: self, taskPath: taskPath)
+    open override func instantiateDataSource(with parent: RSDPathComponent?, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
+        return SBASymptomLoggingDataSource(step: self, parent: parent)
     }
 }
 
@@ -70,8 +70,7 @@ open class SBASymptomLoggingDataSource : SBATrackedLoggingDataSource {
         return SBASymptomTableItem(loggedResult: loggedResult, rowIndex: rowIndex)
     }
     
-    /// Returns the selection step.
-    override open func step(for tableItem: RSDModalStepTableItem) -> RSDStep {
+    override open func step(for tableItem: RSDModalStepTableItem) -> RSDStep? {
         guard let symptomItem = tableItem as? SBASymptomTableItem else {
             return super.step(for: tableItem)
         }
@@ -80,42 +79,32 @@ open class SBASymptomLoggingDataSource : SBATrackedLoggingDataSource {
         return formStep
     }
     
-    override open func willPresent(_ stepController: RSDStepController, from tableItem: RSDModalStepTableItem) {
+    override open func previousResult(for tableItem: RSDModalStepTableItem, with step: RSDStep) -> RSDResult? {
         guard let symptomItem = tableItem as? SBASymptomTableItem else {
-            super.willPresent(stepController, from: tableItem)
-            return
+            return super.previousResult(for: tableItem, with: step)
         }
-
-        // Need to append the step history twice to put the result in both the **current** and previous results.
-        // TODO: syoung 05/08/2018 Refactor to a less obfuscated way of getting results.
-        let step = stepController.step!
-        var navigator = RSDConditionalStepNavigatorObject(with: [step])
-        navigator.progressMarkers = []
-        let task = RSDTaskObject(identifier: step.identifier, stepNavigator: navigator)
-        let path = RSDTaskPath(task: task)
-        if let previousResult = symptomItem.loggedResult.findResult(with: step.identifier) {
-            path.appendStepHistory(with: previousResult)
-            path.appendStepHistory(with: previousResult)
-        }
-        path.currentStep = stepController.step
-        setupModal(stepController, path: path, tableItem: symptomItem)
+        return symptomItem.loggedResult.findResult(with: step.identifier)
     }
     
-    override open func goForward(with taskController: RSDModalStepTaskController) {
-        if let symptomItem = _currentTableItem as? SBASymptomTableItem,
-            let result = taskController.taskPath.result.findAnswerResult(with: SBASymptomTableItem.ResultIdentifier.duration.stringValue) {
-            
-            // Let the delegate know that things are changing.
-            self.delegate?.tableDataSourceWillBeginUpdate(self)
-            
-            // Update the result set for this source.
-            symptomItem.duration = SBASymptomDurationLevel(result: result)
-            updateResults(with: symptomItem)
-            
-            // reload the table delegate.
-            self.delegate?.tableDataSourceDidEndUpdate(self, addedRows: [symptomItem.indexPath], removedRows: [symptomItem.indexPath])
+    override open func saveAnswer(for tableItem: RSDModalStepTableItem, from taskViewModel: RSDTaskViewModel) {
+        guard let symptomItem = tableItem as? SBASymptomTableItem,
+            let result = taskViewModel.taskResult.findAnswerResult(with: SBASymptomTableItem.ResultIdentifier.duration.stringValue)
+            else {
+                super.saveAnswer(for: tableItem, from: taskViewModel)
+                return
         }
-        super.goForward(with: taskController)
+            
+        // Let the delegate know that things are changing.
+        self.delegate?.tableDataSourceWillBeginUpdate(self)
+        
+        // Update the result set for this source.
+        symptomItem.duration = SBASymptomDurationLevel(result: result)
+        updateResults(with: symptomItem)
+        self.delegate?.tableDataSource(self, didRemoveRows: [symptomItem.indexPath], with: .none)
+        self.delegate?.tableDataSource(self, didAddRows: [symptomItem.indexPath], with: .none)
+            
+        // reload the table delegate.
+        self.delegate?.tableDataSourceDidEndUpdate(self)
     }
     
     /// Update the logged result with the new input result.
@@ -123,7 +112,7 @@ open class SBASymptomLoggingDataSource : SBATrackedLoggingDataSource {
         
         var stepResult = self.trackingResult()
         stepResult.updateDetails(from: tableItem.loggedResult)
-        self.taskPath.appendStepHistory(with: stepResult)
+        self.taskResult.appendStepHistory(with: stepResult)
         
         // inform delegate that answers have changed
         delegate?.tableDataSource(self, didChangeAnswersIn: tableItem.indexPath.section)

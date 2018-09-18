@@ -274,7 +274,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         XCTAssertEqual(schedules, expectedSchedules)
     }
     
-    func testInstantiateTaskPath_ClientDataOnPreviousRun_NoGroup() {
+    func testInstantiateTaskViewModel_ClientDataOnPreviousRun_NoGroup() {
         
         let now = Date()
         let todayStart = now.startOfDay()
@@ -305,7 +305,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: schema)
         SBABridgeConfiguration.shared.addMapping(with: task)
         
-        let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo)
+        let (taskPath, schedule) = scheduleManager.instantiateTaskViewModel(for: taskInfo)
         let clientData = scheduleManager.clientData(with: taskInfo.identifier)
 
         XCTAssertEqual(schedule, expectedSchedule)
@@ -315,7 +315,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.guid)
     }
     
-    func testInstantiateTaskPath_ClientDataOnCurrentRun_NoGroup() {
+    func testInstantiateTaskViewModel_ClientDataOnCurrentRun_NoGroup() {
         
         let now = Date()
         let todayStart = now.startOfDay()
@@ -348,7 +348,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: schema)
         SBABridgeConfiguration.shared.addMapping(with: task)
         
-        let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo)
+        let (taskPath, schedule) = scheduleManager.instantiateTaskViewModel(for: taskInfo)
         let clientData = scheduleManager.clientData(with: taskInfo.identifier)
 
         XCTAssertEqual(schedule, expectedSchedule)
@@ -358,7 +358,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         XCTAssertEqual(taskPath.scheduleIdentifier, expectedSchedule.guid)
     }
     
-    func testInstantiateTaskPath_ClientDataOnPreviousRun_DifferentGroup() {
+    func testInstantiateTaskViewModel_ClientDataOnPreviousRun_DifferentGroup() {
         
         let now = Date()
         let todayStart = now.startOfDay()
@@ -399,7 +399,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: schema)
         SBABridgeConfiguration.shared.addMapping(with: task)
         
-        let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo, in: group1)
+        let (taskPath, schedule) = scheduleManager.instantiateTaskViewModel(for: taskInfo, in: group1)
         let clientData = scheduleManager.clientData(with: taskInfo.identifier)
 
         XCTAssertEqual(schedule, expectedSchedule)
@@ -410,7 +410,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         
     }
     
-    func testInstantiateTaskPath_NoSchedule() {
+    func testInstantiateTaskViewModel_NoSchedule() {
         
         let taskInfo = RSDTaskInfoObject(with: "test")
         let step = RSDUIStepObject(identifier: "introduction")
@@ -420,20 +420,26 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: schema)
         SBABridgeConfiguration.shared.addMapping(with: task)
         
-        let (taskPath, schedule) = scheduleManager.instantiateTaskPath(for: taskInfo)
+        let (taskPath, schedule) = scheduleManager.instantiateTaskViewModel(for: taskInfo)
         let clientData = scheduleManager.clientData(with: taskInfo.identifier)
 
         XCTAssertNil(schedule)
         XCTAssertNil(clientData)
-        XCTAssertEqual(taskPath.task?.identifier, task.identifier)
-        if let navigator = taskPath.task?.stepNavigator as? RSDConditionalStepNavigator, let step = navigator.steps.first {
+        XCTAssertEqual(taskPath.taskInfo?.identifier, task.identifier)
+        XCTAssertNil(taskPath.scheduleIdentifier)
+        
+        let taskRepo = SBATaskRepository()
+        if let transformer = try! taskRepo.taskTransformer(for: taskInfo) as? SBAConfigurationTaskTransformer,
+            let navigator = transformer.task.stepNavigator as? RSDConditionalStepNavigator,
+            let step = navigator.steps.first {
             XCTAssertEqual(step.identifier, "introduction")
         } else {
             XCTFail("Failed to return expected task.")
         }
-        XCTAssertNil(taskPath.scheduleIdentifier)
-        XCTAssertEqual(taskPath.task?.schemaInfo?.schemaIdentifier, "test")
-        XCTAssertEqual(taskPath.task?.schemaInfo?.schemaVersion, 3)
+
+        let schemaInfo = taskRepo.schemaInfo(for: taskInfo)
+        XCTAssertEqual(schemaInfo?.schemaIdentifier, "test")
+        XCTAssertEqual(schemaInfo?.schemaVersion, 3)
     }
     
     func testFetchRequestsSQL_NoGroup() {

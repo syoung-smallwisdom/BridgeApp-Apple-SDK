@@ -41,8 +41,8 @@ open class SBATrackedItemsLoggingStepObject : SBATrackedSelectionStepObject {
     /// Implement the view controller vending in the model with compile flag. This is required so that
     /// subclasses can override this method to return a different implementation of the view controller.
     /// Note: The task delegate can also override this to return a different view controller.
-    open func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
-        return SBATrackedLoggingStepViewController(step: self)
+    open func instantiateViewController(with parent: RSDPathComponent?) -> (UIViewController & RSDStepController)? {
+        return SBATrackedLoggingStepViewController(step: self, parent: parent)
     }
     #endif
     
@@ -63,8 +63,8 @@ open class SBATrackedItemsLoggingStepObject : SBATrackedSelectionStepObject {
     }
     
     /// Override to return an instance of `SBATrackedLoggingDataSource`.
-    override open func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
-        return SBATrackedLoggingDataSource(step: self, taskPath: taskPath)
+    override open func instantiateDataSource(with parent: RSDPathComponent?, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
+        return SBATrackedLoggingDataSource(step: self, parent: parent)
     }
     
     /// Override to return a collection result that is pre-populated with the a new set of logging objects.

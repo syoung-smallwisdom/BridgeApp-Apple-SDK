@@ -49,10 +49,11 @@ class TrackedLoggingDataSourceTests: XCTestCase {
     func testInitialState_NoInputFields() {
         NSLocale.setCurrentTest(Locale(identifier: "en_US"))
         
-        guard let dataSource = buildDataSource() else {
+        guard let (dataSource, parentModel) = buildDataSource() else {
             XCTFail("Failed to instantiate the data source. Exiting.")
             return
         }
+        XCTAssertNotNil(parentModel)
         
         // Must log at least one item
         XCTAssertFalse(dataSource.allAnswersValid())
@@ -98,15 +99,18 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         } else {
             XCTFail("item nil or not expected class at \(selectionIndexPath)")
         }
+        
+        XCTAssertNotNil(parentModel)
     }
     
     func testItemLogged_NoInputFields() {
         NSLocale.setCurrentTest(Locale(identifier: "en_US"))
         
-        guard let dataSource = buildDataSource() else {
+        guard let (dataSource, parentModel) = buildDataSource() else {
             XCTFail("Failed to instantiate the data source. Exiting.")
             return
         }
+        XCTAssertNotNil(parentModel)
 
         let indexPath = IndexPath(row: 2, section: 0)
         guard let choiceItem = dataSource.tableItem(at: indexPath) as? SBATrackedLoggingTableItem else {
@@ -123,9 +127,9 @@ class TrackedLoggingDataSourceTests: XCTestCase {
             
             select(indexPath: indexPath, with: dataSource)
             
-            guard let result = dataSource.taskPath.result.findResult(with: dataSource.step.identifier) as? RSDCollectionResult
+            guard let result = dataSource.taskResult.findResult(with: dataSource.step.identifier) as? RSDCollectionResult
                 else {
-                    XCTFail("Failed to get expected result. \(dataSource.taskPath.result)")
+                    XCTFail("Failed to get expected result. \(dataSource.taskResult)")
                     return
             }
             
@@ -141,16 +145,20 @@ class TrackedLoggingDataSourceTests: XCTestCase {
             XCTAssertNotNil(medB1Result)
             XCTAssertNil((medB1Result as? SBATrackedLoggingResultObject)?.loggedDate)
         }
+        
+        XCTAssertNotNil(parentModel)
     }
     
     func testAddMore_NoInputFields() {
         NSLocale.setCurrentTest(Locale(identifier: "en_US"))
         
-        guard let dataSource = buildDataSource() as? (RSDModalStepDataSource & RSDModalStepTaskControllerDelegate & SBATrackingDataSource)
+        guard let (source, parentModel) = buildDataSource(),
+            let dataSource = source as? SBATrackingReviewDataSource
             else {
             XCTFail("Failed to instantiate the data source. Exiting.")
             return
         }
+        XCTAssertNotNil(parentModel)
         
         // Log one of the items
         let loggedIndexPath = IndexPath(row: 2, section: 0)
@@ -159,9 +167,10 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         addMore(dataSource, ["medA2", "medB1", "medC1"], ["medC4"], [], ["medA2", "medB1", "medC1", "medC4"], ["medC1"], [3], [])
         addMore(dataSource, ["medA2", "medB1", "medC1", "medC4"], ["medA1"], ["medA2", "medB1"], ["medA1", "medC1", "medC4"], ["medC1"], [0], [0,1])
         addMore(dataSource, ["medA1", "medC1", "medC4"], [], ["medA1", "medC4"], ["medC1"], ["medC1"], [], [0,2])
+        XCTAssertNotNil(parentModel)
     }
     
-    func addMore(_ dataSource: (RSDModalStepDataSource & RSDModalStepTaskControllerDelegate & SBATrackingDataSource), _ initialIdentifiers: Set<String>, _ addIdentifiers: Set<String>, _ removeIdentifiers: Set<String>, _ expectedIdentifiers: Set<String>, _ previouslyLogged: [String], _ expectedAdded: Set<Int>, _ expectedRemoved: Set<Int>) {
+    func addMore(_ dataSource: SBATrackingReviewDataSource, _ initialIdentifiers: Set<String>, _ addIdentifiers: Set<String>, _ removeIdentifiers: Set<String>, _ expectedIdentifiers: Set<String>, _ previouslyLogged: [String], _ expectedAdded: Set<Int>, _ expectedRemoved: Set<Int>) {
 
         // Then edit the selection state
         let indexPath = IndexPath(row: 0, section: 1)
@@ -170,7 +179,10 @@ class TrackedLoggingDataSourceTests: XCTestCase {
             return
         }
         
-        let step = dataSource.step(for: tableItem)
+        guard let step = dataSource.step(for: tableItem) else {
+            XCTFail("Failed to get expected step from \(dataSource). Exiting.")
+            return
+        }
         XCTAssertEqual(step.identifier, "selection")
         
         guard let selectionStep = step as? SBATrackedSelectionStepObject,
@@ -181,24 +193,18 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         
         XCTAssertEqual(Set(selectionResult.selectedIdentifiers), initialIdentifiers)
         
-        let items = selectionStep.items
-        let stepController = TestStepController()
-        stepController.step = step
-        
-        dataSource.willPresent(stepController, from: tableItem)
-        
-        XCTAssertNotNil(stepController.taskController)
-        
-        guard let taskController = stepController.taskController as? RSDModalStepTaskController,
-            let taskPath = taskController.taskPath else {
-            XCTFail("Failed to set task path. Exiting.")
+        guard let taskPath = dataSource.taskViewModel(for: tableItem) else {
+            XCTFail("Failed to get expected taskViewModel. Exiting.")
             return
         }
         
-        XCTAssertEqual(taskPath.currentStep?.identifier, step.identifier)
+        let items = selectionStep.items
+        
+        taskPath.goForward()
+        let taskStep = (taskPath.task?.stepNavigator as? RSDOrderedStepNavigator)?.steps.first
+        XCTAssertEqual(taskStep?.identifier, step.identifier)
         XCTAssertTrue(taskPath.isFirstStep)
-        XCTAssertEqual(taskPath.childPaths.count, 0)
-        XCTAssertNil(taskPath.parentPath)
+        XCTAssertNil(taskPath.parent)
         XCTAssertNotNil(taskPath.task)
         
         let testDelegate = TestDataSourceDelegate()
@@ -210,16 +216,16 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         selectedIdentifiers.remove(where: { removeIdentifiers.contains($0) })
         
         stepResult.updateSelected(to: selectedIdentifiers, with: items)
-        taskPath.appendStepHistory(with: stepResult)
+        taskPath.taskResult.appendStepHistory(with: stepResult)
         
         // validate assumptions
         XCTAssertEqual(Set(selectedIdentifiers), expectedIdentifiers)
         XCTAssertEqual(Set(stepResult.selectedIdentifiers), expectedIdentifiers)
         
-        dataSource.goForward(with: taskController)
+        dataSource.saveAnswer(for: tableItem, from: taskPath)
         
-        XCTAssertTrue(testDelegate.didFinishWith_called)
         XCTAssertTrue(testDelegate.tableDataSourceWillBeginUpdate_called)
+        XCTAssertTrue(testDelegate.tableDataSourceDidEndUpdate_called)
         if let added = testDelegate.tableDataSourceDidEndUpdate_added?.map({ $0.row }),
             let removed = testDelegate.tableDataSourceDidEndUpdate_removed?.map({ $0.row }) {
             XCTAssertEqual(Set(added), expectedAdded)
@@ -228,7 +234,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
             XCTFail("tableDataSourceDidEndUpdate not called")
         }
         
-        let currentResult = dataSource.taskPath.result.findResult(with: dataSource.step.identifier)
+        let currentResult = dataSource.taskResult.findResult(with: dataSource.step.identifier)
         XCTAssertNotNil(currentResult)
         guard let loggedResult = currentResult as? SBATrackedItemsResult else {
             XCTFail("Result not of expected type")
@@ -239,7 +245,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         
         guard let collectionResult = loggedResult as? RSDCollectionResult
             else {
-                XCTFail("Failed to get expected result. \(dataSource.taskPath.result)")
+                XCTFail("Failed to get expected result. \(dataSource.taskResult)")
                 return
         }
         
@@ -314,7 +320,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         }
     }
     
-    func buildDataSource() -> RSDTableDataSource? {
+    func buildDataSource() -> (RSDTableDataSource, RSDTaskViewModel?)? {
         let (items, sections) = buildMedicationItems()
         let tracker = SBATrackedItemsStepNavigator(identifier: "Test", items: items, sections: sections)
         var result = SBATrackedLoggingCollectionResultObject(identifier: "selection")
@@ -323,7 +329,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         tracker.previousClientData = clientData
         
         let task = RSDTaskObject(identifier: "loggingTest", stepNavigator: tracker)
-        let taskPath = RSDTaskPath(task: task)
+        let taskPath = RSDTaskViewModel(task: task)
         
         let step = SBATrackedItemsLoggingStepObject(identifier: "logging", items: items, sections: sections)
         step.actions = [.addMore : RSDUIActionObject(buttonTitle: "Edit Items") ]
@@ -333,32 +339,35 @@ class TrackedLoggingDataSourceTests: XCTestCase {
             XCTFail("Failed to instantiate the data source. Exiting.")
             return nil
         }
-        return dataSource
+        return (dataSource, taskPath)
     }
 }
 
 class TestDataSourceDelegate : NSObject, RSDTableDataSourceDelegate {
 
     var answersDidChange_section: Int?
-    var didFinishWith_called: Bool = false
     var tableDataSourceWillBeginUpdate_called: Bool = false
     var tableDataSourceDidEndUpdate_added: [IndexPath]?
     var tableDataSourceDidEndUpdate_removed: [IndexPath]?
+    var tableDataSourceDidEndUpdate_called: Bool = false
     
     func tableDataSource(_ dataSource: RSDTableDataSource, didChangeAnswersIn section: Int) {
         answersDidChange_section = section
-    }
-    
-    func tableDataSource(_ dataSource: RSDTableDataSource, didFinishWith stepController: RSDStepController) {
-        didFinishWith_called = true
     }
     
     func tableDataSourceWillBeginUpdate(_ dataSource: RSDTableDataSource) {
         tableDataSourceWillBeginUpdate_called = true
     }
     
-    func tableDataSourceDidEndUpdate(_ dataSource: RSDTableDataSource, addedRows: [IndexPath], removedRows: [IndexPath]) {
-        tableDataSourceDidEndUpdate_added = addedRows
+    func tableDataSource(_ dataSource: RSDTableDataSource, didRemoveRows removedRows: [IndexPath], with animation: RSDUIRowAnimation) {
         tableDataSourceDidEndUpdate_removed = removedRows
+    }
+    
+    func tableDataSource(_ dataSource: RSDTableDataSource, didAddRows addedRows: [IndexPath], with animation: RSDUIRowAnimation) {
+        tableDataSourceDidEndUpdate_added = addedRows
+    }
+    
+    func tableDataSourceDidEndUpdate(_ dataSource: RSDTableDataSource) {
+        tableDataSourceDidEndUpdate_called = true
     }
 }

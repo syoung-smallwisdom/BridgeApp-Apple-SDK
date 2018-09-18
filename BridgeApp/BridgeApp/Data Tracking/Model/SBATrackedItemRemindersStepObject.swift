@@ -85,13 +85,15 @@ open class SBATrackedItemRemindersStepObject: RSDFormUIStepObject, RSDStepViewCo
     }
     
     /// Override to return a `SBATrackedItemReminderDataSource`.
-    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
-        return SBATrackedItemReminderDataSource(step: self, taskPath: taskPath, supportedHints: supportedHints)
+    open override func instantiateDataSource(with parent: RSDPathComponent?, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource?  {
+        return SBATrackedItemReminderDataSource(step: self, parent: parent, supportedHints: supportedHints)
     }
     
-    public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
-        return SBATrackedItemRemindersStepViewController(step: self)
+    #if !os(watchOS)
+    open func instantiateViewController(with parent: RSDPathComponent?) -> (UIViewController & RSDStepController)? {
+        return SBATrackedItemRemindersStepViewController(step: self, parent: parent)
     }
+    #endif
     
     override open func copyInto(_ copy: RSDUIStepObject) {
         super.copyInto(copy)
@@ -131,12 +133,12 @@ open class SBATrackedItemReminderDataSource : RSDFormStepDataSourceObject {
     }
     
     func updateAnswer(to result: RSDCollectionResultObject) {
-        self.taskPath.appendStepHistory(with: result)
+        self.taskResult.appendStepHistory(with: result)
     }
     
-    func updateAnswer(from modalTaskPath: RSDTaskPath, with stepIdentifier: String?) {
+    func updateAnswer(from modalTaskViewModel: RSDTaskViewModel, with stepIdentifier: String?) {
         if let modalStepIdentifier = stepIdentifier,
-            let collectionResult = modalTaskPath.result.findResult(with: modalStepIdentifier) as? RSDCollectionResultObject {
+            let collectionResult = modalTaskViewModel.taskResult.findResult(with: modalStepIdentifier) as? RSDCollectionResultObject {
             return self.updateAnswer(to: collectionResult.copy(with: self.step.identifier))
         }
     }
@@ -163,10 +165,10 @@ open class SBATrackedItemReminderDataSource : RSDFormStepDataSourceObject {
         var navigator = RSDConditionalStepNavigatorObject(with: [reminderChoicesStep])
         navigator.progressMarkers = []
         let task = RSDTaskObject(identifier: reminderChoicesStep.identifier, stepNavigator: navigator)
-        let taskPath = RSDTaskPath(task: task)
+        let taskViewModel = SBATaskViewModel(task: task)
         if let result = self.collectionResult() as? RSDCollectionResultObject {
-            taskPath.appendStepHistory(with: result.copy(with: reminderChoicesStep.identifier))
+            self.taskResult.appendStepHistory(with: result.copy(with: reminderChoicesStep.identifier))
         }
-        return RSDTaskViewController(taskPath: taskPath)
+        return RSDTaskViewController(taskViewModel: taskViewModel)
     }
 }

@@ -67,13 +67,15 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
         _commonInit()
     }
     
-    public func instantiateViewController(with taskPath: RSDTaskPath) -> (UIViewController & RSDStepController)? {
-        return SBATrackedMedicationDetailStepViewController(step: self)
+    #if !os(watchOS)
+    open func instantiateViewController(with parent: RSDPathComponent?) -> (UIViewController & RSDStepController)? {
+        return SBATrackedMedicationDetailStepViewController(step: self, parent: parent)
     }
+    #endif
     
     /// Override to return a `SBATrackedWeeklyScheduleDataSource`.
-    open override func instantiateDataSource(with taskPath: RSDTaskPath, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
-        return SBATrackedMedicationDetailsDataSource.init(identifier: identifier, step: self, taskPath: taskPath)
+    open override func instantiateDataSource(with parent: RSDPathComponent?, for supportedHints: Set<RSDFormUIHint>) -> RSDTableDataSource? {
+        return SBATrackedMedicationDetailsDataSource(step: self, parent: parent)
     }
     
     private func _commonInit() {
@@ -95,7 +97,7 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
 }
 
 /// A data source used to the weekly schedule for a medication
-open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
+open class SBATrackedMedicationDetailsDataSource : RSDStepViewModel, RSDTableDataSource {
     
     enum FieldIdentifiers : String {
         case dosage, schedules, addSchedule
@@ -108,14 +110,8 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
             }
         }
     }
-
-    public var identifier: String
     
     public var delegate: RSDTableDataSourceDelegate?
-    
-    public var step: RSDStep
-    
-    public var taskPath: RSDTaskPath!
     
     public var sections: [RSDTableSection]
     
@@ -123,17 +119,19 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
         return self.sections[FieldIdentifiers.schedules.sectionIndex()]
     }
     
+    override open var isForwardEnabled: Bool {
+        return super.isForwardEnabled && allAnswersValid()
+    }
+    
     open var dosageTableItem: RSDTextInputTableItem? {
         return self.sections[FieldIdentifiers.dosage.sectionIndex()].tableItems.first as? RSDTextInputTableItem
     }
     
-    public init (identifier: String, step: RSDStep, taskPath: RSDTaskPath) {
-        
-        self.identifier = identifier
-        self.step = step
-        self.taskPath = taskPath
+    override public init(step: RSDStep, parent: RSDPathComponent?) {
         self.sections = []
         
+        super.init(step: step, parent: parent)
+
         let previousAnswer = (step as? SBATrackedMedicationDetailStepObject)?.previousAnswer as? SBAMedicationAnswer
 
         sections.append(createDosageSection(with: previousAnswer))
@@ -256,13 +254,13 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
         return (itemsRemoved, !selected)
     }
     
-    public func appendRemoveMedicationToTaskPath() {
+    public func appendRemoveMedicationToTaskResult() {
         var stepResult = SBARemoveTrackedItemsResultObject(identifier: self.step.identifier)
         stepResult.items = [RSDIdentifier(rawValue: self.step.identifier)]
-        self.taskPath.appendStepHistory(with: stepResult)
+        self.taskResult.appendStepHistory(with: stepResult)
     }
     
-    public func appendStepResultToTaskPathAndFinish(with stepViewController: RSDStepViewController) {
+    public func appendStepResultToTaskResultAndFinish(with stepViewController: RSDStepViewController) {
         var stepResult = SBAMedicationDetailsResultObject(identifier: step.identifier)
         stepResult.dosage = self.dosageTableItem?.answerText
         var scheduleResults = [RSDWeeklyScheduleObject]()
@@ -273,7 +271,7 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
         }
         stepResult.schedules = scheduleResults
         
-        self.taskPath.appendStepHistory(with: stepResult)
+        self.taskResult.appendStepHistory(with: stepResult)
     }
     
     /// Returns the weekday choice step.
@@ -301,8 +299,7 @@ open class SBATrackedMedicationDetailsDataSource : RSDTableDataSource {
     }
     
     public func saveAnswer(_ answer: Any, at indexPath: IndexPath) throws {
-        let i = 0
-        
+        assertionFailure("Method implementation is not defined.")
     }
     
     public func selectAnswer(item: RSDTableItem, at indexPath: IndexPath) throws -> (isSelected: Bool, reloadSection: Bool) {

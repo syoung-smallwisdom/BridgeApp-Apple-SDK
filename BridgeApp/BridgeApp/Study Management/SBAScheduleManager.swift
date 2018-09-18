@@ -52,7 +52,7 @@ extension Notification.Name {
 /// activities, but will *not* cache them all in memory. Instead, it will filter out those activites that are
 /// valid for today and the most recent finished activity (if any) for each activity identifier where the
 /// "activity identifier" refers to an `SBBActivity` object's associated `SBAActivityReference`.
-open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrackingDelegate {
+open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager {
 
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
@@ -421,13 +421,14 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     ///                      `schedulePlanGUID` on the activity group is used to determine which available
     ///                      schedule is the one to associate with this task.
     /// - returns:
-    ///     - taskPath: The instantiated task path.
+    ///     - taskViewModel: The instantiated task path.
     ///     - referenceSchedule: The schedule to reference for uploading the task path results (if any).
-    open func instantiateTaskPath(for taskInfo: RSDTaskInfo, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?) {
+    open func instantiateTaskViewModel(for taskInfo: RSDTaskInfo, in activityGroup: SBAActivityGroup? = nil) -> (taskViewModel: RSDTaskViewModel, referenceSchedule: SBBScheduledActivity?) {
         let schedule = scheduledActivity(for: taskInfo.identifier, in: activityGroup)
-        let taskPath: RSDTaskPath = configuration.instantiateTaskPath(for: taskInfo, using: schedule)
-        setupTaskPath(taskPath, with: schedule)
-        return (taskPath, schedule)
+        let replacementInfo = schedule?.activity.activityReference ?? taskInfo
+        let taskViewModel: RSDTaskViewModel = try! self.instantiateTaskViewModel(task: nil, taskInfo: replacementInfo)
+        setupTaskViewModel(taskViewModel, with: schedule)
+        return (taskViewModel, schedule)
     }
     
     /// Instantiate a task path appropriate to the given task. This method will attempt to map the
@@ -447,13 +448,13 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     ///                      `schedulePlanGUID` on the activity group is used to determine which available
     ///                      schedule is the one to associate with this task.
     /// - returns:
-    ///     - taskPath: The instantiated task path.
+    ///     - taskViewModel: The instantiated task path.
     ///     - referenceSchedule: The schedule to reference for uploading the task path results (if any).
-    open func instantiateTaskPath(for task: RSDTask, in activityGroup: SBAActivityGroup? = nil) -> (taskPath: RSDTaskPath, referenceSchedule: SBBScheduledActivity?) {
+    open func instantiateTaskViewModel(for task: RSDTask, in activityGroup: SBAActivityGroup? = nil) -> (taskViewModel: RSDTaskViewModel, referenceSchedule: SBBScheduledActivity?) {
         let schedule = scheduledActivity(for: task.identifier, in: activityGroup)
-        let taskPath: RSDTaskPath = RSDTaskPath(task: task)
-        setupTaskPath(taskPath, with: schedule)
-        return (taskPath, schedule)
+        let taskViewModel = try! self.instantiateTaskViewModel(task: task, taskInfo: nil)
+        setupTaskViewModel(taskViewModel, with: schedule)
+        return (taskViewModel, schedule)
     }
     
     /// Instantiate a task path appropriate to the given schedule.
@@ -464,10 +465,10 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     ///
     /// - parameter schedule: The schedule to use to set up the task.
     /// - returns: The instantiated task path.
-    open func instantiateTaskPath(for schedule: SBBScheduledActivity) -> RSDTaskPath {
-        let taskPath = schedule.instantiateTaskPath()
-        setupTaskPath(taskPath, with: schedule)
-        return taskPath
+    open func instantiateTaskViewModel(for schedule: SBBScheduledActivity) -> RSDTaskViewModel {
+        let taskViewModel: RSDTaskViewModel = try! self.instantiateTaskViewModel(task: nil, taskInfo: schedule.activity.activityReference)
+        setupTaskViewModel(taskViewModel, with: schedule)
+        return taskViewModel
     }
     
     func scheduledActivity(for taskIdentifier: String, in activityGroup: SBAActivityGroup?) -> SBBScheduledActivity? {
@@ -493,11 +494,10 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
         return schedule
     }
     
-    func setupTaskPath(_ taskPath: RSDTaskPath, with schedule: SBBScheduledActivity?) {
+    func setupTaskViewModel(_ taskViewModel: RSDTaskViewModel, with schedule: SBBScheduledActivity?) {
         
         // Assign values to the task path from the schedule.
-        taskPath.scheduleIdentifier = schedule?.guid
-        taskPath.trackingDelegate = self
+        taskViewModel.scheduleIdentifier = schedule?.guid
         
         // Set up the data groups tracking rule.
         if let participant = SBAParticipantManager.shared.studyParticipant {
@@ -505,7 +505,7 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
             // saved. So these changes should **not** be commited. Throw them out.
             SBAFactory.shared.trackingRules.remove(where: { $0 is DataGroupsTrackingRule})
             let rule = DataGroupsTrackingRule(initialCohorts: participant.dataGroups ?? [])
-            rule.taskRunUUID = taskPath.result.taskRunUUID
+            rule.taskRunUUID = taskViewModel.taskResult.taskRunUUID
             SBAFactory.shared.trackingRules.append(rule)
         } else {
             debugPrint("WARNING: Missing a study particpant. Cannot get the data groups.")
@@ -551,7 +551,7 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     open func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
         if reason != .completed {
             // If the task finished with an error or discarded results, then delete the output directory.
-            taskController.taskPath.deleteOutputDirectory()
+            taskController.taskViewModel.deleteOutputDirectory()
             if let err = error {
                 debugPrint("WARNING! Task failed: \(err)")
             }
@@ -559,38 +559,33 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     }
     
     /// Call from the view controller that is used to display the task when the task is ready to save.
-    open func taskController(_ taskController: RSDTaskController, readyToSave taskPath: RSDTaskPath) {
-        self.saveResults(from: taskPath)
+    open func taskController(_ taskController: RSDTaskController, readyToSave taskViewModel: RSDTaskViewModel) {
+        self.saveResults(from: taskViewModel)
     }
     
     /// Allow saving the results from a given task path.
-    open func saveResults(from taskPath: RSDTaskPath, _ completionHandler: (() -> Void)? = nil) {
+    open func saveResults(from taskViewModel: RSDTaskViewModel, _ completionHandler: (() -> Void)? = nil) {
         // Update the schedule on the server but only if the survey was not ended early. In that case, only
         // send the archive but do not mark the task as finished or update the data groups.
         self.offMainQueue.async {
-            if !taskPath.didExitEarly {
-                self.updateDataGroups(for: taskPath)
-                self.saveReports(for: taskPath)
-                self.updateSchedules(for: taskPath)
+            if !taskViewModel.didExitEarly {
+                self.updateDataGroups(for: taskViewModel)
+                self.saveReports(for: taskViewModel)
+                self.updateSchedules(for: taskViewModel)
             }
-            self.archiveAndUpload(taskPath: taskPath)
+            self.archiveAndUpload(taskViewModel: taskViewModel)
             completionHandler?()
         }
-    }
-    
-    /// Do nothing.
-    open func taskController(_ taskController: RSDTaskController, asyncActionControllerFor configuration: RSDAsyncActionConfiguration) -> RSDAsyncActionController? {
-        return nil
     }
     
     // MARK: Upload to server
     
     /// Update the data groups. By default, this will look for changes on the shared `DataGroupsTrackingRule`.
     ///
-    /// - parameter taskPath: The task path for the task which has just run.
-    open func updateDataGroups(for taskPath: RSDTaskPath) {
+    /// - parameter taskViewModel: The task path for the task which has just run.
+    open func updateDataGroups(for taskViewModel: RSDTaskViewModel) {
         let rules = SBAFactory.shared.trackingRules.remove {
-            ($0 as? DataGroupsTrackingRule)?.taskRunUUID == taskPath.result.taskRunUUID
+            ($0 as? DataGroupsTrackingRule)?.taskRunUUID == taskViewModel.taskResult.taskRunUUID
         }
         guard let rule = rules.first as? DataGroupsTrackingRule,
             rule.initialCohorts != rule.currentCohorts
@@ -608,16 +603,16 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     /// Update the values on the scheduled activity. By default, this will recurse through the task path
     /// and its children, looking for a schedule associated with the subtask path.
     ///
-    /// - parameter taskPath: The task path for the task which has just run.
-    public func updateSchedules(for taskPath: RSDTaskPath) {
-        guard taskPath.parentPath == nil else {
+    /// - parameter taskViewModel: The task path for the task which has just run.
+    public func updateSchedules(for taskViewModel: RSDTaskViewModel) {
+        guard taskViewModel.parent == nil else {
             assertionFailure("This method should **only** be called for the top-level task path.")
             return
         }
         
         // Recursively get and update all the schedules in this task path.
         var schedules = [SBBScheduledActivity]()
-        func appendSchedule(_ taskResult: RSDTaskResult,_ scheduleIdentifier: String?) {
+        func appendSchedule(_ taskResult: RSDTaskResult, _ scheduleIdentifier: String?) {
             if let schedule = self.getAndUpdateSchedule(for: taskResult, with: scheduleIdentifier) {
                 schedules.append(schedule)
             }
@@ -626,10 +621,10 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
                 appendSchedule(subtaskResult, nil)
             }
         }
-        appendSchedule(taskPath.result, taskPath.scheduleIdentifier)
+        appendSchedule(taskViewModel.taskResult, taskViewModel.scheduleIdentifier)
         
         // Send message to server that the scheduled activites were updated.
-        self.sendUpdated(for: schedules, taskPath: taskPath)
+        self.sendUpdated(for: schedules, taskViewModel: taskViewModel)
     }
     
     /// For each schedule that this task modifies, mark it as completed and add the client data.
@@ -653,8 +648,8 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     ///
     /// - parameters:
     ///     - schedules: The schedules for which to send updates.
-    ///     - taskPath: The task path (if available) for the task run that triggered this update.
-    open func sendUpdated(for schedules: [SBBScheduledActivity], taskPath: RSDTaskPath? = nil) {
+    ///     - taskViewModel: The task path (if available) for the task run that triggered this update.
+    open func sendUpdated(for schedules: [SBBScheduledActivity], taskViewModel: RSDTaskViewModel? = nil) {
         
         let guids = schedules.map { $0.guid }
         
@@ -677,14 +672,14 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     /// DO NOT MAKE OPEN. This method retains the task path until archiving is completed and because it
     /// nils out the pointer to the task path with a strong reference to `self`, it will also retain the
     /// schedule manager until the completion block is called. syoung 05/31/2018
-    private final func archiveAndUpload(taskPath: RSDTaskPath) {
+    private final func archiveAndUpload(taskViewModel: RSDTaskViewModel) {
         let uuid = UUID()
-        self._retainedPaths[uuid] = taskPath
-        taskPath.archiveResults(with: self) {
+        self._retainedPaths[uuid] = taskViewModel
+        taskViewModel.archiveResults(with: self) {
             self._retainedPaths[uuid] = nil
         }
     }
-    private var _retainedPaths: [UUID : RSDTaskPath] = [:]
+    private var _retainedPaths: [UUID : RSDTaskViewModel] = [:]
     
     // MARK: RSDDataArchiveManager
     
@@ -736,7 +731,7 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     }
     
     /// Finalize the upload of all the created archives.
-    public final func encryptAndUpload(taskPath: RSDTaskPath, dataArchives: [RSDDataArchive], completion: @escaping (() -> Void)) {
+    public final func encryptAndUpload(taskViewModel: RSDTaskViewModel, dataArchives: [RSDDataArchive], completion:@escaping (() -> Void)) {
         let archives: [SBBDataArchive] = dataArchives.compactMap {
             guard let archive = $0 as? SBBDataArchive, self.shouldUpload(archive: archive) else { return nil }
             return archive
@@ -759,8 +754,8 @@ open class SBAScheduleManager: SBAReportManager, RSDDataArchiveManager, RSDTrack
     }
     
     /// By default, if an archive fails, the error is printed and that's all that is done.
-    open func handleArchiveFailure(taskPath: RSDTaskPath, error: Error, completion: @escaping (() -> Void)) {
-        debugPrint("WARNING! Failed to archive \(taskPath.identifier). \(error)")
+    open func handleArchiveFailure(taskViewModel: RSDTaskViewModel, error: Error, completion:@escaping (() -> Void)) {
+        debugPrint("WARNING! Failed to archive \(taskViewModel.identifier). \(error)")
         completion()
     }
     

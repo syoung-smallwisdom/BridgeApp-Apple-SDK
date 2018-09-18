@@ -36,23 +36,16 @@ import Foundation
 /// `RSDModuleIdentifier` is intended to allow a developer to add a light-weight reference to
 /// active task modules (such as a tapping task or hole-in-peg test) by referencing an identifier
 /// string that can be used to reference a module defined in a different framework.
-public struct SBAModuleIdentifier : RawRepresentable, Codable {
-    public private(set) var rawValue: String
+public struct SBAModuleIdentifier : RawRepresentable, Codable, Hashable  {
+    
+    public let rawValue: String
     
     public init(rawValue: String) {
         self.rawValue = rawValue
     }
     
-    // MARK: Include a list of module ids below:
-    
-    /// Framework level module list
-    public func taskTransformer() -> RSDTaskTransformer? {
-        // If a module is added as a static variable on this struct, it should also
-        // be added here.
-        switch self {
-        default:
-            return nil
-        }
+    public var hashValue : Int {
+        return self.rawValue.hashValue
     }
 }
 
@@ -63,9 +56,10 @@ extension RSDIdentifier {
     }
 }
 
-extension SBAModuleIdentifier : Hashable {
-    public var hashValue : Int {
-        return self.rawValue.hashValue
+extension String {
+    
+    public var moduleIdentifier : SBAModuleIdentifier {
+        return SBAModuleIdentifier(rawValue: self)
     }
 }
 
