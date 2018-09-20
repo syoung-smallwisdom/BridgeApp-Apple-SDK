@@ -156,9 +156,9 @@ open class SBATrackedMedicationDetailsDataSource : RSDStepViewModel, RSDTableDat
         var scheduleTableItems = [SBATrackedWeeklyScheduleTableItem]()
         if let previousAnswerUnwrapped = previousAnswer,
             let scheduleItemsUnwrapped = previousAnswerUnwrapped.scheduleItems {
-            for scheudle in scheduleItemsUnwrapped {
+            for schedule in scheduleItemsUnwrapped.sorted() {
                 let scheduleItem = SBATrackedWeeklyScheduleTableItem(identifier:
-                    String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, 0), rowIndex: 0, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId, schedule: scheudle)
+                    String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, 0), rowIndex: 0, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId, schedule: schedule)
                 
                 scheduleTableItems.append(scheduleItem)
             }

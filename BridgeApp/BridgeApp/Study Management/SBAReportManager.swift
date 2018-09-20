@@ -257,7 +257,7 @@ open class SBAReportManager: NSObject {
         let reportIdentifier = self.reportIdentifier(for: activityIdentifier)
         let report = reports.sorted { (lhs, rhs) -> Bool in
             return lhs.date < rhs.date
-            }.rsd_last { $0.identifier == reportIdentifier }
+            }.last { $0.identifier == reportIdentifier }
         return report?.clientData
     }
     
@@ -506,9 +506,9 @@ open class SBAReportManager: NSObject {
             }
         }
         
-        let dictionary = try results.rsd_filteredDictionary { (result) throws -> (String, SBBJSONValue)? in
-            guard let data = try getClientData(result) else { return nil }
-            return (result.identifier, data)
+        let dictionary = try results.reduce(into: [String : SBBJSONValue]()) { (hashtable, result) in
+            guard let data = try getClientData(result) else { return }
+            hashtable[result.identifier] = data
         }
         
         // Return the "most appropriate" value for the combined results.

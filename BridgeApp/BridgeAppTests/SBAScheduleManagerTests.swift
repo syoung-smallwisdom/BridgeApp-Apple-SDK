@@ -101,16 +101,16 @@ class SBAScheduleManagerTests: XCTestCase {
     }
     
     func createSchedules(identifiers: [String], clientData: [String : SBBJSONValue]? = nil) -> ([String : SBBScheduledActivity]) {
-        let schedules: [String : SBBScheduledActivity] = identifiers.rsd_filteredDictionary {
-            let schedule = self.createSchedule(with: RSDIdentifier(rawValue: $0),
+        let schedules = identifiers.reduce(into: [String : SBBScheduledActivity] ()) { (hashtable, identifier) in
+            let schedule = self.createSchedule(with: RSDIdentifier(rawValue: identifier),
                                                scheduledOn: Date().startOfDay(),
                                                expiresOn: nil,
                                                finishedOn: nil,
-                                               clientData: clientData?[$0],
+                                               clientData: clientData?[identifier],
                                                schedulePlanGuid: UUID().uuidString,
                                                activityGuid: UUID().uuidString)
             self.scheduleManager.scheduledActivities.append(schedule)
-            return ($0, schedule)
+            hashtable[identifier] = schedule
         }
         return schedules
     }

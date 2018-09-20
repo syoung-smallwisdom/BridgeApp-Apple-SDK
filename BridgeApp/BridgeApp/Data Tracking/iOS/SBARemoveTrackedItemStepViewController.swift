@@ -66,7 +66,7 @@ open class SBARemoveTrackedItemStepViewController: RSDStepViewController {
                 if let underlinedRange = title.range(of: underlinedSegment) {
                     let underlinedIndex = title.distance(from: title.startIndex, to: underlinedRange.lowerBound)
                     let attributedText = NSMutableAttributedString(string: title)
-                    attributedText.addAttribute(NSAttributedStringKey.underlineStyle, value: NSUnderlineStyle.styleSingle.rawValue, range: NSMakeRange(underlinedIndex, underlinedSegment.count))
+                    attributedText.addAttribute(NSAttributedString.Key.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(underlinedIndex, underlinedSegment.count))
                     self.titleLabel?.attributedText = attributedText
                 }
             } else {

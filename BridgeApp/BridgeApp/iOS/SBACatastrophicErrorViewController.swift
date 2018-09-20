@@ -69,7 +69,7 @@ class SBACatastrophicErrorViewController: UIViewController {
         
         // If the button title is nil set to default title.
         let buttonTitle = buttonText ?? String.localizedStringWithFormat(Localization.localizedString("UPDATE_APP_BUTTON"), Localization.localizedAppName)
-        actionButton.setTitle(buttonTitle, for: UIControlState())
+        actionButton.setTitle(buttonTitle, for: UIControl.State())
         
         // If the action handler is nil then set to default of opening the app for update.
         if action != nil {
@@ -78,7 +78,7 @@ class SBACatastrophicErrorViewController: UIViewController {
         else {
             actionHandler = { _ in
                 let url = Bundle.main.appStoreLinkURL()
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                UIApplication.shared.open(url, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             }
         }
     }
@@ -89,4 +89,9 @@ class SBACatastrophicErrorViewController: UIViewController {
     @IBAction func actionButtonTapped(_ sender: AnyObject) {
         actionHandler?(self)
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }

@@ -232,7 +232,12 @@ class ArchivableTrackingTests: XCTestCase {
                         let schedule = schedules.first {
                         XCTAssertEqual(schedules.count, 1)
                         XCTAssertEqual(schedule["timeOfDay"] as? String, "08:00")
-                        XCTAssertEqual(schedule["daysOfWeek"] as? [Int], [6,4,2])
+                        if let daysOfWeek = schedule["daysOfWeek"] as? [Int] {
+                            XCTAssertEqual(Set(daysOfWeek), [6,4,2])
+                        }
+                        else {
+                            XCTFail("Failed to encode `daysOfWeek`.")
+                        }
                     }
                     else {
                         XCTFail("Client data 'schedules' missing or unexpected type. \(items)")

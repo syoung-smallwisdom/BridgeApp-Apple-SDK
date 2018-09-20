@@ -87,7 +87,7 @@ public final class SBAParticipantManager : NSObject {
                 fatalError("Expecting a non-nil user session info")
             }
             let authenticated = info.authenticated?.boolValue ?? false
-            let consented = info.consentedValue ?? false
+            let consented = info.consentedValue
             let hasChanges = (authenticated && !self.isAuthenticated) ||
                 consented != self.isConsented ||
                 !RSDObjectEquality(info.studyParticipant.dataGroups, self.studyParticipant?.dataGroups)
@@ -106,7 +106,7 @@ public final class SBAParticipantManager : NSObject {
         }
         
         // Add an observer the app entering the foreground to check for whether or not "today" is still valid.
-        NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: self.updateQueue) { (notification) in
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: self.updateQueue) { (notification) in
             self.reload(allFuture: false)
         }
     }
