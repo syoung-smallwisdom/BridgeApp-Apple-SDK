@@ -111,33 +111,40 @@ class MedicationTrackingNavigationTests: XCTestCase {
         
         var medication = SBAMedicationAnswer(identifier: detailStep.identifier)
         medication.dosage = "10 mg"
-        let monThruWed: [RSDWeekday] = [.monday, .tuesday, .wednesday]
-        let friThruSun: [RSDWeekday] = [.friday, .saturday, .sunday]
-        medication.scheduleItems = Set([RSDWeeklyScheduleObject(timeOfDayString: "07:00", daysOfWeek: Set(monThruWed)), RSDWeeklyScheduleObject(timeOfDayString: "17:00", daysOfWeek: Set(friThruSun))])
+        let monThruWed: Set<RSDWeekday> = [.monday, .tuesday, .wednesday]
+        let friThruSun: Set<RSDWeekday> = [.friday, .saturday, .sunday]
+        medication.scheduleItems = Set([RSDWeeklyScheduleObject(timeOfDayString: "07:00", daysOfWeek: monThruWed), RSDWeeklyScheduleObject(timeOfDayString: "17:00", daysOfWeek: friThruSun)])
         detailStep.updatePreviousAnswer(answer: medication)
         if let dataSource = detailStep.instantiateDataSource(with: taskPath, for: Set()) as? SBATrackedMedicationDetailsDataSource {
             XCTAssertEqual(dataSource.sections.count, 3)
+            if dataSource.sections.count == 3 {
             
-            XCTAssertEqual(dataSource.sections[0].identifier, "dosage")
-            if let dosageTableItem = dataSource.sections[0].tableItems[0] as? RSDTextInputTableItem {
-                XCTAssertEqual(dosageTableItem.answerText, "10 mg")
-            } else {
-                XCTFail("dosage table item not instantiated")
+                XCTAssertEqual(dataSource.sections[0].identifier, "dosage")
+                if let dosageTableItem = dataSource.sections[0].tableItems[0] as? RSDTextInputTableItem {
+                    XCTAssertEqual(dosageTableItem.answerText, "10 mg")
+                } else {
+                    XCTFail("dosage table item not instantiated")
+                }
+                
+                XCTAssertEqual(dataSource.sections[1].identifier, "schedules")
+                XCTAssertEqual(dataSource.sections[1].tableItems.count, 2)
+                if let scheduleTableItem = dataSource.sections[1].tableItems.first as? SBATrackedWeeklyScheduleTableItem {
+                    XCTAssertEqual(RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.string(from: scheduleTableItem.time!), "07:00")
+                    if let weekdays = scheduleTableItem.weekdays {
+                        XCTAssertEqual(Set(weekdays), monThruWed)
+                    }
+                    else {
+                        XCTFail("schedule table item weekdays are null")
+                    }
+                } else {
+                    XCTFail("schedule table item 1 not instantiated")
+                }
+                
+                XCTAssertEqual(dataSource.sections[2].identifier, "addSchedule")
             }
-            
-            XCTAssertEqual(dataSource.sections[1].identifier, "schedules")
-            XCTAssertEqual(dataSource.sections[1].tableItems.count, 2)
-            if let scheduleTableItem = dataSource.sections[1].tableItems[0] as? SBATrackedWeeklyScheduleTableItem {
-                XCTAssertEqual(RSDDateCoderObject.hourAndMinutesOnly.inputFormatter.string(from: scheduleTableItem.time!), "07:00")
-                XCTAssertEqual(scheduleTableItem.weekdays?.count, 3)
-                XCTAssertTrue(scheduleTableItem.weekdays!.contains(monThruWed[0]))
-                XCTAssertTrue(scheduleTableItem.weekdays!.contains(monThruWed[1]))
-                XCTAssertTrue(scheduleTableItem.weekdays!.contains(monThruWed[2]))
-            } else {
-                XCTFail("schedule table item 1 not instantiated")
+            else {
+                XCTFail("Number of sections does not equal expected.")
             }
-            
-            XCTAssertEqual(dataSource.sections[2].identifier, "addSchedule")
         } else {
             XCTFail("detail data source not instantiated")
         }
