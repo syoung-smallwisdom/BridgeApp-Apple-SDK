@@ -34,7 +34,7 @@
 import Foundation
 import HealthKit
 
-public protocol SBAProfileItem : class {
+public protocol SBAProfileItem {
     /// profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
     /// within an app.
     var profileKey: String { get }
@@ -70,9 +70,11 @@ public protocol SBAProfileItem : class {
     /// Is the value read-only?
     var readonly: Bool { get }
     
+/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
     /// Some of the stored value types have a unit associated with them that is used to
     /// build the model object into an `HKQuantity`.
     var unit: HKUnit? { get }
+ */
     
     /// Class type to which to deserialize this profile item.
     var type: SBAProfileItemType { get }
@@ -117,16 +119,6 @@ extension SBAProfileItem {
         default:
             return nil
         }
-    }
-    
-    func commonJsonValueSetter(value: SBBJSONValue?) {
-        guard value != nil else {
-            self.value = nil
-            return
-        }
-        
-        guard let itemValue = commonJsonToItemType(value: value) else { return }
-        self.value = itemValue
     }
     
     public func commonJsonToItemType(value: SBBJSONValue?) -> Any? {
@@ -236,9 +228,11 @@ extension SBAProfileItem {
             if (newValue as? NSNumber != nil) {
                 return true
             }
+/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
             else if let quantity = newValue as? HKQuantity {
                 return quantity.is(compatibleWith: self.unit ?? commonDefaultUnit())
             }
+ */
             return false
             
         case SBAProfileTypeIdentifier.bool:
@@ -270,11 +264,14 @@ extension SBAProfileItem {
         }
     }
     
+/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
     func commonDefaultUnit() -> HKUnit {
         return HKUnit.count()
     }
+ */
 }
 
+/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
 extension HKBiologicalSex {
     public var demographicDataValue: NSString? {
         switch (self) {
@@ -289,8 +286,9 @@ extension HKBiologicalSex {
         }
     }
 }
+ */
 
-
+/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 open class SBAProfileItemBase: SBAProfileItem, Decodable {
     
     /// The value property is used to get and set the profile item's value in whatever internal data
@@ -420,7 +418,6 @@ extension NSDate: PlistValue {}
 extension Data: PlistValue {}
 extension Date: PlistValue {}
 
-/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 enum SBAProfileParticipantSourceKey: String {
     case firstName
     case lastName

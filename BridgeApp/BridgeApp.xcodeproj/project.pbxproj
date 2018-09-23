@@ -15,7 +15,6 @@
 		60D9611F20BF161300B5CFEB /* SBAProfileDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */; };
 		60D9612220BF161300B5CFEB /* SBAProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611A20BF161200B5CFEB /* SBAProfileManager.swift */; };
 		60E84E5C20D306A9000DDCB1 /* SBAProfileItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E84E5B20D306A9000DDCB1 /* SBAProfileItemType.swift */; };
-		60E86E21212B30780073C69C /* SBAResourceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E86E0C212B30780073C69C /* SBAResourceFinder.swift */; };
 		CB18538021064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB18537F21064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift */; };
 		CB185396210650670076EFBB /* SBARemoveTrackedItemStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB185395210650670076EFBB /* SBARemoveTrackedItemStepObject.swift */; };
 		CB267A9D20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */; };
@@ -292,7 +291,6 @@
 		60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileDataSource.swift; sourceTree = "<group>"; };
 		60D9611A20BF161200B5CFEB /* SBAProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileManager.swift; sourceTree = "<group>"; };
 		60E84E5B20D306A9000DDCB1 /* SBAProfileItemType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAProfileItemType.swift; sourceTree = "<group>"; };
-		60E86E0C212B30780073C69C /* SBAResourceFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAResourceFinder.swift; sourceTree = "<group>"; };
 		CB18537F21064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATrackedItemRemindersStepObject.swift; sourceTree = "<group>"; };
 		CB185395210650670076EFBB /* SBARemoveTrackedItemStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBARemoveTrackedItemStepObject.swift; sourceTree = "<group>"; };
 		CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATrackedMedicationLoggingStepViewController.swift; sourceTree = "<group>"; };
@@ -738,7 +736,6 @@
 				F8A5CE4920A2AE7100E9FD75 /* SBARootViewController.swift */,
 				F8A5CE4D20A2BBEF00E9FD75 /* CatastrophicError.storyboard */,
 				F8A5CE4E20A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift */,
-				60E86E0C212B30780073C69C /* SBAResourceFinder.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -1087,7 +1084,6 @@
 				F8398C9A212C868A005DE6E0 /* SBAReportManager.swift in Sources */,
 				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,
 				F8A5CE9020A3837100E9FD75 /* SBAParticipantManager.swift in Sources */,
-				60E86E21212B30780073C69C /* SBAResourceFinder.swift in Sources */,
 				F8479527207FEA9D0024A230 /* SBATrackingDataSource.swift in Sources */,
 				F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */,
 				F847951E207FEA9D0024A230 /* SBATrackedItem.swift in Sources */,

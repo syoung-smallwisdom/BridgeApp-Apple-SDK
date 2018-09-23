@@ -115,4 +115,13 @@ open class SBAFactory : RSDFactory {
             return try super.decodeStep(from: decoder, with: type)
         }
     }
+    
+    open func decodeProfileManager(from decoder: Decoder) throws -> SBAProfileManager {
+        return try SBAProfileManagerObject(from: decoder)
+    }
+    
+    open func decodeProfileDataSource(from decoder: Decoder) throws -> SBAProfileDataSource {
+        return try SBAProfileDataSourceObject(from: decoder)
+    }
+
 }

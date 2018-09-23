@@ -106,22 +106,22 @@ public protocol SBAProfileSection {
 /// A protocol for defining items to be shown in a profile table.
 public protocol SBAProfileTableItem {
     /// The title text to show for the item.
-    var title: String { get }
+    var title: String? { get }
     
     /// Detail text to show for the item.
     var detail: String? { get }
     
     /// Is the table item editable?
-    var isEditable: Bool { get }
+    var isEditable: Bool? { get }
     
     /// A set of cohorts (data groups) the participant must be in, in order to show this item in its containing profile section.
-    var inCohorts: Set<String> { get }
+    var inCohorts: Set<String>? { get }
     
     /// A set of cohorts (data groups) the participant must **not** be in, in order to show this item in its containing profile section.
-    var notInCohorts: Set<String> { get }
+    var notInCohorts: Set<String>? { get }
     
     /// The action to perform when the item is selected.
-    var onSelected: SBAProfileOnSelectedAction { get }
+    var onSelected: SBAProfileOnSelectedAction? { get }
 }
 
 /// A concrete implementation of the `SBAProfileSection` protocol which implements the Decodable protocol so it can be described in JSON.
@@ -131,11 +131,18 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
     private var allItems: [SBAProfileTableItem] = []
     open var items: [SBAProfileTableItem] {
         get {
+            
             let cohorts = SBAParticipantManager.shared.studyParticipant?.dataGroups ?? Set<String>()
             return allItems.filter({ (tableItem) -> Bool in
                 // return true if participant data groups include all of the inCohorts and none of the notInCohorts
-                return (tableItem.inCohorts.intersection(cohorts) == tableItem.inCohorts &&
-                        tableItem.notInCohorts.isDisjoint(with: cohorts))
+                guard tableItem.inCohorts != nil || tableItem.notInCohorts != nil
+                    else {
+                        return true
+                }
+                let mustBeIn = tableItem.inCohorts ?? Set<String>()
+                let mustNotBeIn = tableItem.notInCohorts ?? Set<String>()
+                return (mustBeIn.intersection(cohorts) == mustBeIn &&
+                        mustNotBeIn.isDisjoint(with: cohorts))
             })
         }
         set {
@@ -200,8 +207,8 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
             // TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 //        case .profileItem:
 //            return try SBAProfileItemProfileTableItem(from: decoder)
-        case .resource:
-            return try SBAResourceProfileTableItem(from: decoder)
+//        case .resource:
+//            return try SBAResourceProfileTableItem(from: decoder)
         default:
             assertionFailure("Attempt to decode profile table item of unknown type \(type.rawValue)")
             return nil
@@ -209,7 +216,7 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
     }
 
 }
-
+/*
 /// A concrete base class implementation of the `SBAProfileTableItem` protocol which implements the Decodable protocol so it can be described in JSON.
 open class SBAProfileTableItemBase: SBAProfileTableItem, Decodable {
     open var title: String
@@ -256,44 +263,75 @@ open class SBAProfileTableItemBase: SBAProfileTableItem, Decodable {
         }
     }
 }
+*/
 
 /// A profile table item that displays HTML when selected.
-open class SBAHTMLProfileTableItem: SBAProfileTableItemBase {
-    /// Overridden to return .showHTML as the default onSelected action.
-    override open func defaultOnSelectedAction() -> SBAProfileOnSelectedAction {
+public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResourceTransformer {
+    private enum CodingKeys: String, CodingKey {
+        case title, detail, inCohorts, notInCohorts, htmlResource, bundleIdentifier
+    }
+    
+    // MARK: SBAProfileTableItem
+    /// Title to show for the table item.
+    public var title: String?
+    
+    /// Detail text to show for the table item.
+    public var detail: String?
+    
+    /// HTML profile table items are not editable.
+    public var isEditable: Bool? {
+        return false
+    }
+    
+    /// A set of cohorts (data groups) the participant must be in, in order to show this item in its containing profile section.
+    public var inCohorts: Set<String>?
+    
+    /// A set of cohorts (data groups) the participant must not be in, in order to show this item in its containing profile section.
+    public var notInCohorts: Set<String>?
+    
+    /// HTML items show the HTML when selected.
+    public var onSelected: SBAProfileOnSelectedAction? {
         return .showHTML
     }
     
-    open var htmlResource: String
+    // MARK: HTML Profile Table Item
     
-    open var html: String? {
-        return SBAResourceFinder.shared.html(forResource: htmlResource)
-    }
+    /// The htmlResource for this item.
+    public let htmlResource: String
     
-    open var url: URL? {
-        if htmlResource.hasPrefix("http") || htmlResource.hasPrefix("file") {
-            return URL(string: htmlResource)
+    /// Get a URL pointer to the HTML resource.
+    public var url: URL? {
+        do {
+            let (url,_) = try self.resourceURL(ofType: "html")
+            return url
         }
-        else {
-            return SBAResourceFinder.shared.url(forResource: htmlResource, withExtension:"html")
+        catch let err {
+            debugPrint("Error getting the URL: \(err)")
+            return nil
         }
     }
     
-    // MARK: Decoder
-    private enum CodingKeys: String, CodingKey {
-        case htmlResource
+    
+    // MARK: RSDResourceTransformer
+    
+    /// The bundle identifier for the resource bundle that contains the html.
+    public var bundleIdentifier: String?
+    
+    /// The default bundle from the factory used to decode this object.
+    public var factoryBundle: Bundle? = nil
+    
+    /// `RSDResourceTransformer` uses this to get the URL.
+    public var resourceName: String {
+        return htmlResource
     }
     
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        htmlResource = try container.decode(String.self, forKey: .htmlResource)
-        
-        try super.init(from: decoder)
-        
-        // HTML profile table items are not editable
-        self.isEditable = false
+    /// Ignored - required to conform to `RSDResourceTransformer`
+    public var classType: String? {
+        return nil
     }
+
 }
+
 
 /* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 open class SBAProfileItemProfileTableItem: SBAProfileTableItemBase {
@@ -429,29 +467,54 @@ open class SBAProfileItemProfileTableItem: SBAProfileTableItemBase {
         answerMapKeys = try container.decodeIfPresent([String: String].self, forKey: .answerMapKeys) ?? [self.profileItemKey: self.profileItemKey]
     }
 }
- */
 
 /// A profile table item that opens a resource (for example, a task defined in JSON) when selected.
-open class SBAResourceProfileTableItem: SBAProfileTableItemBase {
-    /// Overridden to return .showResource as the default onSelected action.
-    override open func defaultOnSelectedAction() -> SBAProfileOnSelectedAction {
-        return .showResource
-    }
-
-    open var resource: String
-    
-    // MARK: Decoder
+public struct SBAResourceProfileTableItem: SBAProfileTableItem, Decodable, RSDResourceTransformer {
     private enum CodingKeys: String, CodingKey {
-        case resource
+        case title, detail, isEditable, inCohorts, notInCohorts, onSelected, resource, bundleIdentifier
     }
     
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        resource = try container.decode(String.self, forKey: .resource)
-
-        try super.init(from: decoder)
-        
-        // Resource profile table items are not editable
-        self.isEditable = false
+    // MARK: SBAProfileTableItem
+    /// Title to show for the table item.
+    public var title: String?
+    
+    /// Detail text to show for the table item.
+    public var detail: String?
+    
+    /// By default resource profile table items are not editable.
+    public var isEditable: Bool? = false
+    
+    /// A set of cohorts (data groups) the participant must be in, in order to show this item in its containing profile section.
+    public var inCohorts: Set<String>?
+    
+    /// A set of cohorts (data groups) the participant must not be in, in order to show this item in its containing profile section.
+    public var notInCohorts: Set<String>?
+    
+    /// Action to perform when the item is selected. The default for HTML items is to show the HTML.
+    public var onSelected: SBAProfileOnSelectedAction? = .showHTML
+    
+    // MARK: Resource Profile Table Item
+    
+    /// The resource for this item.
+    public let resource: String
+    
+    // MARK: RSDResourceTransformer
+    
+    /// The bundle identifier for the resource bundle that contains the html.
+    public var bundleIdentifier: String?
+    
+    /// The default bundle from the factory used to decode this object.
+    public var factoryBundle: Bundle? = nil
+    
+    /// `RSDResourceTransformer` uses this to get the URL.
+    public var resourceName: String {
+        return htmlResource
     }
+    
+    /// Ignored - required to conform to `RSDResourceTransformer`
+    public var classType: String? {
+        return nil
+    }
+
 }
+ */

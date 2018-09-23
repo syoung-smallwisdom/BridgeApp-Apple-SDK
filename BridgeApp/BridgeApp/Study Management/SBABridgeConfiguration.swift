@@ -109,60 +109,11 @@ open class SBABridgeConfiguration {
         return studyDuration
     }()
     
-    public var profileManager: SBAProfileManager = SBAProfileManagerObject()
-    public var profileDataSource: SBAProfileDataSource = SBAProfileDataSourceObject()
+    /// The profile manager for the study.
+    public private(set) var profileManager : SBAProfileManager = SBAProfileManagerObject()
     
-    private func decodeProfileManager(from profileData: [String: SBBJSONValue], with decoder: JSONDecoder) {
-        if let profileManagerData = profileData["manager"] as? [String : SBBJSONValue],
-            let typeName = profileManagerData["type"] as? String {
-            guard let type: Decodable.Type = self.profileManagerClass(from: SBAProfileManagerType(rawValue: typeName))
-                else {
-                    return
-            }
-            do {
-                let decodingHelper = try decoder.decode(DecodingHelper.self, from: profileManagerData as SBBJSONValue)
-                self.profileManager = try decodingHelper.decode(to: type) as! SBAProfileManager
-            } catch let err {
-                debugPrint("Failed to decode the Profile Data Source object: \(err)")
-            }
-        }
-    }
-    
-    open func profileManagerClass(from type: SBAProfileManagerType) -> Decodable.Type? {
-        switch type {
-        case .profileManager:
-            return SBAProfileManagerObject.self
-        default:
-            assertionFailure("Attempt to decode a ProfileManager with unknown type \(type.rawValue)")
-            return nil
-        }
-    }
-    
-    private func decodeProfileDataSource(from profileData: [String: SBBJSONValue], with decoder: JSONDecoder) {
-        if let profileDataSourceData = profileData["dataSource"] as? [String : SBBJSONValue],
-            let typeName = profileDataSourceData["type"] as? String {
-            guard let type: Decodable.Type = self.profileDataSourceClass(from: SBAProfileDataSourceType(rawValue: typeName))
-                else {
-                    return
-            }
-            do {
-                let decodingHelper = try decoder.decode(DecodingHelper.self, from: profileDataSourceData as SBBJSONValue)
-                self.profileDataSource = try decodingHelper.decode(to: type) as! SBAProfileDataSource
-            } catch let err {
-                debugPrint("Failed to decode the Profile Data Source object: \(err)")
-            }
-        }
-    }
-
-    open func profileDataSourceClass(from type: SBAProfileDataSourceType) -> Decodable.Type? {
-        switch type {
-        case .profileDataSource:
-            return SBAProfileDataSourceObject.self
-        default:
-            assertionFailure("Attempt to decode a ProfileDataSource with unknown type \(type.rawValue)")
-            return nil
-        }
-    }
+    /// The profile data source for the study.
+    public private(set) var profileDataSource : SBAProfileDataSource = SBAProfileDataSourceObject()
     
     public init() {
     }
@@ -249,10 +200,9 @@ open class SBABridgeConfiguration {
                     self.addMapping(with: $0.key, to: $0.value)
                 }
                 
-                if let clientDict = clientData as? [String: SBBJSONValue],
-                    let profileData = clientDict["profile"] as? [String: SBBJSONValue] {
-                        self.decodeProfileManager(from: profileData, with: decoder)
-                        self.decodeProfileDataSource(from: profileData, with: decoder)
+                if let profileMapping = mappingObject.profile {
+                    self.profileManager = profileMapping.manager
+                    self.profileDataSource = profileMapping.dataSource
                 }
             } catch let err {
                 debugPrint("Failed to decode the clientData object: \(err)")
@@ -458,6 +408,7 @@ struct SBAActivityMappingObject : Decodable {
     let tasks : [RSDTaskObject]?
     let taskToSchemaIdentifierMap : [String : String]?
     let reportMappings : [String : SBAReportCategory]?
+    let profile : SBAProfileMappingObject?
 }
 
 /// `SBAActivityGroupObject` is a `Decodable` implementation of a `SBAActivityGroup`.
@@ -711,5 +662,26 @@ extension SBAOptionalImageVendor {
     /// Returns either the `iconImage` or `icon`
     public var imageVendor: RSDImageVendor? {
         return self.image ?? self.imageSource
+    }
+}
+
+struct SBAProfileMappingObject : Decodable {
+    private enum CodingKeys: String, CodingKey {
+        case manager, dataSource
+    }
+    
+    let manager: SBAProfileManager
+    let dataSource: SBAProfileDataSource
+    
+    init(from decoder: Decoder) throws {
+        guard let factory: SBAFactory = decoder.factory as? SBAFactory else {
+            let context = DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Expecting the factory to be a subclass of `SBAFactory`")
+            throw DecodingError.typeMismatch(SBAFactory.self, context)
+        }
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let managerDecoder = try container.superDecoder(forKey: .manager)
+        self.manager = try factory.decodeProfileManager(from: managerDecoder)
+        let dataSourceDecoder = try container.superDecoder(forKey: .dataSource)
+        self.dataSource = try factory.decodeProfileDataSource(from: dataSourceDecoder)
     }
 }
