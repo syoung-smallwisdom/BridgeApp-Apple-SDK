@@ -119,6 +119,7 @@
 		F8F063C320BF45C700DB7D9C /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BF02B420B60F740016C343 /* BridgeSDK_Test.framework */; };
 		F8F063DA20BF7E4C00DB7D9C /* SBAClientDataResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */; };
 		F8F063F220BFB51B00DB7D9C /* ArchivableTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */; };
+		F8F367BB2159C03C00A49F89 /* SBAArchiveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F367BA2159C03C00A49F89 /* SBAArchiveManager.swift */; };
 		F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7241D203D007800AC0E5B /* SurveyTests.swift */; };
 		F8FD5681214714A000BA2FA6 /* SBATaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -392,6 +393,7 @@
 		F8E4A4FA20A4D9F00046577B /* JSONDecoder+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONDecoder+Utilities.swift"; sourceTree = "<group>"; };
 		F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAClientDataResult.swift; sourceTree = "<group>"; };
 		F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivableTrackingTests.swift; sourceTree = "<group>"; };
+		F8F367BA2159C03C00A49F89 /* SBAArchiveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAArchiveManager.swift; sourceTree = "<group>"; };
 		F8F7241D203D007800AC0E5B /* SurveyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyTests.swift; sourceTree = "<group>"; };
 		F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATaskViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -752,6 +754,7 @@
 				F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */,
 				F8BF02EF20B71F580016C343 /* SBAScheduledActivityArchive.swift */,
 				F8398C99212C868A005DE6E0 /* SBAReportManager.swift */,
+				F8F367BA2159C03C00A49F89 /* SBAArchiveManager.swift */,
 			);
 			path = "Study Management";
 			sourceTree = "<group>";
@@ -1093,6 +1096,7 @@
 				F847951E207FEA9D0024A230 /* SBATrackedItem.swift in Sources */,
 				F8F063DA20BF7E4C00DB7D9C /* SBAClientDataResult.swift in Sources */,
 				F8FD5681214714A000BA2FA6 /* SBATaskViewModel.swift in Sources */,
+				F8F367BB2159C03C00A49F89 /* SBAArchiveManager.swift in Sources */,
 				F80F17A32033CB1B00352C3E /* SBBSurvey+RSDTask.swift in Sources */,
 				F8A5CE4A20A2AE7100E9FD75 /* SBARootViewController.swift in Sources */,
 				F8A5CE4C20A2B5C400E9FD75 /* SBAAppDelegate.swift in Sources */,
