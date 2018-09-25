@@ -58,7 +58,7 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
     
     /// DO NOT MAKE OPEN. This method retains the task path until archiving is completed and because it
     /// nils out the pointer to the task path with a strong reference to `self`, it will also retain the
-    /// schedule manager until the completion block is called. syoung 05/31/2018
+    /// archive manager until the completion block is called. syoung 05/31/2018
     private final func _archiveAndUpload(taskViewModel: RSDTaskViewModel) {
         let uuid = UUID()
         self._retainedPaths[uuid] = taskViewModel
