@@ -74,16 +74,11 @@ public struct SBAReport : Hashable {
 public let SBAReportSingletonDate: Date = Date(timeIntervalSinceReferenceDate: 0)
 
 /// Default data source handler for reports. This manager is used to get and store `SBBReportData` objects.
-open class SBAReportManager: NSObject {
+open class SBAReportManager: SBAArchiveManager {
     
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
         case newReports
-    }
-    
-    /// Pointer to the shared configuration to use.
-    public var configuration: SBABridgeConfiguration {
-        return SBABridgeConfiguration.shared
     }
     
     /// Pointer to the shared participant to use.
@@ -286,12 +281,6 @@ open class SBAReportManager: NSObject {
     /// `SBABridgeConfiguration` and returns `.timestamp` if undefined by the configuration.
     open func reportCategory(for reportIdentifier: String) -> SBAReportCategory {
         return self.configuration.reportCategory(for: reportIdentifier) ?? .timestamp
-    }
-    
-    /// Get the schema info associated with the given activity identifier. By default, this looks at the
-    /// shared bridge configuration's schema reference map.
-    open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
-        return self.configuration.schemaInfo(for: activityIdentifier)
     }
     
     func addReports(with newReports: [SBAReport], for query: ReportQuery? = nil) {
