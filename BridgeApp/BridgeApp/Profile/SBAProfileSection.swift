@@ -216,54 +216,6 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
     }
 
 }
-/*
-/// A concrete base class implementation of the `SBAProfileTableItem` protocol which implements the Decodable protocol so it can be described in JSON.
-open class SBAProfileTableItemBase: SBAProfileTableItem, Decodable {
-    open var title: String
-    
-    // this weirdness allows subclasses to make detail be read-only and non-optional if need be
-    private var _detail: String?
-    open var detail: String? { return _detail }
-    open var isEditable: Bool
-    open var inCohorts: Set<String>
-    open var notInCohorts: Set<String>
-    private var onSelectedExplicitlySet: SBAProfileOnSelectedAction? = nil
-    open var onSelected: SBAProfileOnSelectedAction {
-        get {
-            return onSelectedExplicitlySet ?? self.defaultOnSelectedAction()
-        }
-        set {
-            onSelectedExplicitlySet = newValue
-        }
-    }
-
-    /// Override this in subclasses to set a default onSelected action if not otherwise specified.
-    /// - returns: the default action to perform when the item is selected, if onSelected is not explicitly set.
-    open func defaultOnSelectedAction() -> SBAProfileOnSelectedAction {
-        return .noAction
-    }
-    
-    // MARK: Decoder
-    private enum CodingKeys: String, CodingKey {
-        case title, detail, isEditable, onSelected, inCohorts, notInCohorts
-    }
-    
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        title = try container.decodeIfPresent(String.self, forKey: .title) ?? ""
-        _detail = try container.decodeIfPresent(String.self, forKey: .detail)
-        isEditable = try container.decodeIfPresent(Bool.self, forKey: .isEditable) ?? false
-        inCohorts = try container.decodeIfPresent(Set<String>.self, forKey: .inCohorts) ?? Set<String>()
-        notInCohorts = try container.decodeIfPresent(Set<String>.self, forKey: .notInCohorts) ?? Set<String>()
-
-        // only override the default value if explicitly set in the decoder
-        if let onSelectedDecodedString = try container.decodeIfPresent(String.self, forKey: .onSelected) {
-            onSelected = SBAProfileOnSelectedAction(rawValue: onSelectedDecodedString)
-        }
-    }
-}
-*/
 
 /// A profile table item that displays HTML when selected.
 public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResourceTransformer {

@@ -110,10 +110,10 @@ open class SBABridgeConfiguration {
     }()
     
     /// The profile manager for the study.
-    public private(set) var profileManager : SBAProfileManager = SBAProfileManagerObject()
+    open private(set) var profileManager : SBAProfileManager = SBAProfileManagerObject()
     
     /// The profile data source for the study.
-    public private(set) var profileDataSource : SBAProfileDataSource = SBAProfileDataSourceObject()
+    open private(set) var profileDataSource : SBAProfileDataSource = SBAProfileDataSourceObject()
     
     public init() {
     }
