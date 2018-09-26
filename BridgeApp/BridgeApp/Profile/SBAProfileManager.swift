@@ -102,7 +102,7 @@ public class SBAProfileManagerError: NSObject, Error {
 }
 
 /// A protocol for defining a Profile Manager.
-public protocol SBAProfileManager : class {
+public protocol SBAProfileManager {
 
     /// Get a list of the profile keys defined for this app.
     /// - returns: A String array of profile item keys.
@@ -148,19 +148,6 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
         }
         return allItems
     }()
-    
-    // Merge new items into existing list, overwriting old ones with new ones when the profileKey is the same.
-    // Mustn't be called once either itemsKeys or itemsMap has been accessed, and mustn't access either.
-    fileprivate func add(items newItems: [SBAProfileItem]) {
-        var itemsByKey: [String: SBAProfileItem] = [:]
-        for item in items {
-            itemsByKey[item.profileKey] = item
-        }
-        for newItem in newItems {
-            itemsByKey[newItem.profileKey] = newItem
-        }
-        items = Array(itemsByKey.values)
-    }
    
     // MARK: Internal methods
     func uploadDemographicData(_ schemas: Set<String>) {
@@ -224,7 +211,7 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
     /// - parameter value: The new value to set.
     /// - parameter key: The profileKey of the profile item on which to set the new value.
     public func setValue(_ value: Any?, forProfileKey key: String) throws {
-        guard let item = self.itemsMap[key] else {
+        guard var item = self.itemsMap[key] else {
             throw SBAProfileManagerError(errorType: .unknownProfileKey, profileKey: key)
         }
         
