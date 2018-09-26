@@ -570,7 +570,7 @@ open class SBAScheduleManager: SBAReportManager {
                 self.saveReports(for: taskViewModel)
                 self.updateSchedules(for: taskViewModel)
             }
-            self.archiveAndUpload(taskViewModel: taskViewModel)
+            self.archiveAndUpload(taskViewModel)
             completionHandler?()
         }
     }

@@ -50,23 +50,23 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
     public let offMainQueue = DispatchQueue(label: "org.sagebionetworks.BridgeApp.SBAArchiveManager")
     
     /// Archive and upload the results from the task view model.
-    public final func archiveAndUpload(taskViewModel: RSDTaskViewModel) {
+    public final func archiveAndUpload(_ taskState: RSDTaskState) {
         offMainQueue.async {
-            self._archiveAndUpload(taskViewModel: taskViewModel)
+            self._archiveAndUpload(taskState)
         }
     }
     
     /// DO NOT MAKE OPEN. This method retains the task path until archiving is completed and because it
     /// nils out the pointer to the task path with a strong reference to `self`, it will also retain the
     /// archive manager until the completion block is called. syoung 05/31/2018
-    private final func _archiveAndUpload(taskViewModel: RSDTaskViewModel) {
+    private final func _archiveAndUpload(_ taskState: RSDTaskState) {
         let uuid = UUID()
-        self._retainedPaths[uuid] = taskViewModel
-        taskViewModel.archiveResults(with: self) {
+        self._retainedPaths[uuid] = taskState
+        taskState.archiveResults(with: self) {
             self._retainedPaths[uuid] = nil
         }
     }
-    private var _retainedPaths: [UUID : RSDTaskViewModel] = [:]
+    private var _retainedPaths: [UUID : RSDTaskState] = [:]
     
     /// Base class implementation returns nil.
     open func scheduledActivity(for taskResult: RSDTaskResult, scheduleIdentifier: String?) -> SBBScheduledActivity? {
@@ -121,7 +121,7 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
     }
     
     /// Finalize the upload of all the created archives.
-    public final func encryptAndUpload(taskViewModel: RSDTaskViewModel, dataArchives: [RSDDataArchive], completion:@escaping (() -> Void)) {
+    public final func encryptAndUpload(taskResult: RSDTaskResult, dataArchives: [RSDDataArchive], completion:@escaping (() -> Void)) {
         let archives: [SBBDataArchive] = dataArchives.compactMap {
             guard let archive = $0 as? SBBDataArchive, self.shouldUpload(archive: archive) else { return nil }
             return archive
@@ -144,8 +144,8 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
     }
     
     /// By default, if an archive fails, the error is printed and that's all that is done.
-    open func handleArchiveFailure(taskViewModel: RSDTaskViewModel, error: Error, completion:@escaping (() -> Void)) {
-        debugPrint("WARNING! Failed to archive \(taskViewModel.identifier). \(error)")
+    open func handleArchiveFailure(taskResult: RSDTaskResult, error: Error, completion:@escaping (() -> Void)) {
+        debugPrint("WARNING! Failed to archive \(taskResult.identifier). \(error)")
         completion()
     }
     
