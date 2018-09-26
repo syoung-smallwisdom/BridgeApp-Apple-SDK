@@ -125,7 +125,7 @@ open class SBATrackedItemReminderDataSource : RSDFormStepDataSourceObject {
         return self.step as? SBATrackedItemRemindersStepObject
     }
     
-    override open func bulidSections() -> ([RSDTableSection], [RSDTableItemGroup]) {
+    override open func buildSections() -> ([RSDTableSection], [RSDTableItemGroup]) {
         let item = RSDTableItem(identifier: self.step.identifier, rowIndex: 0, reuseIdentifier: RSDFormUIHint.button.rawValue)
         let section = RSDTableSection(identifier: self.step.identifier, sectionIndex: 0, tableItems: [item])
         let group = RSDTableItemGroup(beginningRowIndex: 0, items: [item])
