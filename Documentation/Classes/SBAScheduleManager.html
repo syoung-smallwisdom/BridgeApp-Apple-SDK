@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SBAScheduleManager Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/SBAScheduleManager" class="dashAnchor"></a>
+    <a title="SBAScheduleManager Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">BridgeApp Docs</a></p>
+        <p class="header-right"><a href="https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">BridgeApp Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        SBAScheduleManager Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/SBAAppDelegate.html">SBAAppDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBABridgeConfiguration.html">SBABridgeConfiguration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAMedicationLoggingStepObject.html">SBAMedicationLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/s:9BridgeApp26SBAModalSelectionTableItemC">SBAModalSelectionTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAParticipantManager.html">SBAParticipantManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@BridgeApp@objc(cs)SBAProfileManagerError">SBAProfileManagerError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAProfileManagerObject.html">SBAProfileManagerObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAProfileSectionObject.html">SBAProfileSectionObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBARemoveTrackedItemStepObject.html">SBARemoveTrackedItemStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@BridgeApp@objc(cs)SBARemoveTrackedItemStepViewController">SBARemoveTrackedItemStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAReportManager.html">SBAReportManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAReportManager.html#/s:9BridgeApp16SBAReportManagerC15NotificationKeyO">– NotificationKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAReportManager/ReportQuery.html">– ReportQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBARootViewController.html">SBARootViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAScheduleManager.html">SBAScheduleManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAScheduleManager.html#/s:9BridgeApp18SBAScheduleManagerC15NotificationKeyO">– NotificationKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAScheduleManager/FetchRequest.html">– FetchRequest</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAScheduledActivityArchive.html">SBAScheduledActivityArchive</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASurveyConfiguration.html">SBASurveyConfiguration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASurveyWrapper.html">SBASurveyWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASymptomLoggingCell.html">SBASymptomLoggingCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASymptomLoggingDataSource.html">SBASymptomLoggingDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASymptomLoggingStepObject.html">SBASymptomLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASymptomTableItem.html">SBASymptomTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATaskRepository.html">SBATaskRepository</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATaskStepNode.html">SBATaskStepNode</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATaskViewModel.html">SBATaskViewModel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemDetailsStepObject.html">SBATrackedItemDetailsStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemReminderDataSource.html">SBATrackedItemReminderDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemRemindersStepObject.html">SBATrackedItemRemindersStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemRemindersStepViewController.html">SBATrackedItemRemindersStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsLoggingStepObject.html">SBATrackedItemsLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsReviewStepObject.html">SBATrackedItemsReviewStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsStepNavigator.html">SBATrackedItemsStepNavigator</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsStepNavigator.html#/s:9BridgeApp28SBATrackedItemsStepNavigatorC0D10CodingKeysO">– ItemsCodingKeys</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsStepNavigator.html#/s:9BridgeApp28SBATrackedItemsStepNavigatorC0E11IdentifiersO">– StepIdentifiers</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingCell.html">SBATrackedLoggingCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingDataSource.html">SBATrackedLoggingDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingStepViewController.html">SBATrackedLoggingStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingTableItem.html">SBATrackedLoggingTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationDetailStepObject.html">SBATrackedMedicationDetailStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationDetailsDataSource.html">SBATrackedMedicationDetailsDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationLoggingStepViewController.html">SBATrackedMedicationLoggingStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationReviewCell.html">SBATrackedMedicationReviewCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationReviewDataSource.html">SBATrackedMedicationReviewDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationReviewItem.html">SBATrackedMedicationReviewItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationReviewStepObject.html">SBATrackedMedicationReviewStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedSelectionDataSource.html">SBATrackedSelectionDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedSelectionStepObject.html">SBATrackedSelectionStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedWeeklyScheduleCell.html">SBATrackedWeeklyScheduleCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedWeeklyScheduleTableItem.html">SBATrackedWeeklyScheduleTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackingDataSource.html">SBATrackingDataSource</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Global Variables.html">Global Variables</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Global Variables.html#/s:9BridgeApp22SBAReportSingletonDate10Foundation0E0Vvp">SBAReportSingletonDate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/SBAApplicationState.html">SBAApplicationState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:9BridgeApp26SBAProfileManagerErrorTypeO">SBAProfileManagerErrorType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:9BridgeApp17SBAReportCategoryO">SBAReportCategory</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SBASymptomDurationLevel.html">SBASymptomDurationLevel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:9BridgeApp26SBASymptomMedicationTimingO">SBASymptomMedicationTiming</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:9BridgeApp23SBASymptomSeverityLevelO">SBASymptomSeverityLevel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/JSONDecoder.html">JSONDecoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Notification.html">Notification</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Notification/Name.html">– Name</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDFormUIHint.html">RSDFormUIHint</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDIdentifier.html">RSDIdentifier</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDStepNavigatorType.html">RSDStepNavigatorType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDStepType.html">RSDStepType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDUIActionType.html">RSDUIActionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBActivity.html">SBBActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBBridgeObject.html">SBBBridgeObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBCompoundActivity.html">SBBCompoundActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBDateConstraints.html">SBBDateConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBDateTimeConstraints.html">SBBDateTimeConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBDurationConstraints.html">SBBDurationConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBImage.html">SBBImage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBMultiValueConstraints.html">SBBMultiValueConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBScheduledActivity.html">SBBScheduledActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSchemaReference.html">SBBSchemaReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBStringConstraints.html">SBBStringConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurvey.html">SBBSurvey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyElement.html">SBBSurveyElement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyInfoScreen.html">SBBSurveyInfoScreen</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyQuestion.html">SBBSurveyQuestion</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyQuestionOption.html">SBBSurveyQuestionOption</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyReference.html">SBBSurveyReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyRule.html">SBBSurveyRule</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBTaskReference.html">SBBTaskReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBTimeConstraints.html">SBBTimeConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/UIColor.html">UIColor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/sbb_InputField.html">sbb_InputField</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAActivityGroup.html">SBAActivityGroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAActivityInfo.html">SBAActivityInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAActivityReference.html">SBAActivityReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAClientDataResult.html">SBAClientDataResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAMedication.html">SBAMedication</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAOptionalImageVendor.html">SBAOptionalImageVendor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAProfileDataSource.html">SBAProfileDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAProfileManager.html">SBAProfileManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAProfileSection.html">SBAProfileSection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAProfileTableItem.html">SBAProfileTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBASingleActivityReference.html">SBASingleActivityReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItem.html">SBATrackedItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemAnswer.html">SBATrackedItemAnswer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemDetailsStep.html">SBATrackedItemDetailsStep</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemsResult.html">SBATrackedItemsResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemsStep.html">SBATrackedItemsStep</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedSection.html">SBATrackedSection</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/SBAActivityGroupObject.html">SBAActivityGroupObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAActivityInfoObject.html">SBAActivityInfoObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAHTMLProfileTableItem.html">SBAHTMLProfileTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAMedicationAnswer.html">SBAMedicationAnswer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAMedicationItem.html">SBAMedicationItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAMedicationTrackingResult.html">SBAMedicationTrackingResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAModuleIdentifier.html">SBAModuleIdentifier</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileDataSourceType.html">SBAProfileDataSourceType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileItemType.html">SBAProfileItemType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileManagerType.html">SBAProfileManagerType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileSectionType.html">SBAProfileSectionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileTableItemType.html">SBAProfileTableItemType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBARemoveTrackedItemsResultObject.html">SBARemoveTrackedItemsResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAReport.html">SBAReport</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATimestamp.html">SBATimestamp</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedItemObject.html">SBATrackedItemObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedItemsResultObject.html">SBATrackedItemsResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedLoggingCollectionResultObject.html">SBATrackedLoggingCollectionResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedLoggingResultObject.html">SBATrackedLoggingResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedSectionObject.html">SBATrackedSectionObject</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>SBAScheduleManager</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAScheduleManager</span> <span class="p">:</span> <span class="kt"><a href="../Classes/SBAReportManager.html">SBAReportManager</a></span></code></pre>
+
+                </div>
+              </div>
+            <p>Default data source handler for scheduled activities. This manager is used to get <code>SBBScheduledActivity</code>
+objects and upload the task results for Bridge services. By default, this manager will fetch all the
+activities, but will <em>not</em> cache them all in memory. Instead, it will filter out those activites that are
+valid for today and the most recent finished activity (if any) for each activity identifier where the
+<q>activity identifier</q> refers to an <code>SBBActivity</code> object&rsquo;s associated <code><a href="../Protocols/SBAActivityReference.html">SBAActivityReference</a></code>.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC15NotificationKeyO"></a>
+                    <a name="//apple_ref/swift/Enum/NotificationKey" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC15NotificationKeyO">NotificationKey</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>List of keys used in the notifications sent by this manager.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">NotificationKey</span> <span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC08activityD0So011SBBActivityD8Protocol_pvp"></a>
+                    <a name="//apple_ref/swift/Property/activityManager" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC08activityD0So011SBBActivityD8Protocol_pvp">activityManager</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Pointer to the shared activity manager to use.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">activityManager</span><span class="p">:</span> <span class="kt">SBBActivityManagerProtocol</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC7factory8Research10RSDFactoryCvp"></a>
+                    <a name="//apple_ref/swift/Property/factory" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC7factory8Research10RSDFactoryCvp">factory</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Pointer to the default factory to use for serialization.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">factory</span><span class="p">:</span> <span class="kt">RSDFactory</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Data%20source"></a>
+                <a name="//apple_ref/swift/Section/Data source" class="dashAnchor"></a>
+                <a href="#/Data%20source">
+                  <h3 class="section-name">Data source</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC10identifierSSvp"></a>
+                    <a name="//apple_ref/swift/Property/identifier" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC10identifierSSvp">identifier</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Add an identifier that can be used for mapping this schedule manager to the displayed schedules.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">identifier</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@BridgeApp@objc(cs)SBAScheduleManager(py)scheduledActivities"></a>
+                    <a name="//apple_ref/swift/Property/scheduledActivities" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@BridgeApp@objc(cs)SBAScheduleManager(py)scheduledActivities">scheduledActivities</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>This is an array of the activities fetched by the call to the server in <code>reloadData</code>. By default,
+this list includes the activities filtered using the <code>scheduleFilterPredicate</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">open</span> <span class="k">var</span> <span class="nv">scheduledActivities</span><span class="p">:</span> <span class="p">[</span><span class="kt">SBBScheduledActivity</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Schedule%20loading%20and%20filtering"></a>
+                <a name="//apple_ref/swift/Section/Schedule loading and filtering" class="dashAnchor"></a>
+                <a href="#/Schedule%20loading%20and%20filtering">
+                  <h3 class="section-name">Schedule loading and filtering</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC13activityGroupAA011SBAActivityF0_pSgvp"></a>
+                    <a name="//apple_ref/swift/Property/activityGroup" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC13activityGroupAA011SBAActivityF0_pSgvp">activityGroup</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The activity group associated with this schedule manager. If non-nil, this will be used in setting up
+the filtering predicates and finding the <q>most appropriate</q> schedule when creating a task path.
+This will get the activity group by getting the currently registered activity group from the shared
+configuration using <code>self.identifier</code> as the group identifier.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">activityGroup</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SBAActivityGroup.html">SBAActivityGroup</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC12FetchRequestV"></a>
+                    <a name="//apple_ref/swift/Struct/FetchRequest" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC12FetchRequestV">FetchRequest</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Fetch request objects can be used to make compound fetch requests to retrieve schedules that match
+different sets of parameters. For example, a task group might be set up to group a set of tasks
+together where the schedule used to run a new task is different from the schedule used to mark it as
+finished. This allows for that more complicated logic.</p>
+
+                        <a href="../Classes/SBAScheduleManager/FetchRequest.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">FetchRequest</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC13fetchRequestsSayAC12FetchRequestVGyF"></a>
+                    <a name="//apple_ref/swift/Method/fetchRequests()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC13fetchRequestsSayAC12FetchRequestVGyF">fetchRequests()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The fetch requests to use to fetch the schedules associated with this manager. By default, if
+this schedule manager has an associated activity group, then this will return an array of the
+fetch requests for those schedules available today and the most recently finished schedule for each
+activity included in the group. Otherwise, a request will be created for all activities available
+today.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">fetchRequests</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt"><a href="../Classes/SBAScheduleManager/FetchRequest.html">FetchRequest</a></span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC18availablePredicateSo11NSPredicateCyF"></a>
+                    <a name="//apple_ref/swift/Method/availablePredicate()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC18availablePredicateSo11NSPredicateCyF">availablePredicate()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The predicate to use for filtering today&rsquo;s activities for those available today. If there is an
+<code><a href="../Classes/SBAScheduleManager.html#/s:9BridgeApp18SBAScheduleManagerC13activityGroupAA011SBAActivityF0_pSgvp">activityGroup</a></code> associated with this schedule manager, the fetch request for today&rsquo;s activities will
+be built using this predicate and the activity group predicate. Otherwise, only this predicate will
+be used. Default is to return <code>SBBScheduledActivity.availableTodayPredicate()</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">availablePredicate</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">NSPredicate</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC16historyPredicate3forSo11NSPredicateC8Research13RSDIdentifierV_tF"></a>
+                    <a name="//apple_ref/swift/Method/historyPredicate(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC16historyPredicate3forSo11NSPredicateC8Research13RSDIdentifierV_tF">historyPredicate(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The predicate to use for filtering past activities. By default, this will return all activities where
+the <code>finishedOn</code> property is non-nil and the activity identifier matches the given value.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">historyPredicate</span><span class="p">(</span><span class="k">for</span> <span class="nv">activityIdentifier</span><span class="p">:</span> <span class="kt">RSDIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NSPredicate</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>activityIdentifier</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The activity identifier for the schedule.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The predicate for this fetch request.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC11isReloadingSbvp"></a>
+                    <a name="//apple_ref/swift/Property/isReloading" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC11isReloadingSbvp">isReloading</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>State management for whether or not the schedules are reloading.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">public</span> <span class="k">var</span> <span class="nv">isReloading</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC10reloadDatayyF"></a>
+                    <a name="//apple_ref/swift/Method/reloadData()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC10reloadDatayyF">reloadData()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Reload the data by fetching changes to the scheduled activities.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">open</span> <span class="kd">func</span> <span class="nf">reloadData</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC23loadScheduledActivitiesyyF"></a>
+                    <a name="//apple_ref/swift/Method/loadScheduledActivities()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC23loadScheduledActivitiesyyF">loadScheduledActivities()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Load the scheduled activities from cache using the <code><a href="../Classes/SBAScheduleManager.html#/s:9BridgeApp18SBAScheduleManagerC13fetchRequestsSayAC12FetchRequestVGyF">fetchRequests()</a></code> for this schedule manager.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">func</span> <span class="nf">loadScheduledActivities</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Data%20handling"></a>
+                <a name="//apple_ref/swift/Section/Data handling" class="dashAnchor"></a>
+                <a href="#/Data%20handling">
+                  <h3 class="section-name">Data handling</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC6update17fetchedActivitiesySaySo20SBBScheduledActivityCG_tF"></a>
+                    <a name="//apple_ref/swift/Method/update(fetchedActivities:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC6update17fetchedActivitiesySaySo20SBBScheduledActivityCG_tF">update(fetchedActivities:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called on the main thread once Bridge returns the requested scheduled activities.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">update</span><span class="p">(</span><span class="nv">fetchedActivities</span><span class="p">:</span> <span class="p">[</span><span class="kt">SBBScheduledActivity</span><span class="p">])</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>fetchedActivities</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The list of activities returned by the service.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC24willSendUpdatedSchedules3forySaySo20SBBScheduledActivityCG_tF"></a>
+                    <a name="//apple_ref/swift/Method/willSendUpdatedSchedules(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC24willSendUpdatedSchedules3forySaySo20SBBScheduledActivityCG_tF">willSendUpdatedSchedules(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called on the main thread before sending the given schedules to the server for update. The default
+implementation will call <code>self.update(fetchedActivities:)</code> on a unioned set of the updated schedules
+and the schedules that are currently in memory. This method will filter the schedules using the
+<code>fetchedRequests()</code> for this manager, but will not use the fetch limit parameter to limit the number
+of schedules returned.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">willSendUpdatedSchedules</span><span class="p">(</span><span class="k">for</span> <span class="nv">schedules</span><span class="p">:</span> <span class="p">[</span><span class="kt">SBBScheduledActivity</span><span class="p">])</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>schedules</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The schedules that will be updated.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC28didUpdateScheduledActivities4fromySaySo20SBBScheduledActivityCG_tF"></a>
+                    <a name="//apple_ref/swift/Method/didUpdateScheduledActivities(from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC28didUpdateScheduledActivities4fromySaySo20SBBScheduledActivityCG_tF">didUpdateScheduledActivities(from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when the schedules have changed.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">didUpdateScheduledActivities</span><span class="p">(</span><span class="n">from</span> <span class="nv">previousActivities</span><span class="p">:</span> <span class="p">[</span><span class="kt">SBBScheduledActivity</span><span class="p">])</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>previousActivities</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The schedules that were previously being stored in memory.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC14sortActivitiesySaySo20SBBScheduledActivityCGSgAHF"></a>
+                    <a name="//apple_ref/swift/Method/sortActivities(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC14sortActivitiesySaySo20SBBScheduledActivityCGSgAHF">sortActivities(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Sort the scheduled activities. By default this will sort by comparing the <code>scheduledOn</code> property.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">sortActivities</span><span class="p">(</span><span class="n">_</span> <span class="nv">scheduledActivities</span><span class="p">:</span> <span class="p">[</span><span class="kt">SBBScheduledActivity</span><span class="p">]?)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">SBBScheduledActivity</span><span class="p">]?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Schedule%20management"></a>
+                <a name="//apple_ref/swift/Section/Schedule management" class="dashAnchor"></a>
+                <a href="#/Schedule%20management">
+                  <h3 class="section-name">Schedule management</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC29messageForUnavailableScheduleySSSo20SBBScheduledActivityCF"></a>
+                    <a name="//apple_ref/swift/Method/messageForUnavailableSchedule(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC29messageForUnavailableScheduleySSSo20SBBScheduledActivityCF">messageForUnavailableSchedule(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>If a schedule is unavailable, then the user is shown an alert explaining when it will become
+available.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">messageForUnavailableSchedule</span><span class="p">(</span><span class="n">_</span> <span class="nv">schedule</span><span class="p">:</span> <span class="kt">SBBScheduledActivity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>schedule</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The schedule to check.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The message to display in an alert for a schedule that is not currently available.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC17scheduledActivity3for18scheduleIdentifierSo012SBBScheduledF0CSg8Research13RSDTaskResult_p_SSSgtF"></a>
+                    <a name="//apple_ref/swift/Method/scheduledActivity(for:scheduleIdentifier:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC17scheduledActivity3for18scheduleIdentifierSo012SBBScheduledF0CSg8Research13RSDTaskResult_p_SSSgtF">scheduledActivity(for:scheduleIdentifier:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get the scheduled activity that is associated with this schedule identifier and task result.</p>
+
+<p>For the case where this is a combo task that includes multiple schemas (for example, medication
+tracking and finger tapping) then we want to preference the schedule associated with the <strong>schema</strong>
+over the schedule that was used to trigger the task. The default behavior of this method, therefore
+is to look for a schema and return the schedule associated with that schema, if found.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">open</span> <span class="kd">func</span> <span class="nf">scheduledActivity</span><span class="p">(</span><span class="k">for</span> <span class="nv">taskResult</span><span class="p">:</span> <span class="kt">RSDTaskResult</span><span class="p">,</span> <span class="nv">scheduleIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">SBBScheduledActivity</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>taskResult</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The task result for this task, subtask, or section.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>scheduleIdentifier</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The schedule identifier that was used to start the task.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The schedule associated with this task view controller (if found).</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC11isCompleted3for2onSb8Research11RSDTaskInfo_p_10Foundation4DateVtF"></a>
+                    <a name="//apple_ref/swift/Method/isCompleted(for:on:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC11isCompleted3for2onSb8Research11RSDTaskInfo_p_10Foundation4DateVtF">isCompleted(for:on:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Is the given task info completed for the given date?</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">isCompleted</span><span class="p">(</span><span class="k">for</span> <span class="nv">taskInfo</span><span class="p">:</span> <span class="kt">RSDTaskInfo</span><span class="p">,</span> <span class="n">on</span> <span class="nv">date</span><span class="p">:</span> <span class="kt">Date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC19scheduledActivities3for11availableOnSaySo20SBBScheduledActivityCGAA16SBAActivityGroup_p_10Foundation4DateVtF"></a>
+                    <a name="//apple_ref/swift/Method/scheduledActivities(for:availableOn:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC19scheduledActivities3for11availableOnSaySo20SBBScheduledActivityCGAA16SBAActivityGroup_p_10Foundation4DateVtF">scheduledActivities(for:availableOn:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get the scheduled activities associated with a given group that are available on a given day.
+The criteria for determining availablity is dependent upon the timing of the activity. For a
+day in the past, the criteria includes when the task was finished, expired, and scheduled. For
+a day in the future, the criterion is decided by when the activity is scheduled. For today, the
+activity must either be finished today, or available today (scheduled for a time window that
+includes this day.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">scheduledActivities</span><span class="p">(</span><span class="k">for</span> <span class="nv">activityGroup</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SBAActivityGroup.html">SBAActivityGroup</a></span><span class="p">,</span> <span class="nv">availableOn</span><span class="p">:</span> <span class="kt">Date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">SBBScheduledActivity</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>activityGroup</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The activity group to filter on.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>availableOn</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The date for the day when the activities are <q>available</q>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The schedule associated with this task view controller (if available).</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC24instantiateTaskViewModel3for2in8Research07RSDTaskgH0C04taskgH0_So20SBBScheduledActivityCSg17referenceScheduletAG0L4Info_p_AA16SBAActivityGroup_pSgtF"></a>
+                    <a name="//apple_ref/swift/Method/instantiateTaskViewModel(for:in:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC24instantiateTaskViewModel3for2in8Research07RSDTaskgH0C04taskgH0_So20SBBScheduledActivityCSg17referenceScheduletAG0L4Info_p_AA16SBAActivityGroup_pSgtF">instantiateTaskViewModel(for:in:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Instantiate a task path appropriate to the given task info. This method will attempt to map the
+task info to a schedule, but if called, it is assumed that even if there is no schedule associated
+with this task, that the task path should be instantiated.</p>
+
+<p>The returned result includes the instantiated task path and the reference schedule (if found).</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <p>This method should not be used to instantiate child task paths that are used to track the
+task state for a subtask. Instead, it is intended for starting a new task and will set up any state
+handling (such as tracking data groups) that must be managed globally.</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">instantiateTaskViewModel</span><span class="p">(</span><span class="k">for</span> <span class="nv">taskInfo</span><span class="p">:</span> <span class="kt">RSDTaskInfo</span><span class="p">,</span> <span class="k">in</span> <span class="nv">activityGroup</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SBAActivityGroup.html">SBAActivityGroup</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nv">taskViewModel</span><span class="p">:</span> <span class="kt">RSDTaskViewModel</span><span class="p">,</span> <span class="nv">referenceSchedule</span><span class="p">:</span> <span class="kt">SBBScheduledActivity</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>taskInfo</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The task info object to use to create the task path.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>activityGroup</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The activity group to use to determine the schedule. This is used for the case
+             where there may be multiple schedules with the same task and the
+             <code>schedulePlanGUID</code> on the activity group is used to determine which available
+             schedule is the one to associate with this task.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p></p>
+
+<ul>
+<li>taskViewModel: The instantiated task path.</li>
+<li>referenceSchedule: The schedule to reference for uploading the task path results (if any).</li>
+</ul>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC24instantiateTaskViewModel3for2in8Research07RSDTaskgH0C04taskgH0_So20SBBScheduledActivityCSg17referenceScheduletAG0L0_p_AA16SBAActivityGroup_pSgtF"></a>
+                    <a name="//apple_ref/swift/Method/instantiateTaskViewModel(for:in:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC24instantiateTaskViewModel3for2in8Research07RSDTaskgH0C04taskgH0_So20SBBScheduledActivityCSg17referenceScheduletAG0L0_p_AA16SBAActivityGroup_pSgtF">instantiateTaskViewModel(for:in:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Instantiate a task path appropriate to the given task. This method will attempt to map the
+task to a schedule, but if called, it is assumed that even if there is no schedule associated
+with this task, that the task path should be instantiated.</p>
+
+<p>The returned result includes the instantiated task path and the reference schedule (if found).</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <p>This method should not be used to instantiate child task paths that are used to track the
+task state for a subtask. Instead, it is intended for starting a new task and will set up any state
+handling (such as tracking data groups) that must be managed globally.</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">instantiateTaskViewModel</span><span class="p">(</span><span class="k">for</span> <span class="nv">task</span><span class="p">:</span> <span class="kt">RSDTask</span><span class="p">,</span> <span class="k">in</span> <span class="nv">activityGroup</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SBAActivityGroup.html">SBAActivityGroup</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nv">taskViewModel</span><span class="p">:</span> <span class="kt">RSDTaskViewModel</span><span class="p">,</span> <span class="nv">referenceSchedule</span><span class="p">:</span> <span class="kt">SBBScheduledActivity</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>task</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The task object to use to create the task path.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>activityGroup</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The activity group to use to determine the schedule. This is used for the case
+             where there may be multiple schedules with the same task and the
+             <code>schedulePlanGUID</code> on the activity group is used to determine which available
+             schedule is the one to associate with this task.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p></p>
+
+<ul>
+<li>taskViewModel: The instantiated task path.</li>
+<li>referenceSchedule: The schedule to reference for uploading the task path results (if any).</li>
+</ul>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC24instantiateTaskViewModel3for8Research07RSDTaskgH0CSo20SBBScheduledActivityC_tF"></a>
+                    <a name="//apple_ref/swift/Method/instantiateTaskViewModel(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC24instantiateTaskViewModel3for8Research07RSDTaskgH0CSo20SBBScheduledActivityC_tF">instantiateTaskViewModel(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Instantiate a task path appropriate to the given schedule.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <p>This method should not be used to instantiate child task paths that are used to track the
+task state for a subtask. Instead, it is intended for starting a new task and will set up any state
+handling (such as tracking data groups) that must be managed globally.</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">instantiateTaskViewModel</span><span class="p">(</span><span class="k">for</span> <span class="nv">schedule</span><span class="p">:</span> <span class="kt">SBBScheduledActivity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">RSDTaskViewModel</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>schedule</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The schedule to use to set up the task.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The instantiated task path.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC10clientData4withSo12SBBJSONValue_pSgSS_tF"></a>
+                    <a name="//apple_ref/swift/Method/clientData(with:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC10clientData4withSo12SBBJSONValue_pSgSS_tF">clientData(with:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Find the most recent client data appended to any schedule for this activity identifier.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">open</span> <span class="kd">func</span> <span class="nf">clientData</span><span class="p">(</span><span class="n">with</span> <span class="nv">activityIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">SBBJSONValue</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>activityIdentifier</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The activity identifier for the client data associated with this task.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The client data JSON (if any) associated with this activity identifier.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/RSDTaskViewControllerDelegate"></a>
+                <a name="//apple_ref/swift/Section/RSDTaskViewControllerDelegate" class="dashAnchor"></a>
+                <a href="#/RSDTaskViewControllerDelegate">
+                  <h3 class="section-name">RSDTaskViewControllerDelegate</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC14taskController_13didFinishWith5errory8Research07RSDTaskF0_p_AG0lH6ReasonOs5Error_pSgtF"></a>
+                    <a name="//apple_ref/swift/Method/taskController(_:didFinishWith:error:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC14taskController_13didFinishWith5errory8Research07RSDTaskF0_p_AG0lH6ReasonOs5Error_pSgtF">taskController(_:didFinishWith:error:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Call from the view controller that is used to display the task when the task is finished.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    This method does not dismiss the task.
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">taskController</span><span class="p">(</span><span class="n">_</span> <span class="nv">taskController</span><span class="p">:</span> <span class="kt">RSDTaskController</span><span class="p">,</span> <span class="n">didFinishWith</span> <span class="nv">reason</span><span class="p">:</span> <span class="kt">RSDTaskFinishReason</span><span class="p">,</span> <span class="nv">error</span><span class="p">:</span> <span class="kt">Error</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC14taskController_11readyToSavey8Research07RSDTaskF0_p_AF0K9ViewModelCtF"></a>
+                    <a name="//apple_ref/swift/Method/taskController(_:readyToSave:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC14taskController_11readyToSavey8Research07RSDTaskF0_p_AF0K9ViewModelCtF">taskController(_:readyToSave:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Call from the view controller that is used to display the task when the task is ready to save.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">taskController</span><span class="p">(</span><span class="n">_</span> <span class="nv">taskController</span><span class="p">:</span> <span class="kt">RSDTaskController</span><span class="p">,</span> <span class="n">readyToSave</span> <span class="nv">taskViewModel</span><span class="p">:</span> <span class="kt">RSDTaskViewModel</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC11saveResults4from_y8Research16RSDTaskViewModelC_yycSgtF"></a>
+                    <a name="//apple_ref/swift/Method/saveResults(from:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC11saveResults4from_y8Research16RSDTaskViewModelC_yycSgtF">saveResults(from:_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Allow saving the results from a given task path.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">saveResults</span><span class="p">(</span><span class="n">from</span> <span class="nv">taskViewModel</span><span class="p">:</span> <span class="kt">RSDTaskViewModel</span><span class="p">,</span> <span class="n">_</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Upload%20to%20server"></a>
+                <a name="//apple_ref/swift/Section/Upload to server" class="dashAnchor"></a>
+                <a href="#/Upload%20to%20server">
+                  <h3 class="section-name">Upload to server</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC16updateDataGroups3fory8Research16RSDTaskViewModelC_tF"></a>
+                    <a name="//apple_ref/swift/Method/updateDataGroups(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC16updateDataGroups3fory8Research16RSDTaskViewModelC_tF">updateDataGroups(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Update the data groups. By default, this will look for changes on the shared <code>DataGroupsTrackingRule</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">updateDataGroups</span><span class="p">(</span><span class="k">for</span> <span class="nv">taskViewModel</span><span class="p">:</span> <span class="kt">RSDTaskViewModel</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>taskViewModel</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The task path for the task which has just run.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC15updateSchedules3fory8Research16RSDTaskViewModelC_tF"></a>
+                    <a name="//apple_ref/swift/Method/updateSchedules(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC15updateSchedules3fory8Research16RSDTaskViewModelC_tF">updateSchedules(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Update the values on the scheduled activity. By default, this will recurse through the task path
+and its children, looking for a schedule associated with the subtask path.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">updateSchedules</span><span class="p">(</span><span class="k">for</span> <span class="nv">taskViewModel</span><span class="p">:</span> <span class="kt">RSDTaskViewModel</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>taskViewModel</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The task path for the task which has just run.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC20getAndUpdateSchedule3for4withSo20SBBScheduledActivityCSg8Research13RSDTaskResult_p_SSSgtF"></a>
+                    <a name="//apple_ref/swift/Method/getAndUpdateSchedule(for:with:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC20getAndUpdateSchedule3for4withSo20SBBScheduledActivityCSg8Research13RSDTaskResult_p_SSSgtF">getAndUpdateSchedule(for:with:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>For each schedule that this task modifies, mark it as completed and add the client data.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">getAndUpdateSchedule</span><span class="p">(</span><span class="k">for</span> <span class="nv">taskResult</span><span class="p">:</span> <span class="kt">RSDTaskResult</span><span class="p">,</span> <span class="n">with</span> <span class="nv">scheduleIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">SBBScheduledActivity</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>taskResult</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The task result for the task which has just run.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp18SBAScheduleManagerC11sendUpdated3for13taskViewModelySaySo20SBBScheduledActivityCG_8Research07RSDTaskiJ0CSgtF"></a>
+                    <a name="//apple_ref/swift/Method/sendUpdated(for:taskViewModel:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp18SBAScheduleManagerC11sendUpdated3for13taskViewModelySaySo20SBBScheduledActivityCG_8Research07RSDTaskiJ0CSgtF">sendUpdated(for:taskViewModel:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Send message to Bridge server to update the given schedules. This includes both the task
+that was completed and any tasks that were performed as a requirement of completion of the
+primary task (such as a required one-time survey).</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">sendUpdated</span><span class="p">(</span><span class="k">for</span> <span class="nv">schedules</span><span class="p">:</span> <span class="p">[</span><span class="kt">SBBScheduledActivity</span><span class="p">],</span> <span class="nv">taskViewModel</span><span class="p">:</span> <span class="kt">RSDTaskViewModel</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>schedules</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The schedules for which to send updates.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>taskViewModel</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The task path (if available) for the task run that triggered this update.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017-2018 <a class="link" href="https://developer.sagebridge.org" target="_blank" rel="external">Sage Bionetworks</a>. All rights reserved.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

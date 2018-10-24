@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SBAReportManager Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/SBAReportManager" class="dashAnchor"></a>
+    <a title="SBAReportManager Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">BridgeApp Docs</a></p>
+        <p class="header-right"><a href="https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">BridgeApp Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        SBAReportManager Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/SBAAppDelegate.html">SBAAppDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBABridgeConfiguration.html">SBABridgeConfiguration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAMedicationLoggingStepObject.html">SBAMedicationLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/s:9BridgeApp26SBAModalSelectionTableItemC">SBAModalSelectionTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAParticipantManager.html">SBAParticipantManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@BridgeApp@objc(cs)SBAProfileManagerError">SBAProfileManagerError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAProfileManagerObject.html">SBAProfileManagerObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAProfileSectionObject.html">SBAProfileSectionObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBARemoveTrackedItemStepObject.html">SBARemoveTrackedItemStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@BridgeApp@objc(cs)SBARemoveTrackedItemStepViewController">SBARemoveTrackedItemStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAReportManager.html">SBAReportManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAReportManager.html#/s:9BridgeApp16SBAReportManagerC15NotificationKeyO">– NotificationKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAReportManager/ReportQuery.html">– ReportQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBARootViewController.html">SBARootViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAScheduleManager.html">SBAScheduleManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAScheduleManager.html#/s:9BridgeApp18SBAScheduleManagerC15NotificationKeyO">– NotificationKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAScheduleManager/FetchRequest.html">– FetchRequest</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBAScheduledActivityArchive.html">SBAScheduledActivityArchive</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASurveyConfiguration.html">SBASurveyConfiguration</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASurveyWrapper.html">SBASurveyWrapper</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASymptomLoggingCell.html">SBASymptomLoggingCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASymptomLoggingDataSource.html">SBASymptomLoggingDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASymptomLoggingStepObject.html">SBASymptomLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBASymptomTableItem.html">SBASymptomTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATaskRepository.html">SBATaskRepository</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATaskStepNode.html">SBATaskStepNode</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATaskViewModel.html">SBATaskViewModel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemDetailsStepObject.html">SBATrackedItemDetailsStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemReminderDataSource.html">SBATrackedItemReminderDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemRemindersStepObject.html">SBATrackedItemRemindersStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemRemindersStepViewController.html">SBATrackedItemRemindersStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsLoggingStepObject.html">SBATrackedItemsLoggingStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsReviewStepObject.html">SBATrackedItemsReviewStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsStepNavigator.html">SBATrackedItemsStepNavigator</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsStepNavigator.html#/s:9BridgeApp28SBATrackedItemsStepNavigatorC0D10CodingKeysO">– ItemsCodingKeys</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedItemsStepNavigator.html#/s:9BridgeApp28SBATrackedItemsStepNavigatorC0E11IdentifiersO">– StepIdentifiers</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingCell.html">SBATrackedLoggingCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingDataSource.html">SBATrackedLoggingDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingStepViewController.html">SBATrackedLoggingStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedLoggingTableItem.html">SBATrackedLoggingTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationDetailStepObject.html">SBATrackedMedicationDetailStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationDetailsDataSource.html">SBATrackedMedicationDetailsDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationLoggingStepViewController.html">SBATrackedMedicationLoggingStepViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationReviewCell.html">SBATrackedMedicationReviewCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationReviewDataSource.html">SBATrackedMedicationReviewDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationReviewItem.html">SBATrackedMedicationReviewItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedMedicationReviewStepObject.html">SBATrackedMedicationReviewStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedSelectionDataSource.html">SBATrackedSelectionDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedSelectionStepObject.html">SBATrackedSelectionStepObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedWeeklyScheduleCell.html">SBATrackedWeeklyScheduleCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackedWeeklyScheduleTableItem.html">SBATrackedWeeklyScheduleTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SBATrackingDataSource.html">SBATrackingDataSource</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Global Variables.html">Global Variables</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Global Variables.html#/s:9BridgeApp22SBAReportSingletonDate10Foundation0E0Vvp">SBAReportSingletonDate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/SBAApplicationState.html">SBAApplicationState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:9BridgeApp26SBAProfileManagerErrorTypeO">SBAProfileManagerErrorType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:9BridgeApp17SBAReportCategoryO">SBAReportCategory</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SBASymptomDurationLevel.html">SBASymptomDurationLevel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:9BridgeApp26SBASymptomMedicationTimingO">SBASymptomMedicationTiming</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:9BridgeApp23SBASymptomSeverityLevelO">SBASymptomSeverityLevel</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/JSONDecoder.html">JSONDecoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Notification.html">Notification</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Notification/Name.html">– Name</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDFormUIHint.html">RSDFormUIHint</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDIdentifier.html">RSDIdentifier</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDStepNavigatorType.html">RSDStepNavigatorType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDStepType.html">RSDStepType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RSDUIActionType.html">RSDUIActionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBActivity.html">SBBActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBBridgeObject.html">SBBBridgeObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBCompoundActivity.html">SBBCompoundActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBDateConstraints.html">SBBDateConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBDateTimeConstraints.html">SBBDateTimeConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBDurationConstraints.html">SBBDurationConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBImage.html">SBBImage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBMultiValueConstraints.html">SBBMultiValueConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBScheduledActivity.html">SBBScheduledActivity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSchemaReference.html">SBBSchemaReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBStringConstraints.html">SBBStringConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurvey.html">SBBSurvey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyElement.html">SBBSurveyElement</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyInfoScreen.html">SBBSurveyInfoScreen</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyQuestion.html">SBBSurveyQuestion</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyQuestionOption.html">SBBSurveyQuestionOption</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyReference.html">SBBSurveyReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBSurveyRule.html">SBBSurveyRule</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBTaskReference.html">SBBTaskReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SBBTimeConstraints.html">SBBTimeConstraints</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/UIColor.html">UIColor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/sbb_InputField.html">sbb_InputField</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAActivityGroup.html">SBAActivityGroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAActivityInfo.html">SBAActivityInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAActivityReference.html">SBAActivityReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAClientDataResult.html">SBAClientDataResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAMedication.html">SBAMedication</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAOptionalImageVendor.html">SBAOptionalImageVendor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAProfileDataSource.html">SBAProfileDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAProfileManager.html">SBAProfileManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAProfileSection.html">SBAProfileSection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBAProfileTableItem.html">SBAProfileTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBASingleActivityReference.html">SBASingleActivityReference</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItem.html">SBATrackedItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemAnswer.html">SBATrackedItemAnswer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemDetailsStep.html">SBATrackedItemDetailsStep</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemsResult.html">SBATrackedItemsResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedItemsStep.html">SBATrackedItemsStep</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SBATrackedSection.html">SBATrackedSection</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/SBAActivityGroupObject.html">SBAActivityGroupObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAActivityInfoObject.html">SBAActivityInfoObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAHTMLProfileTableItem.html">SBAHTMLProfileTableItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAMedicationAnswer.html">SBAMedicationAnswer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAMedicationItem.html">SBAMedicationItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAMedicationTrackingResult.html">SBAMedicationTrackingResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAModuleIdentifier.html">SBAModuleIdentifier</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileDataSourceType.html">SBAProfileDataSourceType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileItemType.html">SBAProfileItemType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileManagerType.html">SBAProfileManagerType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileSectionType.html">SBAProfileSectionType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAProfileTableItemType.html">SBAProfileTableItemType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBARemoveTrackedItemsResultObject.html">SBARemoveTrackedItemsResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAReport.html">SBAReport</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATimestamp.html">SBATimestamp</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedItemObject.html">SBATrackedItemObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedItemsResultObject.html">SBATrackedItemsResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedLoggingCollectionResultObject.html">SBATrackedLoggingCollectionResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedLoggingResultObject.html">SBATrackedLoggingResultObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBATrackedSectionObject.html">SBATrackedSectionObject</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>SBAReportManager</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAReportManager</span> <span class="p">:</span> <span class="kt">SBAArchiveManager</span></code></pre>
+
+                </div>
+              </div>
+            <p>Default data source handler for reports. This manager is used to get and store <code>SBBReportData</code> objects.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC15NotificationKeyO"></a>
+                    <a name="//apple_ref/swift/Enum/NotificationKey" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC15NotificationKeyO">NotificationKey</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>List of keys used in the notifications sent by this manager.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">NotificationKey</span> <span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC11participantSo19SBBStudyParticipantCSgvp"></a>
+                    <a name="//apple_ref/swift/Property/participant" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC11participantSo19SBBStudyParticipantCSgvp">participant</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Pointer to the shared participant to use.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">participant</span><span class="p">:</span> <span class="kt">SBBStudyParticipant</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC011participantD0So014SBBParticipantD8Protocol_pvp"></a>
+                    <a name="//apple_ref/swift/Property/participantManager" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC011participantD0So014SBBParticipantD8Protocol_pvp">participantManager</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Pointer to the shared participant manager.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">participantManager</span><span class="p">:</span> <span class="kt">SBBParticipantManagerProtocol</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC24instantiateTaskViewModel4task0I4InfoAA07SBATaskgH0C8Research7RSDTask_pSg_AI0mJ0_pSgtKF"></a>
+                    <a name="//apple_ref/swift/Method/instantiateTaskViewModel(task:taskInfo:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC24instantiateTaskViewModel4task0I4InfoAA07SBATaskgH0C8Research7RSDTask_pSg_AI0mJ0_pSgtKF">instantiateTaskViewModel(task:taskInfo:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Instantiate a new instance of a task view model from the given information. At least one of the input
+parameters should be non-nil or this with throw an exception.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">instantiateTaskViewModel</span><span class="p">(</span><span class="nv">task</span><span class="p">:</span> <span class="kt">RSDTask</span><span class="p">?,</span> <span class="nv">taskInfo</span><span class="p">:</span> <span class="kt">RSDTaskInfo</span><span class="p">?)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/SBATaskViewModel.html">SBATaskViewModel</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC11ReportQueryV"></a>
+                    <a name="//apple_ref/swift/Struct/ReportQuery" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC11ReportQueryV">ReportQuery</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The report query is used to describe the type of report being requested.</p>
+
+                        <a href="../Classes/SBAReportManager/ReportQuery.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ReportQuery</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">Hashable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC13reportQueriesSayAC11ReportQueryVGyF"></a>
+                    <a name="//apple_ref/swift/Method/reportQueries()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC13reportQueriesSayAC11ReportQueryVGyF">reportQueries()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The reports with which this manager is concerned. Default returns an empty array.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">reportQueries</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt"><a href="../Classes/SBAReportManager/ReportQuery.html">ReportQuery</a></span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC10reloadDatayyF"></a>
+                    <a name="//apple_ref/swift/Method/reloadData()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC10reloadDatayyF">reloadData()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Reload the data by fetching changes to the reports.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">reloadData</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC11isReloadingSbvp"></a>
+                    <a name="//apple_ref/swift/Property/isReloading" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC11isReloadingSbvp">isReloading</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>State management for whether or not the schedules are reloading.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">isReloading</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC11loadReportsyyF"></a>
+                    <a name="//apple_ref/swift/Method/loadReports()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC11loadReportsyyF">loadReports()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Load the reports using the <code><a href="../Classes/SBAReportManager.html#/s:9BridgeApp16SBAReportManagerC13reportQueriesSayAC11ReportQueryVGyF">reportQueries()</a></code> for this schedule manager.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">func</span> <span class="nf">loadReports</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Data%20handling"></a>
+                <a name="//apple_ref/swift/Section/Data handling" class="dashAnchor"></a>
+                <a href="#/Data%20handling">
+                  <h3 class="section-name">Data handling</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC12updateFailedyys5Error_pF"></a>
+                    <a name="//apple_ref/swift/Method/updateFailed(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC12updateFailedyys5Error_pF">updateFailed(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called on the main thread if updating fails.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">updateFailed</span><span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt">Error</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC10clientData4withSo12SBBJSONValue_pSgSS_tF"></a>
+                    <a name="//apple_ref/swift/Method/clientData(with:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC10clientData4withSo12SBBJSONValue_pSgSS_tF">clientData(with:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Find the most recent client data for this activity identifier.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">clientData</span><span class="p">(</span><span class="n">with</span> <span class="nv">activityIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">SBBJSONValue</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>activityIdentifier</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The activity identifier for the client data associated with this task.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The client data JSON (if any) associated with this activity identifier.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC13allClientData4with4from2toSaySo12SBBJSONValue_pGSS_10Foundation4DateVALtF"></a>
+                    <a name="//apple_ref/swift/Method/allClientData(with:from:to:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC13allClientData4with4from2toSaySo12SBBJSONValue_pGSS_10Foundation4DateVALtF">allClientData(with:from:to:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Find the client data within the given date range for this activity identifier.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">allClientData</span><span class="p">(</span><span class="n">with</span> <span class="nv">activityIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">from</span> <span class="nv">fromDate</span><span class="p">:</span> <span class="kt">Date</span> <span class="o">=</span> <span class="kt">Date</span><span class="o">.</span><span class="n">distantPast</span><span class="p">,</span> <span class="n">to</span> <span class="nv">toDate</span><span class="p">:</span> <span class="kt">Date</span> <span class="o">=</span> <span class="kt">Date</span><span class="o">.</span><span class="n">distantFuture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">SBBJSONValue</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>activityIdentifier</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The activity identifier for the client data associated with this task.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The client data JSON (if any) associated with this activity identifier.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC16reportIdentifier3forS2S_tF"></a>
+                    <a name="//apple_ref/swift/Method/reportIdentifier(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC16reportIdentifier3forS2S_tF">reportIdentifier(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Return the report identifier for a given activity identifier.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">reportIdentifier</span><span class="p">(</span><span class="k">for</span> <span class="nv">activityIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC14reportCategory3forAA0cF0OSS_tF"></a>
+                    <a name="//apple_ref/swift/Method/reportCategory(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC14reportCategory3forAA0cF0OSS_tF">reportCategory(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get the report category (if any defined) for the given identifier. Default calls through to
+<code><a href="../Classes/SBABridgeConfiguration.html">SBABridgeConfiguration</a></code> and returns <code>.timestamp</code> if undefined by the configuration.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">reportCategory</span><span class="p">(</span><span class="k">for</span> <span class="nv">reportIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Enums.html#/s:9BridgeApp17SBAReportCategoryO">SBAReportCategory</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC16didUpdateReports4withySayAA0C0VG_tF"></a>
+                    <a name="//apple_ref/swift/Method/didUpdateReports(with:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC16didUpdateReports4withySayAA0C0VG_tF">didUpdateReports(with:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Post notification that the reports were updated.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">didUpdateReports</span><span class="p">(</span><span class="n">with</span> <span class="nv">newReports</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/SBAReport.html">SBAReport</a></span><span class="p">])</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC11saveReports3fory8Research16RSDTaskViewModelC_tF"></a>
+                    <a name="//apple_ref/swift/Method/saveReports(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC11saveReports3fory8Research16RSDTaskViewModelC_tF">saveReports(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Build and save the report <code>clientData</code> for the completed task. This should only be called for the
+top-level path.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">saveReports</span><span class="p">(</span><span class="k">for</span> <span class="nv">taskViewModel</span><span class="p">:</span> <span class="kt">RSDTaskViewModel</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>taskViewModel</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The task path for the task which has just run.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC12buildReports4fromSayAA0C0VGSg8Research13RSDTaskResult_p_tF"></a>
+                    <a name="//apple_ref/swift/Method/buildReports(from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC12buildReports4fromSayAA0C0VGSg8Research13RSDTaskResult_p_tF">buildReports(from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Build the reports to return for this task result.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">buildReports</span><span class="p">(</span><span class="n">from</span> <span class="nv">taskResult</span><span class="p">:</span> <span class="kt">RSDTaskResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt"><a href="../Structs/SBAReport.html">SBAReport</a></span><span class="p">]?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC4date3for4from10Foundation4DateVSS_8Research13RSDTaskResult_ptF"></a>
+                    <a name="//apple_ref/swift/Method/date(for:from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC4date3for4from10Foundation4DateVSS_8Research13RSDTaskResult_ptF">date(for:from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The date to use for the report with the given identifier.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">date</span><span class="p">(</span><span class="k">for</span> <span class="nv">reportIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">from</span> <span class="nv">result</span><span class="p">:</span> <span class="kt">RSDTaskResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Date</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC20buildSurveyAnswerMap4fromSDySSypG8Research13RSDTaskResult_p_tF"></a>
+                    <a name="//apple_ref/swift/Method/buildSurveyAnswerMap(from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC20buildSurveyAnswerMap4fromSDySSypG8Research13RSDTaskResult_p_tF">buildSurveyAnswerMap(from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Build a simple answer map for this task result.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    This can be used to create client data for surveys.
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">buildSurveyAnswerMap</span><span class="p">(</span><span class="n">from</span> <span class="nv">taskResult</span><span class="p">:</span> <span class="kt">RSDTaskResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC24didFinishFetchingReportsyyF"></a>
+                    <a name="//apple_ref/swift/Method/didFinishFetchingReports()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC24didFinishFetchingReportsyyF">didFinishFetchingReports()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when all the reports are finished loading. Base class does nothing.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">didFinishFetchingReports</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017-2018 <a class="link" href="https://developer.sagebridge.org" target="_blank" rel="external">Sage Bionetworks</a>. All rights reserved.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
