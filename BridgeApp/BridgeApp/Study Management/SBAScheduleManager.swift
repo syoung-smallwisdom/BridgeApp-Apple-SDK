@@ -548,7 +548,7 @@ open class SBAScheduleManager: SBAReportManager {
     open func taskController(_ taskController: RSDTaskController, didFinishWith reason: RSDTaskFinishReason, error: Error?) {
         if reason != .completed {
             // If the task finished with an error or discarded results, then delete the output directory.
-            taskController.taskViewModel.deleteOutputDirectory()
+            taskController.taskViewModel.deleteOutputDirectory(error: error)
             if let err = error {
                 debugPrint("WARNING! Task failed: \(err)")
             }

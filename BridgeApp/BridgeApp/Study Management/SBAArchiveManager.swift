@@ -50,20 +50,21 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
     public let offMainQueue = DispatchQueue(label: "org.sagebionetworks.BridgeApp.SBAArchiveManager")
     
     /// Archive and upload the results from the task view model.
-    public final func archiveAndUpload(_ taskState: RSDTaskState) {
+    public final func archiveAndUpload(_ taskState: RSDTaskState, completion: ((_ error: Error?) -> Void)? = nil) {
         offMainQueue.async {
-            self._archiveAndUpload(taskState)
+            self._archiveAndUpload(taskState, completion: completion)
         }
     }
     
     /// DO NOT MAKE OPEN. This method retains the task path until archiving is completed and because it
     /// nils out the pointer to the task path with a strong reference to `self`, it will also retain the
     /// archive manager until the completion block is called. syoung 05/31/2018
-    private final func _archiveAndUpload(_ taskState: RSDTaskState) {
+    private final func _archiveAndUpload(_ taskState: RSDTaskState, completion: ((_ error: Error?) -> Void)? = nil) {
         let uuid = UUID()
         self._retainedPaths[uuid] = taskState
-        taskState.archiveResults(with: self) {
+        taskState.archiveResults(with: self) { (_ error: Error?) in
             self._retainedPaths[uuid] = nil
+            completion?(error)
         }
     }
     private var _retainedPaths: [UUID : RSDTaskState] = [:]
