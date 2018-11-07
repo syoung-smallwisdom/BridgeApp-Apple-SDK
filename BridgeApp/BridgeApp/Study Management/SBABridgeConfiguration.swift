@@ -176,9 +176,9 @@ open class SBABridgeConfiguration {
         appConfig.surveyReferences?.forEach {
             self.addMapping(with: $0 as! SBBSurveyReference)
         }
-        if let clientData = appConfig.clientData {
+        do {
+            if let clientData = appConfig.clientData {
             // If there is a clientData object, need to serialize it back into data before decoding it.
-            do {
                 let decoder = RSDFactory.shared.createJSONDecoder()
                 let mappingObject = try decoder.decode(SBAActivityMappingObject.self, from: clientData)
                 if let studyDuration = mappingObject.studyDuration {
@@ -204,14 +204,42 @@ open class SBABridgeConfiguration {
                     self.profileManager = profileMapping.manager
                     self.profileDataSource = profileMapping.dataSource
                 }
-            } catch let err {
-                debugPrint("Failed to decode the clientData object: \(err)")
-                // Attempt refreshing the app config in case the cached version is out-of-date.
-                refreshAppConfig()
             }
+            if let configElements = appConfig.configElements as? [String : SBBJSONValue] {
+                try configElements.forEach {
+                    try self.addConfigElementMapping(for: $0.key, with: $0.value)
+                }
+            }
+        } catch let err {
+            debugPrint("Failed to decode the clientData object: \(err)")
+            // Attempt refreshing the app config in case the cached version is out-of-date.
+            refreshAppConfig()
         }
     }
     
+    /// Update the mappings by adding config elements from `SBBAppConfig` for each key.
+    ///
+    /// The default will check the config element json to see if it can be decoded into a task. If successful,
+    /// the task will be added to the task mapping. If not, it is assumed that this version of the application
+    /// does not support this config element and it will be ignored.
+    ///
+    /// - parameters:
+    ///     - key: The configuration element key (identifier).
+    ///     - json: The JSON dictionary used to describe this object.
+    open func addConfigElementMapping(for key: String, with json: SBBJSONValue) throws {
+        do {
+            let decoder = self.factory(for: json, using: key).createJSONDecoder()
+            let taskWrapper = try decoder.decode(SBATaskMappingObject.self, from: json)
+            self.addMapping(with: taskWrapper.task)
+        } catch let err {
+            debugPrint("Failed to decode config element for \(key) with \(json): \(err)")
+        }
+    }
+    
+    /// Return the factory to use to decode the given JSON config element
+    open func factory(for configElement: SBBJSONValue, using key: String) -> RSDFactory {
+        return RSDFactory.shared
+    }
     
     /// Update the mapping by adding the given activity info.
     open func addMapping(with activityInfo: SBAActivityInfo) {
@@ -683,5 +711,14 @@ struct SBAProfileMappingObject : Decodable {
         self.manager = try factory.decodeProfileManager(from: managerDecoder)
         let dataSourceDecoder = try container.superDecoder(forKey: .dataSource)
         self.dataSource = try factory.decodeProfileDataSource(from: dataSourceDecoder)
+    }
+}
+
+struct SBATaskMappingObject : Decodable {
+    let task: RSDTask
+    
+    init(from decoder: Decoder) throws {
+        let factory = decoder.factory
+        self.task = try factory.decodeTask(from: decoder)
     }
 }
