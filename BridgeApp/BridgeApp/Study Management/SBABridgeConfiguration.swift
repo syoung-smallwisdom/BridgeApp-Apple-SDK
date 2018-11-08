@@ -236,7 +236,7 @@ open class SBABridgeConfiguration {
         }
     }
     
-    /// Return the factory to use to decode the given JSON config element
+    /// Return the factory to use to decode the given JSON config element.
     open func factory(for configElement: SBBJSONValue, using key: String) -> RSDFactory {
         return RSDFactory.shared
     }
