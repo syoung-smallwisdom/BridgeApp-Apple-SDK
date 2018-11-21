@@ -128,7 +128,7 @@ public protocol SBAProfileManager {
 }
 
 /// Concrete implementation of the SBAProfileManager protocol.
-open class SBAProfileManagerObject: SBAProfileManager, Decodable {
+open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodable {
     /// Return the shared instance of the Profile Manager from the shared Bridge configuration.
     public static let shared: SBAProfileManager = {
         return SBABridgeConfiguration.shared.profileManager
@@ -182,6 +182,21 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
         return demographics
     }
     
+    // MARK: SBAReportManager
+    /// Set up to manage reports for all our report-based profile items.
+    override open func reportQueries() -> [SBAReportManager.ReportQuery] {
+        let reportIdentifiers: [RSDIdentifier] = self.items.compactMap {
+            guard $0.type == .report else { return nil }
+            return RSDIdentifier(rawValue: $0.sourceKey)
+        }
+        
+        let queries = reportIdentifiers.map({
+            return ReportQuery(identifier: $0, queryType: .mostRecent, dateRange: nil)
+        })
+        
+        return queries
+    }
+    
     // MARK: SBAProfileManagerProtocol
     
     open func getDataGroups() -> Set<String> {
@@ -223,9 +238,6 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
         case items
     }
     
-    public init() {
-    }
-    
     private enum TypeKeys: String, CodingKey {
         case type
     }
@@ -242,8 +254,14 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
         let container = try decoder.container(keyedBy: TypeKeys.self)
         return try container.decode(String.self, forKey: .type)
     }
+    
+    override public init() {
+        super.init()
+    }
 
     public required init(from decoder: Decoder) throws {
+        super.init()
+        
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         if container.contains(.items) {
@@ -268,9 +286,11 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
     ///     - decoder:     The decoder to use to instatiate the object.
     /// - returns: The profile item (if any) created from this decoder.
     /// - throws: `DecodingError` if the object cannot be decoded.
-    open func decodeItem(from decoder:Decoder, with type:SBAProfileItemType) throws -> SBAProfileItem? {
+    open func decodeItem(from decoder: Decoder, with type: SBAProfileItemType) throws -> SBAProfileItem? {
         
         switch (type) {
+        case .report:
+            return try SBAReportProfileItem(from: decoder)
 /* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
         case .userDefaults:
             return try SBAUserDefaultsProfileItem(from: decoder)

@@ -356,20 +356,27 @@ open class SBAReportManager: SBAArchiveManager {
         
         // Save each report.
         newReports.forEach { (report) in
-            let reportIdentifier = report.identifier.stringValue
-            let category = self.reportCategory(for: reportIdentifier)
-            switch category {
-            case .timestamp:
-                self.participantManager.saveReportJSON(report.clientData,
-                                                       withDateTime: report.date,
-                                                       forReport: reportIdentifier,
-                                                       completion: nil)
-            default:
-                self.participantManager.saveReportJSON(report.clientData,
-                                                       withLocalDate: report.date.dateOnly(),
-                                                       forReport: reportIdentifier,
-                                                       completion: nil)
-            }
+            self.saveReport(report)
+        }
+    }
+    
+    /// Save an individual report to Bridge.
+    ///
+    /// - parameter report: The report object to save to Bridge.
+    public func saveReport(_ report: SBAReport) {
+        let reportIdentifier = report.identifier.stringValue
+        let category = self.reportCategory(for: reportIdentifier)
+        switch category {
+        case .timestamp:
+            self.participantManager.saveReportJSON(report.clientData,
+                                                   withDateTime: report.date,
+                                                   forReport: reportIdentifier,
+                                                   completion: nil)
+        default:
+            self.participantManager.saveReportJSON(report.clientData,
+                                                   withLocalDate: report.date.dateOnly(),
+                                                   forReport: reportIdentifier,
+                                                   completion: nil)
         }
     }
     

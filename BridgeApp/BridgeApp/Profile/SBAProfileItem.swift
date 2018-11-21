@@ -34,7 +34,7 @@
 import Foundation
 import HealthKit
 
-public protocol SBAProfileItem {
+public protocol SBAProfileItem: Decodable {
     /// profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
     /// within an app.
     var profileKey: String { get }
@@ -76,11 +76,74 @@ public protocol SBAProfileItem {
     var unit: HKUnit? { get }
  */
     
-    /// Class type to which to deserialize this profile item.
+    /// The class type to which to deserialize this profile item.
     var type: SBAProfileItemType { get }
+    
+    /// This function should fetch the value associated with sourceKey from the internal data storage for the profile type being implemented.
+    func storedValue(forKey key: String) -> Any?
+    
+    /// This function should set or update the value associated with sourceKey in the internal data storage for the profile type being implemented.
+    func setStoredValue(_ newValue: Any?)
+}
+
+// internal protocol to share common implementation details for properties with default fallback values
+fileprivate protocol SBAProfileItemInternal: SBAProfileItem {
+    // backing store for non-default sourceKey value
+    var _sourceKey: String? { get set }
+    
+    // backing store for non-default demographicKey value
+    var _demographicKey: String? { get set }
+}
+
+// extension where common implementation details for properties with default fallback values are implemented
+extension SBAProfileItemInternal {
+    public var sourceKey: String {
+        get {
+            return self._sourceKey ?? self.profileKey
+        }
+        set {
+            self._sourceKey = newValue
+        }
+    }
+    
+    public var demographicKey: String {
+        get {
+            return self._demographicKey ?? self.profileKey
+        }
+        set {
+            self._demographicKey = newValue
+        }
+    }
 }
 
 extension SBAProfileItem {
+    /// The value property is used to get and set the profile item's value in whatever internal data
+    /// storage is used by the implementing type.
+    public var value: Any? {
+        get {
+            return self.storedValue(forKey: sourceKey)
+        }
+        
+        set {
+            guard !readonly else { return }
+            self.setStoredValue(newValue)
+        }
+    }
+    
+    public var jsonValue: SBBJSONValue? {
+        get {
+            return self.commonJsonValueGetter()
+        }
+        
+        set {
+            commonJsonValueSetter(jsonVal: newValue)
+        }
+    }
+    
+    public var demographicJsonValue: SBBJSONValue? {
+        return self.commonDemographicJsonValue()
+    }
+    
     func commonJsonValueGetter() -> SBBJSONValue? {
         return commonItemTypeToJson(val: self.value)
     }
@@ -121,48 +184,58 @@ extension SBAProfileItem {
         }
     }
     
-    public func commonJsonToItemType(value: SBBJSONValue?) -> Any? {
-        guard value != nil else {
+    mutating func commonJsonValueSetter(jsonVal: SBBJSONValue?) {
+        guard let jsonValue = jsonVal else {
+            self.value = nil
+            return
+        }
+        
+        guard let itemValue = commonJsonToItemType(jsonVal: jsonValue) else { return }
+        self.value = itemValue
+    }
+
+    public func commonJsonToItemType(jsonVal: SBBJSONValue?) -> Any? {
+        guard let jsonValue = jsonVal else {
             return nil
         }
         
         var itemValue: Any? = nil
         switch self.itemType {
         case SBAProfileTypeIdentifier.string:
-            itemValue = String(describing: value!)
+            itemValue = jsonValue as? String ?? String(describing: jsonValue)
             
         case SBAProfileTypeIdentifier.number:
-            guard let val = value! as? NSNumber else { return nil }
+            guard let val = jsonValue as? NSNumber else { return nil }
             itemValue = val
             
         case SBAProfileTypeIdentifier.bool:
-            guard let val = value! as? Bool else { return nil }
+            guard let val = jsonValue as? Bool else { return nil }
             itemValue = val
             
         case SBAProfileTypeIdentifier.date:
-            guard let stringVal = value! as? String,
+            guard let stringVal = jsonValue as? String,
                     let dateVal = NSDate(iso8601String: stringVal)
                 else { return nil }
             itemValue = dateVal
             
 /* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
         case SBAProfileTypeIdentifier.hkBiologicalSex:
-            guard let val = value! as? Int else { return nil }
+            guard let val = jsonValue as? Int else { return nil }
             itemValue = HKBiologicalSex(rawValue: val)
             
         case SBAProfileTypeIdentifier.hkQuantity:
-            guard let val = value! as? NSNumber else { return nil }
+            guard let val = jsonValue as? NSNumber else { return nil }
             itemValue = HKQuantity(unit: self.unit ?? commonDefaultUnit(), doubleValue: val.doubleValue)
  */
             
         case SBAProfileTypeIdentifier.dictionary:
-            guard let dictionary = value! as? [AnyHashable : Any] else { return nil }
+            guard let dictionary = jsonValue as? [AnyHashable : Any] else { return nil }
             itemValue = commonMapObject(with: dictionary)
             
         case SBAProfileTypeIdentifier.array:
-            guard let array = value! as? [Any] else { return nil }
+            guard let array = jsonValue as? [Any] else { return nil }
             itemValue = array.map({ (obj) -> Any? in
-                if let dictionary = value! as? [AnyHashable : Any] {
+                if let dictionary = obj as? [AnyHashable : Any] {
                     return commonMapObject(with: dictionary)
                 }
                 else {
@@ -173,7 +246,7 @@ extension SBAProfileItem {
         case SBAProfileTypeIdentifier.set:
             guard let set = value! as? Set<AnyHashable> else { return nil }
             itemValue = set.map({ (obj) -> Any? in
-                if let dictionary = value! as? [AnyHashable : Any] {
+                if let dictionary = obj as? [AnyHashable : Any] {
                     return commonMapObject(with: dictionary)
                 }
                 else {
@@ -287,6 +360,40 @@ extension HKBiologicalSex {
     }
 }
  */
+
+public struct SBAReportProfileItem: SBAProfileItemInternal {
+    private enum CodingKeys: String, CodingKey {
+        case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema, itemType, readonly, type
+    }
+
+    fileprivate var _sourceKey: String?
+    
+    fileprivate var _demographicKey: String?
+    
+    public var profileKey: String
+    
+    public var demographicSchema: String?
+    
+    public var itemType: SBAProfileTypeIdentifier
+    
+    public var readonly: Bool
+    
+    public var type: SBAProfileItemType
+    
+    public func storedValue(forKey key: String) -> Any? {
+        guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return nil }
+        guard let json = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: self.sourceKey) })?.clientData else { return nil }
+        return self.commonJsonToItemType(jsonVal: json)
+    }
+    
+    public func setStoredValue(_ newValue: Any?) {
+        guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return }
+        let data = self.commonItemTypeToJson(val: newValue) ?? NSNull()
+        let report = SBAReport(identifier: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: data)
+        reportManager.saveReport(report)
+    }
+    
+}
 
 /* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 open class SBAProfileItemBase: SBAProfileItem, Decodable {
