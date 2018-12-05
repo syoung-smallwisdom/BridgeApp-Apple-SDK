@@ -610,7 +610,8 @@ open class SBAScheduleManager: SBAReportManager {
         // Recursively get and update all the schedules in this task path.
         var schedules = [SBBScheduledActivity]()
         func appendSchedule(_ taskResult: RSDTaskResult, _ scheduleIdentifier: String?) {
-            if let schedule = self.getAndUpdateSchedule(for: taskResult, with: scheduleIdentifier) {
+            if let schedule = self.getAndUpdateSchedule(for: taskResult, with: scheduleIdentifier),
+                !schedules.contains(where: { $0.guid == schedule.guid }) {
                 schedules.append(schedule)
             }
             taskResult.stepHistory.forEach {
@@ -648,15 +649,21 @@ open class SBAScheduleManager: SBAReportManager {
     ///     - taskViewModel: The task path (if available) for the task run that triggered this update.
     open func sendUpdated(for schedules: [SBBScheduledActivity], taskViewModel: RSDTaskViewModel? = nil) {
         
-        let guids = schedules.map { $0.guid }
+        // Filter the schedules to ensure that only unique instances are being sent.
+        var uniqueSchedules = [SBBScheduledActivity]()
+        schedules.forEach { (schedule) in
+            guard !uniqueSchedules.contains(where: { $0.guid == schedule.guid }) else { return }
+            uniqueSchedules.append(schedule)
+        }
+        let guids = uniqueSchedules.map { $0.guid }
         
         // Post notification that the schedules were updated.
         NotificationCenter.default.post(name: .SBAWillSendUpdatedScheduledActivities,
                                         object: self,
-                                        userInfo: [NotificationKey.updatedActivities : schedules])
+                                        userInfo: [NotificationKey.updatedActivities : uniqueSchedules])
         
         //print("\n\n-- Sending update to schedules: \(schedules)")
-        self.activityManager.updateScheduledActivities(schedules) { (_, _) in
+        self.activityManager.updateScheduledActivities(uniqueSchedules) { (_, _) in
             // Post notification that the schedules were updated.
             NotificationCenter.default.post(name: .SBADidSendUpdatedScheduledActivities,
                                             object: self,
