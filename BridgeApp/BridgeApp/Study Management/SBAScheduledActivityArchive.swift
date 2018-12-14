@@ -91,7 +91,7 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
     
     /// Get the archivable object for the given result.
     open func archivableData(for result: RSDResult, sectionIdentifier: String?, stepPath: String?) -> RSDArchivable? {
-        if schedule?.activity.survey != nil, let answerResult = result as? RSDAnswerResult {
+        if self.usesV1LegacySchema, schedule?.activity.survey != nil, let answerResult = result as? RSDAnswerResult {
             return SBAAnswerResultWrapper(sectionIdentifier: sectionIdentifier, result: answerResult)
         }
         else if let archivable = result as? RSDArchivable {
@@ -104,13 +104,19 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
     
     /// Insert the data into the archive. By default, this will call `insertData(intoArchive:,filename:, createdOn:)`.
     ///
-    /// - note: The "answers" file is special-cased to *not* include the `.json` extension. This makes it easier
-    /// to read these values in the Synapse tables.
+    /// - note: The "answers.json" file is special-cased to *not* include the `.json` extension if this is
+    /// for a `v1_legacy` archive. This allows the v1 schema to use `answers.foo` which reads better in the
+    /// Synapse tables.
     open func insertDataIntoArchive(_ data: Data, manifest: RSDFileManifest) throws {
         var filename = manifest.filename
         let fileKey = (filename as NSString).deletingPathExtension
         if let reserved = RSDReservedFilename(rawValue: fileKey), reserved == .answers {
-            filename = fileKey
+            if self.usesV1LegacySchema {
+                filename = fileKey
+            }
+            else {
+                self.dataFilename = filename
+            }
         }
         self.insertData(intoArchive: data, filename: filename, createdOn: manifest.timestamp)
     }

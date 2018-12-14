@@ -109,6 +109,11 @@ open class SBABridgeConfiguration {
         return studyDuration
     }()
     
+    /// Does this app use v1_legacy archiving for the data upload schemas? Default is false.
+    ///
+    /// - seealso: https://developer.sagebridge.org/articles/bundled_zip_file_uploads.html
+    public var usesV1LegacyArchiving : Bool = false
+    
     /// The profile manager for the study.
     open private(set) var profileManager : SBAProfileManager = SBAProfileManagerObject()
     
@@ -198,6 +203,10 @@ open class SBABridgeConfiguration {
                 }
                 mappingObject.reportMappings?.forEach {
                     self.addMapping(with: $0.key, to: $0.value)
+                }
+                
+                if let v1Legacy = mappingObject.usesV1LegacyArchiving {
+                    self.usesV1LegacyArchiving = v1Legacy
                 }
                 
                 if let profileMapping = mappingObject.profile {
@@ -431,6 +440,7 @@ public protocol SBAActivityInfo : RSDTaskInfo {
 /// that can be used to decode a Plist or JSON dictionary.
 struct SBAActivityMappingObject : Decodable {
     let studyDuration : DateComponents?
+    let usesV1LegacyArchiving : Bool?
     let groups : [SBAActivityGroupObject]?
     let activityList : [SBAActivityInfoObject]?
     let tasks : [RSDTaskObject]?
