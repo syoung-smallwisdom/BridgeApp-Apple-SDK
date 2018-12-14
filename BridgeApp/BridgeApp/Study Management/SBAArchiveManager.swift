@@ -117,8 +117,19 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
             return inputArchive
         }
         
+        guard !isPlaceholder else {
+            return SBAScheduledActivityArchive(identifier: archiveIdentifier, schemaInfo: schemaInfo, schedule: schedule, isPlaceholder: true)
+        }
+        
         // Otherwise, instantiate a new archive.
-        return SBAScheduledActivityArchive(identifier: archiveIdentifier, schemaInfo: schemaInfo, schedule: schedule, isPlaceholder: isPlaceholder)
+        return self.instantiateArchive(archiveIdentifier, for: schedule, with: schemaInfo)
+    }
+    
+    /// Instantiate the data archive to use for this schedule and schema info.
+    open func instantiateArchive(_ archiveIdentifier: String, for schedule:SBBScheduledActivity?, with schemaInfo: RSDSchemaInfo) -> RSDDataArchive {
+        let archive = SBAScheduledActivityArchive(identifier: archiveIdentifier, schemaInfo: schemaInfo, schedule: schedule, isPlaceholder: false)
+        archive.usesV1LegacySchema = (schedule?.activity.survey == nil) && self.configuration.usesV1LegacyArchiving
+        return archive
     }
     
     /// Finalize the upload of all the created archives.
