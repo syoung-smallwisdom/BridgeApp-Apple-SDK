@@ -204,9 +204,9 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
         switch (type) {
         case .html:
             return try SBAHTMLProfileTableItem(from: decoder)
+        case .profileItem:
+            return try SBAProfileItemProfileTableItem(from: decoder)
             // TODO: emm 2018-08-19 deal with this for mPower 2 2.1
-//        case .profileItem:
-//            return try SBAProfileItemProfileTableItem(from: decoder)
 //        case .resource:
 //            return try SBAResourceProfileTableItem(from: decoder)
         default:
@@ -285,20 +285,48 @@ public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResour
 }
 
 
-/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
-open class SBAProfileItemProfileTableItem: SBAProfileTableItemBase {
-    /// Override to return .editProfileItem as the default onSelected action.
-    override open func defaultOnSelectedAction() -> SBAProfileOnSelectedAction {
+public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
+    private enum CodingKeys: String, CodingKey {
+        case title, inCohorts, notInCohorts, profileItemKey
+    }
+    // MARK: SBAProfileTableItem
+    /// Title to show for the table item.
+    public var title: String?
+    
+    /// Detail text to show for the table item.
+    public var detail: String? {
+        guard let value = self.profileItem.value else { return "" }
+        return String(describing: value)
+    }
+    
+    /// The table item should be editable unless the profile item itself is readonly.
+    public var isEditable: Bool? {
+        return !self.profileItem.readonly
+    }
+    
+    /// A set of cohorts (data groups) the participant must be in, in order to show this item in its containing profile section.
+    public var inCohorts: Set<String>?
+    
+    /// A set of cohorts (data groups) the participant must not be in, in order to show this item in its containing profile section.
+    public var notInCohorts: Set<String>?
+    
+    /// Profile item profile table items by default edit when selected.
+    public var onSelected: SBAProfileOnSelectedAction? {
         return .editProfileItem
     }
     
-    open var profileItemKey: String
+    // MARK: Profile Item Profile Table Item
     
-    lazy open var profileItem: SBAProfileItem = {
-        let profileItems = SBAProfileManager.shared.profileItems()
+    /// The profile item key for this profile table item.
+    public var profileItemKey: String
+    
+    /// The actual profile item for the given profileItemKey.
+    public var profileItem: SBAProfileItem {
+        let profileItems = SBABridgeConfiguration.shared.profileManager.profileItems()
         return profileItems[self.profileItemKey]!
-    }()
+    }
     
+/* TODO: emm 2019-02-06 deal with this for mPower 2 2.1
     func itemDetailFor(_ date: Date, format: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = format
@@ -418,8 +446,10 @@ open class SBAProfileItemProfileTableItem: SBAProfileTableItemBase {
         profileItemKey = try container.decode(String.self, forKey: .profileItemKey)
         answerMapKeys = try container.decodeIfPresent([String: String].self, forKey: .answerMapKeys) ?? [self.profileItemKey: self.profileItemKey]
     }
+ */
 }
 
+/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 /// A profile table item that opens a resource (for example, a task defined in JSON) when selected.
 public struct SBAResourceProfileTableItem: SBAProfileTableItem, Decodable, RSDResourceTransformer {
     private enum CodingKeys: String, CodingKey {
