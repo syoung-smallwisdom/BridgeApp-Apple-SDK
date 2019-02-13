@@ -284,10 +284,10 @@ public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResour
 
 }
 
-
+/// A profile table item that displays, and allows editing, the value of a Profile Item.
 public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
-        case title, inCohorts, notInCohorts, profileItemKey
+        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey
     }
     // MARK: SBAProfileTableItem
     /// Title to show for the table item.
@@ -299,9 +299,16 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
         return String(describing: value)
     }
     
-    /// The table item should be editable unless the profile item itself is readonly.
+    /// The table item should not be editable if the profile item itself is readonly;
+    /// otherwise honor this flag's setting, defaulting to false.
+    private var _isEditable: Bool = false
     public var isEditable: Bool? {
-        return !self.profileItem.readonly
+        get {
+            return self.profileItem.readonly ? false : self._isEditable
+        }
+        set {
+            self._isEditable = newValue ?? false
+        }
     }
     
     /// A set of cohorts (data groups) the participant must be in, in order to show this item in its containing profile section.
@@ -311,14 +318,21 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     public var notInCohorts: Set<String>?
     
     /// Profile item profile table items by default edit when selected.
+    private var _onSelected: SBAProfileOnSelectedAction = .editProfileItem
     public var onSelected: SBAProfileOnSelectedAction? {
-        return .editProfileItem
+        get {
+            return self._onSelected
+        }
+        set {
+            self._onSelected = newValue ?? .editProfileItem
+        }
     }
     
     // MARK: Profile Item Profile Table Item
     
-    /// The profile item key for this profile table item.
-    public var profileItemKey: String
+    /// The profile item key for this profile table item. Required.
+    /// - warning: Using a key that is not included in the Profile Manager's profileItems is a coding error.
+    public let profileItemKey: String
     
     /// The actual profile item for the given profileItemKey.
     public var profileItem: SBAProfileItem {
