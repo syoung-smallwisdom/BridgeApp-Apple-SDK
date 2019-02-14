@@ -34,6 +34,9 @@
 import UIKit
 
 class MockParticipantManager: NSObject, SBBParticipantManagerProtocol {
+    var timestampedReports: [String: [SBBReportData]] = [:]
+    var datestampedReports: [String: [SBBReportData]] = [:]
+    
     func getParticipantRecord(completion: SBBParticipantManagerGetRecordCompletionBlock? = nil) -> URLSessionTask? {
         assert(false, "getParticipantRecord(completion:) not implemented in mock")
         return nil
@@ -100,8 +103,15 @@ class MockParticipantManager: NSObject, SBBParticipantManagerProtocol {
     }
     
     func getLatestCachedData(forReport identifier: String) throws -> SBBReportData {
-        assert(false, "getLatestCachedData(forReport:) not implemented in mock")
-        return SBBReportData()
+        guard let reports = self.timestampedReports[identifier] ?? self.datestampedReports[identifier],
+                    reports.count > 0
+                else {
+            throw NSError(domain: SBB_ERROR_DOMAIN, code: 0, userInfo: ["description": "No cached data found for report \(identifier)"])
+        }
+        
+        return reports.sorted(by: {
+            return $0.date!.compare($1.date!) == ComparisonResult.orderedDescending
+        }).first!
     }
     
 
