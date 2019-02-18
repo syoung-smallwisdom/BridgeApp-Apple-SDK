@@ -354,16 +354,29 @@ open class SBAReportManager: SBAArchiveManager {
                                         object: self,
                                         userInfo: [NotificationKey.newReports: newReports])
         
-        // Save each report.
+        // Save each report to Bridge.
         newReports.forEach { (report) in
-            self.saveReport(report)
+            self.saveReportToBridge(report)
         }
+    }
+    
+    /// Save an individual new report.
+    ///
+    /// - parameter report: The report object to save.
+    public func saveReport(_ report: SBAReport) {
+        // Post notification that a report has been created.
+        NotificationCenter.default.post(name: .SBAWillSaveReports,
+                                        object: self,
+                                        userInfo: [NotificationKey.newReports: [report]])
+        
+        // Save the report to Bridge.
+        self.saveReportToBridge(report)
     }
     
     /// Save an individual report to Bridge.
     ///
     /// - parameter report: The report object to save to Bridge.
-    public func saveReport(_ report: SBAReport) {
+    public func saveReportToBridge(_ report: SBAReport) {
         let reportIdentifier = report.identifier.stringValue
         let category = self.reportCategory(for: reportIdentifier)
         switch category {
