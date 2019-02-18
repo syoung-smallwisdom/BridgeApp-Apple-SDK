@@ -93,7 +93,14 @@ class MockParticipantManager: NSObject, SBBParticipantManagerProtocol {
     }
     
     func saveReportJSON(_ reportJSON: SBBJSONValue, withDateTime dateTime: Date, forReport identifier: String, completion: SBBParticipantManagerCompletionBlock? = nil) -> URLSessionTask? {
-        assert(false, "saveReportJSON(_, withDateTime:, forReport:, completion:) not implemented in mock")
+        let reportData = SBBReportData()
+        reportData.data = reportJSON
+        reportData.date = dateTime
+        var reports = self.timestampedReports[identifier] ?? []
+        reports.append(reportData)
+        self.timestampedReports[identifier] = reports
+        guard let completion = completion else { return nil }
+        completion(["message": "fake 200 response JSON"], nil)
         return nil
     }
     

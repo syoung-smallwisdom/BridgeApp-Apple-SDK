@@ -382,7 +382,7 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     
     public func storedValue(forKey key: String) -> Any? {
         guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return nil }
-        guard let json = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: self.sourceKey) })?.clientData else { return nil }
+        guard let json = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: key) })?.clientData else { return nil }
         return self.commonJsonToItemType(jsonVal: json)
     }
     

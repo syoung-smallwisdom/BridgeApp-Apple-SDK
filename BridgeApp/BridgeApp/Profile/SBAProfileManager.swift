@@ -276,6 +276,7 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
                 }
             }
             self.items = items
+            self.loadReports()
         }
     }
 
