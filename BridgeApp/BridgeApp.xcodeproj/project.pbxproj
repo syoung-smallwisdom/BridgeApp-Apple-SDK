@@ -10,6 +10,7 @@
 		0356943A20EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */; };
 		6090544821308CF7002D1895 /* SBAProfileOnSelectedAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090544621308CF7002D1895 /* SBAProfileOnSelectedAction.swift */; };
 		6090544921308CF7002D1895 /* SBAProfileTypeIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090544721308CF7002D1895 /* SBAProfileTypeIdentifier.swift */; };
+		60B08E7D221B413D00166CAF /* ProfileDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B08E7C221B413D00166CAF /* ProfileDataSourceTests.swift */; };
 		60D9611D20BF161300B5CFEB /* SBAProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611520BF161200B5CFEB /* SBAProfileSection.swift */; };
 		60D9611E20BF161300B5CFEB /* SBAProfileItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611620BF161200B5CFEB /* SBAProfileItem.swift */; };
 		60D9611F20BF161300B5CFEB /* SBAProfileDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */; };
@@ -289,6 +290,7 @@
 		0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATrackedItemRemindersStepViewController.swift; sourceTree = "<group>"; };
 		6090544621308CF7002D1895 /* SBAProfileOnSelectedAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileOnSelectedAction.swift; sourceTree = "<group>"; };
 		6090544721308CF7002D1895 /* SBAProfileTypeIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileTypeIdentifier.swift; sourceTree = "<group>"; };
+		60B08E7C221B413D00166CAF /* ProfileDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileDataSourceTests.swift; sourceTree = "<group>"; };
 		60D9611520BF161200B5CFEB /* SBAProfileSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileSection.swift; sourceTree = "<group>"; };
 		60D9611620BF161200B5CFEB /* SBAProfileItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileItem.swift; sourceTree = "<group>"; };
 		60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileDataSource.swift; sourceTree = "<group>"; };
@@ -453,6 +455,7 @@
 			isa = PBXGroup;
 			children = (
 				8002800322136822000B00B0 /* ProfileManagerTests.swift */,
+				60B08E7C221B413D00166CAF /* ProfileDataSourceTests.swift */,
 			);
 			name = "Profile Tests";
 			sourceTree = "<group>";
@@ -1164,6 +1167,7 @@
 				F87D69C0203B5C4900409087 /* ActivityReferenceTests.swift in Sources */,
 				F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */,
 				F8E4A4EF20A420380046577B /* SBAScheduleManagerTests.swift in Sources */,
+				60B08E7D221B413D00166CAF /* ProfileDataSourceTests.swift in Sources */,
 				F869804B20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift in Sources */,
 				F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */,
 				F8B86AA520C074E800943127 /* ScheduleFilteringTests.swift in Sources */,

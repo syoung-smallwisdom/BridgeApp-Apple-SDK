@@ -296,8 +296,15 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     /// Detail text to show for the table item.
     public var detail: String? {
         guard let value = self.profileItem.value else { return "" }
-        return String(describing: value)
+        switch self.profileItem.itemType {
+        case .bool:
+            return ""
+        default:
+            return String(describing: value)
+        }
     }
+    
+    /// Get the raw value for edit control state.
     
     /// The table item should not be editable if the profile item itself is readonly;
     /// otherwise honor this flag's setting, defaulting to false.
