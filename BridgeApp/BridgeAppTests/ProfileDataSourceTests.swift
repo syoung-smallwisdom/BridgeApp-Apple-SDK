@@ -65,7 +65,8 @@ class ProfileDataSourceTests: XCTestCase {
                                     "title": ProfileDataSourceTests.testProfileItemTitle,
                                     "profileItemKey": ProfileDataSourceTests.testReportProfileKey
                                 ]
-                            ]
+                            ],
+                            "type": "profileSection"
                         ]
                     ]
                 ]
@@ -107,14 +108,22 @@ class ProfileDataSourceTests: XCTestCase {
                 XCTAssert(false, "Expected there to be a profile table item for section 0 row 0 but it's coming back as nil")
                 return
         }
-        guard let piptItem = item00  as? SBAProfileItemProfileTableItem
+        guard var piptItem = item00  as? SBAProfileItemProfileTableItem
             else {
                 XCTAssert(false, "Expected profile table item for section 0 row 0 to be an SBAProfileItemProfileTableItem but instead it's \(String(describing: type(of: item00)))")
                 return
         }
         
+        XCTAssert(piptItem.title == ProfileDataSourceTests.testProfileItemTitle, "Expected profile table item title to be '\(ProfileDataSourceTests.testProfileItemTitle)' but got '\(String(describing:piptItem.title))' instead")
         
+        XCTAssert(piptItem.profileItem.itemType == .bool, "Expected profile table item's profile item type to be bool, but it's \(String(describing: piptItem.profileItem.itemType)) instead")
         
+        XCTAssert(piptItem.profileItemValue == nil, "Expected default profile item value to be nil but it's \(String(describing: piptItem.profileItemValue))")
+        
+        piptItem.profileItemValue = false
+        
+        XCTAssert(piptItem.profileItemValue as? Bool == false, "Expected profile item value to be false but it's \(String(describing: piptItem.profileItemValue))")
+
     }
 
 }

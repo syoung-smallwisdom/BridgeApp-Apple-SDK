@@ -298,23 +298,33 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
         guard let value = self.profileItem.value else { return "" }
         switch self.profileItem.itemType {
         case .bool:
+            // Bool table items should show a switch control
             return ""
         default:
             return String(describing: value)
         }
     }
     
-    /// Get the raw value for edit control state.
+    /// Current profile item value to apply to, and set from, an edit control.
+    public var profileItemValue: Any? {
+        get {
+            return self.profileItem.value
+        }
+        set {
+            self.profileItem.value = newValue
+        }
+    }
     
     /// The table item should not be editable if the profile item itself is readonly;
     /// otherwise honor this flag's setting, defaulting to false.
-    private var _isEditable: Bool = false
+    private var _isEditable: Bool?
     public var isEditable: Bool? {
         get {
-            return self.profileItem.readonly ? false : self._isEditable
+            return self.profileItem.readonly ? false : self._isEditable ?? false
         }
         set {
-            self._isEditable = newValue ?? false
+            guard self.profileItem.readonly == false else { return }
+            self._isEditable = newValue
         }
     }
     
@@ -325,13 +335,13 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     public var notInCohorts: Set<String>?
     
     /// Profile item profile table items by default edit when selected.
-    private var _onSelected: SBAProfileOnSelectedAction = .editProfileItem
+    private var _onSelected: SBAProfileOnSelectedAction? = .editProfileItem
     public var onSelected: SBAProfileOnSelectedAction? {
         get {
-            return self._onSelected
+            return self._onSelected ?? .editProfileItem
         }
         set {
-            self._onSelected = newValue ?? .editProfileItem
+            self._onSelected = newValue
         }
     }
     
@@ -343,8 +353,14 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     
     /// The actual profile item for the given profileItemKey.
     public var profileItem: SBAProfileItem {
-        let profileItems = SBABridgeConfiguration.shared.profileManager.profileItems()
-        return profileItems[self.profileItemKey]!
+        get {
+            let profileItems = SBABridgeConfiguration.shared.profileManager.profileItems()
+            return profileItems[self.profileItemKey]!
+        }
+        set {
+            var profileItems = SBABridgeConfiguration.shared.profileManager.profileItems()
+            profileItems[self.profileItemKey]!.value = newValue.value
+       }
     }
     
 /* TODO: emm 2019-02-06 deal with this for mPower 2 2.1
