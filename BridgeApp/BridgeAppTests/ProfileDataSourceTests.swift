@@ -88,9 +88,9 @@ class ProfileDataSourceTests: XCTestCase {
         super.tearDown()
         SBABridgeConfiguration.shared = SBABridgeConfiguration()
     }
-
+    
     func testProfileTableItems() {
-        let pds = SBABridgeConfiguration.shared.profileDataSource
+        let pds = SBAProfileDataSourceObject.shared
         let numSections = pds.numberOfSections()
         XCTAssert(numSections == 1, "Expected one profile section but got \(numSections)")
         
@@ -102,7 +102,7 @@ class ProfileDataSourceTests: XCTestCase {
     }
     
     func testProfileItemProfileTableItems() {
-        let pds = SBABridgeConfiguration.shared.profileDataSource
+        let pds = SBAProfileDataSourceObject.shared
         guard let item00 = pds.profileTableItem(at: IndexPath(row: 0, section: 0))
             else {
                 XCTAssert(false, "Expected there to be a profile table item for section 0 row 0 but it's coming back as nil")
