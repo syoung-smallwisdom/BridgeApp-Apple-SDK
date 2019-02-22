@@ -295,12 +295,13 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     
     /// Detail text to show for the table item.
     public var detail: String? {
-        guard let value = self.profileItem.value else { return "" }
         switch self.profileItem.itemType {
         case .bool:
-            // Bool table items should show a switch control
-            return ""
+            // Bool table items show detail as On/Off, or blank if never set
+            guard let isOn = self.profileItemValue as? Bool else { return "" }
+            return isOn ? Localization.localizedString("SETTINGS_STATE_ON") : Localization.localizedString("SETTINGS_STATE_OFF")
         default:
+            guard let value = self.profileItem.value else { return "" }
             return String(describing: value)
         }
     }

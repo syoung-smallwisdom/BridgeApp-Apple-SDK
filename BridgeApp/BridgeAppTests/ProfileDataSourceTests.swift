@@ -120,10 +120,21 @@ class ProfileDataSourceTests: XCTestCase {
         
         XCTAssert(piptItem.profileItemValue == nil, "Expected default profile item value to be nil but it's \(String(describing: piptItem.profileItemValue))")
         
+        XCTAssert(piptItem.detail == "", "Expected default profile table item detail to be an empty string, but it's \(String(describing: piptItem.detail))")
+        
         piptItem.profileItemValue = false
         
         XCTAssert(piptItem.profileItemValue as? Bool == false, "Expected profile item value to be false but it's \(String(describing: piptItem.profileItemValue))")
+        
+        let offStr = Localization.localizedString("SETTINGS_STATE_OFF")
+        XCTAssert(piptItem.detail == offStr, "Expected profile table item detail to be \(offStr), but it's \(String(describing: piptItem.detail))")
 
+        piptItem.profileItemValue = true
+        
+        XCTAssert(piptItem.profileItemValue as? Bool == true, "Expected profile item value to be true but it's \(String(describing: piptItem.profileItemValue))")
+        
+        let onStr = Localization.localizedString("SETTINGS_STATE_ON")
+        XCTAssert(piptItem.detail == onStr, "Expected profile table item detail to be \(onStr), but it's \(String(describing: piptItem.detail))")
     }
 
 }
