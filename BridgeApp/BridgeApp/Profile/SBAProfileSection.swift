@@ -287,7 +287,7 @@ public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResour
 /// A profile table item that displays, and allows editing, the value of a Profile Item.
 public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
-        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey
+        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey, editTaskIdentifier
     }
     // MARK: SBAProfileTableItem
     /// Title to show for the table item.
@@ -351,6 +351,10 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     /// The profile item key for this profile table item. Required.
     /// - warning: Using a key that is not included in the Profile Manager's profileItems is a coding error.
     public let profileItemKey: String
+    
+    /// The task info identifier for the step to display to the participant when they ask to edit the value
+    /// of the profile item. Optional.
+    public let editTaskIdentifier: String?
     
     /// The actual profile item for the given profileItemKey.
     public var profileItem: SBAProfileItem {
