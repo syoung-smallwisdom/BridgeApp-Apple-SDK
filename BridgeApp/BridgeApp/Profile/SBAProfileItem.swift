@@ -84,6 +84,7 @@ public protocol SBAProfileItem: Decodable {
     
     /// This function should set or update the value associated with sourceKey in the internal data storage for the profile type being implemented.
     func setStoredValue(_ newValue: Any?)
+    
 }
 
 // internal protocol to share common implementation details for properties with default fallback values
@@ -130,6 +131,7 @@ extension SBAProfileItem {
         }
     }
     
+    /// jsonValue is used to get and set the profile item's value directly from appropriate JSON.
     public var jsonValue: SBBJSONValue? {
         get {
             return self.commonJsonValueGetter()
@@ -140,6 +142,9 @@ extension SBAProfileItem {
         }
     }
     
+    /// demographicJsonValue is used when formatting the item as demographic data for upload to Bridge.
+    /// By default it will fall through to the getter for the jsonValue property, but can be different
+    /// if needed.
     public var demographicJsonValue: SBBJSONValue? {
         return self.commonDemographicJsonValue()
     }
