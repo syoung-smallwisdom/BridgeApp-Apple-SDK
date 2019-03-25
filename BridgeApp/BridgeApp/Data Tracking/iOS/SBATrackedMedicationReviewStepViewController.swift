@@ -96,8 +96,6 @@ open class SBATrackedMedicationReviewCell: RSDTableViewCell {
         super.awakeFromNib()
 
         self.loggedButton?.isSecondaryButton = false
-        self.loggedButton?.usesLightStyle = false
-
         self.actionButton.setTitle(Localization.localizedString("BUTTON_EDIT"), for: .normal)
     }
     

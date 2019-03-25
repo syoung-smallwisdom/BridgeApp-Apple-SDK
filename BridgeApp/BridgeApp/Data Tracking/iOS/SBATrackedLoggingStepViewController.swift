@@ -90,7 +90,6 @@ open class SBATrackedLoggingCell: RSDButtonCell {
         self.loggedDateLabel.isHidden = true
         
         self.loggedButton?.isSecondaryButton = false
-        self.loggedButton?.usesLightStyle = false
         
         let buttonTitle = Localization.localizedString("LOG_BUTTON_TITLE")
         self.actionButton.setTitle(buttonTitle, for: .normal)

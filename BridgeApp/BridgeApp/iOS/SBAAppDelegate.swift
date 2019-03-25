@@ -52,6 +52,10 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
         return SBABridgeConfiguration()
     }
     
+    open func instantiateColorPalette() -> RSDColorPalette {
+        return .twilight
+    }
+    
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization before application launch.
         
@@ -60,8 +64,10 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
         SBABridgeConfiguration.shared = instantiateBridgeConfiguration()
         SBABridgeConfiguration.shared.setupBridge(with: instantiateFactory())
         
+        RSDStudyConfiguration.shared.colorPalette = instantiateColorPalette()
+        
         // Set the tint color.
-        self.window?.tintColor = UIColor.primaryTintColor
+        self.window?.tintColor = RSDStudyConfiguration.shared.colorPalette.primary.normal.color
         
         // Replace the launch root view controller with an SBARootViewController
         // This allows transitioning between root view controllers while a lock screen

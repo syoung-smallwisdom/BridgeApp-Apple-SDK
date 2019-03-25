@@ -46,7 +46,6 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
         let header =  SBATrackedMedicationNavigationHeaderView()
         header.delegate = self
         header.backgroundColor = UIColor.appBackgroundDark
-        header.usesLightStyle = true
         header.underlinedButtonText = Localization.localizedString("MEDICATION_REMOVE_MEDICATION")
         self.navigationHeader = header
         self.tableView.tableHeaderView = header

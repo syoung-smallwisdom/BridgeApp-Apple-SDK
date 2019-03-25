@@ -81,8 +81,14 @@ open class SBASurveyConfiguration {
         return nil
     }
     
-    /// Default implementation is to use the default color theme.
+    // TODO: syoung 03/25/2019 Remove once confirmed that no one is using this.
+    @available(*, unavailable)
     open func colorTheme(for surveyElement: SBBSurveyElement) -> RSDColorThemeElement? {
+        return nil
+    }
+    
+    /// Default implementation is to use the default color theme.
+    open func colorMapping(for surveyElement: SBBSurveyElement) -> RSDColorMappingThemeElement? {
         return nil
     }
     
