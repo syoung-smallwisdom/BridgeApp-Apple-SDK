@@ -85,7 +85,7 @@ class StepProtocolTests: XCTestCase {
         XCTAssertNil(inputStep.action(for: .navigation(.skip), on: inputStep))
         XCTAssertNil(inputStep.shouldHideAction(for: .navigation(.skip), on: inputStep))
         XCTAssertNil(inputStep.viewTheme)
-        XCTAssertNil(inputStep.colorTheme)
+        XCTAssertNil(inputStep.colorMapping)
         XCTAssertEqual(inputStep.stepType, .instruction)
         XCTAssertTrue(inputStep.instantiateStepResult() is RSDResultObject)
     }
@@ -98,7 +98,7 @@ class StepProtocolTests: XCTestCase {
         XCTAssertNil(inputStep.action(for: .navigation(.skip), on: inputStep))
         XCTAssertNil(inputStep.shouldHideAction(for: .navigation(.skip), on: inputStep))
         XCTAssertNil(inputStep.viewTheme)
-        XCTAssertNil(inputStep.colorTheme)
+        XCTAssertNil(inputStep.colorMapping)
         XCTAssertEqual(inputStep.stepType, .form)
         XCTAssertTrue(inputStep.instantiateStepResult() is RSDCollectionResultObject)
         XCTAssertTrue(inputStep.isOptional)
@@ -114,7 +114,7 @@ class StepProtocolTests: XCTestCase {
         XCTAssertNotNil(inputStep.action(for: .navigation(.skip), on: inputStep))
         XCTAssertNotNil(inputStep.shouldHideAction(for: .navigation(.skip), on: inputStep))
         XCTAssertNotNil(inputStep.viewTheme)
-        XCTAssertNotNil(inputStep.colorTheme)
+        XCTAssertNotNil(inputStep.colorMapping)
         XCTAssertEqual(inputStep.stepType, testConfig.stepType)
         XCTAssertTrue(inputStep.instantiateStepResult() is TestResult)
     }
@@ -129,7 +129,7 @@ class StepProtocolTests: XCTestCase {
         XCTAssertNotNil(inputStep.action(for: .navigation(.skip), on: inputStep))
         XCTAssertNotNil(inputStep.shouldHideAction(for: .navigation(.skip), on: inputStep))
         XCTAssertNotNil(inputStep.viewTheme)
-        XCTAssertNotNil(inputStep.colorTheme)
+        XCTAssertNotNil(inputStep.colorMapping)
         XCTAssertEqual(inputStep.stepType, testConfig.stepType)
         XCTAssertTrue(inputStep.instantiateStepResult() is TestResult)
         XCTAssertFalse(inputStep.isOptional)
@@ -772,9 +772,8 @@ class TestSurveyConfiguration : SBASurveyConfiguration {
         return RSDViewThemeElementObject(viewIdentifier: "foo")
     }
     
-    var colorTheme : RSDColorThemeElement = RSDColorThemeElementObject(backgroundColorName: "goo")
-    override func colorTheme(for surveyElement: SBBSurveyElement) -> RSDColorThemeElement? {
-        return RSDColorThemeElementObject(backgroundColorName: "goo")
+    override func colorMapping(for surveyElement: SBBSurveyElement) -> RSDColorMappingThemeElement? {
+        return RSDColorMappingThemeElementObject(colorStyle: .accent, colorMapping: nil)
     }
     
     override func progressMarkers(for survey: SBBSurvey) -> [String]? {
