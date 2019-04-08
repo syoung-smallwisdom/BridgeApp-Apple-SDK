@@ -53,7 +53,7 @@ public protocol SBAProfileItem: Decodable {
     var demographicKey: String { get }
     
     /// itemType specifies what type to store the profileItem's value as. Defaults to String if not otherwise specified.
-    var itemType: SBAProfileTypeIdentifier { get }
+    var itemType: RSDFormDataType { get }
     
     /// The value property is used to get and set the profile item's value in whatever internal data
     /// storage is used by the implementing class.
@@ -156,33 +156,20 @@ extension SBAProfileItem {
     public func commonItemTypeToJson(val: Any?) -> SBBJSONValue? {
         guard val != nil else { return NSNull() }
         switch self.itemType {
-        case SBAProfileTypeIdentifier.string:
+        case .base(.string):
             return val as? NSString
             
-        case SBAProfileTypeIdentifier.number:
+        case .base(.integer):
             return val as? NSNumber
             
-        case SBAProfileTypeIdentifier.bool:
+        case .base(.decimal):
+            return val as? NSNumber
+
+        case .base(.boolean):
             return val as? NSNumber
             
-        case SBAProfileTypeIdentifier.date:
+        case .base(.date):
             return (val as? NSDate)?.iso8601String() as NSString?
-       
-/* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
-        case SBAProfileTypeIdentifier.hkBiologicalSex:
-            return (val as? HKBiologicalSex)?.rawValue as NSNumber?
-            
-        case SBAProfileTypeIdentifier.hkQuantity:
-            guard let quantity = val as? HKQuantity else { return nil }
-            return NSNumber(value: quantity.doubleValue(for: self.unit ?? commonDefaultUnit()))
- */
-            
-        case SBAProfileTypeIdentifier.dictionary, SBAProfileTypeIdentifier.array:
-            return (val as? RSDJSONValue)?.jsonObject() as? SBBJSONValue
-            
-        case SBAProfileTypeIdentifier.set:
-            guard let set = val as? Set<AnyHashable> else { return nil }
-            return (Array(set) as RSDJSONValue).jsonObject() as? SBBJSONValue
             
         default:
             return nil
@@ -206,59 +193,27 @@ extension SBAProfileItem {
         
         var itemValue: Any? = nil
         switch self.itemType {
-        case SBAProfileTypeIdentifier.string:
+        case .base(.string):
             itemValue = jsonValue as? String ?? String(describing: jsonValue)
             
-        case SBAProfileTypeIdentifier.number:
-            guard let val = jsonValue as? NSNumber else { return nil }
+        case .base(.integer):
+            guard let val = jsonValue as? Int else { return nil }
             itemValue = val
             
-        case SBAProfileTypeIdentifier.bool:
+        case .base(.decimal):
+            guard let val = jsonValue as? Decimal else { return nil }
+            itemValue = val
+            
+        case .base(.boolean):
             guard let val = jsonValue as? Bool else { return nil }
             itemValue = val
             
-        case SBAProfileTypeIdentifier.date:
+        case .base(.date):
             guard let stringVal = jsonValue as? String,
                     let dateVal = NSDate(iso8601String: stringVal)
                 else { return nil }
             itemValue = dateVal
-            
-/* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
-        case SBAProfileTypeIdentifier.hkBiologicalSex:
-            guard let val = jsonValue as? Int else { return nil }
-            itemValue = HKBiologicalSex(rawValue: val)
-            
-        case SBAProfileTypeIdentifier.hkQuantity:
-            guard let val = jsonValue as? NSNumber else { return nil }
-            itemValue = HKQuantity(unit: self.unit ?? commonDefaultUnit(), doubleValue: val.doubleValue)
- */
-            
-        case SBAProfileTypeIdentifier.dictionary:
-            guard let dictionary = jsonValue as? [AnyHashable : Any] else { return nil }
-            itemValue = commonMapObject(with: dictionary)
-            
-        case SBAProfileTypeIdentifier.array:
-            guard let array = jsonValue as? [Any] else { return nil }
-            itemValue = array.map({ (obj) -> Any? in
-                if let dictionary = obj as? [AnyHashable : Any] {
-                    return commonMapObject(with: dictionary)
-                }
-                else {
-                    return obj
-                }
-            })
-            
-        case SBAProfileTypeIdentifier.set:
-            guard let set = value! as? Set<AnyHashable> else { return nil }
-            itemValue = set.map({ (obj) -> Any? in
-                if let dictionary = obj as? [AnyHashable : Any] {
-                    return commonMapObject(with: dictionary)
-                }
-                else {
-                    return obj
-                }
-            })
-            
+
         default:
             break
         }
@@ -299,43 +254,20 @@ extension SBAProfileItem {
         guard newValue != nil else { return true }
         
         switch self.itemType {
-        case SBAProfileTypeIdentifier.string:
+        case .base(.string):
             return true // anything can be cast to a string
             
-        case SBAProfileTypeIdentifier.number:
-            if (newValue as? NSNumber != nil) {
-                return true
-            }
-/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
-            else if let quantity = newValue as? HKQuantity {
-                return quantity.is(compatibleWith: self.unit ?? commonDefaultUnit())
-            }
- */
-            return false
-            
-        case SBAProfileTypeIdentifier.bool:
+        case .base(.integer):
             return newValue as? NSNumber != nil
             
-        case SBAProfileTypeIdentifier.date:
+        case .base(.decimal):
+            return newValue as? NSNumber != nil
+            
+        case.base(.boolean):
+            return newValue as? NSNumber != nil
+            
+        case .base(.date):
             return newValue as? NSDate != nil
-            
-/* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
-       case SBAProfileTypeIdentifier.hkBiologicalSex:
-            return newValue as? HKBiologicalSex != nil
-            
-        case SBAProfileTypeIdentifier.hkQuantity:
-            guard let quantity = newValue as? HKQuantity else { return false }
-            return quantity.is(compatibleWith: self.unit ?? commonDefaultUnit())
- */
-            
-        case SBAProfileTypeIdentifier.dictionary:
-            return newValue as? RSDJSONValue != nil
-        
-        case SBAProfileTypeIdentifier.array:
-            return newValue as? NSArray != nil
-            
-        case SBAProfileTypeIdentifier.set:
-            return newValue as? NSSet != nil
             
         default:
             return true   // Any extended type isn't included in the common validation
@@ -379,7 +311,7 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     
     public var demographicSchema: String?
     
-    public var itemType: SBAProfileTypeIdentifier
+    public var itemType: RSDFormDataType
     
     public var readonly: Bool
     
