@@ -55,8 +55,8 @@ extension SBBSurveyElement {
         return SBASurveyConfiguration.shared.viewTheme(for: self)
     }
     
-    public var colorTheme: RSDColorThemeElement? {
-        return SBASurveyConfiguration.shared.colorTheme(for: self)
+    public var colorMapping: RSDColorMappingThemeElement? {
+        return SBASurveyConfiguration.shared.colorMapping(for: self)
     }
 }
 
@@ -93,7 +93,7 @@ extension String {
     }
 }
 
-extension SBBSurveyInfoScreen : RSDThemedUIStep {
+extension SBBSurveyInfoScreen : RSDDesignableUIStep {
     public var imageTheme: RSDImageThemeElement? {
         return self.image
     }
@@ -111,7 +111,7 @@ protocol sbb_InputField : RSDSurveyInputField {
     var constraints : SBBSurveyConstraints { get }
 }
 
-extension SBBSurveyQuestion : RSDThemedUIStep {
+extension SBBSurveyQuestion : RSDDesignableUIStep {
     public var imageTheme: RSDImageThemeElement? {
         return nil
     }

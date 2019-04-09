@@ -52,7 +52,7 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
     
     override open func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = super.tableView(tableView, viewForHeaderInSection: section)
-        if let header = view as? RSDStepChoiceSectionHeader {
+        if let header = view as? RSDTableSectionHeader {
             // Keep a strong reference to the label so it sticks around when removeFromSuperview is called
             let titleLabelRef = header.titleLabel!
             header.titleLabel.removeFromSuperview() // Removes all associated constraints

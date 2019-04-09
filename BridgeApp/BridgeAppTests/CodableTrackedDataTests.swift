@@ -357,9 +357,11 @@ class CodableTrackedDataTests: XCTestCase {
                         ],
                 "selection": { "title": "What items would you like to track?",
                                 "detail": "Select all that apply",
-                                "colorTheme" : { "colorStyle" : { "header" : "darkBackground",
-                                                "body" : "darkBackground",
-                                                "footer" : "lightBackground" }}
+                                "colorMapping" : {
+                                                "type" : "placementMapping",
+                                                "placement" : { "header" : "primary",
+                                                                "body" : "primary",
+                                                                "footer" : "white" }}
                             },
                 "logging": { "title": "Your logged items",
                              "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit Logged Items" }}
@@ -378,8 +380,7 @@ class CodableTrackedDataTests: XCTestCase {
             XCTAssertNil(navigator.sections)
             XCTAssertEqual((navigator.selectionStep as? RSDUIStep)?.title, "What items would you like to track?")
             XCTAssertEqual((navigator.selectionStep as? RSDUIStep)?.detail, "Select all that apply")
-            if let colorTheme = (navigator.selectionStep as? RSDThemedUIStep)?.colorTheme {
-                XCTAssertEqual(colorTheme.colorStyle(for: .footer), .lightBackground)
+            if let _ = (navigator.selectionStep as? RSDDesignableUIStep)?.colorMapping {
             } else {
                 XCTFail("Failed to decode the color Theme")
             }
