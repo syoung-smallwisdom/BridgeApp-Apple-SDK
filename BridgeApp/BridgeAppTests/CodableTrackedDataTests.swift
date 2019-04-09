@@ -357,9 +357,11 @@ class CodableTrackedDataTests: XCTestCase {
                         ],
                 "selection": { "title": "What items would you like to track?",
                                 "detail": "Select all that apply",
-                                "colorMapping" : { "colorMapping" : { "header" : "primary",
-                                                "body" : "primary",
-                                                "footer" : "white" }}
+                                "colorMapping" : {
+                                                "type" : "placementMapping",
+                                                "placement" : { "header" : "primary",
+                                                                "body" : "primary",
+                                                                "footer" : "white" }}
                             },
                 "logging": { "title": "Your logged items",
                              "actions": { "addMore": { "type": "default", "buttonTitle" : "Edit Logged Items" }}

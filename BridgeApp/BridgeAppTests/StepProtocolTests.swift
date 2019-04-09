@@ -773,7 +773,7 @@ class TestSurveyConfiguration : SBASurveyConfiguration {
     }
     
     override func colorMapping(for surveyElement: SBBSurveyElement) -> RSDColorMappingThemeElement? {
-        return RSDColorMappingThemeElementObject(colorStyle: .accent, colorMapping: nil)
+        return RSDSingleColorThemeElementObject(colorStyle: .accent)
     }
     
     override func progressMarkers(for survey: SBBSurvey) -> [String]? {
