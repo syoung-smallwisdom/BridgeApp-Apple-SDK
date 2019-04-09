@@ -52,8 +52,9 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
         return SBABridgeConfiguration()
     }
     
-    open func instantiateColorPalette() -> RSDColorPalette {
-        return .twilight
+    /// Override and return a non-nil value to set up using a custom color palette with your app.
+    open func instantiateColorPalette() -> RSDColorPalette? {
+        return nil
     }
     
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -64,7 +65,9 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
         SBABridgeConfiguration.shared = instantiateBridgeConfiguration()
         SBABridgeConfiguration.shared.setupBridge(with: instantiateFactory())
         
-        RSDStudyConfiguration.shared.colorPalette = instantiateColorPalette()
+        if let palette = instantiateColorPalette() {
+            RSDStudyConfiguration.shared.colorPalette = palette
+        }
         
         // Set the tint color.
         self.window?.tintColor = RSDStudyConfiguration.shared.colorPalette.primary.normal.color
