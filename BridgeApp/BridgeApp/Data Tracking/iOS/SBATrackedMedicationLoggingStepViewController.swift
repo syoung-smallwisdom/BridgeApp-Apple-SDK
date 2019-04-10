@@ -53,6 +53,7 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
     override open func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = super.tableView(tableView, viewForHeaderInSection: section)
         if let header = view as? RSDTableSectionHeader {
+            
             // Keep a strong reference to the label so it sticks around when removeFromSuperview is called
             let titleLabelRef = header.titleLabel!
             header.titleLabel.removeFromSuperview() // Removes all associated constraints
@@ -63,10 +64,10 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
             header.detailLabel.rsd_alignBelow(view: titleLabelRef, padding: 20.0)
             
             // Style the header to match design
-            header.contentView.backgroundColor = UIColor.appBackgroundDark
+            header.contentView.backgroundColor = self.designSystem.colorRules.backgroundPrimary.color
             header.titleLabel.textColor = UIColor.white
             header.titleLabel.textAlignment = .center
-            header.titleLabel.font = UIFont.rsd_headerTitleLabel
+            header.titleLabel.font = self.designSystem.fontRules.font(for: .fieldHeader, compatibleWith: traitCollection)
         }
         return view
     }
@@ -190,10 +191,32 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
         return self.tableItem as? SBATrackedMedicationLoggingTableItem
     }
     
+    open override var usesTableBackgroundColor: Bool {
+        return true
+    }
+    
     override open func awakeFromNib() {
         super.awakeFromNib()
-        
-        self.checkmarkView.backgroundColor = UIColor.secondaryTintColor
+
+        updateCheckmarkColor()
+    }
+    
+    override open func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
+        super.setDesignSystem(designSystem, with: background)
+        updateDividerColor()
+        updateCheckmarkColor()
+    }
+    
+    func updateCheckmarkColor() {
+        let designSystem = self.designSystem ?? RSDDesignSystem()
+        self.checkmarkView.backgroundColor = designSystem.colorRules.palette.secondary.normal.color
+    }
+    
+    func updateDividerColor() {
+        let designSystem = self.designSystem ?? RSDDesignSystem()
+        self.bottomDivider.backgroundColor = (self.bottomDividerType == .thin) ?
+            designSystem.colorRules.separatorLine :
+            designSystem.colorRules.backgroundPrimary.color
     }
     
     override open var tableItem: RSDTableItem! {
@@ -242,7 +265,7 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     open var bottomDividerType: BottomDividerType = .thin {
         didSet {
             self.bottomDividerHeight.constant = CGFloat(self.bottomDividerType.rawValue)
-            self.bottomDivider.backgroundColor = (self.bottomDividerType == .thin) ? UIColor.appVeryLightGray : UIColor.appBackgroundDark
+            updateDividerColor()
         }
     }
     

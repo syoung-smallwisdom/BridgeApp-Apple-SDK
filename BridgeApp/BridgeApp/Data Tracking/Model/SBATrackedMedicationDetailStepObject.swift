@@ -80,12 +80,13 @@ open class SBATrackedMedicationDetailStepObject : SBATrackedItemDetailsStepObjec
     
     private func _commonInit() {
         // Set the default color theme.
-        if self.colorTheme == nil {
-            var colorTheme = RSDColorThemeElementObject()
-            colorTheme.setColorStyle(.darkBackground, for: .header)
-            colorTheme.setColorStyle(.darkBackground, for: .body)
-            colorTheme.setColorStyle(.lightBackground, for: .footer)
-            self.colorTheme = colorTheme
+        if self.colorMapping == nil {
+            let placement: [RSDColorPlacement : RSDColorRules.Style] = [
+                .header: .primary,
+                .body: .primary,
+                .footer: .white
+            ]
+            self.colorMapping = RSDColorPlacementThemeElementObject(placement: placement.mapKeys { $0.stringValue } )
         }
         if self.actions?[.navigation(.cancel)] == nil {
             var actions = self.actions ?? [:]

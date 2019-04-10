@@ -168,23 +168,28 @@ open class SBASymptomLoggingCell: RSDTableViewCell {
     @IBOutlet var detailsListStackView: UIStackView!
     @IBOutlet var inlineTimePicker: RSDToggleConstraintView!
     
-    /// Override to set the content view background color to the color of the table background.
-    override open var tableBackgroundColor: UIColor! {
-        didSet {
-            self.contentView.backgroundColor = tableBackgroundColor
+    override open func awakeFromNib() {
+        super.awakeFromNib()
+        updateColors()
+    }
+    
+    func updateColors() {
+        let designSystem = self.designSystem ?? RSDDesignSystem()
+        let background = self.backgroundColorTile ?? RSDGrayScale().white
+        self.titleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .fieldHeader)
+        self.subtitleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .bodyDetail)
+        for label in self.labels {
+            label.textColor = designSystem.colorRules.textColor(on: background, for: .fieldHeader)
+        }
+        for line in self.separatorLines {
+            line.backgroundColor = designSystem.colorRules.separatorLine
         }
     }
     
-    override open func awakeFromNib() {
-        super.awakeFromNib()
-        self.titleLabel.textColor = UIColor.rsd_headerTitleLabel
-        self.subtitleLabel.textColor = UIColor.rsd_headerDetailLabel
-        for label in self.labels {
-            label.textColor = UIColor.rsd_headerTitleLabel
-        }
-        for line in self.separatorLines {
-            line.backgroundColor = UIColor.rsd_cellSeparatorLine
-        }
+    override open func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
+        super.setDesignSystem(designSystem, with: background)
+        self.contentView.backgroundColor = background.color
+        updateColors()
     }
     
     override open var tableItem: RSDTableItem! {
@@ -247,7 +252,11 @@ open class SBASymptomLoggingCell: RSDTableViewCell {
 }
 
 @IBDesignable
-open class SBASeverityButton : UIButton {
+open class SBASeverityButton : UIButton, RSDViewDesignable {
+    
+    open private(set) var backgroundColorTile: RSDColorTile?
+    
+    open private(set) var designSystem: RSDDesignSystem?
     
     override open var tag: Int {
         didSet {
@@ -262,26 +271,32 @@ open class SBASeverityButton : UIButton {
     }
     
     private func _updateBackgroundColor() {
-        setTitleColor(UIColor.rsd_headerDetailLabel, for: .normal)
-        setTitleColor(UIColor.rsd_headerTitleLabel, for: .selected)
+        let designSystem = self.designSystem ?? RSDDesignSystem()
+        let background = designSystem.colorRules.backgroundLight
+        let textNormalColor = severityColorScale.stroke(for: self.tag, isSelected: false)
+        let textSelectedColor = designSystem.colorRules.textColor(on: background, for: .body)
+        setTitleColor(textNormalColor, for: .normal)
+        setTitleColor(textSelectedColor, for: .selected)
         self.backgroundColor = _fillColor()
         self.layer.borderColor = _strokeColor().cgColor
     }
     
     private func _fillColor() -> UIColor {
-        guard self.tag < UIColor.sba_severityFill.count, isSelected
-            else {
-                return UIColor.white
-        }
-        return UIColor.sba_severityFill[self.tag]
+        return severityColorScale.fill(for: self.tag, isSelected: isSelected)
     }
     
     private func _strokeColor() -> UIColor {
-        guard self.tag < UIColor.sba_severityStroke.count, isSelected
-            else {
-                return UIColor.rsd_cellSeparatorLine
-        }
-        return UIColor.sba_severityStroke[self.tag]
+        return severityColorScale.stroke(for: self.tag, isSelected: isSelected)
+    }
+    
+    lazy var severityColorScale: RSDSeverityColorScale =
+        (self.designSystem ?? RSDDesignSystem()).colorRules.severityColorScale
+    
+    public func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
+        self.designSystem = designSystem
+        self.backgroundColorTile = background
+        self.severityColorScale = designSystem.colorRules.severityColorScale
+        _updateBackgroundColor()
     }
     
     override open func layoutSubviews() {

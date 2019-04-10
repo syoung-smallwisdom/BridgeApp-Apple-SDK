@@ -70,11 +70,16 @@ open class SBATrackedLoggingCell: RSDButtonCell {
     @IBOutlet weak var loggedLabel: UILabel!
     @IBOutlet weak var loggedDateLabel: UILabel!
     
-    /// Override to set the content view background color to the color of the table background.
-    override open var tableBackgroundColor: UIColor! {
-        didSet {
-            self.contentView.backgroundColor = tableBackgroundColor
-        }
+
+    override open func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
+        super.setDesignSystem(designSystem, with: background)
+        self.contentView.backgroundColor = background.color
+        updateCheckmarkColor()
+    }
+    
+    func updateCheckmarkColor() {
+        let designSystem = self.designSystem ?? RSDDesignSystem()
+        self.checkmarkView.backgroundColor = designSystem.colorRules.palette.secondary.normal.color
     }
     
     var loggedButton: RSDRoundedButton? {
@@ -84,7 +89,7 @@ open class SBATrackedLoggingCell: RSDButtonCell {
     override open func awakeFromNib() {
         super.awakeFromNib()
         
-        self.checkmarkView.backgroundColor = UIColor.secondaryTintColor
+        updateCheckmarkColor()
         self.checkmarkView.isHidden = true
         self.loggedLabel.isHidden = true
         self.loggedDateLabel.isHidden = true

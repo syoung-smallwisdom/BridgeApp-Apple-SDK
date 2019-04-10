@@ -45,7 +45,6 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     func createCustomNavigationHeader() {
         let header =  SBATrackedMedicationNavigationHeaderView()
         header.delegate = self
-        header.backgroundColor = UIColor.appBackgroundDark
         header.underlinedButtonText = Localization.localizedString("MEDICATION_REMOVE_MEDICATION")
         self.navigationHeader = header
         self.tableView.tableHeaderView = header
@@ -333,10 +332,8 @@ open class SBATrackedTextfieldCell : RSDTableViewCell {
     @IBOutlet weak var ruleView: UIView!
     
     /// Override to set the content view background color to the color of the table background.
-    override open var tableBackgroundColor: UIColor! {
-        didSet {
-            self.contentView.backgroundColor = tableBackgroundColor
-        }
+    open override var usesTableBackgroundColor: Bool {
+        return true
     }
     
     /// The nib to use with this cell. Default will instantiate a `SBATrackedMedicationDetailCell`.
@@ -374,10 +371,8 @@ open class SBARoundedButtonCell: RSDButtonCell {
     }
     
     /// Override to set the content view background color to the color of the table background.
-    override open var tableBackgroundColor: UIColor! {
-        didSet {
-            self.contentView.backgroundColor = tableBackgroundColor
-        }
+    open override var usesTableBackgroundColor: Bool {
+        return true
     }
 }
 
@@ -408,21 +403,30 @@ open class SBATrackedWeeklyScheduleCell: RSDTableViewCell {
     @IBOutlet var inlineTimePicker: RSDToggleConstraintView!
     
     /// Override to set the content view background color to the color of the table background.
-    override open var tableBackgroundColor: UIColor! {
-        didSet {
-            self.contentView.backgroundColor = tableBackgroundColor
-        }
+    override open var usesTableBackgroundColor: Bool {
+        return true
     }
     
     override open func awakeFromNib() {
         super.awakeFromNib()
-        self.titleLabel.textColor = UIColor.rsd_headerTitleLabel
+        updateColors()
+    }
+    
+    func updateColors() {
+        let designSystem = self.designSystem ?? RSDDesignSystem()
+        let background = self.backgroundColorTile ?? RSDGrayScale().white
+        self.titleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .fieldHeader)
         for label in self.labels {
-            label.textColor = UIColor.rsd_headerTitleLabel
+            label.textColor = designSystem.colorRules.textColor(on: background, for: .fieldHeader)
         }
         for line in self.separatorLines {
-            line.backgroundColor = UIColor.rsd_cellSeparatorLine
+            line.backgroundColor = designSystem.colorRules.separatorLine
         }
+    }
+    
+    override open func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
+        super.setDesignSystem(designSystem, with: background)
+        updateColors()
     }
     
     var atAnytimeHidden: Bool = false {
@@ -540,15 +544,13 @@ open class SBATrackedMedicationNavigationHeaderView: RSDTableStepHeaderView {
     
     func addUnderlinedButtonIfNeeded() {
         guard underlinedButton == nil else { return }
-        underlinedButton = addUnderlinedButton(font: UIFont.rsd_headerTextLabel, color: UIColor.rsd_headerTextLabel)
+        underlinedButton = addUnderlinedButton()
     }
     
     /// Convenience method for adding an underlined button.
-    open func addUnderlinedButton(font: UIFont, color: UIColor) -> RSDUnderlinedButton {
+    func addUnderlinedButton() -> RSDUnderlinedButton {
         let button = RSDUnderlinedButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.titleLabel?.font = font
-        button.setTitleColor(color, for: .normal)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.preferredMaxLayoutWidth = constants.labelMaxLayoutWidth
         button.setTitle(underlinedButtonText, for: .normal)
@@ -563,5 +565,14 @@ open class SBATrackedMedicationNavigationHeaderView: RSDTableStepHeaderView {
     
     @objc func underlineButtonTapped() {
         self.delegate?.underlinedButtonTapped()
+    }
+    
+    override open func allButtons() -> [UIButton] {
+        addUnderlinedButtonIfNeeded()
+        var buttons = super.allButtons()
+        if let button = self.underlinedButton {
+            buttons.append(button)
+        }
+        return buttons
     }
 }

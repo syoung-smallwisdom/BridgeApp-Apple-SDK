@@ -59,18 +59,10 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
             self.goForward()
         }
     }
-    
-    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = super.tableView(tableView, cellForRowAt: indexPath)
-        cell.selectedBackgroundView = UIView()
-        cell.selectedBackgroundView?.backgroundColor = UIColor.rsd_choiceCellBackgroundHighlighted
-        cell.selectionStyle = .gray
-        return cell
-    }
 }
 
 /// Table cell for displayiing medication information to review.
-open class SBATrackedMedicationReviewCell: RSDTableViewCell {
+open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
     
     public static let reuseId = "medicationReview"
     
@@ -81,9 +73,12 @@ open class SBATrackedMedicationReviewCell: RSDTableViewCell {
         return UINib(nibName: nibName, bundle: bundle)
     }
     
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var detailLabel: UILabel!
-    @IBOutlet weak var cheveronView: UIImageView!
+    @IBOutlet weak var chevronView: UIImageView!
+    
+    open override func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
+        super.setDesignSystem(designSystem, with: background)
+        chevronView.tintColor = designSystem.colorRules.palette.accent.normal.color
+    }
     
     /// Action button that is associated with this cell.
     @IBOutlet open var actionButton: UIButton!
@@ -107,23 +102,23 @@ open class SBATrackedMedicationReviewCell: RSDTableViewCell {
             }
             
             if let dosageUnwrapped = medItem.medication.dosage {
-                self.titleLabel.text = String(format: "%@ %@", medItem.medication.identifier, dosageUnwrapped)
+                self.titleLabel?.text = String(format: "%@ %@", medItem.medication.identifier, dosageUnwrapped)
                 if let schedules = medItem.medication.scheduleItems {
                     if schedules.first?.timeOfDayString == nil {
-                        self.detailLabel.text = Localization.localizedString("MEDICATION_ANYTIME")
+                        self.detailLabel?.text = Localization.localizedString("MEDICATION_ANYTIME")
                     } else {
                         let formatter = RSDWeeklyScheduleFormatter()
                         formatter.style = .medium
-                        self.detailLabel.text = formatter.string(from: Array(schedules))
+                        self.detailLabel?.text = formatter.string(from: Array(schedules))
                     }
                 }
                 self.actionButton.isHidden = false
-                self.cheveronView.isHidden = true
+                self.chevronView.isHidden = true
             } else {
-                self.titleLabel.text = medItem.medication.identifier
-                self.detailLabel.text = nil
+                self.titleLabel?.text = medItem.medication.identifier
+                self.detailLabel?.text = nil
                 self.actionButton.isHidden = true
-                self.cheveronView.isHidden = false
+                self.chevronView.isHidden = false
             }
         }
     }
