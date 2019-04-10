@@ -59,18 +59,10 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
             self.goForward()
         }
     }
-    
-    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = super.tableView(tableView, cellForRowAt: indexPath)
-        cell.selectedBackgroundView = UIView()
-        cell.selectedBackgroundView?.backgroundColor = UIColor.rsd_choiceCellBackgroundHighlighted
-        cell.selectionStyle = .gray
-        return cell
-    }
 }
 
 /// Table cell for displayiing medication information to review.
-open class SBATrackedMedicationReviewCell: RSDTableViewCell {
+open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
     
     public static let reuseId = "medicationReview"
     
@@ -84,6 +76,13 @@ open class SBATrackedMedicationReviewCell: RSDTableViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var detailLabel: UILabel!
     @IBOutlet weak var cheveronView: UIImageView!
+    
+    open override func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
+        super.setDesignSystem(designSystem, with: background)
+        let backgroundTile = designSystem.colorRules.backgroundLight
+        titleLabel.textColor = designSystem.colorRules.textColor(on: backgroundTile, for: .body)
+        detailLabel.textColor = designSystem.colorRules.textColor(on: backgroundTile, for: .bodyDetail)
+    }
     
     /// Action button that is associated with this cell.
     @IBOutlet open var actionButton: UIButton!
