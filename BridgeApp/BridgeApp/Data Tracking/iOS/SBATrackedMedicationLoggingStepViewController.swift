@@ -54,8 +54,6 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
         let view = super.tableView(tableView, viewForHeaderInSection: section)
         if let header = view as? RSDTableSectionHeader {
             
-            // TODO: syoung 04/09/2019 Refactor this view controller to use the design system rules.
-            
             // Keep a strong reference to the label so it sticks around when removeFromSuperview is called
             let titleLabelRef = header.titleLabel!
             header.titleLabel.removeFromSuperview() // Removes all associated constraints
