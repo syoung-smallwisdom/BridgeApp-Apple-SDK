@@ -82,7 +82,7 @@ open class SBASurveyConfiguration {
     }
     
     // TODO: syoung 03/25/2019 Remove once confirmed that no one is using this.
-    @available(*, unavailable)
+    @available(*, deprecated)
     open func colorTheme(for surveyElement: SBBSurveyElement) -> RSDColorThemeElement? {
         return nil
     }
