@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0356943A20EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */; };
+		602BB7A7226130D400C17E12 /* SBAProfileDataStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602BB7A6226130D400C17E12 /* SBAProfileDataStorageManager.swift */; };
 		6090544821308CF7002D1895 /* SBAProfileOnSelectedAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090544621308CF7002D1895 /* SBAProfileOnSelectedAction.swift */; };
 		60B08E7D221B413D00166CAF /* ProfileDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B08E7C221B413D00166CAF /* ProfileDataSourceTests.swift */; };
 		60D9611D20BF161300B5CFEB /* SBAProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611520BF161200B5CFEB /* SBAProfileSection.swift */; };
@@ -287,6 +288,7 @@
 
 /* Begin PBXFileReference section */
 		0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATrackedItemRemindersStepViewController.swift; sourceTree = "<group>"; };
+		602BB7A6226130D400C17E12 /* SBAProfileDataStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAProfileDataStorageManager.swift; sourceTree = "<group>"; };
 		6090544621308CF7002D1895 /* SBAProfileOnSelectedAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileOnSelectedAction.swift; sourceTree = "<group>"; };
 		60B08E7C221B413D00166CAF /* ProfileDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileDataSourceTests.swift; sourceTree = "<group>"; };
 		60D9611520BF161200B5CFEB /* SBAProfileSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileSection.swift; sourceTree = "<group>"; };
@@ -443,6 +445,7 @@
 				60E84E5B20D306A9000DDCB1 /* SBAProfileItemType.swift */,
 				60D9611620BF161200B5CFEB /* SBAProfileItem.swift */,
 				60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */,
+				602BB7A6226130D400C17E12 /* SBAProfileDataStorageManager.swift */,
 				60D9611A20BF161200B5CFEB /* SBAProfileManager.swift */,
 			);
 			path = Profile;
@@ -1101,6 +1104,7 @@
 				F8398C9A212C868A005DE6E0 /* SBAReportManager.swift in Sources */,
 				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,
 				F8A5CE9020A3837100E9FD75 /* SBAParticipantManager.swift in Sources */,
+				602BB7A7226130D400C17E12 /* SBAProfileDataStorageManager.swift in Sources */,
 				F8479527207FEA9D0024A230 /* SBATrackingDataSource.swift in Sources */,
 				F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */,
 				F847951E207FEA9D0024A230 /* SBATrackedItem.swift in Sources */,

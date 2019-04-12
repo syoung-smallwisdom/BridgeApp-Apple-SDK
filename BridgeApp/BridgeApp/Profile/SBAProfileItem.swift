@@ -60,12 +60,12 @@ public protocol SBAProfileItem: Decodable {
     var value: Any? { get set }
     
     /// jsonValue is used to get and set the profile item's value directly from appropriate JSON.
-    var jsonValue: SBBJSONValue? { get set }
+    var jsonValue: RSDJSONSerializable? { get set }
     
     /// demographicJsonValue is used when formatting the item as demographic data for upload to Bridge.
     /// By default it will fall through to the getter for the jsonValue property, but can be different
     /// if needed.
-    var demographicJsonValue: SBBJSONValue? { get }
+    var demographicJsonValue: RSDJSONSerializable? { get }
     
     /// Is the value read-only?
     var readonly: Bool { get }
@@ -132,7 +132,7 @@ extension SBAProfileItem {
     }
     
     /// jsonValue is used to get and set the profile item's value directly from appropriate JSON.
-    public var jsonValue: SBBJSONValue? {
+    public var jsonValue: RSDJSONSerializable? {
         get {
             return self.commonJsonValueGetter()
         }
@@ -145,19 +145,19 @@ extension SBAProfileItem {
     /// demographicJsonValue is used when formatting the item as demographic data for upload to Bridge.
     /// By default it will fall through to the getter for the jsonValue property, but can be different
     /// if needed.
-    public var demographicJsonValue: SBBJSONValue? {
+    public var demographicJsonValue: RSDJSONSerializable? {
         return self.commonDemographicJsonValue()
     }
     
-    func commonJsonValueGetter() -> SBBJSONValue? {
+    func commonJsonValueGetter() -> RSDJSONSerializable? {
         return commonItemTypeToJson(val: self.value)
     }
     
-    public func commonItemTypeToJson(val: Any?) -> SBBJSONValue? {
+    public func commonItemTypeToJson(val: Any?) -> RSDJSONSerializable? {
         guard val != nil else { return NSNull() }
         switch self.itemType {
         case .base(.string):
-            return val as? NSString
+            return val as? String
             
         case .base(.integer):
             return val as? NSNumber
@@ -169,14 +169,14 @@ extension SBAProfileItem {
             return val as? NSNumber
             
         case .base(.date):
-            return (val as? NSDate)?.iso8601String() as NSString?
+            return (val as? NSDate)?.iso8601String()
             
         default:
             return nil
         }
     }
     
-    mutating func commonJsonValueSetter(jsonVal: SBBJSONValue?) {
+    mutating func commonJsonValueSetter(jsonVal: RSDJSONSerializable?) {
         guard let jsonValue = jsonVal else {
             self.value = nil
             return
@@ -186,7 +186,7 @@ extension SBAProfileItem {
         self.value = itemValue
     }
 
-    public func commonJsonToItemType(jsonVal: SBBJSONValue?) -> Any? {
+    public func commonJsonToItemType(jsonVal: RSDJSONSerializable?) -> Any? {
         guard let jsonValue = jsonVal else {
             return nil
         }
@@ -221,7 +221,7 @@ extension SBAProfileItem {
         return itemValue
     }
     
-    func commonMapObject(with dictionary: [AnyHashable : Any]) -> Any? {
+    func commonMapObject(with dictionary: [String : RSDJSONSerializable]) -> Any? {
         guard let type = dictionary["type"] as? String,
                 let clazz = NSClassFromString(type) as? (NSObject & Decodable).Type
             else {
@@ -239,7 +239,7 @@ extension SBAProfileItem {
         return nil
     }
     
-    func commonDemographicJsonValue() -> SBBJSONValue? {
+    func commonDemographicJsonValue() -> RSDJSONSerializable? {
         guard let jsonVal = self.commonJsonValueGetter() else { return nil }
 /* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
         if self.itemType == .hkBiologicalSex {
@@ -320,13 +320,13 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     public func storedValue(forKey key: String) -> Any? {
         guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return nil }
         guard let json = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: key) })?.clientData else { return nil }
-        return self.commonJsonToItemType(jsonVal: json)
+        return self.commonJsonToItemType(jsonVal: json as? RSDJSONSerializable)
     }
     
     public func setStoredValue(_ newValue: Any?) {
         guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return }
         let data = self.commonItemTypeToJson(val: newValue) ?? NSNull()
-        let report = SBAReport(identifier: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: data)
+        let report = SBAReport(identifier: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: data as! SBBJSONValue)
         reportManager.saveReport(report)
     }
     
