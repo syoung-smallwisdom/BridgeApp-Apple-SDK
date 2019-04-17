@@ -46,7 +46,7 @@ class ProfileManagerTests: XCTestCase {
                         [
                             "profileKey": ProfileManagerTests.testReportProfileKey,
                             "sourceKey": ProfileManagerTests.testReportSourceKey,
-                            "itemType": "bool",
+                            "itemType": "boolean",
                             "readonly": false,
                             "type": "report"
                         ]
