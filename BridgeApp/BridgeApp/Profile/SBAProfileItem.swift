@@ -298,35 +298,74 @@ extension HKBiologicalSex {
 }
  */
 
+/// SBAReportProfileItem allows storing and retrieving profile item values to/from Bridge Participant Reports.
+/// For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
+/// interpreted as the report identifier.
 public struct SBAReportProfileItem: SBAProfileItemInternal {
     private enum CodingKeys: String, CodingKey {
-        case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema, itemType, readonly, type
+        case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema, reportPropertyKey, itemType, readonly, type
     }
 
     fileprivate var _sourceKey: String?
     
     fileprivate var _demographicKey: String?
     
+    /// profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
+    /// within an app.
     public var profileKey: String
     
+    /// demographicSchema is an optional schema identifier to mark a profile item as being part of the indicated
+    /// demographic data upload schema.
     public var demographicSchema: String?
     
+    /// If reportPropertyKey is not nil, the associated report's clientData is assumed to be a Dictionary, and the
+    /// value of interest is retrieved from that dictionary using this key. This allows all profile items associated
+    /// with a given demographicSchema to be stored together in the same report identifier, which also simplifies
+    /// uploading the updated values to Bridge all at once via the associated schema, to ultimately appear as a new row
+    /// in the same Synapse table.
+    ///
+    /// If reportPropertyKey is nil, the clientData itself is taken to be the value.
+    public var reportPropertyKey: String?
+    
+    /// itemType specifies what type to store the profileItem's value as. Defaults to String if not otherwise specified.
     public var itemType: RSDFormDataType
     
+    /// Is the value read-only?
     public var readonly: Bool
     
+    /// The class type to which to deserialize this profile item.
     public var type: SBAProfileItemType
     
     public func storedValue(forKey key: String) -> Any? {
-        guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return nil }
-        guard let json = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: key) })?.clientData else { return nil }
-        return self.commonJsonToItemType(jsonVal: json as? RSDJSONSerializable)
+        guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager,
+                let clientData = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: key) })?.clientData,
+                var json: RSDJSONSerializable = clientData as? RSDJSONSerializable
+            else {
+                return nil
+        }
+        if let prop = self.reportPropertyKey {
+            guard let dict = json as? Dictionary<String, RSDJSONSerializable>,
+                    let propJson = dict[prop]
+                else {
+                    return nil
+            }
+            json = propJson
+        }
+        
+        return self.commonJsonToItemType(jsonVal: json)
     }
     
     public func setStoredValue(_ newValue: Any?) {
-        guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return }
-        let data = self.commonItemTypeToJson(val: newValue) ?? NSNull()
-        let report = SBAReport(identifier: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: data as! SBBJSONValue)
+        guard !self.readonly, let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return }
+        var clientData : SBBJSONValue = NSNull()
+        if let prop = self.reportPropertyKey {
+            var clientJsonDict = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? Dictionary<String, RSDJSONSerializable> ?? Dictionary<String, RSDJSONSerializable>()
+            clientJsonDict[prop] = self.commonItemTypeToJson(val: newValue)
+            clientData = clientJsonDict as SBBJSONValue
+        } else {
+            clientData = self.commonItemTypeToJson(val: newValue) as? SBBJSONValue ?? NSNull()
+        }
+        let report = SBAReport(identifier: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: clientData)
         reportManager.saveReport(report)
     }
     
