@@ -300,10 +300,20 @@ extension HKBiologicalSex {
 
 /// SBAReportProfileItem allows storing and retrieving profile item values to/from Bridge Participant Reports.
 /// For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
-/// interpreted as the report identifier.
+/// interpreted as the report identifier. If the clientDataIsItem flag is not set, then the demographicKey
+/// (which, likewise, defaults to the profileKey if not specifically set) is interpreted as the item's key
+/// in the report's clientData. If the flag is set, the report's clientData value is used directly.
+///
+/// A common scenario for a study would be to have a demographic survey which is administered once after the
+/// participant signs up and consents. Often (always in e.g. Canada, where required by law), the app/study design
+/// would need some way to allow the participant to change those answers later. One way to do this is to create
+/// an editable profile item for each question/answer in the demographic survey. In this scenario, for each of these
+/// items you would set the demographicSchema to the survey identifier, set the source key to the survey identifier
+/// as well, and set the demographicKey to the identifier of the survey question corresponding to the profile item.
 public struct SBAReportProfileItem: SBAProfileItemInternal {
     private enum CodingKeys: String, CodingKey {
-        case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema, reportPropertyKey, itemType, readonly, type
+        case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema,
+            _clientDataIsItem = "clientDataIsItem", itemType, readonly, type
     }
 
     fileprivate var _sourceKey: String?
@@ -318,15 +328,22 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     /// demographic data upload schema.
     public var demographicSchema: String?
     
-    /// If reportPropertyKey is not nil, the associated report's clientData is assumed to be a Dictionary, and the
-    /// value of interest is retrieved from that dictionary using this key. This allows all profile items associated
-    /// with a given demographicSchema to be stored together in the same report identifier, which also simplifies
-    /// uploading the updated values to Bridge all at once via the associated schema, to ultimately appear as a new row
-    /// in the same Synapse table.
+    /// If clientDataIsItem is true, the report's clientData field is assumed to contain the item value itself.
     ///
-    /// If reportPropertyKey is nil, the clientData itself is taken to be the value.
-    public var reportPropertyKey: String?
-    
+    /// If clientDataIsItem is false, the report's clientData field is assumed to be a dictionary in which
+    /// the item value is stored and retrieved via the demographicKey.
+    ///
+    /// The default value is false.
+    public var _clientDataIsItem: Bool?
+    public var clientDataIsItem: Bool {
+        get {
+            return self._clientDataIsItem ?? false
+        }
+        set {
+            self._clientDataIsItem = newValue
+        }
+    }
+
     /// itemType specifies what type to store the profileItem's value as. Defaults to String if not otherwise specified.
     public var itemType: RSDFormDataType
     
@@ -343,9 +360,9 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
             else {
                 return nil
         }
-        if let prop = self.reportPropertyKey {
+        if !self.clientDataIsItem {
             guard let dict = json as? Dictionary<String, RSDJSONSerializable>,
-                    let propJson = dict[prop]
+                    let propJson = dict[self.demographicKey]
                 else {
                     return nil
             }
@@ -358,12 +375,12 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     public func setStoredValue(_ newValue: Any?) {
         guard !self.readonly, let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return }
         var clientData : SBBJSONValue = NSNull()
-        if let prop = self.reportPropertyKey {
-            var clientJsonDict = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? Dictionary<String, RSDJSONSerializable> ?? Dictionary<String, RSDJSONSerializable>()
-            clientJsonDict[prop] = self.commonItemTypeToJson(val: newValue)
-            clientData = clientJsonDict as SBBJSONValue
-        } else {
+        if self.clientDataIsItem {
             clientData = self.commonItemTypeToJson(val: newValue) as? SBBJSONValue ?? NSNull()
+        } else {
+            var clientJsonDict = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? Dictionary<String, RSDJSONSerializable> ?? Dictionary<String, RSDJSONSerializable>()
+            clientJsonDict[self.demographicKey] = self.commonItemTypeToJson(val: newValue)
+            clientData = clientJsonDict as SBBJSONValue
         }
         let report = SBAReport(identifier: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: clientData)
         reportManager.saveReport(report)
