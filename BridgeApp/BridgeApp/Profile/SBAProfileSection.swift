@@ -317,11 +317,11 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     }
     
     /// The table item should not be editable if the profile item itself is readonly;
-    /// otherwise honor this flag's setting, defaulting to false.
+    /// otherwise honor this flag's setting, defaulting to true.
     private var _isEditable: Bool?
     public var isEditable: Bool? {
         get {
-            return self.profileItem.readonly ? false : self._isEditable ?? false
+            return self.profileItem.readonly ? false : self._isEditable ?? true
         }
         set {
             guard self.profileItem.readonly == false else { return }
