@@ -36,16 +36,36 @@ import XCTest
 
 class ProfileManagerTests: XCTestCase {
 
-    static let testReportProfileKey: String = "testFlag"
-    static let testReportSourceKey: String = "sourceTestFlag"
+    static let profileKey: String = "testFlag"
+    static let sourceKey: String = "sourceTestFlag"
+    static let profileKeyIsClientData: String = "testFlagIsClientData"
+    static let sourceKeyIsClientData: String = "sourceTestFlagIsClientData"
+    static let profileKeyNotClientData: String = "testFlagNotClientData"
+    static let sourceKeyNotClientData: String = "sourceTestFlagNotClientData"
     let appConfigJSON: [String: Any] = [
         "clientData": [
             "profile": [
                 "manager": [
                     "items": [
                         [
-                            "profileKey": ProfileManagerTests.testReportProfileKey,
-                            "sourceKey": ProfileManagerTests.testReportSourceKey,
+                            "profileKey": ProfileManagerTests.profileKey,
+                            "sourceKey": ProfileManagerTests.sourceKey,
+                            "itemType": "boolean",
+                            "readonly": false,
+                            "type": "report"
+                        ],
+                        [
+                            "profileKey": ProfileManagerTests.profileKeyIsClientData,
+                            "sourceKey": ProfileManagerTests.sourceKeyIsClientData,
+                            "clientDataIsItem": true,
+                            "itemType": "boolean",
+                            "readonly": false,
+                            "type": "report"
+                        ],
+                        [
+                            "profileKey": ProfileManagerTests.profileKeyNotClientData,
+                            "sourceKey": ProfileManagerTests.sourceKeyNotClientData,
+                            "clientDataIsItem": false,
                             "itemType": "boolean",
                             "readonly": false,
                             "type": "report"
@@ -73,26 +93,32 @@ class ProfileManagerTests: XCTestCase {
         super.tearDown()
         SBABridgeConfiguration.shared = SBABridgeConfiguration()
     }
-
-    func testProfileItems() {
+    
+    func checkFor(profileKey: String) {
         let pm = SBABridgeConfiguration.shared.profileManager
         let items = pm.profileItems()
         let keys = pm.profileKeys()
-        XCTAssert(keys.contains(ProfileManagerTests.testReportProfileKey), "Expected profile keys to include '\(ProfileManagerTests.testReportProfileKey)' but it doesn't")
-        guard let reportItem = items[ProfileManagerTests.testReportProfileKey]
+        XCTAssert(keys.contains(profileKey), "Expected profile keys to include '\(profileKey)' but it doesn't")
+        guard let reportItem = items[profileKey]
             else {
-                XCTAssert(false, "Expected profile items to include one with the profile key '\(ProfileManagerTests.testReportProfileKey)' but it doesn't")
+                XCTAssert(false, "Expected profile items to include one with the profile key '\(profileKey)' but it doesn't")
                 return
         }
         XCTAssert(type(of: reportItem) == SBAReportProfileItem.self, "Expected report profile item to be of class SBAReportProfileItem, but it's a \(String(describing: type(of: reportItem))) instead")
     }
+
+    func testProfileItems() {
+        self.checkFor(profileKey: ProfileManagerTests.profileKey)
+        self.checkFor(profileKey: ProfileManagerTests.profileKeyIsClientData)
+        self.checkFor(profileKey: ProfileManagerTests.profileKeyNotClientData)
+    }
     
-    func testReportProfileItems() {
+    func checkStorage(profileKey: String) {
         let pm = SBABridgeConfiguration.shared.profileManager
         let items = pm.profileItems()
-        guard var reportItem = items[ProfileManagerTests.testReportProfileKey]
+        guard var reportItem = items[profileKey] as? SBAReportProfileItem
             else {
-                XCTAssert(false, "Expected profile items to include one with the profile key '\(ProfileManagerTests.testReportProfileKey)' but it doesn't")
+                XCTAssert(false, "Expected profile items to include a SBAReportProfileItem with the profile key '\(profileKey)' but it doesn't")
                 return
         }
         
@@ -100,20 +126,40 @@ class ProfileManagerTests: XCTestCase {
         
         // check that it's stored in the appropriate Report as the expected value
         do {
-            let reportData = try BridgeSDK.participantManager.getLatestCachedData(forReport: ProfileManagerTests.testReportSourceKey)
-            guard let boolValue = (reportData.data as? NSNumber)?.boolValue
+            let reportData = try BridgeSDK.participantManager.getLatestCachedData(forReport: reportItem.sourceKey)
+            guard let data = reportData.data
                 else {
-                    XCTAssert(false, "Expected report data to be an NSNumber with a boolValue, but it's \(String(describing: type(of: reportData.data)))")
+                    XCTAssert(false, "Expected reportData.data to exist but it's nil")
                     return
             }
-            XCTAssert(boolValue == true, "Expected reportData.data to be 'true' but it's not")
+            var reportValue = data as? RSDJSONSerializable
+            if !reportItem.clientDataIsItem {
+                guard let clientData = data as? [String : RSDJSONSerializable]
+                    else {
+                        XCTAssert(false, "Expected reportData.data to be castable to a JSON-serializable Dictionary, but it's not: \(String(describing: type(of: reportData.data)))")
+                        return
+                }
+                reportValue = clientData[reportItem.demographicKey]
+            }
+            guard let boolValue = (reportValue as? NSNumber)?.boolValue
+                else {
+                    XCTAssert(false, "Expected report value to be an NSNumber with a boolValue, but it's a \(String(describing: type(of: reportValue))) instead")
+                    return
+            }
+            XCTAssert(boolValue == true, "Expected reportValue to be 'true' but it's \(String(describing: boolValue))")
         } catch let error {
-            XCTAssert(false, "Expected there to be 'latest cached data' for report '\(ProfileManagerTests.testReportProfileKey)' but there isn't\n error: \(String(describing: error))")
+            XCTAssert(false, "Expected there to be 'latest cached data' for report '\(profileKey)' but there isn't\n error: \(String(describing: error))")
             return
         }
         
         // check that we can correctly retrieve it from the reportItem
         XCTAssert(reportItem.value as? Bool == true, "Expected reportItem.value to be 'true' but it's '\(String(describing: reportItem.value))'")
+    }
+    
+    func testReportProfileItems() {
+        self.checkStorage(profileKey: ProfileManagerTests.profileKey)
+        self.checkStorage(profileKey: ProfileManagerTests.profileKeyIsClientData)
+        self.checkStorage(profileKey: ProfileManagerTests.profileKeyNotClientData)
     }
 
 }

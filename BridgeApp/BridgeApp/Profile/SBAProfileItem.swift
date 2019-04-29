@@ -355,13 +355,13 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     
     public func storedValue(forKey key: String) -> Any? {
         guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager,
-                let clientData = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: key) })?.clientData,
-                var json: RSDJSONSerializable = clientData as? RSDJSONSerializable
+                let clientData = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: key) })?.clientData
             else {
                 return nil
         }
+        var json = clientData as? RSDJSONSerializable
         if !self.clientDataIsItem {
-            guard let dict = json as? Dictionary<String, RSDJSONSerializable>,
+            guard let dict = clientData as? [String : RSDJSONSerializable],
                     let propJson = dict[self.demographicKey]
                 else {
                     return nil
