@@ -1,15 +1,15 @@
 module: BridgeApp
 output: ../Documentation
 xcodebuild_arguments:
-- -project
-- ./BridgeApp/BridgeApp.xcodeproj
+- -workspace
+- BridgeApp.xcworkspace
 - -scheme
-- "BridgeApp (iOS)"
+- "BridgeApp-iOS"
 
 author: "Sage Bionetworks"
 author_url: https://developer.sagebridge.org
 github_url: https://github.com/Sage-Bionetworks/BridgeApp-Apple-SDK
-copyright: "&copy; 2017-2018 [Sage Bionetworks](https://developer.sagebridge.org). All rights reserved."
+copyright: "&copy; 2017-2019 [Sage Bionetworks](https://developer.sagebridge.org). All rights reserved."
 readme: README.md
 min_acl: public
 clean: true
