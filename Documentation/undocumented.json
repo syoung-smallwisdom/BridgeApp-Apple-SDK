@@ -401,84 +401,84 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedMedicationDetailStepObject.swift",
-      "line": 118,
+      "line": 119,
       "symbol": "SBATrackedMedicationDetailsDataSource.schedulesSection",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedMedicationDetailStepObject.swift",
-      "line": 126,
+      "line": 127,
       "symbol": "SBATrackedMedicationDetailsDataSource.dosageTableItem",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedMedicationDetailStepObject.swift",
-      "line": 130,
+      "line": 131,
       "symbol": "SBATrackedMedicationDetailsDataSource.init(step:parent:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedMedicationDetailStepObject.swift",
-      "line": 257,
+      "line": 258,
       "symbol": "SBATrackedMedicationDetailsDataSource.appendRemoveMedicationToTaskResult()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedMedicationDetailStepObject.swift",
-      "line": 263,
+      "line": 264,
       "symbol": "SBATrackedMedicationDetailsDataSource.appendStepResultToTaskResultAndFinish(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedMedicationDetailStepObject.swift",
-      "line": 310,
+      "line": 311,
       "symbol": "SBAMedicationDetailsResultObject",
       "symbol_kind": "source.lang.swift.decl.struct",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedMedicationDetailStepObject.swift",
-      "line": 353,
+      "line": 354,
       "symbol": "SBATrackedWeeklyScheduleTableItem.ResultIdentifier",
       "symbol_kind": "source.lang.swift.decl.enum",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedSelectionStepObject.swift",
-      "line": 221,
+      "line": 222,
       "symbol": "SBATrackedSectionObject.init(identifier:text:detail:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedSelectionStepObject.swift",
-      "line": 286,
+      "line": 287,
       "symbol": "SBATrackedItemObject.init(identifier:sectionIdentifier:title:shortText:detail:icon:isExclusive:addDetailsIdentifier:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedSelectionStepObject.swift",
-      "line": 329,
+      "line": 330,
       "symbol": "SBATrackedItemsResultObject.init(identifier:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedSelectionStepObject.swift",
-      "line": 427,
+      "line": 428,
       "symbol": "SBARemoveTrackedItemsResultObject.init(identifier:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedSelectionStepObject.swift",
-      "line": 431,
+      "line": 432,
       "symbol": "SBARemoveTrackedItemsResultObject.init(identifier:items:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -604,21 +604,21 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBASymptomLoggingStepViewController.swift",
-      "line": 178,
+      "line": 171,
       "symbol": "SBASymptomLoggingCell.awakeFromNib()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBASymptomLoggingStepViewController.swift",
-      "line": 241,
+      "line": 246,
       "symbol": "SBASymptomLoggingCell.prepareForInsertion(into:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBASymptomLoggingStepViewController.swift",
-      "line": 250,
+      "line": 255,
       "symbol": "SBASeverityButton",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
@@ -646,7 +646,7 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedLoggingStepViewController.swift",
-      "line": 84,
+      "line": 89,
       "symbol": "SBATrackedLoggingCell.awakeFromNib()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -667,168 +667,168 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 316,
+      "line": 314,
       "symbol": "SBATrackedWeeklyScheduleCellDelegate",
       "symbol_kind": "source.lang.swift.decl.protocol",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 327,
+      "line": 325,
       "symbol": "SBATrackedTextfieldCell",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 351,
+      "line": 347,
       "symbol": "TrackedTextField",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 368,
+      "line": 364,
       "symbol": "SBARoundedButtonCell",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 388,
+      "line": 382,
       "symbol": "SBATrackedWeeklyScheduleCell.reuseId",
       "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 390,
+      "line": 384,
       "symbol": "SBATrackedWeeklyScheduleCell.delegate",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 399,
+      "line": 393,
       "symbol": "SBATrackedWeeklyScheduleCell.titleLabel",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 400,
+      "line": 394,
       "symbol": "SBATrackedWeeklyScheduleCell.timeButton",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 401,
+      "line": 395,
       "symbol": "SBATrackedWeeklyScheduleCell.timePicker",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 402,
+      "line": 396,
       "symbol": "SBATrackedWeeklyScheduleCell.dayButtonContainer",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 403,
+      "line": 397,
       "symbol": "SBATrackedWeeklyScheduleCell.dayButton",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 404,
+      "line": 398,
       "symbol": "SBATrackedWeeklyScheduleCell.atAnytimeContainer",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 405,
+      "line": 399,
       "symbol": "SBATrackedWeeklyScheduleCell.atAnytimeCheckbox",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 407,
+      "line": 401,
       "symbol": "SBATrackedWeeklyScheduleCell.separatorLines",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 408,
+      "line": 402,
       "symbol": "SBATrackedWeeklyScheduleCell.labels",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 418,
+      "line": 410,
       "symbol": "SBATrackedWeeklyScheduleCell.awakeFromNib()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 485,
+      "line": 488,
       "symbol": "SBAInstructionImage",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 509,
+      "line": 512,
       "symbol": "SBATrackedMedicationNavigationHeaderViewDelegate",
       "symbol_kind": "source.lang.swift.decl.protocol",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationDetailStepViewController.swift",
-      "line": 513,
+      "line": 516,
       "symbol": "SBATrackedMedicationNavigationHeaderView",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationLoggingStepViewController.swift",
-      "line": 116,
+      "line": 117,
       "symbol": "SBATrackedMedicationLoggingStepViewController.timeUpdated(cell:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationLoggingStepViewController.swift",
-      "line": 124,
+      "line": 125,
       "symbol": "SBATrackedMedicationLoggingStepViewController.logTapped(cell:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationLoggingStepViewController.swift",
-      "line": 132,
+      "line": 133,
       "symbol": "SBATrackedMedicationLoggingStepViewController.undoTapped(cell:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationLoggingStepViewController.swift",
-      "line": 150,
+      "line": 151,
       "symbol": "SBAMedicationLoggingCellDelegate",
       "symbol_kind": "source.lang.swift.decl.protocol",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationLoggingStepViewController.swift",
-      "line": 158,
+      "line": 159,
       "symbol": "SBAMedicationLoggingCell",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
@@ -842,14 +842,14 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationReviewStepViewController.swift",
-      "line": 75,
+      "line": 67,
       "symbol": "SBATrackedMedicationReviewCell.reuseId",
       "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/iOS/SBATrackedMedicationReviewStepViewController.swift",
-      "line": 95,
+      "line": 90,
       "symbol": "SBATrackedMedicationReviewCell.awakeFromNib()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -1396,7 +1396,7 @@
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBBSurveyElement+RSDStep.swift",
       "line": 58,
-      "symbol": "SBBSurveyElement.colorTheme",
+      "symbol": "SBBSurveyElement.colorMapping",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
@@ -1479,14 +1479,14 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBABridgeConfiguration.swift",
-      "line": 118,
+      "line": 123,
       "symbol": "SBABridgeConfiguration.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBABridgeConfiguration.swift",
-      "line": 625,
+      "line": 663,
       "symbol": "SBAActivityInfoObject.init(identifier:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -1625,6 +1625,13 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBASurveyConfiguration.swift",
+      "line": 86,
+      "symbol": "SBASurveyConfiguration.colorTheme(for:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
       "line": 39,
       "symbol": "SBAAppDelegate.window",
@@ -1654,14 +1661,14 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
-      "line": 55,
+      "line": 60,
       "symbol": "SBAAppDelegate.application(_:willFinishLaunchingWithOptions:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
-      "line": 74,
+      "line": 83,
       "symbol": "SBAAppDelegate.applicationDidBecomeActive(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
