@@ -117,9 +117,13 @@ extension SBAProfileItemInternal {
     }
 }
 
+public let SBAProfileItemValueUpdateNotification: NSNotification.Name = NSNotification.Name(rawValue: "SBAProfileItemValueUpdate")
+public let SBAProfileItemUpdatedItemsKey: String = "SBAProfileItemUpdatedItems"
+
 extension SBAProfileItem {
     /// The value property is used to get and set the profile item's value in whatever internal data
-    /// storage is used by the implementing type.
+    /// storage is used by the implementing type. Setting the value on a non-readonly profile item causes
+    /// a notification to be posted.
     public var value: Any? {
         get {
             return self.storedValue(forKey: sourceKey)
@@ -128,6 +132,8 @@ extension SBAProfileItem {
         set {
             guard !readonly else { return }
             self.setStoredValue(newValue)
+            let updatedItems: [String: Any?] = [self.profileKey: newValue]
+            NotificationCenter.default.post(name: SBAProfileItemValueUpdateNotification, object: self, userInfo: [SBAProfileItemUpdatedItemsKey: updatedItems])
         }
     }
     

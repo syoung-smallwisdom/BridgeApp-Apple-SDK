@@ -314,5 +314,15 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
         }
     }
 
+    /// Called when all the reports are finished loading.
+    /// This prompts all the profileItems to post notifications that their values may have changed.
+    override open func didFinishFetchingReports() {
+        var updatedItems: [String: Any?] = [:]
+        for key in self.profileKeys() {
+            updatedItems[key] = self.value(forProfileKey: key)
+        }
+        NotificationCenter.default.post(name: SBAProfileItemValueUpdateNotification, object: self, userInfo: [SBAProfileItemUpdatedItemsKey: updatedItems])
+    }
+
 }
 
