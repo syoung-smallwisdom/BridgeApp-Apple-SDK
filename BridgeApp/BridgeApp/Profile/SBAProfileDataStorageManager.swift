@@ -1,8 +1,8 @@
 //
-//  SBAProfileTypeIdentifier.swift
-//  BridgeApp
+//  SBAProfileDataStorageManager.swift
+//  BridgeApp (iOS)
 //
-//  Copyright © 2017-2018 Sage Bionetworks. All rights reserved.
+//  Copyright © 2019 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -31,46 +31,37 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-public struct SBAProfileTypeIdentifier : RawRepresentable, Codable {
-    public typealias RawValue = String
+open class SBAProfileDataStorageManager: NSObject, RSDDataStorageManager {
     
-    public private(set) var rawValue: String
-    
-    public init(rawValue: String) {
-        self.rawValue = rawValue
+    struct TaskData : RSDTaskData {
+        let identifier: String
+        let timestampDate: Date?
+        let json: RSDJSONSerializable
+        
+        public init(identifier: String, timestampDate: Date?, json: RSDJSONSerializable) {
+            self.identifier = identifier
+            self.timestampDate = timestampDate
+            self.json = json
+        }
     }
-    
-    public static let string: SBAProfileTypeIdentifier = "string"
-    public static let number: SBAProfileTypeIdentifier = "number"
-    public static let bool: SBAProfileTypeIdentifier = "bool"
-    public static let date: SBAProfileTypeIdentifier = "date"
-    public static let array: SBAProfileTypeIdentifier = "array"
-    public static let set: SBAProfileTypeIdentifier = "set"
-    public static let dictionary: SBAProfileTypeIdentifier = "dictionary"
-}
 
-extension SBAProfileTypeIdentifier : Equatable {
-    public static func ==(lhs: SBAProfileTypeIdentifier, rhs: SBAProfileTypeIdentifier) -> Bool {
-        return lhs.rawValue == rhs.rawValue
-    }
-    public static func ==(lhs: String, rhs: SBAProfileTypeIdentifier) -> Bool {
-        return lhs == rhs.rawValue
-    }
-    public static func ==(lhs: SBAProfileTypeIdentifier, rhs: String) -> Bool {
-        return lhs.rawValue == rhs
-    }
-}
-
-extension SBAProfileTypeIdentifier : Hashable {
-    public var hashValue : Int {
-        return self.rawValue.hashValue
-    }
-}
-
-extension SBAProfileTypeIdentifier : ExpressibleByStringLiteral {
-    public typealias StringLiteralType = String
+    private var profileItem: SBAProfileItem
     
-    public init(stringLiteral value: String) {
-        self.init(rawValue: value)
+    public init(with profileKey: String) throws {
+        let items = SBAProfileManagerObject.shared.profileItems()
+        guard let item = items[profileKey]
+            else {
+                throw RSDValidationError.identifierNotFound(items, profileKey, "Profile item not found for key \(profileKey)")
+        }
+        self.profileItem = item
+    }
+    
+    open func previousTaskData(for taskIdentifier: RSDIdentifier) -> RSDTaskData? {
+        guard let json = self.profileItem.jsonValue else { return nil }
+        return TaskData(identifier: self.profileItem.demographicKey, timestampDate: nil, json: json)
+    }
+    
+    open func saveTaskData(_ data: RSDTaskData, from taskResult: RSDTaskResult?) {
+        self.profileItem.jsonValue = data.json
     }
 }

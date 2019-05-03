@@ -96,3 +96,7 @@
 "KEYCHAIN_DELETE_ERROR_MESSAGE" = "Could not delete Keychain item.";
 "KEYCHAIN_FIND_ERROR_MESSAGE" = "Could not find Keychain item.";
 
+/* Profile */
+"SETTINGS_STATE_ON" = "On";                                      // Boolean profile item table item detail text when setting is on
+"SETTINGS_STATE_OFF" = "Off";                                    // Boolean profile item table item detail text when setting is off
+

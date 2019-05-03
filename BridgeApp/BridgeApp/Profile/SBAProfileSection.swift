@@ -204,9 +204,9 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
         switch (type) {
         case .html:
             return try SBAHTMLProfileTableItem(from: decoder)
+        case .profileItem:
+            return try SBAProfileItemProfileTableItem(from: decoder)
             // TODO: emm 2018-08-19 deal with this for mPower 2 2.1
-//        case .profileItem:
-//            return try SBAProfileItemProfileTableItem(from: decoder)
 //        case .resource:
 //            return try SBAResourceProfileTableItem(from: decoder)
         default:
@@ -284,21 +284,97 @@ public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResour
 
 }
 
-
-/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
-open class SBAProfileItemProfileTableItem: SBAProfileTableItemBase {
-    /// Override to return .editProfileItem as the default onSelected action.
-    override open func defaultOnSelectedAction() -> SBAProfileOnSelectedAction {
-        return .editProfileItem
+/// A profile table item that displays, and allows editing, the value of a Profile Item.
+public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
+    private enum CodingKeys: String, CodingKey {
+        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey, _editTaskIdentifier = "editTaskIdentifier"
+    }
+    // MARK: SBAProfileTableItem
+    /// Title to show for the table item.
+    public var title: String?
+    
+    /// Detail text to show for the table item.
+    public var detail: String? {
+        switch self.profileItem.itemType.baseType {
+        case .boolean:
+            // Bool table items show detail as On/Off, or blank if never set
+            guard let isOn = self.profileItemValue as? Bool else { return "" }
+            return isOn ? Localization.localizedString("SETTINGS_STATE_ON") : Localization.localizedString("SETTINGS_STATE_OFF")
+        default:
+            guard let value = self.profileItem.value else { return "" }
+            return String(describing: value)
+        }
     }
     
-    open var profileItemKey: String
+    /// Current profile item value to apply to, and set from, an edit control.
+    public var profileItemValue: Any? {
+        get {
+            return self.profileItem.value
+        }
+        set {
+            self.profileItem.value = newValue
+        }
+    }
     
-    lazy open var profileItem: SBAProfileItem = {
-        let profileItems = SBAProfileManager.shared.profileItems()
-        return profileItems[self.profileItemKey]!
-    }()
+    /// The table item should not be editable if the profile item itself is readonly;
+    /// otherwise honor this flag's setting, defaulting to true.
+    private var _isEditable: Bool?
+    public var isEditable: Bool? {
+        get {
+            return self.profileItem.readonly ? false : self._isEditable ?? true
+        }
+        set {
+            guard self.profileItem.readonly == false else { return }
+            self._isEditable = newValue
+        }
+    }
     
+    /// A set of cohorts (data groups) the participant must be in, in order to show this item in its containing profile section.
+    public var inCohorts: Set<String>?
+    
+    /// A set of cohorts (data groups) the participant must not be in, in order to show this item in its containing profile section.
+    public var notInCohorts: Set<String>?
+    
+    /// Profile item profile table items by default edit when selected.
+    private var _onSelected: SBAProfileOnSelectedAction? = .editProfileItem
+    public var onSelected: SBAProfileOnSelectedAction? {
+        get {
+            return self._onSelected ?? .editProfileItem
+        }
+        set {
+            self._onSelected = newValue
+        }
+    }
+    
+    // MARK: Profile Item Profile Table Item
+    
+    /// The profile item key for this profile table item. Required.
+    /// - warning: Using a key that is not included in the Profile Manager's profileItems is a coding error.
+    public let profileItemKey: String
+    
+    /// The task info identifier for the step to display to the participant when they ask to edit the value
+    /// of the profile item. Falls back to the profile item's demographicSchema if not explicitly set.
+    ///
+    public var _editTaskIdentifier: String?
+    public var editTaskIdentifier: String? {
+        get {
+            return _editTaskIdentifier ?? self.profileItem.demographicSchema
+        }
+    }
+    
+    /// The actual profile item for the given profileItemKey.
+    public var profileItem: SBAProfileItem {
+        get {
+            let profileItems = SBABridgeConfiguration.shared.profileManager.profileItems()
+            return profileItems[self.profileItemKey]!
+        }
+        set {
+            var profileItems = SBABridgeConfiguration.shared.profileManager.profileItems()
+            profileItems[self.profileItemKey]!.value = newValue.value
+       }
+    }
+    
+/* TODO: emm 2019-02-06 deal with this for mPower 2 2.1
     func itemDetailFor(_ date: Date, format: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = format
@@ -418,8 +494,10 @@ open class SBAProfileItemProfileTableItem: SBAProfileTableItemBase {
         profileItemKey = try container.decode(String.self, forKey: .profileItemKey)
         answerMapKeys = try container.decodeIfPresent([String: String].self, forKey: .answerMapKeys) ?? [self.profileItemKey: self.profileItemKey]
     }
+ */
 }
 
+/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 /// A profile table item that opens a resource (for example, a task defined in JSON) when selected.
 public struct SBAResourceProfileTableItem: SBAProfileTableItem, Decodable, RSDResourceTransformer {
     private enum CodingKeys: String, CodingKey {

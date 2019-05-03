@@ -34,7 +34,7 @@
 import Foundation
 import HealthKit
 
-public protocol SBAProfileItem {
+public protocol SBAProfileItem: Decodable {
     /// profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
     /// within an app.
     var profileKey: String { get }
@@ -53,19 +53,19 @@ public protocol SBAProfileItem {
     var demographicKey: String { get }
     
     /// itemType specifies what type to store the profileItem's value as. Defaults to String if not otherwise specified.
-    var itemType: SBAProfileTypeIdentifier { get }
+    var itemType: RSDFormDataType { get }
     
     /// The value property is used to get and set the profile item's value in whatever internal data
     /// storage is used by the implementing class.
     var value: Any? { get set }
     
     /// jsonValue is used to get and set the profile item's value directly from appropriate JSON.
-    var jsonValue: SBBJSONValue? { get set }
+    var jsonValue: RSDJSONSerializable? { get set }
     
     /// demographicJsonValue is used when formatting the item as demographic data for upload to Bridge.
     /// By default it will fall through to the getter for the jsonValue property, but can be different
     /// if needed.
-    var demographicJsonValue: SBBJSONValue? { get }
+    var demographicJsonValue: RSDJSONSerializable? { get }
     
     /// Is the value read-only?
     var readonly: Bool { get }
@@ -76,111 +76,156 @@ public protocol SBAProfileItem {
     var unit: HKUnit? { get }
  */
     
-    /// Class type to which to deserialize this profile item.
+    /// The class type to which to deserialize this profile item.
     var type: SBAProfileItemType { get }
+    
+    /// This function should fetch the value associated with sourceKey from the internal data storage for the profile type being implemented.
+    func storedValue(forKey key: String) -> Any?
+    
+    /// This function should set or update the value associated with sourceKey in the internal data storage for the profile type being implemented.
+    func setStoredValue(_ newValue: Any?)
+    
 }
 
+// internal protocol to share common implementation details for properties with default fallback values
+fileprivate protocol SBAProfileItemInternal: SBAProfileItem {
+    // backing store for non-default sourceKey value
+    var _sourceKey: String? { get set }
+    
+    // backing store for non-default demographicKey value
+    var _demographicKey: String? { get set }
+}
+
+// extension where common implementation details for properties with default fallback values are implemented
+extension SBAProfileItemInternal {
+    public var sourceKey: String {
+        get {
+            return self._sourceKey ?? self.profileKey
+        }
+        set {
+            self._sourceKey = newValue
+        }
+    }
+    
+    public var demographicKey: String {
+        get {
+            return self._demographicKey ?? self.profileKey
+        }
+        set {
+            self._demographicKey = newValue
+        }
+    }
+}
+
+extension Notification.Name {
+    /// Notification name posted by SBAProfileItem for an item when updating its value, and by SBAProfileManager
+    /// for all its items when it finishes loading or fetching reports.
+    public static let SBAProfileItemValueUpdated: NSNotification.Name = NSNotification.Name(rawValue: "SBAProfileItemValueUpdated")
+}
+
+/// This is the key into the SBAProfileItemValueUpdated notification's userInfo for the mapping of profile keys to updated values.
+public let SBAProfileItemUpdatedItemsKey: String = "SBAProfileItemUpdatedItems"
+
 extension SBAProfileItem {
-    func commonJsonValueGetter() -> SBBJSONValue? {
+    /// The value property is used to get and set the profile item's value in whatever internal data
+    /// storage is used by the implementing type. Setting the value on a non-readonly profile item causes
+    /// a notification to be posted.
+    public var value: Any? {
+        get {
+            return self.storedValue(forKey: sourceKey)
+        }
+        
+        set {
+            guard !readonly else { return }
+            self.setStoredValue(newValue)
+            let updatedItems: [String: Any?] = [self.profileKey: newValue]
+            NotificationCenter.default.post(name: .SBAProfileItemValueUpdated, object: self, userInfo: [SBAProfileItemUpdatedItemsKey: updatedItems])
+        }
+    }
+    
+    /// jsonValue is used to get and set the profile item's value directly from appropriate JSON.
+    public var jsonValue: RSDJSONSerializable? {
+        get {
+            return self.commonJsonValueGetter()
+        }
+        
+        set {
+            commonJsonValueSetter(jsonVal: newValue)
+        }
+    }
+    
+    /// demographicJsonValue is used when formatting the item as demographic data for upload to Bridge.
+    /// By default it will fall through to the getter for the jsonValue property, but can be different
+    /// if needed.
+    public var demographicJsonValue: RSDJSONSerializable? {
+        return self.commonDemographicJsonValue()
+    }
+    
+    func commonJsonValueGetter() -> RSDJSONSerializable? {
         return commonItemTypeToJson(val: self.value)
     }
     
-    public func commonItemTypeToJson(val: Any?) -> SBBJSONValue? {
+    public func commonItemTypeToJson(val: Any?) -> RSDJSONSerializable? {
         guard val != nil else { return NSNull() }
-        switch self.itemType {
-        case SBAProfileTypeIdentifier.string:
-            return val as? NSString
+        switch self.itemType.baseType {
+        case .string:
+            return val as? String
             
-        case SBAProfileTypeIdentifier.number:
+        case .integer:
             return val as? NSNumber
             
-        case SBAProfileTypeIdentifier.bool:
+        case .decimal:
+            return val as? NSNumber
+
+        case .boolean:
             return val as? NSNumber
             
-        case SBAProfileTypeIdentifier.date:
-            return (val as? NSDate)?.iso8601String() as NSString?
-       
-/* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
-        case SBAProfileTypeIdentifier.hkBiologicalSex:
-            return (val as? HKBiologicalSex)?.rawValue as NSNumber?
-            
-        case SBAProfileTypeIdentifier.hkQuantity:
-            guard let quantity = val as? HKQuantity else { return nil }
-            return NSNumber(value: quantity.doubleValue(for: self.unit ?? commonDefaultUnit()))
- */
-            
-        case SBAProfileTypeIdentifier.dictionary, SBAProfileTypeIdentifier.array:
-            return (val as? RSDJSONValue)?.jsonObject() as? SBBJSONValue
-            
-        case SBAProfileTypeIdentifier.set:
-            guard let set = val as? Set<AnyHashable> else { return nil }
-            return (Array(set) as RSDJSONValue).jsonObject() as? SBBJSONValue
+        case .date:
+            return (val as? NSDate)?.iso8601String()
             
         default:
             return nil
         }
     }
     
-    public func commonJsonToItemType(value: SBBJSONValue?) -> Any? {
-        guard value != nil else {
+    mutating func commonJsonValueSetter(jsonVal: RSDJSONSerializable?) {
+        guard let jsonValue = jsonVal else {
+            self.value = nil
+            return
+        }
+        
+        guard let itemValue = commonJsonToItemType(jsonVal: jsonValue) else { return }
+        self.value = itemValue
+    }
+
+    public func commonJsonToItemType(jsonVal: RSDJSONSerializable?) -> Any? {
+        guard let jsonValue = jsonVal else {
             return nil
         }
         
         var itemValue: Any? = nil
-        switch self.itemType {
-        case SBAProfileTypeIdentifier.string:
-            itemValue = String(describing: value!)
+        switch self.itemType.baseType {
+        case .string:
+            itemValue = jsonValue as? String ?? String(describing: jsonValue)
             
-        case SBAProfileTypeIdentifier.number:
-            guard let val = value! as? NSNumber else { return nil }
+        case .integer:
+            guard let val = jsonValue as? Int else { return nil }
             itemValue = val
             
-        case SBAProfileTypeIdentifier.bool:
-            guard let val = value! as? Bool else { return nil }
+        case .decimal:
+            guard let val = jsonValue as? Decimal else { return nil }
             itemValue = val
             
-        case SBAProfileTypeIdentifier.date:
-            guard let stringVal = value! as? String,
+        case .boolean:
+            guard let val = jsonValue as? Bool else { return nil }
+            itemValue = val
+            
+        case .date:
+            guard let stringVal = jsonValue as? String,
                     let dateVal = NSDate(iso8601String: stringVal)
                 else { return nil }
             itemValue = dateVal
-            
-/* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
-        case SBAProfileTypeIdentifier.hkBiologicalSex:
-            guard let val = value! as? Int else { return nil }
-            itemValue = HKBiologicalSex(rawValue: val)
-            
-        case SBAProfileTypeIdentifier.hkQuantity:
-            guard let val = value! as? NSNumber else { return nil }
-            itemValue = HKQuantity(unit: self.unit ?? commonDefaultUnit(), doubleValue: val.doubleValue)
- */
-            
-        case SBAProfileTypeIdentifier.dictionary:
-            guard let dictionary = value! as? [AnyHashable : Any] else { return nil }
-            itemValue = commonMapObject(with: dictionary)
-            
-        case SBAProfileTypeIdentifier.array:
-            guard let array = value! as? [Any] else { return nil }
-            itemValue = array.map({ (obj) -> Any? in
-                if let dictionary = value! as? [AnyHashable : Any] {
-                    return commonMapObject(with: dictionary)
-                }
-                else {
-                    return obj
-                }
-            })
-            
-        case SBAProfileTypeIdentifier.set:
-            guard let set = value! as? Set<AnyHashable> else { return nil }
-            itemValue = set.map({ (obj) -> Any? in
-                if let dictionary = value! as? [AnyHashable : Any] {
-                    return commonMapObject(with: dictionary)
-                }
-                else {
-                    return obj
-                }
-            })
-            
+
         default:
             break
         }
@@ -188,7 +233,7 @@ extension SBAProfileItem {
         return itemValue
     }
     
-    func commonMapObject(with dictionary: [AnyHashable : Any]) -> Any? {
+    func commonMapObject(with dictionary: [String : RSDJSONSerializable]) -> Any? {
         guard let type = dictionary["type"] as? String,
                 let clazz = NSClassFromString(type) as? (NSObject & Decodable).Type
             else {
@@ -206,7 +251,7 @@ extension SBAProfileItem {
         return nil
     }
     
-    func commonDemographicJsonValue() -> SBBJSONValue? {
+    func commonDemographicJsonValue() -> RSDJSONSerializable? {
         guard let jsonVal = self.commonJsonValueGetter() else { return nil }
 /* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
         if self.itemType == .hkBiologicalSex {
@@ -220,44 +265,21 @@ extension SBAProfileItem {
     func commonCheckTypeCompatible(newValue: Any?) -> Bool {
         guard newValue != nil else { return true }
         
-        switch self.itemType {
-        case SBAProfileTypeIdentifier.string:
+        switch self.itemType.baseType {
+        case .string:
             return true // anything can be cast to a string
             
-        case SBAProfileTypeIdentifier.number:
-            if (newValue as? NSNumber != nil) {
-                return true
-            }
-/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
-            else if let quantity = newValue as? HKQuantity {
-                return quantity.is(compatibleWith: self.unit ?? commonDefaultUnit())
-            }
- */
-            return false
-            
-        case SBAProfileTypeIdentifier.bool:
+        case .integer:
             return newValue as? NSNumber != nil
             
-        case SBAProfileTypeIdentifier.date:
+        case .decimal:
+            return newValue as? NSNumber != nil
+            
+        case .boolean:
+            return newValue as? NSNumber != nil
+            
+        case .date:
             return newValue as? NSDate != nil
-            
-/* TODO: emm 2018-08-24 do we maybe still need to support these for updating the demographic survey from the Profile tab?
-       case SBAProfileTypeIdentifier.hkBiologicalSex:
-            return newValue as? HKBiologicalSex != nil
-            
-        case SBAProfileTypeIdentifier.hkQuantity:
-            guard let quantity = newValue as? HKQuantity else { return false }
-            return quantity.is(compatibleWith: self.unit ?? commonDefaultUnit())
- */
-            
-        case SBAProfileTypeIdentifier.dictionary:
-            return newValue as? RSDJSONValue != nil
-        
-        case SBAProfileTypeIdentifier.array:
-            return newValue as? NSArray != nil
-            
-        case SBAProfileTypeIdentifier.set:
-            return newValue as? NSSet != nil
             
         default:
             return true   // Any extended type isn't included in the common validation
@@ -287,6 +309,96 @@ extension HKBiologicalSex {
     }
 }
  */
+
+/// SBAReportProfileItem allows storing and retrieving profile item values to/from Bridge Participant Reports.
+/// For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
+/// interpreted as the report identifier. If the clientDataIsItem flag is not set, then the demographicKey
+/// (which, likewise, defaults to the profileKey if not specifically set) is interpreted as the item's key
+/// in the report's clientData. If the flag is set, the report's clientData value is used directly.
+///
+/// A common scenario for a study would be to have a demographic survey which is administered once after the
+/// participant signs up and consents. Often (always in e.g. Canada, where required by law), the app/study design
+/// would need some way to allow the participant to change those answers later. One way to do this is to create
+/// an editable profile item for each question/answer in the demographic survey. In this scenario, for each of these
+/// items you would set the demographicSchema to the survey identifier, set the source key to the survey identifier
+/// as well, and set the demographicKey to the identifier of the survey question corresponding to the profile item.
+public struct SBAReportProfileItem: SBAProfileItemInternal {
+    private enum CodingKeys: String, CodingKey {
+        case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema,
+            _clientDataIsItem = "clientDataIsItem", itemType, readonly, type
+    }
+
+    fileprivate var _sourceKey: String?
+    
+    fileprivate var _demographicKey: String?
+    
+    /// profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
+    /// within an app.
+    public var profileKey: String
+    
+    /// demographicSchema is an optional schema identifier to mark a profile item as being part of the indicated
+    /// demographic data upload schema.
+    public var demographicSchema: String?
+    
+    /// If clientDataIsItem is true, the report's clientData field is assumed to contain the item value itself.
+    ///
+    /// If clientDataIsItem is false, the report's clientData field is assumed to be a dictionary in which
+    /// the item value is stored and retrieved via the demographicKey.
+    ///
+    /// The default value is false.
+    public var _clientDataIsItem: Bool?
+    public var clientDataIsItem: Bool {
+        get {
+            return self._clientDataIsItem ?? false
+        }
+        set {
+            self._clientDataIsItem = newValue
+        }
+    }
+
+    /// itemType specifies what type to store the profileItem's value as. Defaults to String if not otherwise specified.
+    public var itemType: RSDFormDataType
+    
+    /// Is the value read-only?
+    public var readonly: Bool
+    
+    /// The class type to which to deserialize this profile item.
+    public var type: SBAProfileItemType
+    
+    public func storedValue(forKey key: String) -> Any? {
+        guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager,
+                let clientData = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: key) })?.clientData
+            else {
+                return nil
+        }
+        var json = clientData as? RSDJSONSerializable
+        if !self.clientDataIsItem {
+            guard let dict = clientData as? [String : RSDJSONSerializable],
+                    let propJson = dict[self.demographicKey]
+                else {
+                    return nil
+            }
+            json = propJson
+        }
+        
+        return self.commonJsonToItemType(jsonVal: json)
+    }
+    
+    public func setStoredValue(_ newValue: Any?) {
+        guard !self.readonly, let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return }
+        var clientData : SBBJSONValue = NSNull()
+        if self.clientDataIsItem {
+            clientData = self.commonItemTypeToJson(val: newValue) as? SBBJSONValue ?? NSNull()
+        } else {
+            var clientJsonDict = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? Dictionary<String, RSDJSONSerializable> ?? Dictionary<String, RSDJSONSerializable>()
+            clientJsonDict[self.demographicKey] = self.commonItemTypeToJson(val: newValue)
+            clientData = clientJsonDict as SBBJSONValue
+        }
+        let report = SBAReport(identifier: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: clientData)
+        reportManager.saveReport(report)
+    }
+    
+}
 
 /* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 open class SBAProfileItemBase: SBAProfileItem, Decodable {

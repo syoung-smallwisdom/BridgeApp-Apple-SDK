@@ -128,7 +128,7 @@ public protocol SBAProfileManager {
 }
 
 /// Concrete implementation of the SBAProfileManager protocol.
-open class SBAProfileManagerObject: SBAProfileManager, Decodable {
+open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodable {
     /// Return the shared instance of the Profile Manager from the shared Bridge configuration.
     public static let shared: SBAProfileManager = {
         return SBABridgeConfiguration.shared.profileManager
@@ -150,36 +150,52 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
     }()
    
     // MARK: Internal methods
-    func uploadDemographicData(_ schemas: Set<String>) {
-        let demographicItems = self.items.filter({ return $0.demographicSchema != nil && schemas.contains($0.demographicSchema!) })
-        guard demographicItems.count > 0 else { return }
-        
-        for schemaIdentifier in schemas {
-            let itemsForSchema = demographicItems.filter({ $0.demographicSchema! == schemaIdentifier })
-            let archiveFilename = schemaIdentifier
-            let archive = SBBDataArchive(reference: schemaIdentifier, jsonValidationMapping: nil)
-            
-            if let schemaRevision = SBABridgeConfiguration.shared.schemaInfo(for: schemaIdentifier)?.schemaVersion {
-                archive.setArchiveInfoObject(schemaRevision, forKey: "schemaRevision")
-            }
-            
-            let demographics = self.demographics(with: itemsForSchema)
-            archive.insertDictionary(intoArchive: demographics, filename: archiveFilename, createdOn: Date())
-            do {
-                try archive.complete()
-                archive.encryptAndUploadArchive()
-            }
-            catch {}
-        }
-    }
+    // TODO: emm 2019-05-03 Deal with this (or remove? is it obsolete?) for mPower 2.1
+//    func uploadDemographicData(_ schemas: Set<String>) {
+//        let demographicItems = self.items.filter({ return $0.demographicSchema != nil && schemas.contains($0.demographicSchema!) })
+//        guard demographicItems.count > 0 else { return }
+//
+//        for schemaIdentifier in schemas {
+//            let itemsForSchema = demographicItems.filter({ $0.demographicSchema! == schemaIdentifier })
+//            let archiveFilename = schemaIdentifier
+//            let archive = SBBDataArchive(reference: schemaIdentifier, jsonValidationMapping: nil)
+//
+//            if let schemaRevision = SBABridgeConfiguration.shared.schemaInfo(for: schemaIdentifier)?.schemaVersion {
+//                archive.setArchiveInfoObject(schemaRevision, forKey: "schemaRevision")
+//            }
+//
+//            let demographics = self.demographics(with: itemsForSchema)
+//            archive.insertDictionary(intoArchive: demographics, filename: archiveFilename, createdOn: Date())
+//            do {
+//                try archive.complete()
+//                archive.encryptAndUploadArchive()
+//            }
+//            catch {}
+//        }
+//    }
+//
+//    // overrideable for testing
+//    func demographics(with demographicItems: [SBAProfileItem]) -> [String: Any] {
+//        var demographics: [String: Any] = [:]
+//        for item in demographicItems {
+//            demographics[item.demographicKey] = item.demographicJsonValue ?? NSNull()
+//        }
+//        return demographics
+//    }
     
-    // overrideable for testing
-    func demographics(with demographicItems: [SBAProfileItem]) -> [String: Any] {
-        var demographics: [String: Any] = [:]
-        for item in demographicItems {
-            demographics[item.demographicKey] = item.demographicJsonValue ?? NSNull()
+    // MARK: SBAReportManager
+    /// Set up to manage reports for all our report-based profile items.
+    override open func reportQueries() -> [SBAReportManager.ReportQuery] {
+        let reportIdentifiers: [RSDIdentifier] = self.items.compactMap {
+            guard $0.type == .report else { return nil }
+            return RSDIdentifier(rawValue: $0.sourceKey)
         }
-        return demographics
+        
+        let queries = reportIdentifiers.map({
+            return ReportQuery(identifier: $0, queryType: .mostRecent, dateRange: nil)
+        })
+        
+        return queries
     }
     
     // MARK: SBAProfileManagerProtocol
@@ -223,9 +239,6 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
         case items
     }
     
-    public init() {
-    }
-    
     private enum TypeKeys: String, CodingKey {
         case type
     }
@@ -242,8 +255,14 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
         let container = try decoder.container(keyedBy: TypeKeys.self)
         return try container.decode(String.self, forKey: .type)
     }
+    
+    override public init() {
+        super.init()
+    }
 
     public required init(from decoder: Decoder) throws {
+        super.init()
+        
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         if container.contains(.items) {
@@ -258,6 +277,7 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
                 }
             }
             self.items = items
+            self.loadReports()
         }
     }
 
@@ -268,9 +288,11 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
     ///     - decoder:     The decoder to use to instatiate the object.
     /// - returns: The profile item (if any) created from this decoder.
     /// - throws: `DecodingError` if the object cannot be decoded.
-    open func decodeItem(from decoder:Decoder, with type:SBAProfileItemType) throws -> SBAProfileItem? {
+    open func decodeItem(from decoder: Decoder, with type: SBAProfileItemType) throws -> SBAProfileItem? {
         
         switch (type) {
+        case .report:
+            return try SBAReportProfileItem(from: decoder)
 /* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
         case .userDefaults:
             return try SBAUserDefaultsProfileItem(from: decoder)
@@ -291,6 +313,24 @@ open class SBAProfileManagerObject: SBAProfileManager, Decodable {
             assertionFailure("Attempt to decode profile item of unknown type \(type.rawValue)")
             return nil
         }
+    }
+    
+    /// Posts a "value updated" notification that includes all the profile items. Gets called on initialization
+    /// and on updating/reloading reports.
+    private func postValuesUpdatedNotification() {
+        var updatedItems: [String: Any?] = [:]
+        for key in self.profileKeys() {
+            updatedItems[key] = self.value(forProfileKey: key)
+        }
+        
+        if updatedItems.count > 0 {
+            NotificationCenter.default.post(name: .SBAProfileItemValueUpdated, object: self, userInfo: [SBAProfileItemUpdatedItemsKey: updatedItems])
+        }
+    }
+
+    /// Called when all the reports are finished loading.
+    override open func didFinishFetchingReports() {
+        self.postValuesUpdatedNotification()
     }
 
 }
