@@ -193,6 +193,9 @@
             <a href="../Global Variables.html">Global Variables</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Global Variables.html#/s:9BridgeApp29SBAProfileItemUpdatedItemsKeySSvp">SBAProfileItemUpdatedItemsKey</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Global Variables.html#/s:9BridgeApp22SBAReportSingletonDate10Foundation0E0Vvp">SBAReportSingletonDate</a>
               </li>
             </ul>
@@ -402,6 +405,9 @@
                 <a href="../Structs/SBAProfileDataSourceType.html">SBAProfileDataSourceType</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Structs/SBAProfileItemProfileTableItem.html">SBAProfileItemProfileTableItem</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Structs/SBAProfileItemType.html">SBAProfileItemType</a>
               </li>
               <li class="nav-group-task">
@@ -418,6 +424,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/SBAReport.html">SBAReport</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SBAReportProfileItem.html">SBAReportProfileItem</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Structs/SBATimestamp.html">SBATimestamp</a>
@@ -447,7 +456,7 @@
             <h1>SBAProfileManagerObject</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAProfileManagerObject</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/SBAProfileManager.html">SBAProfileManager</a></span><span class="p">,</span> <span class="kt">Decodable</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAProfileManagerObject</span> <span class="p">:</span> <span class="kt"><a href="../Classes/SBAReportManager.html">SBAReportManager</a></span><span class="p">,</span> <span class="kt"><a href="../Protocols/SBAProfileManager.html">SBAProfileManager</a></span><span class="p">,</span> <span class="kt">Decodable</span></code></pre>
 
                 </div>
               </div>
@@ -478,6 +487,44 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="k">let</span> <span class="nv">shared</span><span class="p">:</span> <span class="kt"><a href="../Protocols/SBAProfileManager.html">SBAProfileManager</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/SBAReportManager"></a>
+                <a name="//apple_ref/swift/Section/SBAReportManager" class="dashAnchor"></a>
+                <a href="#/SBAReportManager">
+                  <h3 class="section-name">SBAReportManager</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp23SBAProfileManagerObjectC13reportQueriesSayAA09SBAReportD0C11ReportQueryVGyF"></a>
+                    <a name="//apple_ref/swift/Method/reportQueries()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp23SBAProfileManagerObjectC13reportQueriesSayAA09SBAReportD0C11ReportQueryVGyF">reportQueries()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set up to manage reports for all our report-based profile items.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">open</span> <span class="kd">func</span> <span class="nf">reportQueries</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt"><a href="../Classes/SBAReportManager.html">SBAReportManager</a></span><span class="o">.</span><span class="kt">ReportQuery</span><span class="p">]</span></code></pre>
 
                         </div>
                       </div>
@@ -789,6 +836,33 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>The profile item (if any) created from this decoder.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp23SBAProfileManagerObjectC24didFinishFetchingReportsyyF"></a>
+                    <a name="//apple_ref/swift/Method/didFinishFetchingReports()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp23SBAProfileManagerObjectC24didFinishFetchingReportsyyF">didFinishFetchingReports()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when all the reports are finished loading.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">open</span> <span class="kd">func</span> <span class="nf">didFinishFetchingReports</span><span class="p">()</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>

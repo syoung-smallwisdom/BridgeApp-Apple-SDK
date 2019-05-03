@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>SBAMedicationItem Structure Reference</title>
+    <title>SBAReportProfileItem Structure Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -10,8 +10,8 @@
     
   </head>
   <body>
-    <a name="//apple_ref/swift/Struct/SBAMedicationItem" class="dashAnchor"></a>
-    <a title="SBAMedicationItem Structure Reference"></a>
+    <a name="//apple_ref/swift/Struct/SBAReportProfileItem" class="dashAnchor"></a>
+    <a title="SBAReportProfileItem Structure Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">BridgeApp Docs</a></p>
@@ -22,7 +22,7 @@
       <p id="breadcrumbs">
         <a href="../index.html">BridgeApp Reference</a>
         <img id="carat" src="../img/carat.png" />
-        SBAMedicationItem Structure Reference
+        SBAReportProfileItem Structure Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -453,32 +453,25 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>SBAMedicationItem</h1>
+            <h1>SBAReportProfileItem</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBAMedicationItem</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt"><a href="../Protocols/SBAMedication.html">SBAMedication</a></span><span class="p">,</span> <span class="kt">RSDEmbeddedIconVendor</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBAReportProfileItem</span> <span class="p">:</span> <span class="kt">SBAProfileItemInternal</span></code></pre>
 
                 </div>
               </div>
-            <p>A medication item includes details for displaying a given medication.</p>
+            <p>SBAReportProfileItem allows storing and retrieving profile item values to/from Bridge Participant Reports.
+For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
+interpreted as the report identifier. If the clientDataIsItem flag is not set, then the demographicKey
+(which, likewise, defaults to the profileKey if not specifically set) is interpreted as the item&rsquo;s key
+in the report&rsquo;s clientData. If the flag is set, the report&rsquo;s clientData value is used directly.</p>
 
-<ul>
-<li>example:
-<code>
-let json = &quot;&quot;&quot;
-       {
-           &quot;identifier&quot;: &quot;advil&quot;,
-           &quot;sectionIdentifier&quot;: &quot;pain&quot;,
-           &quot;title&quot;: &quot;Advil&quot;,
-           &quot;shortText&quot;: &quot;Ibu&quot;,
-           &quot;detail&quot;: &quot;(Ibuprofen)&quot;,
-           &quot;isExclusive&quot;: true,
-           &quot;icon&quot;: &quot;pill&quot;,
-           &quot;injection&quot;: true
-       }
-       &quot;&quot;&quot;.data(using: .utf8)! // our data in native (JSON) format
-</code></li>
-</ul>
+<p>A common scenario for a study would be to have a demographic survey which is administered once after the
+participant signs up and consents. Often (always in e.g. Canada, where required by law), the app/study design
+would need some way to allow the participant to change those answers later. One way to do this is to create
+an editable profile item for each question/answer in the demographic survey. In this scenario, for each of these
+items you would set the demographicSchema to the survey identifier, set the source key to the survey identifier
+as well, and set the demographicKey to the identifier of the survey question corresponding to the profile item.</p>
 
           </section>
           <section class="section task-group-section">
@@ -487,9 +480,9 @@ let json = &quot;&quot;&quot;
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9BridgeApp17SBAMedicationItemV10identifierSSvp"></a>
-                    <a name="//apple_ref/swift/Property/identifier" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp17SBAMedicationItemV10identifierSSvp">identifier</a>
+                    <a name="/s:9BridgeApp20SBAReportProfileItemV10profileKeySSvp"></a>
+                    <a name="//apple_ref/swift/Property/profileKey" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBAReportProfileItemV10profileKeySSvp">profileKey</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -497,14 +490,15 @@ let json = &quot;&quot;&quot;
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A unique identifier that can be used to track the item.</p>
+                        <p>profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
+within an app.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">identifier</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">profileKey</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -514,9 +508,9 @@ let json = &quot;&quot;&quot;
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9BridgeApp17SBAMedicationItemV17sectionIdentifierSSSgvp"></a>
-                    <a name="//apple_ref/swift/Property/sectionIdentifier" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp17SBAMedicationItemV17sectionIdentifierSSSgvp">sectionIdentifier</a>
+                    <a name="/s:9BridgeApp20SBAReportProfileItemV17demographicSchemaSSSgvp"></a>
+                    <a name="//apple_ref/swift/Property/demographicSchema" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBAReportProfileItemV17demographicSchemaSSSgvp">demographicSchema</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -524,14 +518,15 @@ let json = &quot;&quot;&quot;
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>An optional identifier that can be used to group the medication into a section.</p>
+                        <p>demographicSchema is an optional schema identifier to mark a profile item as being part of the indicated
+demographic data upload schema.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">sectionIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">demographicSchema</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -541,9 +536,9 @@ let json = &quot;&quot;&quot;
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9BridgeApp17SBAMedicationItemV5titleSSSgvp"></a>
-                    <a name="//apple_ref/swift/Property/title" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp17SBAMedicationItemV5titleSSSgvp">title</a>
+                    <a name="/s:9BridgeApp20SBAReportProfileItemV013_clientDataIsE0SbSgvp"></a>
+                    <a name="//apple_ref/swift/Property/_clientDataIsItem" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBAReportProfileItemV013_clientDataIsE0SbSgvp">_clientDataIsItem</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -551,14 +546,19 @@ let json = &quot;&quot;&quot;
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Localized text to display as the full descriptor for the medication.</p>
+                        <p>If clientDataIsItem is true, the report&rsquo;s clientData field is assumed to contain the item value itself.</p>
+
+<p>If clientDataIsItem is false, the report&rsquo;s clientData field is assumed to be a dictionary in which
+the item value is stored and retrieved via the demographicKey.</p>
+
+<p>The default value is false.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">_clientDataIsItem</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -568,9 +568,9 @@ let json = &quot;&quot;&quot;
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9BridgeApp17SBAMedicationItemV9shortTextSSSgvp"></a>
-                    <a name="//apple_ref/swift/Property/shortText" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp17SBAMedicationItemV9shortTextSSSgvp">shortText</a>
+                    <a name="/s:9BridgeApp20SBAReportProfileItemV8itemType8Research011RSDFormDataG0Ovp"></a>
+                    <a name="//apple_ref/swift/Property/itemType" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBAReportProfileItemV8itemType8Research011RSDFormDataG0Ovp">itemType</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -578,14 +578,14 @@ let json = &quot;&quot;&quot;
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Localized shortened text to display when used in a sentence.</p>
+                        <p>itemType specifies what type to store the profileItem&rsquo;s value as. Defaults to String if not otherwise specified.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">shortText</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">itemType</span><span class="p">:</span> <span class="kt">RSDFormDataType</span></code></pre>
 
                         </div>
                       </div>
@@ -595,9 +595,9 @@ let json = &quot;&quot;&quot;
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9BridgeApp17SBAMedicationItemV6detailSSSgvp"></a>
-                    <a name="//apple_ref/swift/Property/detail" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp17SBAMedicationItemV6detailSSSgvp">detail</a>
+                    <a name="/s:9BridgeApp20SBAReportProfileItemV8readonlySbvp"></a>
+                    <a name="//apple_ref/swift/Property/readonly" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBAReportProfileItemV8readonlySbvp">readonly</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -605,14 +605,14 @@ let json = &quot;&quot;&quot;
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Detail text to display with additional information about the medication.</p>
+                        <p>Is the value read-only?</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">detail</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">readonly</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
 
                         </div>
                       </div>
@@ -622,9 +622,9 @@ let json = &quot;&quot;&quot;
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9BridgeApp17SBAMedicationItemV11isExclusiveSbvp"></a>
-                    <a name="//apple_ref/swift/Property/isExclusive" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp17SBAMedicationItemV11isExclusiveSbvp">isExclusive</a>
+                    <a name="/s:9BridgeApp20SBAReportProfileItemV4typeAA010SBAProfileE4TypeVvp"></a>
+                    <a name="//apple_ref/swift/Property/type" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBAReportProfileItemV4typeAA010SBAProfileE4TypeVvp">type</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -632,15 +632,14 @@ let json = &quot;&quot;&quot;
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Whether or not the medication is set up so that <em>only</em> this can be selected
-for a given section.</p>
+                        <p>The class type to which to deserialize this profile item.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">isExclusive</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">type</span><span class="p">:</span> <span class="kt"><a href="../Structs/SBAProfileItemType.html">SBAProfileItemType</a></span></code></pre>
 
                         </div>
                       </div>
@@ -650,9 +649,9 @@ for a given section.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9BridgeApp17SBAMedicationItemV4icon8Research15RSDImageWrapperVSgvp"></a>
-                    <a name="//apple_ref/swift/Property/icon" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp17SBAMedicationItemV4icon8Research15RSDImageWrapperVSgvp">icon</a>
+                    <a name="/s:9BridgeApp14SBAProfileItemP11storedValue6forKeyypSgSS_tF"></a>
+                    <a name="//apple_ref/swift/Method/storedValue(forKey:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp14SBAProfileItemP11storedValue6forKeyypSgSS_tF">storedValue(forKey:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -660,14 +659,13 @@ for a given section.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>An optional icon to display for the medication.</p>
-
+                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">icon</span><span class="p">:</span> <span class="kt">RSDImageWrapper</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">storedValue</span><span class="p">(</span><span class="n">forKey</span> <span class="nv">key</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Any</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -677,9 +675,9 @@ for a given section.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9BridgeApp17SBAMedicationItemV21isContinuousInjectionSbSgvp"></a>
-                    <a name="//apple_ref/swift/Property/isContinuousInjection" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp17SBAMedicationItemV21isContinuousInjectionSbSgvp">isContinuousInjection</a>
+                    <a name="/s:9BridgeApp14SBAProfileItemP14setStoredValueyyypSgF"></a>
+                    <a name="//apple_ref/swift/Method/setStoredValue(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp14SBAProfileItemP14setStoredValueyyypSgF">setStoredValue(_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -687,15 +685,13 @@ for a given section.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Is the medication delivered via continuous injection? If this is the case, then questions about
-schedule timing and dosage should be skipped.</p>
-
+                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">isContinuousInjection</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setStoredValue</span><span class="p">(</span><span class="n">_</span> <span class="nv">newValue</span><span class="p">:</span> <span class="kt">Any</span><span class="p">?)</span></code></pre>
 
                         </div>
                       </div>

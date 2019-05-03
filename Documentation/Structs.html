@@ -193,6 +193,9 @@
             <a href="Global Variables.html">Global Variables</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="Global Variables.html#/s:9BridgeApp29SBAProfileItemUpdatedItemsKeySSvp">SBAProfileItemUpdatedItemsKey</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Global Variables.html#/s:9BridgeApp22SBAReportSingletonDate10Foundation0E0Vvp">SBAReportSingletonDate</a>
               </li>
             </ul>
@@ -402,6 +405,9 @@
                 <a href="Structs/SBAProfileDataSourceType.html">SBAProfileDataSourceType</a>
               </li>
               <li class="nav-group-task">
+                <a href="Structs/SBAProfileItemProfileTableItem.html">SBAProfileItemProfileTableItem</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Structs/SBAProfileItemType.html">SBAProfileItemType</a>
               </li>
               <li class="nav-group-task">
@@ -418,6 +424,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="Structs/SBAReport.html">SBAReport</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBAReportProfileItem.html">SBAReportProfileItem</a>
               </li>
               <li class="nav-group-task">
                 <a href="Structs/SBATimestamp.html">SBATimestamp</a>
@@ -870,6 +879,49 @@ let json = &quot;&quot;&quot;
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:9BridgeApp20SBAReportProfileItemV"></a>
+                    <a name="//apple_ref/swift/Struct/SBAReportProfileItem" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBAReportProfileItemV">SBAReportProfileItem</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>SBAReportProfileItem allows storing and retrieving profile item values to/from Bridge Participant Reports.
+For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
+interpreted as the report identifier. If the clientDataIsItem flag is not set, then the demographicKey
+(which, likewise, defaults to the profileKey if not specifically set) is interpreted as the item&rsquo;s key
+in the report&rsquo;s clientData. If the flag is set, the report&rsquo;s clientData value is used directly.</p>
+
+<p>A common scenario for a study would be to have a demographic survey which is administered once after the
+participant signs up and consents. Often (always in e.g. Canada, where required by law), the app/study design
+would need some way to allow the participant to change those answers later. One way to do this is to create
+an editable profile item for each question/answer in the demographic survey. In this scenario, for each of these
+items you would set the demographicSchema to the survey identifier, set the source key to the survey identifier
+as well, and set the demographicKey to the identifier of the survey question corresponding to the profile item.</p>
+
+                        <a href="Structs/SBAReportProfileItem.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBAReportProfileItem</span> <span class="p">:</span> <span class="kt">SBAProfileItemInternal</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:9BridgeApp18SBAProfileItemTypeV"></a>
                     <a name="//apple_ref/swift/Struct/SBAProfileItemType" class="dashAnchor"></a>
                     <a class="token" href="#/s:9BridgeApp18SBAProfileItemTypeV">SBAProfileItemType</a>
@@ -981,6 +1033,34 @@ let json = &quot;&quot;&quot;
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBAHTMLProfileTableItem</span> <span class="p">:</span> <span class="kt"><a href="Protocols/SBAProfileTableItem.html">SBAProfileTableItem</a></span><span class="p">,</span> <span class="kt">Decodable</span><span class="p">,</span> <span class="kt">RSDResourceTransformer</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp026SBAProfileItemProfileTableD0V"></a>
+                    <a name="//apple_ref/swift/Struct/SBAProfileItemProfileTableItem" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp026SBAProfileItemProfileTableD0V">SBAProfileItemProfileTableItem</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A profile table item that displays, and allows editing, the value of a Profile Item.</p>
+
+                        <a href="Structs/SBAProfileItemProfileTableItem.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBAProfileItemProfileTableItem</span> <span class="p">:</span> <span class="kt"><a href="Protocols/SBAProfileTableItem.html">SBAProfileTableItem</a></span><span class="p">,</span> <span class="kt">Decodable</span></code></pre>
 
                         </div>
                       </div>
