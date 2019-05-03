@@ -117,7 +117,13 @@ extension SBAProfileItemInternal {
     }
 }
 
-public let SBAProfileItemValueUpdateNotification: NSNotification.Name = NSNotification.Name(rawValue: "SBAProfileItemValueUpdate")
+extension Notification.Name {
+    /// Notification name posted by SBAProfileItem for an item when updating its value, and by SBAProfileManager
+    /// for all its items when it finishes loading or fetching reports.
+    public static let SBAProfileItemValueUpdated: NSNotification.Name = NSNotification.Name(rawValue: "SBAProfileItemValueUpdated")
+}
+
+/// This is the key into the SBAProfileItemValueUpdated notification's userInfo for the mapping of profile keys to updated values.
 public let SBAProfileItemUpdatedItemsKey: String = "SBAProfileItemUpdatedItems"
 
 extension SBAProfileItem {
@@ -133,7 +139,7 @@ extension SBAProfileItem {
             guard !readonly else { return }
             self.setStoredValue(newValue)
             let updatedItems: [String: Any?] = [self.profileKey: newValue]
-            NotificationCenter.default.post(name: SBAProfileItemValueUpdateNotification, object: self, userInfo: [SBAProfileItemUpdatedItemsKey: updatedItems])
+            NotificationCenter.default.post(name: .SBAProfileItemValueUpdated, object: self, userInfo: [SBAProfileItemUpdatedItemsKey: updatedItems])
         }
     }
     
@@ -161,20 +167,20 @@ extension SBAProfileItem {
     
     public func commonItemTypeToJson(val: Any?) -> RSDJSONSerializable? {
         guard val != nil else { return NSNull() }
-        switch self.itemType {
-        case .base(.string):
+        switch self.itemType.baseType {
+        case .string:
             return val as? String
             
-        case .base(.integer):
+        case .integer:
             return val as? NSNumber
             
-        case .base(.decimal):
+        case .decimal:
             return val as? NSNumber
 
-        case .base(.boolean):
+        case .boolean:
             return val as? NSNumber
             
-        case .base(.date):
+        case .date:
             return (val as? NSDate)?.iso8601String()
             
         default:
@@ -198,23 +204,23 @@ extension SBAProfileItem {
         }
         
         var itemValue: Any? = nil
-        switch self.itemType {
-        case .base(.string):
+        switch self.itemType.baseType {
+        case .string:
             itemValue = jsonValue as? String ?? String(describing: jsonValue)
             
-        case .base(.integer):
+        case .integer:
             guard let val = jsonValue as? Int else { return nil }
             itemValue = val
             
-        case .base(.decimal):
+        case .decimal:
             guard let val = jsonValue as? Decimal else { return nil }
             itemValue = val
             
-        case .base(.boolean):
+        case .boolean:
             guard let val = jsonValue as? Bool else { return nil }
             itemValue = val
             
-        case .base(.date):
+        case .date:
             guard let stringVal = jsonValue as? String,
                     let dateVal = NSDate(iso8601String: stringVal)
                 else { return nil }
@@ -259,20 +265,20 @@ extension SBAProfileItem {
     func commonCheckTypeCompatible(newValue: Any?) -> Bool {
         guard newValue != nil else { return true }
         
-        switch self.itemType {
-        case .base(.string):
+        switch self.itemType.baseType {
+        case .string:
             return true // anything can be cast to a string
             
-        case .base(.integer):
+        case .integer:
             return newValue as? NSNumber != nil
             
-        case .base(.decimal):
+        case .decimal:
             return newValue as? NSNumber != nil
             
-        case.base(.boolean):
+        case .boolean:
             return newValue as? NSNumber != nil
             
-        case .base(.date):
+        case .date:
             return newValue as? NSDate != nil
             
         default:

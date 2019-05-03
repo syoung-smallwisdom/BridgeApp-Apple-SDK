@@ -150,37 +150,38 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
     }()
    
     // MARK: Internal methods
-    func uploadDemographicData(_ schemas: Set<String>) {
-        let demographicItems = self.items.filter({ return $0.demographicSchema != nil && schemas.contains($0.demographicSchema!) })
-        guard demographicItems.count > 0 else { return }
-        
-        for schemaIdentifier in schemas {
-            let itemsForSchema = demographicItems.filter({ $0.demographicSchema! == schemaIdentifier })
-            let archiveFilename = schemaIdentifier
-            let archive = SBBDataArchive(reference: schemaIdentifier, jsonValidationMapping: nil)
-            
-            if let schemaRevision = SBABridgeConfiguration.shared.schemaInfo(for: schemaIdentifier)?.schemaVersion {
-                archive.setArchiveInfoObject(schemaRevision, forKey: "schemaRevision")
-            }
-            
-            let demographics = self.demographics(with: itemsForSchema)
-            archive.insertDictionary(intoArchive: demographics, filename: archiveFilename, createdOn: Date())
-            do {
-                try archive.complete()
-                archive.encryptAndUploadArchive()
-            }
-            catch {}
-        }
-    }
-    
-    // overrideable for testing
-    func demographics(with demographicItems: [SBAProfileItem]) -> [String: Any] {
-        var demographics: [String: Any] = [:]
-        for item in demographicItems {
-            demographics[item.demographicKey] = item.demographicJsonValue ?? NSNull()
-        }
-        return demographics
-    }
+    // TODO: emm 2019-05-03 Deal with this (or remove? is it obsolete?) for mPower 2.1
+//    func uploadDemographicData(_ schemas: Set<String>) {
+//        let demographicItems = self.items.filter({ return $0.demographicSchema != nil && schemas.contains($0.demographicSchema!) })
+//        guard demographicItems.count > 0 else { return }
+//
+//        for schemaIdentifier in schemas {
+//            let itemsForSchema = demographicItems.filter({ $0.demographicSchema! == schemaIdentifier })
+//            let archiveFilename = schemaIdentifier
+//            let archive = SBBDataArchive(reference: schemaIdentifier, jsonValidationMapping: nil)
+//
+//            if let schemaRevision = SBABridgeConfiguration.shared.schemaInfo(for: schemaIdentifier)?.schemaVersion {
+//                archive.setArchiveInfoObject(schemaRevision, forKey: "schemaRevision")
+//            }
+//
+//            let demographics = self.demographics(with: itemsForSchema)
+//            archive.insertDictionary(intoArchive: demographics, filename: archiveFilename, createdOn: Date())
+//            do {
+//                try archive.complete()
+//                archive.encryptAndUploadArchive()
+//            }
+//            catch {}
+//        }
+//    }
+//
+//    // overrideable for testing
+//    func demographics(with demographicItems: [SBAProfileItem]) -> [String: Any] {
+//        var demographics: [String: Any] = [:]
+//        for item in demographicItems {
+//            demographics[item.demographicKey] = item.demographicJsonValue ?? NSNull()
+//        }
+//        return demographics
+//    }
     
     // MARK: SBAReportManager
     /// Set up to manage reports for all our report-based profile items.
@@ -313,15 +314,23 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
             return nil
         }
     }
-
-    /// Called when all the reports are finished loading.
-    /// This prompts all the profileItems to post notifications that their values may have changed.
-    override open func didFinishFetchingReports() {
+    
+    /// Posts a "value updated" notification that includes all the profile items. Gets called on initialization
+    /// and on updating/reloading reports.
+    private func postValuesUpdatedNotification() {
         var updatedItems: [String: Any?] = [:]
         for key in self.profileKeys() {
             updatedItems[key] = self.value(forProfileKey: key)
         }
-        NotificationCenter.default.post(name: SBAProfileItemValueUpdateNotification, object: self, userInfo: [SBAProfileItemUpdatedItemsKey: updatedItems])
+        
+        if updatedItems.count > 0 {
+            NotificationCenter.default.post(name: .SBAProfileItemValueUpdated, object: self, userInfo: [SBAProfileItemUpdatedItemsKey: updatedItems])
+        }
+    }
+
+    /// Called when all the reports are finished loading.
+    override open func didFinishFetchingReports() {
+        self.postValuesUpdatedNotification()
     }
 
 }

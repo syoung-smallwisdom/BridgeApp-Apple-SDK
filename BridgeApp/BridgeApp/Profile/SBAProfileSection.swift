@@ -295,8 +295,8 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     
     /// Detail text to show for the table item.
     public var detail: String? {
-        switch self.profileItem.itemType {
-        case .base(.boolean):
+        switch self.profileItem.itemType.baseType {
+        case .boolean:
             // Bool table items show detail as On/Off, or blank if never set
             guard let isOn = self.profileItemValue as? Bool else { return "" }
             return isOn ? Localization.localizedString("SETTINGS_STATE_ON") : Localization.localizedString("SETTINGS_STATE_OFF")
