@@ -337,6 +337,8 @@
 		F825BA5B207FD49D00D29F60 /* Data Tracking */ = {
 			isa = PBXGroup;
 			children = (
+				F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */,
+				F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */,
 				F8479516207FE99A0024A230 /* Model */,
 				F8479517207FE9BB0024A230 /* iOS */,
 			);
@@ -576,9 +578,7 @@
 			isa = PBXGroup;
 			children = (
 				F84794F7207FDEED0024A230 /* SBAFactory.swift */,
-				F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */,
 				F87D69692037956B00409087 /* SBAActivityReference.swift */,
-				F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */,
 				F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */,
 				F82B1A882036305200FEA16D /* SBBImage+Utilities.swift */,
 				F886FD1220351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift */,
