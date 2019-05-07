@@ -60,8 +60,9 @@ public struct SBAReport : Hashable {
     /// The client data blob associated with this report.
     public let clientData: SBBJSONValue
     
-    public var hashValue: Int {
-        return self.identifier.hashValue ^ RSDObjectHash(self.date)
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+        hasher.combine(date)
     }
     
     public static func == (lhs: SBAReport, rhs: SBAReport) -> Bool {
@@ -161,8 +162,9 @@ open class SBAReportManager: SBAArchiveManager {
             self.endRange = dateRange?.end
         }
         
-        public var hashValue: Int {
-            return self.identifier.hashValue ^ self.queryType.hashValue
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(identifier)
+            hasher.combine(queryType)
         }
     }
     

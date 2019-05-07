@@ -187,8 +187,9 @@ class TestScheduleManager : SBAScheduleManager {
 }
 
 extension SBAScheduleManager.FetchRequest : Hashable {
-    public var hashValue: Int {
-        return self.predicate.hash
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.predicate)
     }
     
     public static func == (lhs: SBAScheduleManager.FetchRequest, rhs: SBAScheduleManager.FetchRequest) -> Bool {

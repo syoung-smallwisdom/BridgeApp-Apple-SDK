@@ -424,8 +424,9 @@ public struct SBATimestamp : Codable, Hashable, RSDScheduleTime {
     /// The time/date for when the event was logged as *actually* occuring.
     public let loggedDate: Date
     
-    public var hashValue: Int {
-        return timingIdentifier.hashValue ^ loggedDate.hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(timingIdentifier)
+        hasher.combine(loggedDate)
     }
     
     /// The time range for this timestamp.
