@@ -130,7 +130,7 @@ public enum SBASymptomMedicationTiming : String, Codable {
     case postMedication = "post-medication"
 
     public var intValue: Int {
-        return SBASymptomMedicationTiming.sortOrder.index(of: self)!
+        return SBASymptomMedicationTiming.sortOrder.firstIndex(of: self)!
     }
     
     public init?(intValue: Int) {
@@ -179,7 +179,7 @@ public enum SBASymptomDurationLevel : Int, Codable {
     }
     
     public init?(stringValue: String) {
-        guard let rawValue = SBASymptomDurationLevel.choiceKeys.index(of: stringValue) else { return nil }
+        guard let rawValue = SBASymptomDurationLevel.choiceKeys.firstIndex(of: stringValue) else { return nil }
         self.init(rawValue: rawValue)
     }
     

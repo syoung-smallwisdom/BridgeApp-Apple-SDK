@@ -355,7 +355,7 @@ extension SBATrackedItemsResult {
             return []
         }
         func positionOf(_ identifier: String) -> Int {
-            return items.index(where: { identifier == $0.identifier }) ?? items.count
+            return items.firstIndex(where: { identifier == $0.identifier }) ?? items.count
         }
         return identifiers.sorted { positionOf($0) < positionOf($1) }
     }

@@ -162,8 +162,8 @@ extension SBBCompoundActivity {
     
     fileprivate func _index(of step: RSDStep) -> Int? {
         if let ref = step as? SBBSurveyReference {
-            return _surveyList.index(of: ref)
-        } else if let ref = step as? SBBSchemaReference, let idx = _schemaList.index(of: ref) {
+            return _surveyList.firstIndex(of: ref)
+        } else if let ref = step as? SBBSchemaReference, let idx = _schemaList.firstIndex(of: ref) {
             return idx + _surveyList.count
         } else {
             return nil

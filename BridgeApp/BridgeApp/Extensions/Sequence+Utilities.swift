@@ -56,7 +56,7 @@ extension Array where Element : NSObjectProtocol {
     public func sba_union(with other:[Element], where evaluate: (Element, Element) throws -> Bool) rethrows -> [Element] {
         var results = self
         try other.forEach { (element) in
-            if let idx = try results.index(where: { try evaluate($0, element) }) {
+            if let idx = try results.firstIndex(where: { try evaluate($0, element) }) {
                 results.remove(at: idx)
             }
             results.append(element)

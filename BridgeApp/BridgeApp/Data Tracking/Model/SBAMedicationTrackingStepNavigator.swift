@@ -326,7 +326,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating func updateMedicationDetails(from detailsResult: SBAMedicationDetailsResultObject) {
-        guard let idx = medications.index(where: { $0.identifier == detailsResult.identifier }) else {
+        guard let idx = medications.firstIndex(where: { $0.identifier == detailsResult.identifier }) else {
             return
         }
         
@@ -356,7 +356,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating func updateLogging(itemIdentifier: String, timingIdentifier: String, loggedDate: Date?) {
-        guard let idx = medications.index(where: { $0.identifier == itemIdentifier })
+        guard let idx = medications.firstIndex(where: { $0.identifier == itemIdentifier })
             else {
                 return
         }
