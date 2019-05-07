@@ -79,7 +79,9 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
             // Survey schema is better matched by created date and survey guid
             self.setArchiveInfoObject(surveyReference.guid, forKey: kSurveyGuidKey)
             let createdOn = surveyReference.createdOn ?? Date()
-            self.setArchiveInfoObject((createdOn as NSDate).iso8601String(), forKey: kSurveyCreatedOnKey)
+            if let stamp = (createdOn as NSDate).iso8601String() {
+                self.setArchiveInfoObject(stamp, forKey: kSurveyCreatedOnKey)
+            }
         }
     }
     
