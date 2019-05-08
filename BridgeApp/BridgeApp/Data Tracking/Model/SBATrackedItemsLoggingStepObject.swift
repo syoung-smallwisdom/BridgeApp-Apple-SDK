@@ -166,13 +166,13 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     }
     
     /// Build the client data for this result.
-    public func clientData() throws -> SBBJSONValue? {
+    public func dataScore() throws -> RSDJSONSerializable? {
         // Only include the client data for the logging result and not the selection result.
         guard identifier == RSDIdentifier.trackedItemsResult.stringValue
             else {
                 return nil
         }
-        return try self.rsd_jsonEncodedDictionary() as NSDictionary
+        return try self.rsd_jsonEncodedDictionary().jsonObject()
     }
     
     /// Update the selection from the client data.

@@ -171,15 +171,12 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         let topClientData = self.scheduleManager.buildClientData(from: taskPath.taskResult)
         XCTAssertNotNil(topClientData)
         if let dictionary = topClientData as? NSDictionary {
-            let expectedDictionary : NSDictionary = [
-                "introduction" : "introduction",
-                "step1": "step1",
-                "step2": [ "stepX" : "stepX",
-                           "stepY" : "stepY"],
-                "step3": [ "stepX" : "stepX",
-                           "stepY" : "stepY"]
-            ]
-            XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
+            XCTAssertEqual(dictionary["introduction"] as? String, "introduction moo")
+            XCTAssertEqual(dictionary["step1"] as? String, "step1 moo")
+            let expectedDictionary : NSDictionary = [ "stepX" : "stepX moo",
+                                                          "stepY" : "stepY moo"]
+            XCTAssertEqual(dictionary["step2"] as? NSDictionary, expectedDictionary)
+            XCTAssertEqual(dictionary["step3"] as? NSDictionary, expectedDictionary)
         }
         else {
             XCTFail("\(String(describing: topClientData)) is not a Dictionary.")
@@ -188,7 +185,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         let insertedClientData = self.scheduleManager.buildClientData(from: subtaskPath.taskResult)
         XCTAssertNotNil(insertedClientData)
         if let stringValue = insertedClientData as? String {
-            XCTAssertEqual(stringValue, "insertStep")
+            XCTAssertEqual(stringValue, "insertStep moo")
         }
         else {
             XCTFail("\(String(describing: insertedClientData)) is not a String.")
@@ -223,13 +220,74 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         if let report = reports.first(where: { $0.identifier == mainTaskIdentifier }) {
             XCTAssertEqual(report.date, topResult.endDate)
             if let dictionary = report.clientData as? NSDictionary {
+                XCTAssertEqual(dictionary["introduction"] as? String, "introduction moo")
+                XCTAssertEqual(dictionary["step1"] as? String, "step1 moo")
+                let expectedDictionary : NSDictionary = [ "stepX" : "stepX moo",
+                                                              "stepY" : "stepY moo"]
+                XCTAssertEqual(dictionary["step2"] as? NSDictionary, expectedDictionary)
+                XCTAssertEqual(dictionary["step3"] as? NSDictionary, expectedDictionary)
+            }
+            else {
+                XCTFail("\(String(describing: report.clientData)) is not a Dictionary.")
+            }
+        }
+        else {
+            XCTFail("Failed to build the report")
+        }
+        
+        if let report = reports.first(where: { $0.identifier == insertSurveySchemaIdentifier }) {
+            XCTAssertEqual(report.date, SBAReportSingletonDate)
+            if let dictionary = report.clientData as? NSDictionary {
                 let expectedDictionary : NSDictionary = [
-                    "introduction" : "introduction",
-                    "step1": "step1",
-                    "step2": [ "stepX" : "stepX",
-                               "stepY" : "stepY"],
-                    "step3": [ "stepX" : "stepX",
-                               "stepY" : "stepY"]
+                    "stepA" : 0,
+                    "stepB" : 1,
+                    "stepC" : 2
+                ]
+                XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
+            }
+            else {
+                XCTFail("\(String(describing: report.clientData)) is not a Dictionary.")
+            }
+        }
+        else {
+            XCTFail("Failed to build the report")
+        }
+        
+        if let report = reports.first(where: { $0.identifier == insertTaskSchemaIdentifier }) {
+            XCTAssertEqual(report.date, self.scheduleManager.nowValue.startOfDay())
+            if let stringValue = report.clientData as? String {
+                XCTAssertEqual(stringValue, "insertStep moo")
+            }
+            else {
+                XCTFail("\(String(describing: report.clientData)) is not a String.")
+            }
+        }
+        else {
+            XCTFail("Failed to build the report")
+        }
+    }
+    
+    func testBuildReports_TempTask() {
+        let taskPath = runTempTask()
+        let mainResult = taskPath.taskResult.findResult(with: mainTaskIdentifier)
+        guard let reports = self.scheduleManager.buildReports(from: taskPath.taskResult)
+            else {
+                XCTFail("Failed to build the reports for this task result")
+                return
+        }
+        
+        XCTAssertEqual(reports.count, 3)
+        
+        if let report = reports.first(where: { $0.identifier == mainTaskIdentifier }) {
+            XCTAssertEqual(report.date, mainResult?.endDate)
+            if let dictionary = report.clientData as? NSDictionary {
+                let expectedDictionary : NSDictionary = [
+                    "introduction" : "introduction moo",
+                    "step1": "step1 moo",
+                    "step2": [ "stepX" : "stepX moo",
+                               "stepY" : "stepY moo"],
+                    "step3": [ "stepX" : "stepX moo",
+                               "stepY" : "stepY moo"]
                 ]
                 XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
             }
@@ -262,7 +320,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         if let report = reports.first(where: { $0.identifier == insertTaskSchemaIdentifier }) {
             XCTAssertEqual(report.date, self.scheduleManager.nowValue.startOfDay())
             if let stringValue = report.clientData as? String {
-                XCTAssertEqual(stringValue, "insertStep")
+                XCTAssertEqual(stringValue, "insertStep moo")
             }
             else {
                 XCTFail("\(String(describing: report.clientData)) is not a String.")
@@ -285,16 +343,15 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         if let report = reports.first(where: { $0.identifier == mainTaskIdentifier }) {
             if let dictionary = report.clientData as? NSDictionary {
-                // TODO: FIX ME!! Fix the answer map so that sections and collections work.
                 let expectedDictionary : NSDictionary = [
-//                    "step2_stepX_identifier" : "stepX",
-//                    "step2_stepY_identifier" : "stepY",
-//                    "step3_stepX_identifier" : "stepX",
-//                    "step3_stepY_identifier" : "stepY",
-//                    "step2_stepX_boolean" : true,
-//                    "step2_stepY_boolean" : true,
-//                    "step3_stepX_boolean" : true,
-//                    "step3_stepY_boolean" : true,
+                    "step2" : [
+                        "stepX" : ["identifier" : "stepX", "boolean" : true],
+                        "stepY" : ["identifier" : "stepY", "boolean" : true]
+                    ],
+                    "step3" : [
+                        "stepX" : ["identifier" : "stepX", "boolean" : true],
+                        "stepY" : ["identifier" : "stepY", "boolean" : true]
+                    ],
                     "foo" : 3,
                     "baroo" : 5
                 ]
@@ -357,6 +414,39 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     let insertSurveySchemaRevision = 5
     
     let tempTaskIdentifier = "tempTask"
+    
+    func runTempTask() -> RSDTaskViewModel {
+        
+        // Create a task to be inserted into the parent task.
+        let insertStep = convert([TestStep(identifier: "insertStep")]).first!
+        var insertTask = TestTask(identifier: insertTaskIdentifier, stepNavigator: TestConditionalNavigator(steps: [insertStep]))
+        insertTask.schemaInfo = RSDSchemaInfoObject(identifier: insertTaskSchemaIdentifier, revision: insertTaskSchemaRevision)
+        
+        // Create a task to be inserted into the parent task.
+        var insertSurvey = TestTask(identifier: insertSurveyIdentifier, stepNavigator: TestConditionalNavigator(steps: convertWithIndex(TestStep.steps(from: ["stepA", "stepB", "stepC"]))))
+        insertSurvey.schemaInfo = RSDSchemaInfoObject(identifier: insertSurveySchemaIdentifier, revision: insertSurveySchemaRevision)
+        
+        var steps: [RSDStep] = []
+        steps.append(contentsOf: convert(TestStep.steps(from: ["introduction", "step1"])))
+        steps.append(RSDSectionStepObject(identifier: "step2", steps: convert(TestStep.steps(from: ["stepX", "stepY"]))))
+        steps.append(RSDSectionStepObject(identifier: "step3", steps: convert(TestStep.steps(from: ["stepX", "stepY"]))))
+        
+        var mainTask = TestTask(identifier: mainTaskIdentifier, stepNavigator: TestConditionalNavigator(steps: steps))
+        mainTask.schemaInfo = RSDSchemaInfoObject(identifier: mainTaskSchemaIdentifier, revision: mainTaskSchemaRevision)
+        
+        let taskSteps: [RSDStep] = [TestSubtaskStep(task: insertTask),
+                                    TestSubtaskStep(task: mainTask),
+                                    TestSubtaskStep(task: insertSurvey),
+                                    RSDUIStepObject(identifier: "completion")
+        ]
+        let task = TestTask(identifier: tempTaskIdentifier, stepNavigator: TestConditionalNavigator(steps: taskSteps))
+        
+        let taskController = TestTaskController()
+        taskController.task = task
+        let _ = taskController.test_stepTo("completion")
+        
+        return taskController.taskViewModel!
+    }
     
     func runCompoundTask() -> RSDTaskViewModel {
         
@@ -452,7 +542,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     }
 }
 
-struct TestClientDataResult : SBAClientDataResult {
+struct TestClientDataResult : RSDScoringResult {
     private enum CodingKeys: String, CodingKey {
         case identifier, type, startDate, endDate
     }
@@ -463,12 +553,12 @@ struct TestClientDataResult : SBAClientDataResult {
     var startDate: Date = Date()
     var endDate: Date = Date()
     
-    func clientData() throws -> SBBJSONValue? {
-        return identifier as NSString
+    func dataScore() throws -> RSDJSONSerializable? {
+        return "\(identifier) moo"
     }
     
     func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
-        // archive isn't tested using this method.
-        return nil
+        // archive isn't tested using this mock.
+        fatalError("Archiving is not implemented for this test object")
     }
 }

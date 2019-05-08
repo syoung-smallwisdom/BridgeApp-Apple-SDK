@@ -47,6 +47,7 @@
 		F82B1A892036305200FEA16D /* SBBImage+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1A882036305200FEA16D /* SBBImage+Utilities.swift */; };
 		F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */; };
 		F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1AB02036410C00FEA16D /* SBABridgeConfiguration.swift */; };
+		F83703012282AFDD00939733 /* JSONSerializableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83703002282AFDD00939733 /* JSONSerializableTests.swift */; };
 		F83906FB20325D13005FC0BA /* BridgeInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = F83906FA20325D13005FC0BA /* BridgeInfo.plist */; };
 		F83906FE20325E70005FC0BA /* sample-study.pem in Resources */ = {isa = PBXBuildFile; fileRef = F83906FD20325E70005FC0BA /* sample-study.pem */; };
 		F8398C9A212C868A005DE6E0 /* SBAReportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8398C99212C868A005DE6E0 /* SBAReportManager.swift */; };
@@ -208,6 +209,7 @@
 		F82B1A882036305200FEA16D /* SBBImage+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBImage+Utilities.swift"; sourceTree = "<group>"; };
 		F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+Utilities.swift"; sourceTree = "<group>"; };
 		F82B1AB02036410C00FEA16D /* SBABridgeConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBABridgeConfiguration.swift; sourceTree = "<group>"; };
+		F83703002282AFDD00939733 /* JSONSerializableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONSerializableTests.swift; sourceTree = "<group>"; };
 		F83906FA20325D13005FC0BA /* BridgeInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BridgeInfo.plist; sourceTree = "<group>"; };
 		F83906FD20325E70005FC0BA /* sample-study.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "sample-study.pem"; sourceTree = "<group>"; };
 		F8398C99212C868A005DE6E0 /* SBAReportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAReportManager.swift; sourceTree = "<group>"; };
@@ -537,6 +539,7 @@
 			isa = PBXGroup;
 			children = (
 				F87D69BF203B5C4900409087 /* ActivityReferenceTests.swift */,
+				F83703002282AFDD00939733 /* JSONSerializableTests.swift */,
 				F89F67692032789800B5CC4B /* StepProtocolTests.swift */,
 				F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */,
 				F8F7241D203D007800AC0E5B /* SurveyTests.swift */,
@@ -891,6 +894,7 @@
 				F87D69C0203B5C4900409087 /* ActivityReferenceTests.swift in Sources */,
 				F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */,
 				F8E4A4EF20A420380046577B /* SBAScheduleManagerTests.swift in Sources */,
+				F83703012282AFDD00939733 /* JSONSerializableTests.swift in Sources */,
 				60B08E7D221B413D00166CAF /* ProfileDataSourceTests.swift in Sources */,
 				F869804B20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift in Sources */,
 				F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */,

@@ -378,7 +378,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         self.reminders = (aResult as? RSDAnswerResult)?.value as? [Int]
     }
     
-    public func clientData() throws -> SBBJSONValue? {
+    public func dataScore() throws -> RSDJSONSerializable? {
         guard identifier == RSDIdentifier.trackedItemsResult.stringValue
             else {
                 return nil
@@ -386,7 +386,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         let dictionary = try self.rsd_jsonEncodedDictionary()
         return
             [CodingKeys.medications.stringValue : dictionary[CodingKeys.medications.stringValue],
-             CodingKeys.reminders.stringValue : dictionary[CodingKeys.reminders.stringValue]] as SBBJSONValue
+             CodingKeys.reminders.stringValue : dictionary[CodingKeys.reminders.stringValue]].jsonObject()
     }
     
     mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {

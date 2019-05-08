@@ -75,8 +75,8 @@ public struct SBAReport : Hashable {
 public let SBAReportSingletonDate: Date = Date(timeIntervalSinceReferenceDate: 0)
 
 /// Default data source handler for reports. This manager is used to get and store `SBBReportData` objects.
-open class SBAReportManager: SBAArchiveManager {
-    
+open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
+
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
         case newReports
@@ -238,6 +238,18 @@ open class SBAReportManager: SBAArchiveManager {
             }
         }
     }
+    
+    // MARK: RSDDataStorageManager
+    
+    public func previousTaskData(for taskIdentifier: RSDIdentifier) -> RSDTaskData? {
+        // TODO: Implement syoung 05/07/2019
+        return nil
+    }
+    
+    public func saveTaskData(_ data: RSDTaskData, from taskResult: RSDTaskResult?) {
+        // TODO: Implement syoung 05/07/2019
+    }
+    
     
     // MARK: Data handling
 
@@ -439,99 +451,23 @@ open class SBAReportManager: SBAArchiveManager {
     ///     - taskResult: The task result for the task which has just run.
     /// - returns: The client data built for this task result (if any).
     func buildClientData(from taskResult: RSDTaskResult) -> SBBJSONValue? {
-        do {
-            let clientData = try recursiveGetClientData(from: taskResult, isTopLevel: true)
-            return clientData ?? (self.buildSurveyAnswerMap(from: taskResult) as NSDictionary)
+        guard let builder = self.builder(for: taskResult),
+            let scoring = builder.getScoringData(from: taskResult)
+            else {
+                return nil
         }
-        catch let err {
-            assertionFailure("Failed to encode client data: \(err)")
-            return nil
-        }
+        return scoring.toClientData()
     }
     
-    /// Build a simple answer map for this task result.
-    /// - note: This can be used to create client data for surveys.
+    /// Return the builder to use to build the scoring data.
+    open func builder(for taskResult: RSDTaskResult) -> RSDScoreBuilder? {
+        return RSDDefaultScoreBuilder()
+    }
+    
+    /// This is no longer used by the report manager to build a report. syoung 05/07/2019
+    @available(*, unavailable)
     open func buildSurveyAnswerMap(from taskResult: RSDTaskResult) -> [String : Any] {
-        var answers = [String : Any]()
-        
-        func appendValue(_ value: Any?, forKey key: String) {
-            answers[key] = (value as? SBBJSONValue) ?? (value as? RSDJSONValue)?.jsonObject()
-        }
-        
-        func appendResult(_ result: RSDResult) {
-            if let answers = (result as? RSDCollectionResult)?.answers() {
-                answers.forEach {
-                    appendValue($0.value, forKey: $0.key)
-                }
-            }
-            else if let answerResult = result as? RSDAnswerResult {
-                appendValue(answerResult.value, forKey: answerResult.identifier)
-            }
-        }
-        
-        taskResult.stepHistory.forEach { appendResult($0) }
-        taskResult.asyncResults?.forEach { appendResult($0) }
-        
-        return answers
-    }
-    
-    func recursiveGetClientData(from taskResult: RSDTaskResult, isTopLevel: Bool) throws  -> SBBJSONValue? {
-        // Verify that this task result is not associated with a different schema.
-        guard isTopLevel || (taskResult.schemaInfo ?? self.schemaInfo(for: taskResult.identifier) == nil)
-            else {
-                return nil
-        }
-        
-        var dataResults: [SBBJSONValue] = []
-        if let data = try recursiveGetClientData(from: taskResult.stepHistory) {
-            dataResults.append(data)
-        }
-        if let asyncResults = taskResult.asyncResults,
-            let data = try recursiveGetClientData(from: asyncResults) {
-            dataResults.append(data)
-        }
-        
-        if let clientData = dataResults.count <= 1 ? dataResults.first : (dataResults as NSArray) {
-            return clientData
-        }
-        else {
-            return nil
-        }
-    }
-    
-    func recursiveGetClientData(from results: [RSDResult]) throws -> SBBJSONValue? {
-        
-        func getClientData(_ result: RSDResult) throws -> SBBJSONValue? {
-            if let clientResult = result as? SBAClientDataResult,
-                let clientData = try clientResult.clientData() {
-                return clientData
-            }
-            else if let taskResult = result as? RSDTaskResult {
-                return try self.recursiveGetClientData(from: taskResult, isTopLevel: false)
-            }
-            else if let collectionResult = result as? RSDCollectionResult {
-                return try self.recursiveGetClientData(from: collectionResult.inputResults)
-            }
-            else {
-                return nil
-            }
-        }
-        
-        let dictionary = try results.reduce(into: [String : SBBJSONValue]()) { (hashtable, result) in
-            guard let data = try getClientData(result) else { return }
-            hashtable[result.identifier] = data
-        }
-        
-        // Return the "most appropriate" value for the combined results.
-        if dictionary.count == 0 {
-            return nil
-        }
-        else if dictionary.sba_uniqueCount() == 1 {
-            return dictionary.first!.value
-        }
-        else {
-            return dictionary as NSDictionary
-        }
+        fatalError("Do not override this method - it is no longer used.")
     }
     
     func fetchReport(for query: ReportQuery, category: SBAReportCategory, startDate: Date, endDate: Date) {

@@ -325,8 +325,8 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         let tracker = SBATrackedItemsStepNavigator(identifier: "Test", items: items, sections: sections)
         var result = SBATrackedLoggingCollectionResultObject(identifier: "selection")
         result.updateSelected(to: ["medA2", "medB1", "medC1"], with: items)
-        let clientData = try! result.clientData()
-        tracker.previousClientData = clientData
+        let dataScore = try! result.dataScore()
+        tracker.previousClientData = dataScore?.toClientData()
         
         let task = RSDTaskObject(identifier: "loggingTest", stepNavigator: tracker)
         let taskPath = RSDTaskViewModel(task: task)
