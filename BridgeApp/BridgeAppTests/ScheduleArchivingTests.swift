@@ -217,7 +217,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
 
         XCTAssertEqual(reports.count, 3)
         
-        if let report = reports.first(where: { $0.identifier == mainTaskIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == mainTaskIdentifier }) {
             XCTAssertEqual(report.date, topResult.endDate)
             if let dictionary = report.clientData as? NSDictionary {
                 XCTAssertEqual(dictionary["introduction"] as? String, "introduction moo")
@@ -235,7 +235,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             XCTFail("Failed to build the report")
         }
         
-        if let report = reports.first(where: { $0.identifier == insertSurveySchemaIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == insertSurveySchemaIdentifier }) {
             XCTAssertEqual(report.date, SBAReportSingletonDate)
             if let dictionary = report.clientData as? NSDictionary {
                 let expectedDictionary : NSDictionary = [
@@ -253,7 +253,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             XCTFail("Failed to build the report")
         }
         
-        if let report = reports.first(where: { $0.identifier == insertTaskSchemaIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == insertTaskSchemaIdentifier }) {
             XCTAssertEqual(report.date, self.scheduleManager.nowValue.startOfDay())
             if let stringValue = report.clientData as? String {
                 XCTAssertEqual(stringValue, "insertStep moo")
@@ -278,7 +278,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         XCTAssertEqual(reports.count, 3)
         
-        if let report = reports.first(where: { $0.identifier == mainTaskIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == mainTaskIdentifier }) {
             XCTAssertEqual(report.date, mainResult?.endDate)
             if let dictionary = report.clientData as? NSDictionary {
                 let expectedDictionary : NSDictionary = [
@@ -299,7 +299,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             XCTFail("Failed to build the report")
         }
         
-        if let report = reports.first(where: { $0.identifier == insertSurveySchemaIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == insertSurveySchemaIdentifier }) {
             XCTAssertEqual(report.date, SBAReportSingletonDate)
             if let dictionary = report.clientData as? NSDictionary {
                 let expectedDictionary : NSDictionary = [
@@ -317,7 +317,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
             XCTFail("Failed to build the report")
         }
         
-        if let report = reports.first(where: { $0.identifier == insertTaskSchemaIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == insertTaskSchemaIdentifier }) {
             XCTAssertEqual(report.date, self.scheduleManager.nowValue.startOfDay())
             if let stringValue = report.clientData as? String {
                 XCTAssertEqual(stringValue, "insertStep moo")
@@ -341,7 +341,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         XCTAssertEqual(reports.count, 1)
         
-        if let report = reports.first(where: { $0.identifier == mainTaskIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == mainTaskIdentifier }) {
             if let dictionary = report.clientData as? NSDictionary {
                 let expectedDictionary : NSDictionary = [
                     "step2" : [

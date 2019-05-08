@@ -52,7 +52,7 @@ public enum SBAReportCategory : String, Codable {
 public struct SBAReport : Hashable {
 
     /// The identifier for the report.
-    public let identifier: RSDIdentifier
+    public let reportKey: RSDIdentifier
 
     /// The date for the report.
     public let date: Date
@@ -61,12 +61,12 @@ public struct SBAReport : Hashable {
     public let clientData: SBBJSONValue
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(identifier)
+        hasher.combine(reportKey)
         hasher.combine(date)
     }
     
     public static func == (lhs: SBAReport, rhs: SBAReport) -> Bool {
-        return lhs.identifier == rhs.identifier && lhs.date == rhs.date
+        return lhs.reportKey == rhs.reportKey && lhs.date == rhs.date
     }
 }
 
@@ -136,7 +136,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     public struct ReportQuery : Codable, Hashable {
         
         /// The identifier for the report.
-        public let identifier: RSDIdentifier
+        public let reportKey: RSDIdentifier
         
         /// The type of query.
         public let queryType: QueryType
@@ -156,18 +156,18 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         
         /// The report identifier as a string for use in requesting reports from Bridge.
         public var reportIdentifier: String {
-            return identifier.stringValue
+            return reportKey.stringValue
         }
         
-        public init(identifier: RSDIdentifier, queryType: QueryType = .mostRecent, dateRange: (start: Date, end: Date)? = nil) {
-            self.identifier = identifier
+        public init(reportKey: RSDIdentifier, queryType: QueryType = .mostRecent, dateRange: (start: Date, end: Date)? = nil) {
+            self.reportKey = reportKey
             self.queryType = queryType
             self.startRange = dateRange?.start
             self.endRange = dateRange?.end
         }
         
         public func hash(into hasher: inout Hasher) {
-            hasher.combine(identifier)
+            hasher.combine(reportKey)
             hasher.combine(queryType)
         }
     }
@@ -270,7 +270,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         let reportIdentifier = self.reportIdentifier(for: activityIdentifier)
         let report = reports.sorted { (lhs, rhs) -> Bool in
             return lhs.date < rhs.date
-            }.last { $0.identifier == reportIdentifier }
+            }.last { $0.reportKey == reportIdentifier }
         return report?.clientData
     }
     
@@ -281,7 +281,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     open func allClientData(with activityIdentifier: String, from fromDate: Date = Date.distantPast, to toDate: Date = Date.distantFuture) -> [SBBJSONValue] {
         let reportIdentifier = self.reportIdentifier(for: activityIdentifier)
         return self.reports.compactMap {
-            guard $0.identifier == reportIdentifier,
+            guard $0.reportKey == reportIdentifier,
                 (fromDate <= $0.date && $0.date < toDate)
                 else {
                     return nil
@@ -322,7 +322,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
 
     func filteredReports( _ newReports: [SBAReport], query: ReportQuery) -> [SBAReport] {
         return newReports.filter { (report) -> Bool in
-            guard query.identifier == report.identifier else { return false }
+            guard query.reportKey == report.reportKey else { return false }
             switch query.queryType {
             case .today:
                 return report.date.isToday
@@ -340,7 +340,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     func unionReports(_ newReports: [SBAReport], query: ReportQuery) {
         guard newReports.count > 0 else { return }
         if query.queryType == .mostRecent,
-            let previous = self.reports.first(where: { $0.identifier == query.identifier }),
+            let previous = self.reports.first(where: { $0.reportKey == query.reportKey }),
             newReports.count == 1 {
             self.reports.remove(previous)
         }
@@ -395,7 +395,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     ///
     /// - parameter report: The report object to save to Bridge.
     public func saveReportToBridge(_ report: SBAReport) {
-        let reportIdentifier = report.identifier.stringValue
+        let reportIdentifier = report.reportKey.stringValue
         let category = self.reportCategory(for: reportIdentifier)
         switch category {
         case .timestamp:
@@ -421,7 +421,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
                 let schemaIdentifier = schemaInfo.schemaIdentifier,
                 let clientData = buildClientData(from: taskResult) {
                 let date = self.date(for: schemaIdentifier, from: taskResult)
-                let report = SBAReport(identifier: RSDIdentifier(rawValue: schemaIdentifier),
+                let report = SBAReport(reportKey: RSDIdentifier(rawValue: schemaIdentifier),
                                        date: date,
                                        clientData: clientData)
                 newReports.append(report)
@@ -513,7 +513,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         let newReports: [SBAReport] = reportDataObjects.compactMap {
             guard let clientData = $0.data, let date = $0.date else { return nil }
             let reportDate = (category == .groupByDay) ? date.startOfDay() : date
-            return SBAReport(identifier: query.identifier, date: reportDate, clientData: clientData)
+            return SBAReport(reportKey: query.reportKey, date: reportDate, clientData: clientData)
         }
         
         let error: Error? = {

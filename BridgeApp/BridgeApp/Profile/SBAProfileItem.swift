@@ -367,7 +367,7 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     
     public func storedValue(forKey key: String) -> Any? {
         guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager,
-                let clientData = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: key) })?.clientData
+                let clientData = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: key) })?.clientData
             else {
                 return nil
         }
@@ -390,11 +390,11 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
         if self.clientDataIsItem {
             clientData = self.commonItemTypeToJson(val: newValue) as? SBBJSONValue ?? NSNull()
         } else {
-            var clientJsonDict = reportManager.reports.first(where: { $0.identifier == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? Dictionary<String, RSDJSONSerializable> ?? Dictionary<String, RSDJSONSerializable>()
+            var clientJsonDict = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? Dictionary<String, RSDJSONSerializable> ?? Dictionary<String, RSDJSONSerializable>()
             clientJsonDict[self.demographicKey] = self.commonItemTypeToJson(val: newValue)
             clientData = clientJsonDict as SBBJSONValue
         }
-        let report = SBAReport(identifier: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: clientData)
+        let report = SBAReport(reportKey: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: clientData)
         reportManager.saveReport(report)
     }
     

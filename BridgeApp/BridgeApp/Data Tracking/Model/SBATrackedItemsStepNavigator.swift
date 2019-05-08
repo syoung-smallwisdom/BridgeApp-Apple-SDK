@@ -109,8 +109,14 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     
     /// Build the client data for this task.
     open func taskData(for taskResult: RSDTaskResult) -> RSDTaskData? {
-        // TODO: Implement syoung 05/07/2019
-        return nil
+        do {
+            let dataScore = try _inMemoryResult.dataScore()
+            return nil
+        }
+        catch let err {
+            debugPrint("Failed to get data score from the in-memory result: \(err)")
+            return nil
+        }
     }
     
     /// Set up the previous client data.
