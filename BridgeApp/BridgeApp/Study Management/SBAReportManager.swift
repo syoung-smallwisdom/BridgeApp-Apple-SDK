@@ -80,6 +80,10 @@ public struct SBAReport : Hashable {
         self.date = date ?? SBAReportSingletonDate
         self.clientData = json.toClientData()
     }
+    
+    init(taskData: RSDTaskData) {
+        self.init(identifier: taskData.identifier, date: taskData.timestampDate, json: taskData.json)
+    }
 }
 
 extension SBAReport : RSDTaskData {
@@ -272,13 +276,38 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     
     // MARK: RSDDataStorageManager
     
+    private struct HoldDataKey : Hashable {
+        let uuid: UUID
+        let identifier: String
+        init(_ uuid: UUID, _ identifier: String) {
+            self.uuid = uuid
+            self.identifier = identifier
+        }
+    }
+    
+    private let _holdDataQueue = DispatchQueue(label: "org.sagebionetworks.BridgeApp.SBAReportManager.holdData")
+    private var _holdData = [HoldDataKey : RSDTaskData]()
+    
     public func previousTaskData(for taskIdentifier: RSDIdentifier) -> RSDTaskData? {
         // TODO: Implement syoung 05/07/2019
         return nil
     }
     
     public func saveTaskData(_ data: RSDTaskData, from taskResult: RSDTaskResult?) {
-        // TODO: Implement syoung 05/07/2019
+        
+        // If there isn't a task result then save the task data directly to a report.
+        guard let uuid = taskResult?.taskRunUUID else {
+            let report = SBAReport(taskData: data)
+            DispatchQueue.main.async {
+                self.saveReport(report)
+            }
+            return
+        }
+        // Otherwise, save it to a holding dictionary for access later when packaging up all the reports
+        // for upload at the same time.
+        _holdDataQueue.async {
+            self._holdData[HoldDataKey(uuid, data.identifier)] = data
+        }
     }
     
     
@@ -482,17 +511,25 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     ///     - taskResult: The task result for the task which has just run.
     /// - returns: The client data built for this task result (if any).
     func buildClientData(from taskResult: RSDTaskResult) -> SBBJSONValue? {
-        guard let builder = self.builder(for: taskResult),
-            let scoring = builder.getScoringData(from: taskResult)
-            else {
-                return nil
+        
+        // Get the hold data, if any.
+        var holdJSON: RSDJSONSerializable?
+        _holdDataQueue.sync {
+            let key = HoldDataKey(taskResult.taskRunUUID, taskResult.identifier)
+            holdJSON = self._holdData[key]?.json
+            self._holdData[key] = nil
         }
-        return scoring.toClientData()
-    }
-    
-    /// Return the builder to use to build the scoring data.
-    open func builder(for taskResult: RSDTaskResult) -> RSDScoreBuilder? {
-        return RSDDefaultScoreBuilder()
+        
+        // For now, assume that if there is data from the task, that that scoring is all we need. Eventually,
+        // this might need to incorporate adding to that data, but don't build that into the function until
+        // we discover a need for it. syoung 05/08/2019
+        if let json = holdJSON {
+            return json.toClientData()
+        }
+        
+        // Otherwise, use a default builder for the scoring.
+        let builder = RSDDefaultScoreBuilder()
+        return builder.getScoringData(from: taskResult)?.toClientData()
     }
     
     /// This is no longer used by the report manager to build a report. syoung 05/07/2019

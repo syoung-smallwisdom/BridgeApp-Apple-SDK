@@ -217,7 +217,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
 
         XCTAssertEqual(reports.count, 3)
         
-        if let report = reports.first(where: { $0.reportKey == mainTaskIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == mainTaskSchemaIdentifier }) {
             XCTAssertEqual(report.date, topResult.endDate)
             if let dictionary = report.clientData as? NSDictionary {
                 XCTAssertEqual(dictionary["introduction"] as? String, "introduction moo")
@@ -278,7 +278,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         XCTAssertEqual(reports.count, 3)
         
-        if let report = reports.first(where: { $0.reportKey == mainTaskIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == mainTaskSchemaIdentifier }) {
             XCTAssertEqual(report.date, mainResult?.endDate)
             if let dictionary = report.clientData as? NSDictionary {
                 let expectedDictionary : NSDictionary = [
@@ -341,7 +341,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         XCTAssertEqual(reports.count, 1)
         
-        if let report = reports.first(where: { $0.reportKey == mainTaskIdentifier }) {
+        if let report = reports.first(where: { $0.reportKey == mainTaskSchemaIdentifier }) {
             if let dictionary = report.clientData as? NSDictionary {
                 let expectedDictionary : NSDictionary = [
                     "step2" : [
@@ -364,7 +364,66 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         else {
             XCTFail("Failed to build the report")
         }
-
+    }
+    
+    func testDataTrackingNavigation_NoInitialReport() {
+        
+        // setup navigation task
+        var steps: [RSDStep] = TestStep.steps(from: ["introduction", "step1", "step2", "step3", "step4"])
+        var completionStep = TestStep(identifier: "completion")
+        completionStep.stepType = .completion
+        steps.append(completionStep)
+        
+        let navigator = TestConditionalNavigator(steps: steps)
+        var task = TestTask(identifier: mainTaskIdentifier, stepNavigator: navigator)
+        let tracker = TestTracker()
+        tracker.scoringData = ["addedInfo" : "goo"]
+        task.tracker = tracker
+        task.schemaInfo = RSDSchemaInfoObject(identifier: mainTaskSchemaIdentifier, revision: mainTaskSchemaRevision)
+        
+        let taskController = TestTaskController()
+        taskController.task = task
+        taskController.taskViewModel.dataManager = self.scheduleManager
+        
+        // Check that the setup method was called as expected
+        XCTAssertNil(tracker.setupTask_data)
+        
+        // step to just before completion
+        let _ = taskController.test_stepTo("step4")
+        let expect = expectation(description: "Task ready to save")
+        taskController.handleTaskResultReady_completionBlock = {
+            // Note: For a real view controller, that view controller would all the schedule manager to
+            // save the results. We aren't doing that here b/c we don't actually want to push archives and
+            // whatnot.
+            expect.fulfill()
+        }
+        let _ = taskController.test_stepTo("completion")
+        waitForExpectations(timeout: 2) { (err) in
+            XCTAssertNil(err)
+        }
+        XCTAssertNotNil(taskController.handleTaskResultReady_calledWith)
+        
+        // Now, build the reports
+        
+        let taskPath = taskController.taskViewModel!
+        guard let reports = self.scheduleManager.buildReports(from: taskPath.taskResult),
+            let report = reports.first
+            else {
+                XCTFail("Failed to build the reports for this task result")
+                return
+        }
+        
+        // Check that the expected report exists and that it is built including the dictionary scoring from
+        // the call to the task tracker.
+        XCTAssertEqual(reports.count, 1)
+        XCTAssertEqual(report.identifier, mainTaskSchemaIdentifier)
+        XCTAssertEqual(report.date, taskPath.taskResult.endDate)
+        if let dictionary = report.clientData as? NSDictionary {
+            XCTAssertEqual(dictionary["addedInfo"] as? String, "goo")
+        }
+        else {
+            XCTFail("\(String(describing: report.clientData)) is not a Dictionary.")
+        }
     }
     
     func testUpdateSchedules() {
@@ -406,7 +465,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     let insertTaskSchemaRevision = 3
     
     let mainTaskIdentifier = "test"
-    let mainTaskSchemaIdentifier = "test"
+    let mainTaskSchemaIdentifier = "test_schema"
     let mainTaskSchemaRevision = 2
     
     let insertSurveyIdentifier = "insertSurvey"
@@ -561,4 +620,29 @@ struct TestClientDataResult : RSDScoringResult {
         // archive isn't tested using this mock.
         fatalError("Archiving is not implemented for this test object")
     }
+}
+
+class TestTracker : RSDTrackingTask {
+    
+    var scoringData: RSDJSONSerializable?
+    var setupTask_data: RSDTaskData?
+    
+    func taskData(for taskResult: RSDTaskResult) -> RSDTaskData? {
+        guard let json = scoringData else { return nil }
+        return TestTaskData(identifier: taskResult.identifier, timestampDate: taskResult.endDate, json: json)
+    }
+    
+    func setupTask(with data: RSDTaskData?, for path: RSDTaskPathComponent) {
+        setupTask_data = data
+    }
+    
+    func shouldSkipStep(_ step: RSDStep) -> (shouldSkip: Bool, stepResult: RSDResult?) {
+        return (false, nil)
+    }
+}
+
+struct TestTaskData : RSDTaskData {
+    let identifier: String
+    let timestampDate: Date?
+    let json: RSDJSONSerializable
 }
