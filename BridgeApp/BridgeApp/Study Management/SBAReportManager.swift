@@ -114,12 +114,16 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     
     /// Instantiate a new instance of a task view model from the given information. At least one of the input
     /// parameters should be non-nil or this with throw an exception.
-    open func instantiateTaskViewModel(task: RSDTask?, taskInfo: RSDTaskInfo?) throws -> SBATaskViewModel {
+    open func instantiateTaskViewModel(task: RSDTask?, taskInfo: RSDTaskInfo?) throws -> RSDTaskViewModel {
         if let task = task {
-            return SBATaskViewModel(task: task, reportManager: self)
+            let model = RSDTaskViewModel(task: task)
+            model.dataManager = self
+            return model
         }
         else if let taskInfo = taskInfo {
-            return SBATaskViewModel(taskInfo: taskInfo, reportManager: self)
+            let model = RSDTaskViewModel(taskInfo: taskInfo)
+            model.dataManager = self
+            return model
         }
         else {
             throw RSDValidationError.unexpectedNullObject("Either the task or task info must be non-nil")

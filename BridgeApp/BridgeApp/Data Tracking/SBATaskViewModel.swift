@@ -34,6 +34,8 @@
 import Foundation
 
 extension RSDTaskPathComponent {
+    
+    @available(*, deprecated)
     func setupTracking() {
         guard let navigator = self.task?.stepNavigator as? SBATrackedItemsStepNavigator
             else {
@@ -45,6 +47,7 @@ extension RSDTaskPathComponent {
 
 
 /// Subclass of the task view model that can manage view model customization specific to this framework.
+@available(*, deprecated)
 open class SBATaskViewModel : RSDTaskViewModel {
     
     public weak var reportManager: SBAReportManager? {
@@ -79,6 +82,7 @@ open class SBATaskViewModel : RSDTaskViewModel {
 }
 
 /// Subclass of the task node that can manage view model customization specific to this framework.
+@available(*, deprecated)
 open class SBATaskStepNode : RSDTaskStepNode {
     
     override open func handleTaskLoaded() {
@@ -87,14 +91,14 @@ open class SBATaskStepNode : RSDTaskStepNode {
     }
 }
 
-open class SBAModalTaskViewModel : SBATaskViewModel {
+open class SBAModalTaskViewModel : RSDTaskViewModel {
     
     public let parentViewModel: RSDModalStepDataSource
     
     public init(task: RSDTask, parentViewModel: RSDModalStepDataSource) {
         self.parentViewModel = parentViewModel
-        let reportManager = (parentViewModel.rootPathComponent as? SBATaskViewModel)?.reportManager
-        super.init(task: task, reportManager: reportManager)
+        super.init(task: task, parentPath: nil)
+        self.dataManager = parentViewModel.rootPathComponent.dataManager
     }
 }
 
