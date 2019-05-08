@@ -39,7 +39,10 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        
+        SBABridgeConfiguration.shared.addMapping(with: mainTaskSchemaIdentifier, to: .timestamp)
+        SBABridgeConfiguration.shared.addMapping(with: insertTaskSchemaIdentifier, to: .groupByDay)
+        SBABridgeConfiguration.shared.addMapping(with: insertSurveySchemaIdentifier, to: .singleton)
     }
     
     override func tearDown() {
@@ -158,9 +161,11 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     func testBuildClientData_CompoundTask() {
 
         let taskPath = runCompoundTask()
-        guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier] else {
-            XCTFail("Fails assumption. Could not retrieve child task path.")
-            return
+        guard let subtaskPath = taskPath.childPaths[insertTaskIdentifier],
+            let surveyPath = taskPath.childPaths[insertSurveyIdentifier]
+            else {
+                XCTFail("Fails assumption. Could not retrieve child task path.")
+                return
         }
 
         let topClientData = self.scheduleManager.buildClientData(from: taskPath.taskResult)
@@ -188,6 +193,121 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         else {
             XCTFail("\(String(describing: insertedClientData)) is not a String.")
         }
+        
+        let surveyClientData = self.scheduleManager.buildClientData(from: surveyPath.taskResult)
+        XCTAssertNotNil(surveyClientData)
+        if let dictionary = surveyClientData as? NSDictionary {
+            let expectedDictionary : NSDictionary = [
+                "stepA" : 0,
+                "stepB" : 1,
+                "stepC" : 2
+            ]
+            XCTAssertEqual(dictionary, expectedDictionary)
+        }
+        else {
+            XCTFail("\(String(describing: insertedClientData)) is not a String.")
+        }
+    }
+    
+    func testBuildReports_CompoundTask() {
+        let taskPath = runCompoundTask()
+        let topResult = taskPath.taskResult
+        guard let reports = self.scheduleManager.buildReports(from: taskPath.taskResult)
+            else {
+                XCTFail("Failed to build the reports for this task result")
+                return
+        }
+
+        XCTAssertEqual(reports.count, 3)
+        
+        if let report = reports.first(where: { $0.identifier == mainTaskIdentifier }) {
+            XCTAssertEqual(report.date, topResult.endDate)
+            if let dictionary = report.clientData as? NSDictionary {
+                let expectedDictionary : NSDictionary = [
+                    "introduction" : "introduction",
+                    "step1": "step1",
+                    "step2": [ "stepX" : "stepX",
+                               "stepY" : "stepY"],
+                    "step3": [ "stepX" : "stepX",
+                               "stepY" : "stepY"]
+                ]
+                XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
+            }
+            else {
+                XCTFail("\(String(describing: report.clientData)) is not a Dictionary.")
+            }
+        }
+        else {
+            XCTFail("Failed to build the report")
+        }
+        
+        if let report = reports.first(where: { $0.identifier == insertSurveySchemaIdentifier }) {
+            XCTAssertEqual(report.date, SBAReportSingletonDate)
+            if let dictionary = report.clientData as? NSDictionary {
+                let expectedDictionary : NSDictionary = [
+                    "stepA" : 0,
+                    "stepB" : 1,
+                    "stepC" : 2
+                ]
+                XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
+            }
+            else {
+                XCTFail("\(String(describing: report.clientData)) is not a Dictionary.")
+            }
+        }
+        else {
+            XCTFail("Failed to build the report")
+        }
+        
+        if let report = reports.first(where: { $0.identifier == insertTaskSchemaIdentifier }) {
+            XCTAssertEqual(report.date, self.scheduleManager.nowValue.startOfDay())
+            if let stringValue = report.clientData as? String {
+                XCTAssertEqual(stringValue, "insertStep")
+            }
+            else {
+                XCTFail("\(String(describing: report.clientData)) is not a String.")
+            }
+        }
+        else {
+            XCTFail("Failed to build the report")
+        }
+    }
+    
+    func testBuildReports_CollectionTask() {
+        let taskPath = runCollectionTask()
+        guard let reports = self.scheduleManager.buildReports(from: taskPath.taskResult)
+            else {
+                XCTFail("Failed to build the reports for this task result")
+                return
+        }
+        
+        XCTAssertEqual(reports.count, 1)
+        
+        if let report = reports.first(where: { $0.identifier == mainTaskIdentifier }) {
+            if let dictionary = report.clientData as? NSDictionary {
+                // TODO: FIX ME!! Fix the answer map so that sections and collections work.
+                let expectedDictionary : NSDictionary = [
+//                    "step2_stepX_identifier" : "stepX",
+//                    "step2_stepY_identifier" : "stepY",
+//                    "step3_stepX_identifier" : "stepX",
+//                    "step3_stepY_identifier" : "stepY",
+//                    "step2_stepX_boolean" : true,
+//                    "step2_stepY_boolean" : true,
+//                    "step3_stepX_boolean" : true,
+//                    "step3_stepY_boolean" : true,
+                    "foo" : 3,
+                    "baroo" : 5
+                ]
+                XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
+            }
+            else {
+                XCTFail("\(String(describing: report.clientData)) is not a Dictionary.")
+            }
+        }
+        else {
+            XCTFail("Failed to build the report")
+        }
+
     }
     
     func testUpdateSchedules() {
@@ -232,20 +352,29 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     let mainTaskSchemaIdentifier = "test"
     let mainTaskSchemaRevision = 2
     
+    let insertSurveyIdentifier = "insertSurvey"
+    let insertSurveySchemaIdentifier = "schemaB"
+    let insertSurveySchemaRevision = 5
+    
     let tempTaskIdentifier = "tempTask"
     
     func runCompoundTask() -> RSDTaskViewModel {
         
         // Create a task to be inserted into the parent task.
-        let insertStep = TestStep(identifier: "insertStep")
+        let insertStep = convert([TestStep(identifier: "insertStep")]).first!
         var insertTask = TestTask(identifier: insertTaskIdentifier, stepNavigator: TestConditionalNavigator(steps: [insertStep]))
         insertTask.schemaInfo = RSDSchemaInfoObject(identifier: insertTaskSchemaIdentifier, revision: insertTaskSchemaRevision)
+        
+        // Create a task to be inserted into the parent task.
+        var insertSurvey = TestTask(identifier: insertSurveyIdentifier, stepNavigator: TestConditionalNavigator(steps: convertWithIndex(TestStep.steps(from: ["stepA", "stepB", "stepC"]))))
+        insertSurvey.schemaInfo = RSDSchemaInfoObject(identifier: insertSurveySchemaIdentifier, revision: insertSurveySchemaRevision)
 
         var steps: [RSDStep] = []
         steps.append(TestSubtaskStep(task: insertTask))
-        steps.append(contentsOf: TestStep.steps(from: ["introduction", "step1"]))
-        steps.append(RSDSectionStepObject(identifier: "step2", steps: TestStep.steps(from: ["stepX", "stepY"])))
-        steps.append(RSDSectionStepObject(identifier: "step3", steps: TestStep.steps(from: ["stepX", "stepY"])))
+        steps.append(TestSubtaskStep(task: insertSurvey))
+        steps.append(contentsOf: convert(TestStep.steps(from: ["introduction", "step1"])))
+        steps.append(RSDSectionStepObject(identifier: "step2", steps: convert(TestStep.steps(from: ["stepX", "stepY"]))))
+        steps.append(RSDSectionStepObject(identifier: "step3", steps: convert(TestStep.steps(from: ["stepX", "stepY"]))))
         steps.append(RSDUIStepObject(identifier: "completion"))
         
         var task = TestTask(identifier: mainTaskIdentifier, stepNavigator: TestConditionalNavigator(steps: steps))
@@ -257,19 +386,89 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         return taskController.taskViewModel!
     }
-}
-
-extension RSDAnswerResultObject : SBAClientDataResult {
     
-    public func clientData() throws -> SBBJSONValue? {
-        guard self.answerType == .string else { return nil }
-        return self.value as? NSString
+    func runCollectionTask() -> RSDTaskViewModel {
+        
+        var steps: [RSDStep] = []
+        steps.append(contentsOf: convertForInstruction(TestStep.steps(from: ["introduction", "step1"])))
+        steps.append(RSDSectionStepObject(identifier: "step2", steps: convertForCollection(TestStep.steps(from: ["stepX", "stepY"]))))
+        steps.append(RSDSectionStepObject(identifier: "step3", steps: convertForCollection(TestStep.steps(from: ["stepX", "stepY"]))))
+        steps.append(contentsOf: convertForQuestion(TestStep.steps(from: ["foo", "baroo"])))
+        steps.append(RSDUIStepObject(identifier: "completion"))
+        
+        var task = TestTask(identifier: mainTaskIdentifier, stepNavigator: TestConditionalNavigator(steps: steps))
+        task.schemaInfo = RSDSchemaInfoObject(identifier: mainTaskSchemaIdentifier, revision: mainTaskSchemaRevision)
+        
+        let taskController = TestTaskController()
+        taskController.task = task
+        let _ = taskController.test_stepTo("completion")
+        
+        return taskController.taskViewModel!
     }
     
-    public func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
+    func convert(_ steps: [TestStep]) -> [TestStep] {
+        return steps.map { (inStep) -> TestStep in
+            var step = inStep
+            step.result = TestClientDataResult(identifier: step.identifier, startDate: Date(), endDate: Date())
+            return step
+        }
+    }
+    
+    func convertWithIndex(_ steps: [TestStep]) -> [TestStep] {
+        return steps.enumerated().map {
+            var step = $1
+            step.result = RSDAnswerResultObject(identifier: step.identifier, answerType: .integer, value: $0)
+            return step
+        }
+    }
+    
+    func convertForInstruction(_ steps: [TestStep]) -> [TestStep] {
+        return steps.map { (inStep) -> TestStep in
+            var step = inStep
+            step.result = RSDResultObject(identifier: step.identifier)
+            return step
+        }
+    }
+    
+    func convertForCollection(_ steps: [TestStep]) -> [TestStep] {
+        return steps.map { (inStep) -> TestStep in
+            var step = inStep
+            var collectionResult = RSDCollectionResultObject(identifier: step.identifier)
+            collectionResult.appendInputResults(with: RSDAnswerResultObject(identifier: "identifier", answerType: .string, value: step.identifier))
+            collectionResult.appendInputResults(with: RSDAnswerResultObject(identifier: "boolean", answerType: .boolean, value: true))
+            step.result = collectionResult
+            return step
+        }
+    }
+    
+    func convertForQuestion(_ steps: [TestStep]) -> [TestStep] {
+        return steps.map { (inStep) -> TestStep in
+            var step = inStep
+            var collectionResult = RSDCollectionResultObject(identifier: step.identifier)
+            collectionResult.appendInputResults(with: RSDAnswerResultObject(identifier: step.identifier, answerType: .integer, value: step.identifier.count))
+            step.result = collectionResult
+            return step
+        }
+    }
+}
+
+struct TestClientDataResult : SBAClientDataResult {
+    private enum CodingKeys: String, CodingKey {
+        case identifier, type, startDate, endDate
+    }
+    
+    let identifier: String
+    
+    let type: RSDResultType = RSDResultType(rawValue: "testClientData")
+    var startDate: Date = Date()
+    var endDate: Date = Date()
+    
+    func clientData() throws -> SBBJSONValue? {
+        return identifier as NSString
+    }
+    
+    func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
         // archive isn't tested using this method.
         return nil
     }
 }
-
-
