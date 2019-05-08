@@ -49,6 +49,8 @@ class JSONSerializableTests: XCTestCase {
         let json = obj as RSDJSONSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? String, "foo")
+        let jsonData = clientData.toJSONSerializable()
+        XCTAssertEqual(jsonData as? String, "foo")
     }
 
     func testArray() {
@@ -56,6 +58,8 @@ class JSONSerializableTests: XCTestCase {
         let json = array.jsonObject()
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? NSArray, array)
+        let jsonData = clientData.toJSONSerializable()
+        XCTAssertEqual(jsonData as? NSArray, array)
     }
 
     func testDictionary() {
@@ -63,6 +67,8 @@ class JSONSerializableTests: XCTestCase {
         let json = dictionary.jsonObject()
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? NSDictionary, dictionary)
+        let jsonData = clientData.toJSONSerializable()
+        XCTAssertEqual(jsonData as? NSDictionary, dictionary)
     }
 
     func testNSNumber() {
@@ -70,6 +76,8 @@ class JSONSerializableTests: XCTestCase {
         let json = obj as RSDJSONSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? NSNumber, 3)
+        let jsonData = clientData.toJSONSerializable()
+        XCTAssertEqual(jsonData as? NSNumber, 3)
     }
 
     func testInt() {

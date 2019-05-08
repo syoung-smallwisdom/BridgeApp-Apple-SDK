@@ -128,7 +128,7 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
     }
     
     func getMedicationResult() -> SBAMedicationTrackingResult? {
-        guard let clientData = self.clientData(with: RSDIdentifier.medicationTask.stringValue)
+        guard let clientData = self.report(with: RSDIdentifier.medicationTask.stringValue)?.clientData
             else {
                 return nil
         }

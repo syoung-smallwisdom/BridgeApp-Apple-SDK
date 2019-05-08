@@ -289,8 +289,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     private var _holdData = [HoldDataKey : RSDTaskData]()
     
     public func previousTaskData(for taskIdentifier: RSDIdentifier) -> RSDTaskData? {
-        // TODO: Implement syoung 05/07/2019
-        return nil
+        return report(with: taskIdentifier.stringValue)
     }
     
     public func saveTaskData(_ data: RSDTaskData, from taskResult: RSDTaskResult?) {
@@ -322,12 +321,21 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     ///
     /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
     /// - returns: The client data JSON (if any) associated with this activity identifier.
+    @available(*, deprecated)
     open func clientData(with activityIdentifier: String) -> SBBJSONValue? {
+        return report(with: activityIdentifier)?.clientData
+    }
+    
+    /// Find the most report for this activity identifier.
+    ///
+    /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
+    /// - returns: The report (if any) associated with this activity identifier.
+    open func report(with activityIdentifier: String) -> SBAReport? {
         let reportIdentifier = self.reportIdentifier(for: activityIdentifier)
         let report = reports.sorted { (lhs, rhs) -> Bool in
             return lhs.date < rhs.date
             }.last { $0.reportKey == reportIdentifier }
-        return report?.clientData
+        return report
     }
     
     /// Find the client data within the given date range for this activity identifier.

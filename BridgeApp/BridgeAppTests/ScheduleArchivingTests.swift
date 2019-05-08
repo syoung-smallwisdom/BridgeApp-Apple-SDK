@@ -43,6 +43,20 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: mainTaskSchemaIdentifier, to: .timestamp)
         SBABridgeConfiguration.shared.addMapping(with: insertTaskSchemaIdentifier, to: .groupByDay)
         SBABridgeConfiguration.shared.addMapping(with: insertSurveySchemaIdentifier, to: .singleton)
+        
+        SBABridgeConfiguration.shared.addMapping(from: mainTaskIdentifier, to: mainTaskSchemaIdentifier)
+        SBABridgeConfiguration.shared.addMapping(from: insertTaskIdentifier, to: insertTaskSchemaIdentifier)
+        SBABridgeConfiguration.shared.addMapping(from: insertSurveyIdentifier, to: insertSurveySchemaIdentifier)
+        
+        SBABridgeConfiguration.shared.addMapping(with: SBBSchemaReference(dictionaryRepresentation:
+            ["id" : mainTaskSchemaIdentifier,
+             "revision" : NSNumber(value: mainTaskSchemaRevision)])!)
+        SBABridgeConfiguration.shared.addMapping(with: SBBSchemaReference(dictionaryRepresentation:
+            ["id" : insertTaskSchemaIdentifier,
+             "revision" : NSNumber(value: insertTaskSchemaRevision)])!)
+        SBABridgeConfiguration.shared.addMapping(with: SBBSchemaReference(dictionaryRepresentation:
+            ["id" : insertSurveySchemaIdentifier,
+             "revision" : NSNumber(value: insertSurveySchemaRevision)])!)
     }
     
     override func tearDown() {
@@ -387,6 +401,74 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         // Check that the setup method was called as expected
         XCTAssertNil(tracker.setupTask_data)
+        
+        // step to just before completion
+        let _ = taskController.test_stepTo("step4")
+        let expect = expectation(description: "Task ready to save")
+        taskController.handleTaskResultReady_completionBlock = {
+            // Note: For a real view controller, that view controller would all the schedule manager to
+            // save the results. We aren't doing that here b/c we don't actually want to push archives and
+            // whatnot.
+            expect.fulfill()
+        }
+        let _ = taskController.test_stepTo("completion")
+        waitForExpectations(timeout: 2) { (err) in
+            XCTAssertNil(err)
+        }
+        XCTAssertNotNil(taskController.handleTaskResultReady_calledWith)
+        
+        // Now, build the reports
+        
+        let taskPath = taskController.taskViewModel!
+        guard let reports = self.scheduleManager.buildReports(from: taskPath.taskResult),
+            let report = reports.first
+            else {
+                XCTFail("Failed to build the reports for this task result")
+                return
+        }
+        
+        // Check that the expected report exists and that it is built including the dictionary scoring from
+        // the call to the task tracker.
+        XCTAssertEqual(reports.count, 1)
+        XCTAssertEqual(report.identifier, mainTaskSchemaIdentifier)
+        XCTAssertEqual(report.date, taskPath.taskResult.endDate)
+        if let dictionary = report.clientData as? NSDictionary {
+            XCTAssertEqual(dictionary["addedInfo"] as? String, "goo")
+        }
+        else {
+            XCTFail("\(String(describing: report.clientData)) is not a Dictionary.")
+        }
+    }
+    
+    func testDataTrackingNavigation_WithPreviousReports() {
+        
+        // setup navigation task
+        var steps: [RSDStep] = TestStep.steps(from: ["introduction", "step1", "step2", "step3", "step4"])
+        var completionStep = TestStep(identifier: "completion")
+        completionStep.stepType = .completion
+        steps.append(completionStep)
+        
+        let navigator = TestConditionalNavigator(steps: steps)
+        var task = TestTask(identifier: mainTaskIdentifier, stepNavigator: navigator)
+        let tracker = TestTracker()
+        tracker.scoringData = ["addedInfo" : "goo"]
+        task.tracker = tracker
+        task.schemaInfo = RSDSchemaInfoObject(identifier: mainTaskSchemaIdentifier, revision: mainTaskSchemaRevision)
+        
+        self.scheduleManager.reports = [SBAReport(identifier: mainTaskSchemaIdentifier,
+                                                  date: Date().addingNumberOfDays(-2),
+                                                  json: ["addedInfo" : "blu"]),
+                                        SBAReport(identifier: mainTaskSchemaIdentifier,
+                                                  date: Date().addingNumberOfDays(-1),
+                                                  json: ["addedInfo" : "ragu"])]
+        
+        let taskController = TestTaskController()
+        taskController.task = task
+        taskController.taskViewModel.dataManager = self.scheduleManager
+        
+        // Check that the setup method was called as expected
+        XCTAssertNotNil(tracker.setupTask_data)
+        XCTAssertEqual(tracker.setupTask_data?.json as? [String : String], ["addedInfo" : "ragu"])
         
         // step to just before completion
         let _ = taskController.test_stepTo("step4")

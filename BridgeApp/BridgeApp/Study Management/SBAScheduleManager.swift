@@ -509,13 +509,13 @@ open class SBAScheduleManager: SBAReportManager {
         }
     }
     
-    /// Find the most recent client data appended to any schedule for this activity identifier.
+    /// Find the most recent report data appended to any schedule for this activity identifier.
     ///
     /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
     /// - returns: The client data JSON (if any) associated with this activity identifier.
-    override open func clientData(with activityIdentifier: String) -> SBBJSONValue? {
+    open override func report(with activityIdentifier: String) -> SBAReport? {
         // Check first if the client data is on a report.
-        if let ret = super.clientData(with: activityIdentifier) {
+        if let ret = super.report(with: activityIdentifier) {
             return ret
         }
         
@@ -531,7 +531,16 @@ open class SBAScheduleManager: SBAReportManager {
                 currentFinishedOn = finishedOn
             }
         }
-        return clientData
+        
+        if let data = clientData {
+            let reportIdentifier = self.reportIdentifier(for: activityIdentifier)
+            return SBAReport(reportKey: RSDIdentifier(rawValue: reportIdentifier),
+                             date: currentFinishedOn,
+                             clientData: data)
+        }
+        else {
+            return nil
+        }
     }
     
     /// Subclass the cohorts tracking rule so that we can use casting to check for an existing
