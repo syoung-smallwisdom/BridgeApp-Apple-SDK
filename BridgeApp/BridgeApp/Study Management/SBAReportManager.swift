@@ -68,6 +68,33 @@ public struct SBAReport : Hashable {
     public static func == (lhs: SBAReport, rhs: SBAReport) -> Bool {
         return lhs.reportKey == rhs.reportKey && lhs.date == rhs.date
     }
+    
+    public init(reportKey: RSDIdentifier, date: Date, clientData: SBBJSONValue) {
+        self.reportKey = reportKey
+        self.date = date
+        self.clientData = clientData
+    }
+    
+    public init(identifier: String, date: Date?, json: RSDJSONSerializable) {
+        self.reportKey = RSDIdentifier(rawValue: identifier)
+        self.date = date ?? SBAReportSingletonDate
+        self.clientData = json.toClientData()
+    }
+}
+
+extension SBAReport : RSDTaskData {
+    
+    public var identifier: String {
+        return reportKey.stringValue
+    }
+    
+    public var timestampDate: Date? {
+        return (date == SBAReportSingletonDate) ? nil : date
+    }
+    
+    public var json: RSDJSONSerializable {
+        return clientData.toJSONSerializable()
+    }
 }
 
 /// The `localDate` used as the reference date for a singleton date object. The user's enrollment date is not

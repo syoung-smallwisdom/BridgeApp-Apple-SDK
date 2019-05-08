@@ -72,3 +72,15 @@ public extension RSDJSONSerializable {
         return data
     }
 }
+
+public extension SBBJSONValue {
+    func toJSONSerializable() -> RSDJSONSerializable {
+        guard let data = self as? RSDJSONSerializable else {
+            // Note: syoung 05/07/2019 All implementations of SBBJSONValue should be tested so this is
+            // unexpected to happen. Nevertheless, if it does happen, only crash in Debug and not in Release.
+            assertionFailure("Failed to convert \(self) to RSDJSONSerializable")
+            return NSNull()
+        }
+        return data
+    }
+}
