@@ -152,7 +152,10 @@ open class SBATrackedMedicationDetailStepViewController: RSDTableStepViewControl
     override open func textFieldDidEndEditing(_ textField: UITextField) {
         // TODO: mdephillips 6/25/18 figure out why this isnt being done automatically
         if let source = tableData as? SBATrackedMedicationDetailsDataSource {
-            try? source.dosageTableItem?.setAnswer(textField.text)
+            do {
+                try source.dosageTableItem?.setAnswer(textField.text)
+            }
+            catch {}
         }
         self.answersDidChange(in: SBATrackedMedicationDetailsDataSource.FieldIdentifiers.dosage.sectionIndex())
         super.textFieldDidEndEditing(textField)

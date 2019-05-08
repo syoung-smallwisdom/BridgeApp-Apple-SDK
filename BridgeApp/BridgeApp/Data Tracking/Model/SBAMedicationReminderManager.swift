@@ -196,6 +196,9 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
                     }
                 case .authorized, .provisional:
                     self.addNotifications(for: medicationResult)
+                @unknown default:
+                    print("WARNING!! Unknown authorization status is not handled. \(settings.authorizationStatus)")
+                    break   // Do nothing. Assume that future cases can be ignored for now.
                 }
             }
         }
