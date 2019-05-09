@@ -456,7 +456,7 @@
             <h1>SBAReportManager</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAReportManager</span> <span class="p">:</span> <span class="kt">SBAArchiveManager</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAReportManager</span> <span class="p">:</span> <span class="kt">SBAArchiveManager</span><span class="p">,</span> <span class="kt">RSDDataStorageManager</span></code></pre>
 
                 </div>
               </div>
@@ -550,9 +550,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:9BridgeApp16SBAReportManagerC24instantiateTaskViewModel4task0I4InfoAA07SBATaskgH0C8Research7RSDTask_pSg_AI0mJ0_pSgtKF"></a>
+                    <a name="/s:9BridgeApp16SBAReportManagerC24instantiateTaskViewModel4task0I4Info8Research07RSDTaskgH0CAG0L0_pSg_AG0lJ0_pSgtKF"></a>
                     <a name="//apple_ref/swift/Method/instantiateTaskViewModel(task:taskInfo:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC24instantiateTaskViewModel4task0I4InfoAA07SBATaskgH0C8Research7RSDTask_pSg_AI0mJ0_pSgtKF">instantiateTaskViewModel(task:taskInfo:)</a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC24instantiateTaskViewModel4task0I4Info8Research07RSDTaskgH0CAG0L0_pSg_AG0lJ0_pSgtKF">instantiateTaskViewModel(task:taskInfo:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -568,7 +568,7 @@ parameters should be non-nil or this with throw an exception.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">instantiateTaskViewModel</span><span class="p">(</span><span class="nv">task</span><span class="p">:</span> <span class="kt">RSDTask</span><span class="p">?,</span> <span class="nv">taskInfo</span><span class="p">:</span> <span class="kt">RSDTaskInfo</span><span class="p">?)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/SBATaskViewModel.html">SBATaskViewModel</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">instantiateTaskViewModel</span><span class="p">(</span><span class="nv">task</span><span class="p">:</span> <span class="kt">RSDTask</span><span class="p">?,</span> <span class="nv">taskInfo</span><span class="p">:</span> <span class="kt">RSDTaskInfo</span><span class="p">?)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">RSDTaskViewModel</span></code></pre>
 
                         </div>
                       </div>
@@ -715,6 +715,69 @@ parameters should be non-nil or this with throw an exception.</p>
             </div>
             <div class="task-group">
               <div class="task-name-container">
+                <a name="/RSDDataStorageManager"></a>
+                <a name="//apple_ref/swift/Section/RSDDataStorageManager" class="dashAnchor"></a>
+                <a href="#/RSDDataStorageManager">
+                  <h3 class="section-name">RSDDataStorageManager</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8Research26RSDSwiftDataStorageManagerP012previousTaskC03forAA07RSDTaskC0_pSgAA13RSDIdentifierV_tF"></a>
+                    <a name="//apple_ref/swift/Method/previousTaskData(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Research26RSDSwiftDataStorageManagerP012previousTaskC03forAA07RSDTaskC0_pSgAA13RSDIdentifierV_tF">previousTaskData(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">previousTaskData</span><span class="p">(</span><span class="k">for</span> <span class="nv">taskIdentifier</span><span class="p">:</span> <span class="kt">RSDIdentifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">RSDTaskData</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8Research26RSDSwiftDataStorageManagerP08saveTaskC0_4fromyAA07RSDTaskC0_p_AA0I6Result_pSgtF"></a>
+                    <a name="//apple_ref/swift/Method/saveTaskData(_:from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Research26RSDSwiftDataStorageManagerP08saveTaskC0_4fromyAA07RSDTaskC0_p_AA0I6Result_pSgtF">saveTaskData(_:from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">saveTaskData</span><span class="p">(</span><span class="n">_</span> <span class="nv">data</span><span class="p">:</span> <span class="kt">RSDTaskData</span><span class="p">,</span> <span class="n">from</span> <span class="nv">taskResult</span><span class="p">:</span> <span class="kt">RSDTaskResult</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
                 <a name="/Data%20handling"></a>
                 <a name="//apple_ref/swift/Section/Data handling" class="dashAnchor"></a>
                 <a href="#/Data%20handling">
@@ -769,7 +832,8 @@ parameters should be non-nil or this with throw an exception.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">clientData</span><span class="p">(</span><span class="n">with</span> <span class="nv">activityIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">SBBJSONValue</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated)</span>
+<span class="kd">open</span> <span class="kd">func</span> <span class="nf">clientData</span><span class="p">(</span><span class="n">with</span> <span class="nv">activityIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">SBBJSONValue</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -795,6 +859,56 @@ parameters should be non-nil or this with throw an exception.</p>
                       <div>
                         <h4>Return Value</h4>
                         <p>The client data JSON (if any) associated with this activity identifier.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC6report4withAA0C0VSgSS_tF"></a>
+                    <a name="//apple_ref/swift/Method/report(with:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC6report4withAA0C0VSgSS_tF">report(with:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Find the most recent report for this activity identifier.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">report</span><span class="p">(</span><span class="n">with</span> <span class="nv">activityIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Structs/SBAReport.html">SBAReport</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>activityIdentifier</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The activity identifier for the client data associated with this task.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The latest report (if any) associated with this activity identifier.</p>
                       </div>
                     </section>
                   </div>
@@ -1118,38 +1232,6 @@ top-level path.</p>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">date</span><span class="p">(</span><span class="k">for</span> <span class="nv">reportIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">from</span> <span class="nv">result</span><span class="p">:</span> <span class="kt">RSDTaskResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Date</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:9BridgeApp16SBAReportManagerC20buildSurveyAnswerMap4fromSDySSypG8Research13RSDTaskResult_p_tF"></a>
-                    <a name="//apple_ref/swift/Method/buildSurveyAnswerMap(from:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC20buildSurveyAnswerMap4fromSDySSypG8Research13RSDTaskResult_p_tF">buildSurveyAnswerMap(from:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Build a simple answer map for this task result.</p>
-<div class="aside aside-note">
-    <p class="aside-title">Note</p>
-    This can be used to create client data for surveys.
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">buildSurveyAnswerMap</span><span class="p">(</span><span class="n">from</span> <span class="nv">taskResult</span><span class="p">:</span> <span class="kt">RSDTaskResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]</span></code></pre>
 
                         </div>
                       </div>

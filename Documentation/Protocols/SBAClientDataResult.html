@@ -456,12 +456,17 @@
             <h1>SBAClientDataResult</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBAClientDataResult</span> <span class="p">:</span> <span class="kt">RSDArchivable</span><span class="p">,</span> <span class="kt">RSDResult</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">@available(*, deprecated)</span>
+<span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBAClientDataResult</span> <span class="p">:</span> <span class="kt">RSDScoringResult</span></code></pre>
 
                 </div>
               </div>
             <p>An <code>SBAClientDataResult</code> is an archivable result that can also save a clientData scoring object on
 an associated <code>SBBScheduledActivity</code> or <code>SBBStudyParticipant</code> object.</p>
+
+<ul>
+<li>Deprecated. Use <code>RSDScoringResult</code> directly instead</li>
+</ul>
 
           </section>
           <section class="section task-group-section">
@@ -488,6 +493,39 @@ an associated <code>SBBScheduledActivity</code> or <code>SBBStudyParticipant</co
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">clientData</span><span class="p">()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">SBBJSONValue</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8Research16RSDScoringResultP9dataScoreAA19RSDJSONSerializable_pSgyKF"></a>
+                    <a name="//apple_ref/swift/Method/dataScore()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Research16RSDScoringResultP9dataScoreAA19RSDJSONSerializable_pSgyKF">dataScore()</a>
+                    </code>
+                      <span class="declaration-note">
+                        Extension method
+                      </span>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">dataScore</span><span class="p">()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">RSDJSONSerializable</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>

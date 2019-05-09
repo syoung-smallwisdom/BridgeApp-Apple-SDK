@@ -380,7 +380,7 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATrackedItemsStepNavigator.swift",
-      "line": 172,
+      "line": 198,
       "symbol": "SBATrackedItemsStepNavigator.decodeItems(from:)",
       "symbol_kind": "source.lang.swift.decl.function.method.class",
       "warning": "undocumented"
@@ -491,29 +491,43 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/SBAClientDataResult.swift",
+      "line": 65,
+      "symbol": "RSDJSONSerializable.toClientData()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/SBAClientDataResult.swift",
+      "line": 77,
+      "symbol": "SBBJSONValue.toJSONSerializable()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/SBATaskViewModel.swift",
-      "line": 50,
+      "line": 53,
       "symbol": "SBATaskViewModel.reportManager",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/SBATaskViewModel.swift",
-      "line": 61,
+      "line": 64,
       "symbol": "SBATaskViewModel.init(task:reportManager:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/SBATaskViewModel.swift",
-      "line": 67,
+      "line": 70,
       "symbol": "SBATaskViewModel.init(taskInfo:reportManager:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/SBATaskViewModel.swift",
-      "line": 90,
+      "line": 94,
       "symbol": "SBAModalTaskViewModel",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
@@ -1521,57 +1535,71 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
-      "line": 82,
+      "line": 72,
+      "symbol": "SBAReport.init(reportKey:date:clientData:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
+      "line": 78,
+      "symbol": "SBAReport.init(identifier:date:json:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
+      "line": 113,
       "symbol": "SBAReportManager.NotificationKey.newReports",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
-      "line": 101,
+      "line": 132,
       "symbol": "SBAReportManager.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
-      "line": 129,
+      "line": 164,
       "symbol": "SBAReportManager.reports",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
-      "line": 142,
+      "line": 177,
       "symbol": "SBAReportManager.ReportQuery.QueryType.all",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
-      "line": 142,
+      "line": 177,
       "symbol": "SBAReportManager.ReportQuery.QueryType.dateRange",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
-      "line": 142,
+      "line": 177,
       "symbol": "SBAReportManager.ReportQuery.QueryType.mostRecent",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
-      "line": 142,
+      "line": 177,
       "symbol": "SBAReportManager.ReportQuery.QueryType.today",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
-      "line": 158,
-      "symbol": "SBAReportManager.ReportQuery.init(identifier:queryType:dateRange:)",
+      "line": 193,
+      "symbol": "SBAReportManager.ReportQuery.init(reportKey:queryType:dateRange:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },

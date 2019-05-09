@@ -691,13 +691,18 @@ and thus need to be mutable classes.
                         <p>An <code>SBAClientDataResult</code> is an archivable result that can also save a clientData scoring object on
 an associated <code>SBBScheduledActivity</code> or <code>SBBStudyParticipant</code> object.</p>
 
+<ul>
+<li>Deprecated. Use <code>RSDScoringResult</code> directly instead</li>
+</ul>
+
                         <a href="Protocols/SBAClientDataResult.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBAClientDataResult</span> <span class="p">:</span> <span class="kt">RSDArchivable</span><span class="p">,</span> <span class="kt">RSDResult</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated)</span>
+<span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SBAClientDataResult</span> <span class="p">:</span> <span class="kt">RSDScoringResult</span></code></pre>
 
                         </div>
                       </div>

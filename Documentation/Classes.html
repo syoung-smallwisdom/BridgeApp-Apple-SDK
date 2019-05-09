@@ -815,7 +815,7 @@ data such as medication, triggers, or symptoms.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBATrackedItemsStepNavigator</span> <span class="p">:</span> <span class="kt">Decodable</span><span class="p">,</span> <span class="kt">RSDStepNavigator</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBATrackedItemsStepNavigator</span> <span class="p">:</span> <span class="kt">Decodable</span><span class="p">,</span> <span class="kt">RSDStepNavigator</span><span class="p">,</span> <span class="kt">RSDTrackingTask</span></code></pre>
 
                         </div>
                       </div>
@@ -1216,7 +1216,8 @@ or triggers associated with a medical condition.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBATaskViewModel</span> <span class="p">:</span> <span class="kt">RSDTaskViewModel</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated)</span>
+<span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBATaskViewModel</span> <span class="p">:</span> <span class="kt">RSDTaskViewModel</span></code></pre>
 
                         </div>
                       </div>
@@ -1244,7 +1245,8 @@ or triggers associated with a medical condition.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBATaskStepNode</span> <span class="p">:</span> <span class="kt">RSDTaskStepNode</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@available(*, deprecated)</span>
+<span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBATaskStepNode</span> <span class="p">:</span> <span class="kt">RSDTaskStepNode</span></code></pre>
 
                         </div>
                       </div>
@@ -1766,7 +1768,7 @@ memory is up-to-date with what has been sent to the server.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAReportManager</span> <span class="p">:</span> <span class="kt">SBAArchiveManager</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAReportManager</span> <span class="p">:</span> <span class="kt">SBAArchiveManager</span><span class="p">,</span> <span class="kt">RSDDataStorageManager</span></code></pre>
 
                         </div>
                       </div>
