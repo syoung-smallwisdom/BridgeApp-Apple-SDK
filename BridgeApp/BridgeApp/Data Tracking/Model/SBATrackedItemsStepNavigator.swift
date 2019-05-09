@@ -107,7 +107,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
         self.previousClientData = clientData
     }
     
-    /// Build the client data for this task.
+    /// Build the task data for this task.
     open func taskData(for taskResult: RSDTaskResult) -> RSDTaskData? {
         do {
             guard let dataScore = try _inMemoryResult.dataScore() else {
