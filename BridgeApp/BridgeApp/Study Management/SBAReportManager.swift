@@ -329,7 +329,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     /// Find the most recent report for this activity identifier.
     ///
     /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
-    /// - returns: The report (if any) associated with this activity identifier.
+    /// - returns: The latest report (if any) associated with this activity identifier.
     open func report(with activityIdentifier: String) -> SBAReport? {
         let reportIdentifier = self.reportIdentifier(for: activityIdentifier)
         let report = reports.sorted { (lhs, rhs) -> Bool in
