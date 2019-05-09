@@ -326,7 +326,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         return report(with: activityIdentifier)?.clientData
     }
     
-    /// Find the most report for this activity identifier.
+    /// Find the most recent report for this activity identifier.
     ///
     /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
     /// - returns: The report (if any) associated with this activity identifier.
