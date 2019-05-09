@@ -165,7 +165,7 @@ open class SBATrackedItemReminderDataSource : RSDFormStepDataSourceObject {
         var navigator = RSDConditionalStepNavigatorObject(with: [reminderChoicesStep])
         navigator.progressMarkers = []
         let task = RSDTaskObject(identifier: reminderChoicesStep.identifier, stepNavigator: navigator)
-        let taskViewModel = SBATaskViewModel(task: task)
+        let taskViewModel = RSDTaskViewModel(task: task)
         if let result = self.collectionResult() as? RSDCollectionResultObject {
             self.taskResult.appendStepHistory(with: result.copy(with: reminderChoicesStep.identifier))
         }

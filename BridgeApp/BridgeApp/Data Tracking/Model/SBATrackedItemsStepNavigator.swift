@@ -35,7 +35,7 @@ import Foundation
 
 /// `SBATrackedItemsStepNavigator` is a general-purpose navigator designed to be used for selecting tracked
 /// data such as medication, triggers, or symptoms.
-open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
+open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTrackingTask {
 
     /// Publicly accessible coding keys for the default structure for decoding items and sections.
     public enum ItemsCodingKeys : String, CodingKey {
@@ -95,6 +95,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
     public private(set) weak var taskPath: RSDPathComponent?
     
     /// Setup data tracking for this task.
+    @available(*, deprecated)
     open func setupTracking(with taskPath: RSDPathComponent) {
         self.taskPath = taskPath
         guard let root = taskPath.rootPathComponent as? SBATaskViewModel,
@@ -104,6 +105,31 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator {
                 return
         }
         self.previousClientData = clientData
+    }
+    
+    /// Build the task data for this task.
+    open func taskData(for taskResult: RSDTaskResult) -> RSDTaskData? {
+        do {
+            guard let dataScore = try _inMemoryResult.dataScore() else {
+                return nil
+            }
+            return SBAReport(identifier: taskResult.identifier, date: taskResult.endDate, json: dataScore)
+        }
+        catch let err {
+            debugPrint("Failed to get data score from the in-memory result: \(err)")
+            return nil
+        }
+    }
+    
+    /// Set up the previous client data.
+    open func setupTask(with data: RSDTaskData?, for path: RSDTaskPathComponent) {
+        self.taskPath = path
+        self.previousClientData = data?.json.toClientData()
+    }
+    
+    /// Not used. Always return `false`.
+    open func shouldSkipStep(_ step: RSDStep) -> (shouldSkip: Bool, stepResult: RSDResult?) {
+        return (false, nil)
     }
     
     /// Default initializer.

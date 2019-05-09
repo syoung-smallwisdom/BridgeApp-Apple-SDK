@@ -104,7 +104,7 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
             }
             if let medTrackingResultUnwrapped = medTrackingResult {
                 do {
-                    try scheduleManager.previousClientData[taskController.taskViewModel.taskResult.identifier] = medTrackingResultUnwrapped.clientData()
+                    try scheduleManager.previousClientData[taskController.taskViewModel.taskResult.identifier] = medTrackingResultUnwrapped.dataScore()?.toClientData()
                 } catch {
                     print(error)
                 }

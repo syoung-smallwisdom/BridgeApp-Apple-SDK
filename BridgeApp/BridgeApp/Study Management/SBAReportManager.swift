@@ -52,7 +52,7 @@ public enum SBAReportCategory : String, Codable {
 public struct SBAReport : Hashable {
 
     /// The identifier for the report.
-    public let identifier: RSDIdentifier
+    public let reportKey: RSDIdentifier
 
     /// The date for the report.
     public let date: Date
@@ -61,12 +61,43 @@ public struct SBAReport : Hashable {
     public let clientData: SBBJSONValue
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(identifier)
+        hasher.combine(reportKey)
         hasher.combine(date)
     }
     
     public static func == (lhs: SBAReport, rhs: SBAReport) -> Bool {
-        return lhs.identifier == rhs.identifier && lhs.date == rhs.date
+        return lhs.reportKey == rhs.reportKey && lhs.date == rhs.date
+    }
+    
+    public init(reportKey: RSDIdentifier, date: Date, clientData: SBBJSONValue) {
+        self.reportKey = reportKey
+        self.date = date
+        self.clientData = clientData
+    }
+    
+    public init(identifier: String, date: Date?, json: RSDJSONSerializable) {
+        self.reportKey = RSDIdentifier(rawValue: identifier)
+        self.date = date ?? SBAReportSingletonDate
+        self.clientData = json.toClientData()
+    }
+    
+    init(taskData: RSDTaskData) {
+        self.init(identifier: taskData.identifier, date: taskData.timestampDate, json: taskData.json)
+    }
+}
+
+extension SBAReport : RSDTaskData {
+    
+    public var identifier: String {
+        return reportKey.stringValue
+    }
+    
+    public var timestampDate: Date? {
+        return (date == SBAReportSingletonDate) ? nil : date
+    }
+    
+    public var json: RSDJSONSerializable {
+        return clientData.toJSONSerializable()
     }
 }
 
@@ -75,8 +106,8 @@ public struct SBAReport : Hashable {
 public let SBAReportSingletonDate: Date = Date(timeIntervalSinceReferenceDate: 0)
 
 /// Default data source handler for reports. This manager is used to get and store `SBBReportData` objects.
-open class SBAReportManager: SBAArchiveManager {
-    
+open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
+
     /// List of keys used in the notifications sent by this manager.
     public enum NotificationKey : String {
         case newReports
@@ -114,12 +145,16 @@ open class SBAReportManager: SBAArchiveManager {
     
     /// Instantiate a new instance of a task view model from the given information. At least one of the input
     /// parameters should be non-nil or this with throw an exception.
-    open func instantiateTaskViewModel(task: RSDTask?, taskInfo: RSDTaskInfo?) throws -> SBATaskViewModel {
+    open func instantiateTaskViewModel(task: RSDTask?, taskInfo: RSDTaskInfo?) throws -> RSDTaskViewModel {
         if let task = task {
-            return SBATaskViewModel(task: task, reportManager: self)
+            let model = RSDTaskViewModel(task: task)
+            model.dataManager = self
+            return model
         }
         else if let taskInfo = taskInfo {
-            return SBATaskViewModel(taskInfo: taskInfo, reportManager: self)
+            let model = RSDTaskViewModel(taskInfo: taskInfo)
+            model.dataManager = self
+            return model
         }
         else {
             throw RSDValidationError.unexpectedNullObject("Either the task or task info must be non-nil")
@@ -132,7 +167,7 @@ open class SBAReportManager: SBAArchiveManager {
     public struct ReportQuery : Codable, Hashable {
         
         /// The identifier for the report.
-        public let identifier: RSDIdentifier
+        public let reportKey: RSDIdentifier
         
         /// The type of query.
         public let queryType: QueryType
@@ -152,18 +187,18 @@ open class SBAReportManager: SBAArchiveManager {
         
         /// The report identifier as a string for use in requesting reports from Bridge.
         public var reportIdentifier: String {
-            return identifier.stringValue
+            return reportKey.stringValue
         }
         
-        public init(identifier: RSDIdentifier, queryType: QueryType = .mostRecent, dateRange: (start: Date, end: Date)? = nil) {
-            self.identifier = identifier
+        public init(reportKey: RSDIdentifier, queryType: QueryType = .mostRecent, dateRange: (start: Date, end: Date)? = nil) {
+            self.reportKey = reportKey
             self.queryType = queryType
             self.startRange = dateRange?.start
             self.endRange = dateRange?.end
         }
         
         public func hash(into hasher: inout Hasher) {
-            hasher.combine(identifier)
+            hasher.combine(reportKey)
             hasher.combine(queryType)
         }
     }
@@ -239,6 +274,42 @@ open class SBAReportManager: SBAArchiveManager {
         }
     }
     
+    // MARK: RSDDataStorageManager
+    
+    private struct HoldDataKey : Hashable {
+        let uuid: UUID
+        let identifier: String
+        init(_ uuid: UUID, _ identifier: String) {
+            self.uuid = uuid
+            self.identifier = identifier
+        }
+    }
+    
+    private let _holdDataQueue = DispatchQueue(label: "org.sagebionetworks.BridgeApp.SBAReportManager.holdData")
+    private var _holdData = [HoldDataKey : RSDTaskData]()
+    
+    public func previousTaskData(for taskIdentifier: RSDIdentifier) -> RSDTaskData? {
+        return report(with: taskIdentifier.stringValue)
+    }
+    
+    public func saveTaskData(_ data: RSDTaskData, from taskResult: RSDTaskResult?) {
+        
+        // If there isn't a task result then save the task data directly to a report.
+        guard let uuid = taskResult?.taskRunUUID else {
+            let report = SBAReport(taskData: data)
+            DispatchQueue.main.async {
+                self.saveReport(report)
+            }
+            return
+        }
+        // Otherwise, save it to a holding dictionary for access later when packaging up all the reports
+        // for upload at the same time.
+        _holdDataQueue.async {
+            self._holdData[HoldDataKey(uuid, data.identifier)] = data
+        }
+    }
+    
+    
     // MARK: Data handling
 
     /// Called on the main thread if updating fails.
@@ -250,12 +321,21 @@ open class SBAReportManager: SBAArchiveManager {
     ///
     /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
     /// - returns: The client data JSON (if any) associated with this activity identifier.
+    @available(*, deprecated)
     open func clientData(with activityIdentifier: String) -> SBBJSONValue? {
+        return report(with: activityIdentifier)?.clientData
+    }
+    
+    /// Find the most recent report for this activity identifier.
+    ///
+    /// - parameter activityIdentifier: The activity identifier for the client data associated with this task.
+    /// - returns: The latest report (if any) associated with this activity identifier.
+    open func report(with activityIdentifier: String) -> SBAReport? {
         let reportIdentifier = self.reportIdentifier(for: activityIdentifier)
         let report = reports.sorted { (lhs, rhs) -> Bool in
             return lhs.date < rhs.date
-            }.last { $0.identifier == reportIdentifier }
-        return report?.clientData
+            }.last { $0.reportKey == reportIdentifier }
+        return report
     }
     
     /// Find the client data within the given date range for this activity identifier.
@@ -265,7 +345,7 @@ open class SBAReportManager: SBAArchiveManager {
     open func allClientData(with activityIdentifier: String, from fromDate: Date = Date.distantPast, to toDate: Date = Date.distantFuture) -> [SBBJSONValue] {
         let reportIdentifier = self.reportIdentifier(for: activityIdentifier)
         return self.reports.compactMap {
-            guard $0.identifier == reportIdentifier,
+            guard $0.reportKey == reportIdentifier,
                 (fromDate <= $0.date && $0.date < toDate)
                 else {
                     return nil
@@ -306,7 +386,7 @@ open class SBAReportManager: SBAArchiveManager {
 
     func filteredReports( _ newReports: [SBAReport], query: ReportQuery) -> [SBAReport] {
         return newReports.filter { (report) -> Bool in
-            guard query.identifier == report.identifier else { return false }
+            guard query.reportKey == report.reportKey else { return false }
             switch query.queryType {
             case .today:
                 return report.date.isToday
@@ -324,7 +404,7 @@ open class SBAReportManager: SBAArchiveManager {
     func unionReports(_ newReports: [SBAReport], query: ReportQuery) {
         guard newReports.count > 0 else { return }
         if query.queryType == .mostRecent,
-            let previous = self.reports.first(where: { $0.identifier == query.identifier }),
+            let previous = self.reports.first(where: { $0.reportKey == query.reportKey }),
             newReports.count == 1 {
             self.reports.remove(previous)
         }
@@ -379,7 +459,7 @@ open class SBAReportManager: SBAArchiveManager {
     ///
     /// - parameter report: The report object to save to Bridge.
     public func saveReportToBridge(_ report: SBAReport) {
-        let reportIdentifier = report.identifier.stringValue
+        let reportIdentifier = report.reportKey.stringValue
         let category = self.reportCategory(for: reportIdentifier)
         switch category {
         case .timestamp:
@@ -405,7 +485,7 @@ open class SBAReportManager: SBAArchiveManager {
                 let schemaIdentifier = schemaInfo.schemaIdentifier,
                 let clientData = buildClientData(from: taskResult) {
                 let date = self.date(for: schemaIdentifier, from: taskResult)
-                let report = SBAReport(identifier: RSDIdentifier(rawValue: schemaIdentifier),
+                let report = SBAReport(reportKey: RSDIdentifier(rawValue: schemaIdentifier),
                                        date: date,
                                        clientData: clientData)
                 newReports.append(report)
@@ -439,99 +519,31 @@ open class SBAReportManager: SBAArchiveManager {
     ///     - taskResult: The task result for the task which has just run.
     /// - returns: The client data built for this task result (if any).
     func buildClientData(from taskResult: RSDTaskResult) -> SBBJSONValue? {
-        do {
-            let clientData = try recursiveGetClientData(from: taskResult, isTopLevel: true)
-            return clientData ?? (self.buildSurveyAnswerMap(from: taskResult) as NSDictionary)
+        
+        // Get the hold data, if any.
+        var holdJSON: RSDJSONSerializable?
+        _holdDataQueue.sync {
+            let key = HoldDataKey(taskResult.taskRunUUID, taskResult.identifier)
+            holdJSON = self._holdData[key]?.json
+            self._holdData[key] = nil
         }
-        catch let err {
-            assertionFailure("Failed to encode client data: \(err)")
-            return nil
+        
+        // For now, assume that if there is data from the task, that that scoring is all we need. Eventually,
+        // this might need to incorporate adding to that data, but don't build that into the function until
+        // we discover a need for it. syoung 05/08/2019
+        if let json = holdJSON {
+            return json.toClientData()
         }
+        
+        // Otherwise, use a default builder for the scoring.
+        let builder = RSDDefaultScoreBuilder()
+        return builder.getScoringData(from: taskResult)?.toClientData()
     }
     
-    /// Build a simple answer map for this task result.
-    /// - note: This can be used to create client data for surveys.
+    /// This is no longer used by the report manager to build a report. syoung 05/07/2019
+    @available(*, unavailable)
     open func buildSurveyAnswerMap(from taskResult: RSDTaskResult) -> [String : Any] {
-        var answers = [String : Any]()
-        
-        func appendValue(_ value: Any?, forKey key: String) {
-            answers[key] = (value as? SBBJSONValue) ?? (value as? RSDJSONValue)?.jsonObject()
-        }
-        
-        func appendResult(_ result: RSDResult) {
-            if let answers = (result as? RSDCollectionResult)?.answers() {
-                answers.forEach {
-                    appendValue($0.value, forKey: $0.key)
-                }
-            }
-            else if let answerResult = result as? RSDAnswerResult {
-                appendValue(answerResult.value, forKey: answerResult.identifier)
-            }
-        }
-        
-        taskResult.stepHistory.forEach { appendResult($0) }
-        taskResult.asyncResults?.forEach { appendResult($0) }
-        
-        return answers
-    }
-    
-    func recursiveGetClientData(from taskResult: RSDTaskResult, isTopLevel: Bool) throws  -> SBBJSONValue? {
-        // Verify that this task result is not associated with a different schema.
-        guard isTopLevel || (taskResult.schemaInfo ?? self.schemaInfo(for: taskResult.identifier) == nil)
-            else {
-                return nil
-        }
-        
-        var dataResults: [SBBJSONValue] = []
-        if let data = try recursiveGetClientData(from: taskResult.stepHistory) {
-            dataResults.append(data)
-        }
-        if let asyncResults = taskResult.asyncResults,
-            let data = try recursiveGetClientData(from: asyncResults) {
-            dataResults.append(data)
-        }
-        
-        if let clientData = dataResults.count <= 1 ? dataResults.first : (dataResults as NSArray) {
-            return clientData
-        }
-        else {
-            return nil
-        }
-    }
-    
-    func recursiveGetClientData(from results: [RSDResult]) throws -> SBBJSONValue? {
-        
-        func getClientData(_ result: RSDResult) throws -> SBBJSONValue? {
-            if let clientResult = result as? SBAClientDataResult,
-                let clientData = try clientResult.clientData() {
-                return clientData
-            }
-            else if let taskResult = result as? RSDTaskResult {
-                return try self.recursiveGetClientData(from: taskResult, isTopLevel: false)
-            }
-            else if let collectionResult = result as? RSDCollectionResult {
-                return try self.recursiveGetClientData(from: collectionResult.inputResults)
-            }
-            else {
-                return nil
-            }
-        }
-        
-        let dictionary = try results.reduce(into: [String : SBBJSONValue]()) { (hashtable, result) in
-            guard let data = try getClientData(result) else { return }
-            hashtable[result.identifier] = data
-        }
-        
-        // Return the "most appropriate" value for the combined results.
-        if dictionary.count == 0 {
-            return nil
-        }
-        else if dictionary.sba_uniqueCount() == 1 {
-            return dictionary.first!.value
-        }
-        else {
-            return dictionary as NSDictionary
-        }
+        fatalError("Do not override this method - it is no longer used.")
     }
     
     func fetchReport(for query: ReportQuery, category: SBAReportCategory, startDate: Date, endDate: Date) {
@@ -573,7 +585,7 @@ open class SBAReportManager: SBAArchiveManager {
         let newReports: [SBAReport] = reportDataObjects.compactMap {
             guard let clientData = $0.data, let date = $0.date else { return nil }
             let reportDate = (category == .groupByDay) ? date.startOfDay() : date
-            return SBAReport(identifier: query.identifier, date: reportDate, clientData: clientData)
+            return SBAReport(reportKey: query.reportKey, date: reportDate, clientData: clientData)
         }
         
         let error: Error? = {

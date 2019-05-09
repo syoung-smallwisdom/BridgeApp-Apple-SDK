@@ -59,7 +59,7 @@ class ArchivableTrackingTests: XCTestCase {
         result.loggingItems = [loggedResultA, loggedResultB]
         
         do {
-            let clientData = try result.clientData()
+            let clientData = try result.dataScore()
             XCTAssertNotNil(clientData)
             if let clientData = clientData as? [String : Any] {
                 XCTAssertEqual(clientData["identifier"] as? String, identifier)
@@ -221,7 +221,7 @@ class ArchivableTrackingTests: XCTestCase {
         result.medications = [medA3, medC3]
         
         do {
-            let clientData = try result.clientData() as? [String : Any]
+            let clientData = try result.dataScore() as? [String : Any]
             XCTAssertNotNil(clientData)
             if let items = clientData?["items"] as? [[String : Any]] {
                 XCTAssertEqual(items.count, 2)

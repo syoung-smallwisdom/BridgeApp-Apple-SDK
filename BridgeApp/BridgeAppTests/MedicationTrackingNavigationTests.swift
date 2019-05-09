@@ -419,9 +419,8 @@ class MedicationTrackingNavigationTests: XCTestCase {
         // This is how the previous answer of "no reminders please" looks.
         initialResult.reminders = []
         
-        let clientData = try! initialResult.clientData()
-        
-        medTracker.previousClientData = clientData
+        let dataScore = try! initialResult.dataScore()
+        medTracker.previousClientData = dataScore?.toClientData()
         
         // Check initial state
         let selectionStep = medTracker.getSelectionStep() as? SBATrackedSelectionStepObject
@@ -477,9 +476,8 @@ class MedicationTrackingNavigationTests: XCTestCase {
         // This is how the previous answer of "no reminders please" looks.
         initialResult.reminders = []
         
-        let clientData = try! initialResult.clientData()
-        
-        medTracker.previousClientData = clientData
+        let clientData = try! initialResult.dataScore()
+        medTracker.previousClientData = clientData?.toClientData()
         
         // Check initial state
         let selectionStep = medTracker.getSelectionStep() as? SBATrackedSelectionStepObject

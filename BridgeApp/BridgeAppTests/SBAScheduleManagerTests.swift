@@ -135,11 +135,16 @@ class SBAScheduleManagerTests: XCTestCase {
 
 class TestScheduleManager : SBAScheduleManager {
     
+    var nowValue = Date()
     var updateFinishedBlock: (() -> Void)?
     var updateFailed_error: Error?
     var update_fetchedActivities:[SBBScheduledActivity]?
     var sendUpdated_schedules: [SBBScheduledActivity]?
     var sendUpdated_taskPath: RSDTaskViewModel?
+    
+    override func now() -> Date {
+        return nowValue
+    }
     
     override func updateFailed(_ error: Error) {
         updateFailed_error = error

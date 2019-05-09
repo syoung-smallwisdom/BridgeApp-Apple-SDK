@@ -192,7 +192,7 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
         }
         
         let queries = reportIdentifiers.map({
-            return ReportQuery(identifier: $0, queryType: .mostRecent, dateRange: nil)
+            return ReportQuery(reportKey: $0, queryType: .mostRecent, dateRange: nil)
         })
         
         return queries

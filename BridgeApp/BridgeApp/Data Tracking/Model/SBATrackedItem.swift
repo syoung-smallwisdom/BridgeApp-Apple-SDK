@@ -144,7 +144,7 @@ extension RSDIdentifier {
     public static let trackedItemsResult: RSDIdentifier = "trackedItems"
 }
 
-public protocol SBATrackedItemsCollectionResult : SBATrackedItemsResult, SBAClientDataResult {
+public protocol SBATrackedItemsCollectionResult : SBATrackedItemsResult, RSDScoringResult {
     
     /// Update the result from the given client data.
     mutating func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws
