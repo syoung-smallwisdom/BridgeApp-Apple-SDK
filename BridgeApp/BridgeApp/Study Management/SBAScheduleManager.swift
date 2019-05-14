@@ -197,7 +197,7 @@ open class SBAScheduleManager: SBAReportManager {
     }
     
     /// State management for whether or not the schedules are reloading.
-    override public var isReloading: Bool {
+    override open var isReloading: Bool {
         return super.isReloading || _isReloadingScheduledActivities
     }
     private var _isReloadingScheduledActivities: Bool = false

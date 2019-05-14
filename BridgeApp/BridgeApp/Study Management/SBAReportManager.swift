@@ -211,13 +211,18 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         return []
     }
     
-    /// Reload the data by fetching changes to the reports.
+    /// Reload the data by fetching changes to the data that are used by this manager.
     open func reloadData() {
         loadReports()
     }
     
-    /// State management for whether or not the schedules are reloading.
-    public var isReloading: Bool {
+    /// State management for whether or not the manager is reloading.
+    open var isReloading: Bool {
+        return isReloadingReports
+    }
+    
+    /// State management for whether or not the *reports* specifically are reloading.
+    public final var isReloadingReports: Bool {
         return _reloadingReports.count > 0
     }
     private var _reloadingReports = Set<ReportQuery>()
@@ -225,7 +230,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     /// Load the reports using the `reportQueries()` for this schedule manager.
     public final func loadReports() {
         DispatchQueue.main.async {
-            if self.isReloading { return }
+            if self.isReloadingReports { return }
             let queries = self.reportQueries()
             self._reloadingReports.formUnion(queries)
             
@@ -242,9 +247,9 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
                     do {
                         switch query.queryType {
                         case .mostRecent:
-                            let report: SBBReportData? = try self.participantManager.getLatestCachedData(forReport: query.reportIdentifier)
-                            if report != nil {
-                                self.didFetchReports(for: query, category: category, reports: [report!])
+                            let report: SBBReportData = try self.participantManager.getLatestCachedData(forReport: query.reportIdentifier)
+                            if !report.isEmpty {
+                                self.didFetchReports(for: query, category: category, reports: [report])
                             }
                             else {
                                 self.fetchReport(for: query, category: category, startDate: dayOne, endDate: self.now())
@@ -613,5 +618,12 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     
     /// Called when all the reports are finished loading. Base class does nothing.
     open func didFinishFetchingReports() {
+    }
+}
+
+extension SBBReportData {
+    
+    var isEmpty: Bool {
+        return data == nil && date == nil
     }
 }
