@@ -104,7 +104,9 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
             }
             if let medTrackingResultUnwrapped = medTrackingResult {
                 do {
-                    try scheduleManager.previousClientData[taskController.taskViewModel.taskResult.identifier] = medTrackingResultUnwrapped.dataScore()?.toClientData()
+                    if let dataScore = try medTrackingResultUnwrapped.dataScore() {
+                        self.scheduleManager.previousReport[taskController.taskViewModel.taskResult.identifier] = SBAReport(identifier: taskController.taskViewModel.taskResult.identifier, date: taskController.taskViewModel.taskResult.endDate, json: dataScore)
+                    }
                 } catch {
                     print(error)
                 }
@@ -131,10 +133,10 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
 open class ClientDataScheduleManager: SBAScheduleManager {
     
     /// The previous client data for the tasks
-    var previousClientData = [String : SBBJSONValue]()
+    var previousReport = [String : SBAReport]()
     
-    override open func clientData(with activityIdentifier: String) -> SBBJSONValue? {
-        return previousClientData[activityIdentifier]
+    override open func report(with activityIdentifier: String) -> SBAReport? {
+        return previousReport[activityIdentifier]
     }
     
     override open func fetchRequests() -> [FetchRequest] {

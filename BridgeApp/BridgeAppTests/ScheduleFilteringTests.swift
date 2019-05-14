@@ -306,7 +306,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: task)
         
         let (taskPath, schedule) = scheduleManager.instantiateTaskViewModel(for: taskInfo)
-        let clientData = scheduleManager.clientData(with: taskInfo.identifier)
+        let clientData = scheduleManager.report(with: taskInfo.identifier)?.clientData
 
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
@@ -349,7 +349,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: task)
         
         let (taskPath, schedule) = scheduleManager.instantiateTaskViewModel(for: taskInfo)
-        let clientData = scheduleManager.clientData(with: taskInfo.identifier)
+        let clientData = scheduleManager.report(with: taskInfo.identifier)?.clientData
 
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
@@ -400,7 +400,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: task)
         
         let (taskPath, schedule) = scheduleManager.instantiateTaskViewModel(for: taskInfo, in: group1)
-        let clientData = scheduleManager.clientData(with: taskInfo.identifier)
+        let clientData = scheduleManager.report(with: taskInfo.identifier)?.clientData
 
         XCTAssertEqual(schedule, expectedSchedule)
         XCTAssertNotNil(clientData)
@@ -421,7 +421,7 @@ class ScheduleFilteringTests: SBAScheduleManagerTests {
         SBABridgeConfiguration.shared.addMapping(with: task)
         
         let (taskPath, schedule) = scheduleManager.instantiateTaskViewModel(for: taskInfo)
-        let clientData = scheduleManager.clientData(with: taskInfo.identifier)
+        let clientData = scheduleManager.report(with: taskInfo.identifier)?.clientData
 
         XCTAssertNil(schedule)
         XCTAssertNil(clientData)
