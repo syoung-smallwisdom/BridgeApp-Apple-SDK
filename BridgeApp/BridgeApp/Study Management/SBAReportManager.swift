@@ -242,9 +242,9 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
                     do {
                         switch query.queryType {
                         case .mostRecent:
-                            let report: SBBReportData? = try self.participantManager.getLatestCachedData(forReport: query.reportIdentifier)
-                            if report != nil {
-                                self.didFetchReports(for: query, category: category, reports: [report!])
+                            let report: SBBReportData = try self.participantManager.getLatestCachedData(forReport: query.reportIdentifier)
+                            if !report.isEmpty {
+                                self.didFetchReports(for: query, category: category, reports: [report])
                             }
                             else {
                                 self.fetchReport(for: query, category: category, startDate: dayOne, endDate: self.now())
@@ -613,5 +613,12 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     
     /// Called when all the reports are finished loading. Base class does nothing.
     open func didFinishFetchingReports() {
+    }
+}
+
+extension SBBReportData {
+    
+    var isEmpty: Bool {
+        return data == nil && date == nil
     }
 }
