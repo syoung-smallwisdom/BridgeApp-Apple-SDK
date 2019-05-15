@@ -643,7 +643,7 @@ parameters should be non-nil or this with throw an exception.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Reload the data by fetching changes to the reports.</p>
+                        <p>Reload the data by fetching changes to the data that are used by this manager.</p>
 
                       </div>
                       <div class="declaration">
@@ -670,14 +670,41 @@ parameters should be non-nil or this with throw an exception.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>State management for whether or not the schedules are reloading.</p>
+                        <p>State management for whether or not the manager is reloading.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">isReloading</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">isReloading</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp16SBAReportManagerC18isReloadingReportsSbvp"></a>
+                    <a name="//apple_ref/swift/Property/isReloadingReports" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBAReportManagerC18isReloadingReportsSbvp">isReloadingReports</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>State management for whether or not the <em>reports</em> specifically are reloading.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="k">var</span> <span class="nv">isReloadingReports</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>

@@ -1234,14 +1234,14 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileManager.swift",
-      "line": 137,
+      "line": 139,
       "symbol": "SBAProfileManagerObject.userDefaults",
       "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileManager.swift",
-      "line": 259,
+      "line": 267,
       "symbol": "SBAProfileManagerObject.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
