@@ -95,7 +95,7 @@ class ProfileManagerTests: XCTestCase {
     }
     
     func checkFor(profileKey: String) {
-        let pm = SBABridgeConfiguration.shared.profileManager
+        let pm = SBAProfileManagerObject.shared
         let items = pm.profileItems()
         let keys = pm.profileKeys()
         XCTAssert(keys.contains(profileKey), "Expected profile keys to include '\(profileKey)' but it doesn't")
@@ -114,7 +114,7 @@ class ProfileManagerTests: XCTestCase {
     }
     
     func checkStorage(profileKey: String) {
-        let pm = SBABridgeConfiguration.shared.profileManager
+        let pm = SBAProfileManagerObject.shared
         let items = pm.profileItems()
         guard var reportItem = items[profileKey] as? SBAReportProfileItem
             else {

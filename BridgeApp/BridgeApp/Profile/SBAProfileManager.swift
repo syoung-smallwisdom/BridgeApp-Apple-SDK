@@ -128,11 +128,13 @@ public protocol SBAProfileManager {
 }
 
 /// Concrete implementation of the SBAProfileManager protocol.
-open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodable {
+open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decodable {
+    static let groupIdentifier: String = "Profile Activity Group"
+    
     /// Return the shared instance of the Profile Manager from the shared Bridge configuration.
-    public static let shared: SBAProfileManager = {
-        return SBABridgeConfiguration.shared.profileManager
-    }()
+    public static var shared: SBAProfileManager {
+        return SBABridgeConfiguration.shared.profileManager ?? SBAProfileManagerObject()
+    }
 
     public static let userDefaults = BridgeSDK.sharedUserDefaults()
 
@@ -148,6 +150,11 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
         }
         return allItems
     }()
+    
+    /// Is the account signed in?
+    private var isAuthenticated: Bool = false
+    
+
    
     // MARK: Internal methods
     // TODO: emm 2019-05-03 Deal with this (or remove? is it obsolete?) for mPower 2.1
@@ -183,7 +190,8 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
 //        return demographics
 //    }
     
-    // MARK: SBAReportManager
+    // MARK: SBAScheduleManager
+    
     /// Set up to manage reports for all our report-based profile items.
     override open func reportQueries() -> [SBAReportManager.ReportQuery] {
         let reportIdentifiers: [RSDIdentifier] = self.items.compactMap {
@@ -263,10 +271,24 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
     public required init(from decoder: Decoder) throws {
         super.init()
         
+        // Add an observer for changes to the login session.
+        NotificationCenter.default.addObserver(forName: .sbbUserSessionUpdated, object: nil, queue: OperationQueue.main) { (notification) in
+            guard let info = notification.userInfo?[kSBBUserSessionInfoKey] as? SBBUserSessionInfo else {
+                fatalError("Expecting a non-nil user session info")
+            }
+            let authenticated = info.authenticated?.boolValue ?? false
+            let authStateChanged = (authenticated && !self.isAuthenticated)
+            self.isAuthenticated = authenticated
+            if authStateChanged {
+                self.reloadData()
+            }
+        }
+
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         if container.contains(.items) {
             var items: [SBAProfileItem] = self.items
+            var schemas: [RSDIdentifier] = []
             var nestedContainer = try container.nestedUnkeyedContainer(forKey: .items)
             while !nestedContainer.isAtEnd {
                 let itemDecoder = try nestedContainer.superDecoder()
@@ -274,10 +296,19 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
                 let itemType = SBAProfileItemType(rawValue: itemTypeName)
                 if let item = try decodeItem(from: itemDecoder, with: itemType) {
                     items.append(item)
+                    if let schema = item.demographicSchema {
+                        schemas.append(RSDIdentifier(rawValue: schema))
+                    }
                 }
             }
             self.items = items
             self.loadReports()
+            
+            guard schemas.count > 0 else { return }
+            
+            let profileActivityGroup = SBAActivityGroupObject(identifier: SBAProfileManagerObject.groupIdentifier, title: nil, journeyTitle: nil, image: nil, activityIdentifiers: schemas, notificationIdentifier: nil, schedulePlanGuid: nil, activityGuidMap: nil)
+            self.activityGroup = profileActivityGroup
+            SBABridgeConfiguration.shared.addMapping(with: profileActivityGroup)
         }
     }
 
@@ -332,6 +363,5 @@ open class SBAProfileManagerObject: SBAReportManager, SBAProfileManager, Decodab
     override open func didFinishFetchingReports() {
         self.postValuesUpdatedNotification()
     }
-
 }
 

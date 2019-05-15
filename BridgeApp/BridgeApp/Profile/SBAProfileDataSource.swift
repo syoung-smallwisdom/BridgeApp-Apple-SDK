@@ -175,9 +175,9 @@ public extension SBAProfileDataSource {
 
 open class SBAProfileDataSourceObject: Decodable, SBAProfileDataSource {
     /// Return the shared instance of the Profile Data Source from the shared Bridge configuration.
-    public static let shared: SBAProfileDataSource = {
-        return SBABridgeConfiguration.shared.profileDataSource
-    }()
+    public static var shared: SBAProfileDataSource {
+        return SBABridgeConfiguration.shared.profileDataSource ?? SBAProfileDataSourceObject()
+    }
 
     private var sections: [SBAProfileSection] = [SBAProfileSection]()
 
