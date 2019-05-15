@@ -115,10 +115,10 @@ open class SBABridgeConfiguration {
     public var usesV1LegacyArchiving : Bool = false
     
     /// The profile manager for the study.
-    open private(set) var profileManager : SBAProfileManager = SBAProfileManagerObject()
+    open private(set) var profileManager : SBAProfileManager?
     
     /// The profile data source for the study.
-    open private(set) var profileDataSource : SBAProfileDataSource = SBAProfileDataSourceObject()
+    open private(set) var profileDataSource : SBAProfileDataSource?
     
     public init() {
     }

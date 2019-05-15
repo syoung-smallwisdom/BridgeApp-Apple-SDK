@@ -132,9 +132,9 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     static let groupIdentifier: String = "Profile Activity Group"
     
     /// Return the shared instance of the Profile Manager from the shared Bridge configuration.
-    public static let shared: SBAProfileManager = {
-        return SBABridgeConfiguration.shared.profileManager
-    }()
+    public static var shared: SBAProfileManager {
+        return SBABridgeConfiguration.shared.profileManager ?? SBAProfileManagerObject()
+    }
 
     public static let userDefaults = BridgeSDK.sharedUserDefaults()
 

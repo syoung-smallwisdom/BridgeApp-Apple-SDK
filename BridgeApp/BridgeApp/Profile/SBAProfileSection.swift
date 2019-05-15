@@ -365,11 +365,11 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     /// The actual profile item for the given profileItemKey.
     public var profileItem: SBAProfileItem {
         get {
-            let profileItems = SBABridgeConfiguration.shared.profileManager.profileItems()
+            let profileItems = SBAProfileManagerObject.shared.profileItems()
             return profileItems[self.profileItemKey]!
         }
         set {
-            var profileItems = SBABridgeConfiguration.shared.profileManager.profileItems()
+            var profileItems = SBAProfileManagerObject.shared.profileItems()
             profileItems[self.profileItemKey]!.value = newValue.value
        }
     }
