@@ -1653,13 +1653,6 @@
       "warning": "undocumented"
     },
     {
-      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBASurveyConfiguration.swift",
-      "line": 86,
-      "symbol": "SBASurveyConfiguration.colorTheme(for:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
       "line": 39,
       "symbol": "SBAAppDelegate.window",
