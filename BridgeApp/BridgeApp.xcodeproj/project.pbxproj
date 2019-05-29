@@ -79,7 +79,7 @@
 		F869804B20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F869804A20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift */; };
 		F87D2AC622780599007CA2B5 /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC522780599007CA2B5 /* BridgeSDK.framework */; };
 		F87D2AC822780599007CA2B5 /* Research.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC722780599007CA2B5 /* Research.framework */; };
-		F87D2ACA22780599007CA2B5 /* ResearchRecorders.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC922780599007CA2B5 /* ResearchRecorders.framework */; };
+		F87D2ACA22780599007CA2B5 /* ResearchRecorders.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC922780599007CA2B5 /* ResearchRecorders.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F87D2ACC22780599007CA2B5 /* ResearchUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2ACB22780599007CA2B5 /* ResearchUI.framework */; };
 		F87D2ACE227805B1007CA2B5 /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2ACD227805B1007CA2B5 /* BridgeSDK_Test.framework */; };
 		F87D2AD0227805B1007CA2B5 /* Research_UnitTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2ACF227805B1007CA2B5 /* Research_UnitTest.framework */; };
