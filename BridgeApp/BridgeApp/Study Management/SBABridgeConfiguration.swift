@@ -81,6 +81,9 @@ open class SBABridgeConfiguration {
     /// The shared singleton.
     public static var shared = SBABridgeConfiguration()
     
+    /// A serial queue used to manage accessors
+    fileprivate let syncQueue = DispatchQueue(label: "org.sagebionetworks.BridgeApp.SBABridgeConfiguration")
+    
     /// A mapping of identifiers to activity groups defined for this application.
     fileprivate var activityGroupMap : [String : SBAActivityGroup] = [:]
     
@@ -252,22 +255,30 @@ open class SBABridgeConfiguration {
     
     /// Update the mapping by adding the given activity info.
     open func addMapping(with activityInfo: SBAActivityInfo) {
-        self.activityInfoMap[activityInfo.identifier] = activityInfo
+        syncQueue.async {
+            self.activityInfoMap[activityInfo.identifier] = activityInfo
+        }
     }
     
     /// Update the mapping by adding the given activity group.
     open func addMapping(with activityGroup: SBAActivityGroup) {
-        self.activityGroupMap[activityGroup.identifier] = activityGroup
+        syncQueue.async {
+            self.activityGroupMap[activityGroup.identifier] = activityGroup
+        }
     }
     
     /// Update the mapping by adding the given schema reference.
     open func addMapping(with schemaReference: SBBSchemaReference) {
-        self.schemaReferenceMap[schemaReference.identifier] = schemaReference
+        syncQueue.async {
+            self.schemaReferenceMap[schemaReference.identifier] = schemaReference
+        }
     }
     
     /// Update the mapping by adding the given survey reference.
     open func addMapping(with surveyReference: SBBSurveyReference) {
-        self.surveyReferenceMap[surveyReference.identifier] = surveyReference
+        syncQueue.async {
+            self.surveyReferenceMap[surveyReference.identifier] = surveyReference
+        }
     }
     
     /// Update the mapping by adding the given task.
@@ -283,17 +294,23 @@ open class SBABridgeConfiguration {
                                                      moduleId: SBAModuleIdentifier(rawValue: task.identifier))
             self.addMapping(with: activityInfo)
         }
-        self.taskMap[task.identifier] = task
+        syncQueue.async {
+            self.taskMap[task.identifier] = task
+        }
     }
     
     /// Update the mapping of a report identifier to a given category.
     open func addMapping(with reportIdentifier: String, to category: SBAReportCategory) {
-        self.reportMap[reportIdentifier] = category
+        syncQueue.async {
+            self.reportMap[reportIdentifier] = category
+        }
     }
     
     /// Update the mapping from the activity identifier to the matching schema identifier.
     open func addMapping(from activityIdentifier: String, to schemaIdentifier: String) {
-        self.taskToSchemaIdentifierMap[activityIdentifier] = schemaIdentifier
+        syncQueue.async {
+            self.taskToSchemaIdentifierMap[activityIdentifier] = schemaIdentifier
+        }
     }
 
     /// Override this method to return a task transformer for a given task. This method is intended
@@ -316,19 +333,31 @@ open class SBABridgeConfiguration {
     
     /// Get the activity group with the given identifier.
     open func activityGroup(with identifier: String) -> SBAActivityGroup? {
-        return activityGroupMap[identifier]
+        var ret: SBAActivityGroup?
+        syncQueue.sync {
+            ret = self.activityGroupMap[identifier]
+        }
+        return ret
     }
     
     /// Look for a task info object in the mapping tables for the given activity reference.
     open func activityInfo(for activityIdentifier: String) -> SBAActivityInfo? {
-        return self.activityInfoMap[activityIdentifier]
+        var ret: SBAActivityInfo?
+        syncQueue.sync {
+            ret = self.activityInfoMap[activityIdentifier]
+        }
+        return ret
     }
     
     /// Get the task to return for the given identifier.
     open func task(for activityIdentifier: String) -> RSDTask? {
         
         // Look for a mapped task identifier.
-        let storedTask = self.taskMap[activityIdentifier]
+        var storedTask: RSDTask?
+        syncQueue.sync {
+            storedTask = self.taskMap[activityIdentifier]
+        }
+        
         let schemaInfo = self.schemaInfo(for: activityIdentifier)
         
         // Copy if option available.
@@ -343,32 +372,56 @@ open class SBABridgeConfiguration {
     /// shared bridge configuration's schema reference map.
     open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
         let schemaIdentifier = self.taskToSchemaIdentifierMap[activityIdentifier] ?? activityIdentifier
-        return self.schemaReferenceMap[schemaIdentifier]
+        var ret: RSDSchemaInfo?
+        syncQueue.sync {
+            ret = self.schemaReferenceMap[schemaIdentifier]
+        }
+        return ret
     }
     
     /// Get the survey with the given identifier.
     open func survey(for surveyIdentifier: String) -> SBBSurveyReference? {
-        return self.surveyReferenceMap[surveyIdentifier]
+        var ret: SBBSurveyReference?
+        syncQueue.sync {
+            ret = self.surveyReferenceMap[surveyIdentifier]
+        }
+        return ret
     }
     
     /// Get the report category for a given report identifier.
     open func reportCategory(for reportIdentifier: String) -> SBAReportCategory? {
-        return self.reportMap[reportIdentifier]
+        var ret: SBAReportCategory?
+        syncQueue.sync {
+            ret = self.reportMap[reportIdentifier]
+        }
+        return ret
     }
     
     /// Listing of all the surveys included in the reference mapping.
     public func allSurveys() -> [SBBSurveyReference] {
-        return surveyReferenceMap.map { $0.value }
+        var ret: [SBBSurveyReference]!
+        syncQueue.sync {
+            ret = self.surveyReferenceMap.map { $0.value }
+        }
+        return ret
     }
     
     /// Listing of all the schemas included in the reference mapping.
     public func allSchemas() -> [SBBSchemaReference] {
-        return schemaReferenceMap.map { $0.value }
+        var ret: [SBBSchemaReference]!
+        syncQueue.sync {
+            ret = self.schemaReferenceMap.map { $0.value }
+        }
+        return ret
     }
     
     /// Listing of all the activity groups in the reference mapping.
     public func allActivityGroups() -> [SBAActivityGroup] {
-        return activityGroupMap.map { $0.value }
+        var ret: [SBAActivityGroup]!
+        syncQueue.sync {
+            ret = self.activityGroupMap.map { $0.value }
+        }
+        return ret
     }
 }
 
@@ -562,7 +615,10 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
     
     /// Returns the configuration activity info objects mapped by activity identifier.
     public var tasks : [RSDTaskInfo] {
-        let map = SBABridgeConfiguration.shared.activityInfoMap
+        var map : [String : SBAActivityInfo]!
+        SBABridgeConfiguration.shared.syncQueue.sync {
+            map = SBABridgeConfiguration.shared.activityInfoMap
+        }
         return self.activityIdentifiers.compactMap { map[$0.stringValue] }
     }
 }
