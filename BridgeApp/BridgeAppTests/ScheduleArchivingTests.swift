@@ -40,21 +40,22 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     override func setUp() {
         super.setUp()
         
-        SBABridgeConfiguration.shared.addMapping(with: mainTaskSchemaIdentifier, to: .timestamp)
-        SBABridgeConfiguration.shared.addMapping(with: insertTaskSchemaIdentifier, to: .groupByDay)
-        SBABridgeConfiguration.shared.addMapping(with: insertSurveySchemaIdentifier, to: .singleton)
+        let config = self.scheduleManager?._configuration ?? SBABridgeConfiguration.shared
+        config.addMapping(with: mainTaskSchemaIdentifier, to: .timestamp)
+        config.addMapping(with: insertTaskSchemaIdentifier, to: .groupByDay)
+        config.addMapping(with: insertSurveySchemaIdentifier, to: .singleton)
         
-        SBABridgeConfiguration.shared.addMapping(from: mainTaskIdentifier, to: mainTaskSchemaIdentifier)
-        SBABridgeConfiguration.shared.addMapping(from: insertTaskIdentifier, to: insertTaskSchemaIdentifier)
-        SBABridgeConfiguration.shared.addMapping(from: insertSurveyIdentifier, to: insertSurveySchemaIdentifier)
+        config.addMapping(from: mainTaskIdentifier, to: mainTaskSchemaIdentifier)
+        config.addMapping(from: insertTaskIdentifier, to: insertTaskSchemaIdentifier)
+        config.addMapping(from: insertSurveyIdentifier, to: insertSurveySchemaIdentifier)
         
-        SBABridgeConfiguration.shared.addMapping(with: SBBSchemaReference(dictionaryRepresentation:
+        config.addMapping(with: SBBSchemaReference(dictionaryRepresentation:
             ["id" : mainTaskSchemaIdentifier,
              "revision" : NSNumber(value: mainTaskSchemaRevision)])!)
-        SBABridgeConfiguration.shared.addMapping(with: SBBSchemaReference(dictionaryRepresentation:
+        config.addMapping(with: SBBSchemaReference(dictionaryRepresentation:
             ["id" : insertTaskSchemaIdentifier,
              "revision" : NSNumber(value: insertTaskSchemaRevision)])!)
-        SBABridgeConfiguration.shared.addMapping(with: SBBSchemaReference(dictionaryRepresentation:
+        config.addMapping(with: SBBSchemaReference(dictionaryRepresentation:
             ["id" : insertSurveySchemaIdentifier,
              "revision" : NSNumber(value: insertSurveySchemaRevision)])!)
     }

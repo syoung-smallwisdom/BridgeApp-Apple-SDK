@@ -55,8 +55,10 @@ class SBAScheduleManagerTests: XCTestCase {
         super.setUp()
         
         BridgeSDK.setup(withBridgeInfo: TestBridgeInfo())
-        SBABridgeConfiguration.shared = SBABridgeConfiguration()
+        let config = SBABridgeConfiguration()
+        SBABridgeConfiguration.shared = config
         scheduleManager = TestScheduleManager()
+        scheduleManager._configuration = config
         mockActivityManager = MockActivityManager()
     }
     
@@ -134,6 +136,11 @@ class SBAScheduleManagerTests: XCTestCase {
 }
 
 class TestScheduleManager : SBAScheduleManager {
+    
+    var _configuration: SBABridgeConfiguration?
+    override var configuration: SBABridgeConfiguration {
+        return _configuration ?? SBABridgeConfiguration.shared
+    }
     
     var nowValue = Date()
     var updateFinishedBlock: (() -> Void)?
