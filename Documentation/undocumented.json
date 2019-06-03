@@ -1493,14 +1493,14 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBABridgeConfiguration.swift",
-      "line": 123,
+      "line": 126,
       "symbol": "SBABridgeConfiguration.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBABridgeConfiguration.swift",
-      "line": 663,
+      "line": 719,
       "symbol": "SBAActivityInfoObject.init(identifier:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
