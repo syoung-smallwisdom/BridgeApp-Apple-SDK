@@ -171,7 +171,11 @@ public struct SBAMedicationItem : Codable, SBAMedication, RSDEmbeddedIconVendor 
 ///            {
 ///                "identifier": "ibuprofen",
 ///                "dosage": "10/100 mg",
-///                "scheduleItems" : [ { "daysOfWeek": [1,3,5], "timeOfDay" : "8:00" }]
+///                "scheduleItems" : [ { "daysOfWeek": [1,3,5], "timeOfDay" : "08:00" },
+///                                    { "daysOfWeek": [1,3,5], "timeOfDay" : "20:00" },
+///                                    { "daysOfWeek": [0,1,2,3,4,5,6] }],
+///                "timestamps" : [{"timeOfDay" : "08:00", "loggedDate" : "2019-05-02T08:10:00.000-07:00"},
+///                                {"timeOfDay" : "afternoon", "loggedDate" : "2019-05-02T13:15:00.000-07:00"}]
 ///            }
 ///            """.data(using: .utf8)! // our data in native (JSON) format
 ///```
