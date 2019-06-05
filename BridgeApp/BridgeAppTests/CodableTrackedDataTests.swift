@@ -552,4 +552,120 @@ class CodableTrackedDataTests: XCTestCase {
         }
     }
     
+    func testMedAnswersV1Decoding() {
+        let json = """
+        {
+            "items": [{
+                    "identifier": "medA3",
+                    "dosage": "10 mg",
+                    "scheduleItems": [{
+                            "timeOfDay": "12:00",
+                            "daysOfWeek": [2, 5, 3, 7, 6, 4, 1]
+                        },
+                        {
+                            "timeOfDay": "20:00",
+                            "daysOfWeek": [3, 1, 6, 4, 2, 5, 7]
+                        },
+                        {
+                            "timeOfDay": "08:00",
+                            "daysOfWeek": [2, 6, 5, 4, 1, 7, 3]
+                        }
+                    ],
+                    "timestamps": [{
+                            "loggedDate": "2018-02-04T08:00:00.000-08:00",
+                            "timeOfDay": "08:00"
+                        },
+                        {
+                            "loggedDate": "2018-02-04T12:15:00.000-08:00",
+                            "timeOfDay": "12:00"
+                        },
+                        {
+                            "loggedDate": "2018-02-04T20:45:00.000-08:00",
+                            "timeOfDay": "20:00"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "medA4",
+                    "dosage": "40 mg",
+                    "scheduleItems": [{
+                            "timeOfDay": "10:30",
+                            "daysOfWeek": [2, 4, 6]
+                        },
+                        {
+                            "timeOfDay": "07:30",
+                            "daysOfWeek": [2, 6, 4]
+                        }
+                    ],
+                    "timestamps": [{
+                            "loggedDate": "2018-02-04T07:45:00.000-08:00",
+                            "timeOfDay": "07:30"
+                        },
+                        {
+                            "loggedDate": "2018-02-04T10:30:00.000-08:00",
+                            "timeOfDay": "10:30"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "medA5",
+                    "dosage": "5 ml",
+                    "scheduleItems": [{
+                        "daysOfWeek": [6, 1, 5, 4, 3, 7, 2]
+                    }],
+                    "timestamps": [{
+                            "loggedDate": "2018-02-04T08:00:00.000-08:00",
+                            "timeOfDay": "morning"
+                        },
+                        {
+                            "loggedDate": "2018-02-04T12:15:00.000-08:00",
+                            "timeOfDay": "afternoon"
+                        },
+                        {
+                            "loggedDate": "2018-02-04T20:45:00.000-08:00",
+                            "timeOfDay": "evening"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "medC3",
+                    "dosage": "2 ml",
+                    "scheduleItems": [{
+                            "timeOfDay": "08:00",
+                            "daysOfWeek": [1, 5]
+                        },
+                        {
+                            "timeOfDay": "20:00",
+                            "daysOfWeek": [1, 5]
+                        }
+                    ]
+                }
+            ],
+            "reminders": [
+                0
+            ],
+            "startDate": "2019-06-04T18:12:05.233-07:00",
+            "type": "medication",
+            "identifier": "review",
+            "endDate": "2019-06-04T18:12:05.233-07:00"
+        }
+        """.data(using: .utf8)! // our data in native (JSON) format
+        
+        do {
+            let clientData = try JSONSerialization.jsonObject(with: json, options: []) as! SBBJSONValue
+            var trackingResult = SBAMedicationTrackingResult(identifier: "Foo")
+            try trackingResult.updateSelected(from: clientData, with: [])
+            
+            XCTAssertNotNil(trackingResult.reminders)
+            XCTAssertEqual(trackingResult.reminders?.first, 0)
+            XCTAssertEqual(trackingResult.reminders?.count, 1)
+            
+            let items = trackingResult.medications
+            XCTAssertEqual(items.map { $0.identifier }, ["medA3", "medA4", "medA5", "medC3"])
+        }
+        catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
 }
