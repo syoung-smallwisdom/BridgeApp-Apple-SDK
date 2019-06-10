@@ -213,27 +213,31 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
         }
         
         let requests: [UNNotificationRequest] = medicationResult.medications.compactMap { (med) -> [UNNotificationRequest]? in
-            guard let scheduleItems = med.scheduleItems else { return nil }
-            let scheduleRequests: [UNNotificationRequest] = scheduleItems.compactMap { (schedule) -> [UNNotificationRequest]? in
-                guard let timeOfDay = schedule.timeOfDayString else { return nil }
-                let triggers = schedule.notificationTriggers()
-                let triggerRequests: [UNNotificationRequest] = triggers.map { (dateComponents) -> [UNNotificationRequest] in
-                    let reminderRequests: [UNNotificationRequest] = reminders.compactMap { (reminderTimeInterval) -> UNNotificationRequest? in
-                        let identifier = self.getLocalNotificationIdentifier(med, timeOfDay, dateComponents, reminderTimeInterval)
-                        if pendingRequestIds.remove(where: { $0 == identifier }).count > 0 {
-                            // If there is an unchanged pending request, then remove it from this list
-                            // and do not create a new reminder for it.
-                            return nil
+            guard let dosageItems = med.dosageItems else { return nil }
+            let medRequests = dosageItems.compactMap { (dosage) -> [UNNotificationRequest]? in
+                guard let scheduleItems = dosage.scheduleItems else { return nil }
+                let scheduleRequests: [UNNotificationRequest] = scheduleItems.compactMap { (schedule) -> [UNNotificationRequest]? in
+                    guard let timeOfDay = schedule.timeOfDayString else { return nil }
+                    let triggers = schedule.notificationTriggers()
+                    let triggerRequests: [UNNotificationRequest] = triggers.map { (dateComponents) -> [UNNotificationRequest] in
+                        let reminderRequests: [UNNotificationRequest] = reminders.compactMap { (reminderTimeInterval) -> UNNotificationRequest? in
+                            let identifier = self.getLocalNotificationIdentifier(med, timeOfDay, dateComponents, reminderTimeInterval)
+                            if pendingRequestIds.remove(where: { $0 == identifier }).count > 0 {
+                                // If there is an unchanged pending request, then remove it from this list
+                                // and do not create a new reminder for it.
+                                return nil
+                            }
+                            else {
+                                return self.createLocalNotification(med, timeOfDay, dateComponents, reminderTimeInterval)
+                            }
                         }
-                        else {
-                            return self.createLocalNotification(med, timeOfDay, dateComponents, reminderTimeInterval)
-                        }
-                    }
-                    return reminderRequests
+                        return reminderRequests
+                        }.flatMap { $0 }
+                    return triggerRequests
                     }.flatMap { $0 }
-                return triggerRequests
+                return scheduleRequests
                 }.flatMap { $0 }
-            return scheduleRequests
+            return medRequests
             }.flatMap { $0 }
         
         return (requests, pendingRequestIds)

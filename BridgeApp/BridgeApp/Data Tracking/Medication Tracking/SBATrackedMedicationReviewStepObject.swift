@@ -34,7 +34,7 @@
 import Foundation
 
 /// A step used for review selected medication and their details
-open class SBATrackedMedicationReviewStepObject : SBATrackedItemsReviewStepObject, RSDStepViewControllerVendor {
+open class SBATrackedMedicationReviewStepObject : SBATrackedSelectionStepObject {
     
     #if !os(watchOS)
     /// Override to return a medication tracking review step view controller.
@@ -65,21 +65,9 @@ open class SBATrackedMedicationReviewStepObject : SBATrackedItemsReviewStepObjec
     }
     
     private func _commonInit() {
-        // Set the default values for the title and subtitle to display depending upon state.
-        if self.addDetailsTitle == nil {
-            self.addDetailsTitle = Localization.localizedString("MEDICATION_ADD_DETAILS_TITLE")
-        }
-        if self.addDetailsSubtitle == nil {
-            self.addDetailsSubtitle = Localization.localizedString("MEDICATION_ADD_DETAILS_DETAIL")
-        }
-        if self.reviewTitle == nil {
-            self.reviewTitle = Localization.localizedString("MEDICATION_REVIEW_TITLE")
-        }
-        
-        if self.actions?[.addMore] == nil {
-            var actions = self.actions ?? [:]
-            actions[.addMore] = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_EDIT_LIST_TITLE"))
-            self.actions = actions
+
+        if self.title == nil {
+            self.title = Localization.localizedString("MEDICATION_REVIEW_TITLE")
         }
         
         if self.actions?[.navigation(.goForward)] == nil {
@@ -91,7 +79,7 @@ open class SBATrackedMedicationReviewStepObject : SBATrackedItemsReviewStepObjec
 }
 
 /// A data source used to handle tracked medication review.
-open class SBATrackedMedicationReviewDataSource : SBATrackingReviewDataSource {
+open class SBATrackedMedicationReviewDataSource : SBAMedicationLoggingDataSource {
 
     fileprivate var mostRecentResult: SBAMedicationTrackingResult? {
         return self.trackingResult() as? SBAMedicationTrackingResult
@@ -111,15 +99,8 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingReviewDataSource {
         }
         
         let review = buildReviewSections(step: step, result: result)
-        var itemGroups = review.itemGroups
-        var sections = review.sections
-        
-        let actionType: RSDUIActionType = .addMore
-        if let uiStep = step as? RSDUIActionHandler, let action = uiStep.action(for: actionType, on: step) {
-            let tableItem = SBAModalSelectionTableItem(identifier: actionType.stringValue, rowIndex: 0, reuseIdentifier: RSDFormUIHint.button.stringValue, action: action)
-            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: [tableItem]))
-            sections.append(RSDTableSection(identifier: "addMore", sectionIndex: 1, tableItems: [tableItem]))
-        }
+        let itemGroups = review.itemGroups
+        let sections = review.sections
         
         return (sections, itemGroups)
     }
@@ -141,7 +122,7 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingReviewDataSource {
     }
     
     /// Override the instantiation of the table item to return a medication review table item
-    open class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
+    open override class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
 
         guard let medAnswer = itemAnswer as? SBAMedicationAnswer else {
             return RSDTextTableItem(rowIndex: rowIndex, text: "Invalid SBATrackedItemAnswer format")
@@ -149,6 +130,32 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingReviewDataSource {
 
         let reviewItem = SBATrackedMedicationReviewItem(medication: medAnswer, rowIndex: rowIndex, reuseIdentifier: SBATrackedMedicationReviewCell.reuseId)
         return reviewItem
+    }
+    
+    /// Override to check if the medications all have required values.
+    open override func allAnswersValid() -> Bool {
+        guard let result = self.mostRecentResult else { return true }
+        let isValid =
+            result.medications.count > 0 &&
+            result.medications.reduce(true, { $0 && $1.hasRequiredValues })
+        return isValid
+    }
+    
+    /// Override to customize the actions for skip and learn more.
+    open override func action(for actionType: RSDUIActionType) -> RSDUIAction? {
+        switch actionType {
+        case .navigation(.learnMore):
+            // Shoehorn in using the learn more to add medication b/c the new design has the "Add a medication"
+            // button in the place where typically this should be a "learn more" action. syoung 06/11/2019
+            return RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_ADD_BUTTON"))
+            
+        case .navigation(.skip):
+            // Always return the skip button and let the view controller refresh.
+            return RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_REVIEW_SKIP"))
+            
+        default:
+            return super.action(for: actionType)
+        }
     }
 }
 
@@ -163,7 +170,7 @@ open class SBATrackedMedicationReviewItem : RSDModalStepTableItem {
     ///     - identifier: The cell identifier.
     ///     - rowIndex: The index of this item relative to all rows in the section in which this item resides.
     ///     - reuseIdentifier: The string to use as the reuse identifier.
-    public init(medication: SBAMedicationAnswer, rowIndex: Int, reuseIdentifier: String = RSDFormUIHint.logging.rawValue) {
+    public init(medication: SBAMedicationAnswer, rowIndex: Int, reuseIdentifier: String = SBATrackedMedicationReviewCell.reuseId) {
         self.medication = medication
         super.init(identifier: medication.identifier, rowIndex: rowIndex, reuseIdentifier: reuseIdentifier)
     }

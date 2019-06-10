@@ -33,10 +33,6 @@
 
 import Foundation
 
-public enum SBATimeRange : String, Codable {
-    case morning, afternoon, evening, night
-}
-
 extension Date {
     
     public func startOfDay() -> Date {
@@ -81,15 +77,6 @@ extension Date {
     
     public func timeRange() -> SBATimeRange {
         let hour = Calendar.current.component(.hour, from: self)
-        switch hour {
-        case 5..<12 :
-            return .morning
-        case 12..<17 :
-            return .afternoon
-        case 17..<22 :
-            return .evening
-        default:
-            return .night
-        }
+        return SBATimeRange(hour: hour) ?? .night
     }
 }

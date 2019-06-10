@@ -33,10 +33,14 @@
 
 import UIKit
 
+/// Extend `SBAMedicationLoggingStepObject` to implement the step view controller vendor.
+extension SBAMedicationLoggingStepObject : RSDStepViewControllerVendor {
+}
+
 /// `SBATrackedMedicationLoggingStepViewController` is the default view controller shown for a `SBAMedicationLoggingStepObject`.
 ///
 /// - seealso: `SBAMedicationLoggingStepObject`
-open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewController {
+open class SBATrackedMedicationLoggingStepViewController: SBAMedicationListStepViewController {
     
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
@@ -44,7 +48,8 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
         
         if reuseIdentifier == SBAMedicationLoggingCell.reuseId {
             tableView.register(SBAMedicationLoggingCell.nib, forCellReuseIdentifier: reuseIdentifier)
-        } else {
+        }
+        else {
             super.registerReuseIdentifierIfNeeded(reuseIdentifier)
         }
     }
@@ -56,18 +61,16 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
             
             // Keep a strong reference to the label so it sticks around when removeFromSuperview is called
             let titleLabelRef = header.titleLabel!
-            header.titleLabel.removeFromSuperview() // Removes all associated constraints
-            // The RSDStepChoiceSectionHeader uses autolayout so to center the label appropriately,
-            // we need to have the label span the full width of the cell
-            header.contentView.addSubview(titleLabelRef)
-            titleLabelRef.rsd_alignToSuperview([.leading, .trailing, .top], padding: 20.0)
-            header.detailLabel.rsd_alignBelow(view: titleLabelRef, padding: 20.0)
+            if let constraints = titleLabelRef.rsd_constraint(for: .leading, relation: .equal) {
+                titleLabelRef.rsd_alignToSuperview([.trailing], padding: constraints.constant)
+            }
             
             // Style the header to match design
-            header.contentView.backgroundColor = self.designSystem.colorRules.backgroundPrimary.color
-            header.titleLabel.textColor = UIColor.white
+            let backgroundColor = self.designSystem.colorRules.backgroundPrimary
+            header.contentView.backgroundColor = backgroundColor.color
+            header.titleLabel.textColor = self.designSystem.colorRules.textColor(on: backgroundColor, for: .heading2)
             header.titleLabel.textAlignment = .center
-            header.titleLabel.font = self.designSystem.fontRules.font(for: .fieldHeader, compatibleWith: traitCollection)
+            header.titleLabel.font = self.designSystem.fontRules.font(for: .heading2, compatibleWith: traitCollection)
         }
         return view
     }
@@ -88,7 +91,9 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
     
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let source = tableData as? SBAMedicationLoggingDataSource,
-            let tableItem = source.tableItem(at: indexPath) as? SBATrackedMedicationLoggingTableItem else {
+            let tableItem = source.tableItem(at: indexPath) as? SBATrackedMedicationLoggingTableItem
+            else {
+                super.tableView(tableView, didSelectRowAt: indexPath)
                 return
         }
         tableItem.isEditingDisplayTime = false
@@ -123,19 +128,26 @@ extension SBATrackedMedicationLoggingStepViewController: SBAMedicationLoggingCel
     }
     
     public func logTapped(cell: SBAMedicationLoggingCell) {
-        guard let source = tableData as? SBAMedicationLoggingDataSource,
-            let loggingItem = cell.loggingTableItem else {
-                return
-        }
-        source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
+        updateLogging(for: cell)
     }
     
     public func undoTapped(cell: SBAMedicationLoggingCell) {
+        updateLogging(for: cell)
+    }
+    
+    func updateLogging(for cell: SBAMedicationLoggingCell) {
         guard let source = tableData as? SBAMedicationLoggingDataSource,
             let loggingItem = cell.loggingTableItem else {
                 return
         }
-        source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
+        if loggingItem.dosage.isAnytime ?? true {
+            source.reloadLoggingDetails(for: loggingItem, at: cell.indexPath)
+            self.tableView.reloadSections([cell.indexPath.section], with: .automatic)
+        }
+        else {
+            source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
+            cell.tableItem = loggingItem
+        }
     }
 
     public func timeTapped(cell: SBAMedicationLoggingCell) {
@@ -172,10 +184,13 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     @IBOutlet weak var titleLabelHeight: NSLayoutConstraint!
     
     @IBOutlet weak var weekdayLabel: UILabel!
+    @IBOutlet weak var takeAnytimeLabel: UILabel!
     @IBOutlet weak var checkmarkView: RSDCheckmarkView!
     
     @IBOutlet weak var loggedView: UIView!
     @IBOutlet weak var loggedTimeButton: RSDUnderlinedButton!
+    @IBOutlet weak var takenButton: RSDRoundedButton!
+    @IBOutlet weak var undoButton: RSDUnderlinedButton!
     
     @IBOutlet weak var notLoggedView: UIView!
     @IBOutlet weak var notLoggedTimeLabel: UILabel!
@@ -192,24 +207,39 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     }
     
     open override var usesTableBackgroundColor: Bool {
-        return true
+        return false
     }
     
     override open func awakeFromNib() {
         super.awakeFromNib()
-
-        updateCheckmarkColor()
+        updateColorsAndFonts()
     }
     
     override open func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
         super.setDesignSystem(designSystem, with: background)
-        updateDividerColor()
-        updateCheckmarkColor()
+        updateColorsAndFonts()
     }
     
-    func updateCheckmarkColor() {
+    func updateColorsAndFonts() {
         let designSystem = self.designSystem ?? RSDDesignSystem()
+        let backgroundColor = self.backgroundColorTile ?? designSystem.colorRules.backgroundLight
+        
         self.checkmarkView.backgroundColor = designSystem.colorRules.palette.secondary.normal.color
+        self.titleLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .heading3)
+        self.titleLabel.font = designSystem.fontRules.font(for: .heading3, compatibleWith: traitCollection)
+        self.weekdayLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .small)
+        self.weekdayLabel.font = designSystem.fontRules.font(for: .small, compatibleWith: traitCollection)
+        self.notLoggedTimeLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .body)
+        self.notLoggedTimeLabel.font = designSystem.fontRules.font(for: .body, compatibleWith: traitCollection)
+        self.takeAnytimeLabel.text = Localization.localizedString("MEDICATION_TAKE_ANYTIME")
+        self.takeAnytimeLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .body)
+        self.takeAnytimeLabel.font = designSystem.fontRules.font(for: .body, compatibleWith: traitCollection)
+        
+        self.loggedTimeButton.setDesignSystem(designSystem, with: backgroundColor)
+        self.undoButton.setDesignSystem(designSystem, with: backgroundColor)
+        self.takenButton.setDesignSystem(designSystem, with: backgroundColor)
+        
+        updateDividerColor()
     }
     
     func updateDividerColor() {
@@ -237,9 +267,17 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
             self.loggedTimeButton.isHidden = (loggingItem.timeText == nil)
             self.notLoggedTimeLabel.isHidden = (loggingItem.timeText == nil)
             let timeFormat = !isLogged ? "%@" : Localization.localizedString("MEDICATION_LOGGING_TIME_EDIT_%@")
-            let timeStr = String(format: timeFormat, loggingItem.timeText ?? "")
-            self.loggedTimeButton.setTitle(timeStr, for: .normal)
-            self.notLoggedTimeLabel.text = timeStr
+            if let timeText = loggingItem.timeText {
+                let timeStr = String(format: timeFormat, timeText)
+                self.loggedTimeButton.setTitle(timeStr, for: .normal)
+                self.notLoggedTimeLabel.text = timeStr
+                self.takeAnytimeLabel.isHidden = true
+            }
+            else {
+                self.takeAnytimeLabel.isHidden = false
+                self.weekdayLabel.isHidden = true
+                self.notLoggedTimeLabel.isHidden = true
+            }
             
             self.datePicker.date = loggingItem.displayDate ?? Date()
             if loggingItem.isEditingDisplayTime {
@@ -279,14 +317,12 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     @IBAction func takenTapped() {
         guard let loggingItem = self.loggingTableItem else { return }
         loggingItem.logTimestamp()
-        self.tableItem = loggingItem
         self.delegate?.logTapped(cell: self)
     }
     
     @IBAction func undoTapped() {
         guard let loggingItem = self.loggingTableItem else { return }
         loggingItem.undo()
-        self.tableItem = loggingItem
         self.delegate?.undoTapped(cell: self)
     }
     

@@ -38,7 +38,7 @@ import UserNotifications
 /// `SBATrackedItemRemindersStepViewController` contains a prompt butotn cell that
 /// shows a form step view controller with the input fields from the form step.
 ///
-/// - seealso: `RSDTableStepViewController`, `SBARemoveTrackedItemsResultObject`, `SBATrackedItemRemindersStepObject`
+/// - seealso: `RSDTableStepViewController`, `SBATrackedItemRemindersStepObject`
 open class SBATrackedItemRemindersStepViewController: RSDTableStepViewController {
     
     public var reminderStep: SBATrackedItemRemindersStepObject? {

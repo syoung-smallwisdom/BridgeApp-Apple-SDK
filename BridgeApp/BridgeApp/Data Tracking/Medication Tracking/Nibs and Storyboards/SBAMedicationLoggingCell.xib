@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -19,7 +19,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="339.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Medication Dosage" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="tQR-rc-Cks">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Medication Dosage" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tQR-rc-Cks">
                         <rect key="frame" x="16" y="0.0" width="288" height="64"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="64" id="nyx-le-fKo"/>
@@ -28,52 +28,6 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BwH-d1-odP" userLabel="Needs Taken View">
-                        <rect key="frame" x="0.0" y="72" width="320" height="91.5"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Tof-1h-r3E">
-                                <rect key="frame" x="20" y="26" width="140" height="40"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hrm-L5-BqF">
-                                        <rect key="frame" x="0.0" y="0.0" width="140" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Weekday" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2JQ-of-a44">
-                                        <rect key="frame" x="0.0" y="20.5" width="140" height="19.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                        <color key="textColor" red="0.42352941176470588" green="0.45490196078431372" blue="0.53725490196078429" alpha="1" colorSpace="calibratedRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="140" id="cbr-QV-x6O"/>
-                                </constraints>
-                            </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Rf-LQ-ucb" userLabel="Taken Button" customClass="RSDRoundedButton" customModule="ResearchUI">
-                                <rect key="frame" x="160" y="31" width="140" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="140" id="dT3-7A-2Ao"/>
-                                </constraints>
-                                <state key="normal" title="Taken"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSecondaryButton" value="NO"/>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="takenTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="rCl-yw-I7C"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="Tof-1h-r3E" firstAttribute="centerY" secondItem="BwH-d1-odP" secondAttribute="centerY" id="4R8-4w-rHe"/>
-                            <constraint firstItem="Tof-1h-r3E" firstAttribute="leading" secondItem="BwH-d1-odP" secondAttribute="leading" constant="20" id="5fG-BL-acz"/>
-                            <constraint firstAttribute="trailing" secondItem="5Rf-LQ-ucb" secondAttribute="trailing" constant="20" id="OYR-6A-tOb"/>
-                            <constraint firstAttribute="height" constant="91.5" id="YLV-l5-jW6"/>
-                            <constraint firstItem="5Rf-LQ-ucb" firstAttribute="centerY" secondItem="BwH-d1-odP" secondAttribute="centerY" id="uQK-OG-0p8"/>
-                        </constraints>
-                    </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fmn-bX-ino" userLabel="Already Taken View">
                         <rect key="frame" x="0.0" y="72" width="320" height="91.5"/>
                         <subviews>
@@ -89,7 +43,7 @@
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9NR-dy-INI">
-                                        <rect key="frame" x="36" y="0.5" width="72.5" height="51.5"/>
+                                        <rect key="frame" x="36" y="-1" width="72.5" height="55"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Taken at" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NzJ-39-cT4">
                                                 <rect key="frame" x="0.0" y="0.0" width="72.5" height="21.5"/>
@@ -98,7 +52,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pnw-lD-zAG" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                <rect key="frame" x="0.0" y="21.5" width="72.5" height="30"/>
+                                                <rect key="frame" x="0.0" y="21.5" width="72.5" height="33.5"/>
                                                 <state key="normal" title="Time"/>
                                                 <connections>
                                                     <action selector="timeTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="7Tj-S0-1BR"/>
@@ -122,7 +76,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9lU-GV-kPA" userLabel="Undo Button" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                <rect key="frame" x="263" y="31" width="37" height="30"/>
+                                <rect key="frame" x="256" y="29" width="44" height="33.5"/>
                                 <state key="normal" title="Undo"/>
                                 <connections>
                                     <action selector="undoTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="UJe-Fi-ani"/>
@@ -136,6 +90,62 @@
                             <constraint firstItem="cEH-ar-7Xi" firstAttribute="centerY" secondItem="Fmn-bX-ino" secondAttribute="centerY" id="GSb-oY-Aif"/>
                             <constraint firstItem="cEH-ar-7Xi" firstAttribute="leading" secondItem="Fmn-bX-ino" secondAttribute="leading" constant="20" id="tv4-FL-HfN"/>
                             <constraint firstAttribute="trailing" secondItem="9lU-GV-kPA" secondAttribute="trailing" constant="20" id="y8u-ct-ga4"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BwH-d1-odP" userLabel="Needs Taken View">
+                        <rect key="frame" x="0.0" y="72" width="320" height="91.5"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Tof-1h-r3E">
+                                <rect key="frame" x="20" y="26" width="140" height="40"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hrm-L5-BqF">
+                                        <rect key="frame" x="0.0" y="0.0" width="140" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Weekday" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2JQ-of-a44">
+                                        <rect key="frame" x="0.0" y="20.5" width="140" height="19.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <color key="textColor" red="0.42352941176470588" green="0.45490196078431372" blue="0.53725490196078429" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="140" id="cbr-QV-x6O"/>
+                                </constraints>
+                            </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Take this medication at any time" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZrQ-YY-giI">
+                                <rect key="frame" x="20" y="10" width="130" height="71.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Rf-LQ-ucb" userLabel="Taken Button" customClass="RSDRoundedButton" customModule="ResearchUI">
+                                <rect key="frame" x="160" y="31" width="140" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="140" id="dT3-7A-2Ao"/>
+                                </constraints>
+                                <state key="normal" title="Taken"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isSecondaryButton" value="NO"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="takenTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="rCl-yw-I7C"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Tof-1h-r3E" firstAttribute="centerY" secondItem="BwH-d1-odP" secondAttribute="centerY" id="4R8-4w-rHe"/>
+                            <constraint firstItem="ZrQ-YY-giI" firstAttribute="leading" secondItem="Tof-1h-r3E" secondAttribute="leading" id="5aV-zL-z1H"/>
+                            <constraint firstItem="Tof-1h-r3E" firstAttribute="leading" secondItem="BwH-d1-odP" secondAttribute="leading" constant="20" id="5fG-BL-acz"/>
+                            <constraint firstItem="5Rf-LQ-ucb" firstAttribute="leading" secondItem="ZrQ-YY-giI" secondAttribute="trailing" constant="10" id="6IO-zh-X9v"/>
+                            <constraint firstItem="ZrQ-YY-giI" firstAttribute="centerY" secondItem="5Rf-LQ-ucb" secondAttribute="centerY" id="DfN-Nv-Lx9"/>
+                            <constraint firstAttribute="trailing" secondItem="5Rf-LQ-ucb" secondAttribute="trailing" constant="20" id="OYR-6A-tOb"/>
+                            <constraint firstAttribute="bottom" secondItem="ZrQ-YY-giI" secondAttribute="bottom" constant="10" id="btx-5f-X0v"/>
+                            <constraint firstItem="5Rf-LQ-ucb" firstAttribute="centerY" secondItem="BwH-d1-odP" secondAttribute="centerY" id="uQK-OG-0p8"/>
+                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="5Rf-LQ-ucb" secondAttribute="bottom" constant="18" id="y2B-pV-OrK"/>
                         </constraints>
                     </view>
                     <datePicker contentMode="scaleToFill" verticalHuggingPriority="980" verticalCompressionResistancePriority="980" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="3Hi-ub-rDv">
@@ -191,8 +201,11 @@
                 <outlet property="loggedView" destination="Fmn-bX-ino" id="Tfy-QS-CLY"/>
                 <outlet property="notLoggedTimeLabel" destination="hrm-L5-BqF" id="9xv-Z5-phi"/>
                 <outlet property="notLoggedView" destination="BwH-d1-odP" id="NJ6-gC-hOP"/>
+                <outlet property="takeAnytimeLabel" destination="ZrQ-YY-giI" id="OOp-fw-BHt"/>
+                <outlet property="takenButton" destination="5Rf-LQ-ucb" id="ldT-yT-lYv"/>
                 <outlet property="titleLabel" destination="tQR-rc-Cks" id="ScZ-vw-IyY"/>
                 <outlet property="titleLabelHeight" destination="nyx-le-fKo" id="YGX-NN-Vgq"/>
+                <outlet property="undoButton" destination="9lU-GV-kPA" id="xH7-dy-Zxb"/>
                 <outlet property="weekdayLabel" destination="2JQ-of-a44" id="9XJ-bQ-uzN"/>
             </connections>
             <point key="canvasLocation" x="34" y="202"/>

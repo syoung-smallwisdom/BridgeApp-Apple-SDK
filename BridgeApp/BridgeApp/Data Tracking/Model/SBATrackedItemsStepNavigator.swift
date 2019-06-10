@@ -43,8 +43,8 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     }
     
     /// Publicly accessible coding keys for the steps used by this navigator.
-    public enum StepIdentifiers : String, CodingKey {
-        case selection, review, addDetails, logging, reminder, introduction
+    public enum StepIdentifiers : String, CodingKey, CaseIterable {
+        case introduction, selection, review, logging, reminder
     }
     
     public enum RequiredStepCodingKeys : String, CodingKey {
@@ -94,19 +94,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     /// The task path associated with the current run of the task.
     public private(set) weak var taskPath: RSDPathComponent?
     
-    /// Setup data tracking for this task.
-    @available(*, deprecated)
-    open func setupTracking(with taskPath: RSDPathComponent) {
-        self.taskPath = taskPath
-        guard let root = taskPath.rootPathComponent as? SBATaskViewModel,
-            let reportManager = root.reportManager,
-            let clientData = reportManager.clientData(with: self.activityIdentifier.stringValue)
-            else {
-                return
-        }
-        self.previousClientData = clientData
-    }
-    
     /// Build the task data for this task.
     open func taskData(for taskResult: RSDTaskResult) -> RSDTaskData? {
         do {
@@ -140,7 +127,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
         self.activityIdentifier = RSDIdentifier(rawValue: identifier)
         self.selectionStep = type(of: self).buildSelectionStep(items: items, sections: sections)
         self.reviewStep = type(of: self).buildReviewStep(items: items, sections: sections)
-        self.detailStepTemplates = type(of: self).buildDetailSteps(items: items, sections: sections)
         self.loggingStep = type(of: self).buildLoggingStep(items: items, sections: sections)
         self.reminderStep = type(of: self).buildReminderStep()
         self.introductionStep = type(of: self).buildIntroductionStep()
@@ -160,11 +146,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
         
         // Build the details template.
         let container = try decoder.container(keyedBy: StepIdentifiers.self)
-        let detailStepTemplates = type(of: self).buildDetailSteps(items: items, sections: sections)
-        if let step = detailStepTemplates?.first as? RSDDecodableReplacement, container.contains(.addDetails) {
-            let nestedDecoder = try container.superDecoder(forKey: .addDetails)
-            try step.decode(from: nestedDecoder)
-        }
         
         // Build the tracking steps.
         let selectionStep = try type(of: self).decodeStep(from: decoder, for: .selection, items: items, sections: sections)
@@ -173,7 +154,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
         
         self.selectionStep = selectionStep!
         self.reviewStep = reviewStep
-        self.detailStepTemplates = detailStepTemplates
         self.loggingStep = loggingStep!
         
         // Build the decoder optional reminder step
@@ -210,9 +190,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     /// The review step to display when reviewing/editing selected medication.
     public let reviewStep: SBATrackedItemsStep?
     
-    /// The detail step should be displayed for each tracked item that has additional details.
-    public let detailStepTemplates: [SBATrackedItemDetailsStep]?
-    
     /// A step to display in order to log details for a set of tracked data. For example, as well
     /// as logging a user's medication, the researchers may wish to log whether or not the participant
     /// took the medication when scheduled to do so.
@@ -233,11 +210,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     
     /// Build the review step for this tracked data collection. Override to customize the step.
     open class func buildReviewStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep? {
-        return nil
-    }
-    
-    /// Build the add details steps for this tracked data collection. Override to customize the steps.
-    open class func buildDetailSteps(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> [SBATrackedItemDetailsStep]? {
         return nil
     }
     
@@ -308,7 +280,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     
     /// The in-memory result is the stored result that is used to set the current state before
     /// displaying any steps.
-    lazy private var _inMemoryResult: SBATrackedItemsCollectionResult = {
+    lazy internal var _inMemoryResult: SBATrackedItemsCollectionResult = {
         return instantiateLoggingResult()
     }()
     
@@ -325,10 +297,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
             return
         }
         
-        if let removeItemResult = result as? SBARemoveTrackedItemsResultObject {
-            self.updateSelectedInMemoryResult(byRemoving: removeItemResult.items.map({ $0.identifier }))
-        }
-        else if step.identifier == self.selectionStep.identifier {
+        if step.identifier == self.selectionStep.identifier {
             let selectedIdentifiers = (result as? SBATrackedItemsResult)?.selectedIdentifiers
             self.updateSelectedInMemoryResult(to: selectedIdentifiers, with: self.items)
         }
@@ -375,73 +344,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
         return SBATrackedLoggingCollectionResultObject(identifier: self.loggingStep.identifier)
     }
     
-    // MARK: Detail step management
-    
-    private var _detailSteps: [String : RSDStep] = [:]
-
-    /// Find or copy the detail step specific to this identifier.
-    open func getDetailStep(with identifier: String) -> (RSDStep, SBATrackedItemAnswer)? {
-        guard let selectedAnswer = _inMemoryResult.selectedAnswers.first(where: { $0.identifier == identifier}),
-            let item = (self.items.first(where: { $0.identifier == identifier}) ?? (selectedAnswer as? SBATrackedItem)),
-            let detailsId = item.addDetailsIdentifier
-            else {
-                return nil
-        }
-        if let step = _detailSteps[identifier] {
-            if let detailStep = step as? SBATrackedItemDetailsStepObject {
-                detailStep.updatePreviousAnswer(answer: selectedAnswer)
-            }
-            // return the previously created instance if there is one.            
-            return (step, selectedAnswer)
-        } else if let template = self.detailStepTemplates?.first(where: { $0.identifier == detailsId }),
-            let step = template.copy(from: item, with: selectedAnswer) {
-            // save the created step for future calls.
-            _detailSteps[identifier] = step
-            return (step, selectedAnswer)
-        } else {
-            return nil
-        }
-    }
-    
-    /// Get the next detail step that still has details to fill in.
-    open func nextDetailStep(after identifier: String, result: RSDTaskResult) -> RSDStep? {
-        guard !_inMemoryResult.hasRequiredValues else { return nil }
-
-        // If the tracked item was removed, there should be no next detail step.
-        guard !isRemoveTrackedItemResult(with: identifier, result: result) else { return nil }
-        
-        return _nextDetailStep(after: identifier, previousLoop: nil)
-    }
-    
-    func _nextDetailStep(after identifier: String, previousLoop: String?) -> RSDStep? {
-        let selectedIdentifiers = _inMemoryResult.selectedIdentifiers
-        guard selectedIdentifiers.count > 0 else { return nil }
-        
-        var previousId = identifier
-        // If the previous identifier isn't in the list of selected identifiers,
-        // then look to see if if it needs its details set
-        if !selectedIdentifiers.contains(previousId) {
-            previousId = selectedIdentifiers.first!
-            if let (step, answer) = getDetailStep(with: previousId), !answer.hasRequiredValues {
-                return step
-            }
-        }
-        // Look forward to the next identifier that isn't filled.
-        while let nextId = selectedIdentifiers.rsd_next(after: { $0 == previousId }), nextId != previousLoop {
-            previousId = nextId
-            if let (step, answer) = getDetailStep(with: nextId), !answer.hasRequiredValues {
-                return step
-            }
-        }
-        // If the starting identifier is the review, this has looped before, or there is only one selected
-        // item, then we know we have gotten them all. Otherwise, go back to the beginning and loop through.
-        if previousLoop != nil || selectedIdentifiers.count == 1 || !selectedIdentifiers.contains(identifier) {
-            return nil
-        } else {
-            return _nextDetailStep(after: self.reviewStep?.identifier ?? "null", previousLoop: identifier)
-        }
-    }
-    
     /// Get the selection step including any preparation required for this navigator.
     open func getSelectionStep() -> RSDStep {
         self.selectionStep.result = _inMemoryResult
@@ -458,6 +360,16 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     open func getLoggingStep() -> RSDStep {
         self.loggingStep.result = _inMemoryResult
         return self.loggingStep
+    }
+    
+    /// Get the introduction step.
+    open func getIntroductionStep() -> RSDStep? {
+        return self.introductionStep
+    }
+    
+    /// Get the reminder step.
+    open func getReminderStep() -> RSDStep? {
+        return self.reminderStep
     }
     
     // MARK: RSDStepNavigator
@@ -480,16 +392,18 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     /// If this is a selection or review identifier, those steps are returned, otherwise
     /// will return the appropriate detail step for the given item identifier (if any).
     open func step(with identifier: String) -> RSDStep? {
-        if identifier == self.selectionStep.identifier {
+        guard let stepId = StepIdentifiers(rawValue: identifier) else { return nil }
+        switch stepId {
+        case .introduction:
+            return getIntroductionStep()
+        case .selection:
             return getSelectionStep()
-        } else if identifier == self.reviewStep?.identifier {
+        case .review:
             return getReviewStep()
-        } else if identifier == self.loggingStep.identifier {
+        case .reminder:
+            return getReminderStep()
+        case .logging:
             return getLoggingStep()
-        } else if let (step, _) = getDetailStep(with: identifier) {
-            return step
-        } else {
-            return nil
         }
     }
     
@@ -535,87 +449,89 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
         return (nextStep, navigationDirection)
     }
     
+    open func firstStep() -> RSDStep {
+        if doesRequireSelection() {
+            return getIntroductionStep() ?? getSelectionStep()
+        }
+        else if doesRequireReview(), let reviewStep = getReviewStep() {
+            return reviewStep
+        }
+        else {
+            return getLoggingStep()
+        }
+    }
+    
+    /// Does this tracker need to stop at the review screen or is there something that can be logged?
+    open func doesRequireReview() -> Bool {
+        return false
+    }
+    
+    /// Does this tracker need to set up selection?
+    open func doesRequireSelection() -> Bool {
+        return _inMemoryResult.selectedAnswers.count == 0
+    }
+    
+    /// Does this tracker need to set a reminder?
+    open func doesRequireSetReminder() -> Bool {
+        return false
+    }
+    
     private func _step(after step: RSDStep?, with result: inout RSDTaskResult) -> RSDStep? {
         
         // When moving forward, always update the in-memory result before continuing.
         updateInMemoryResult(from: &result, using: step)
         
         guard let identifier = step?.identifier else {
-            // For the first step, return the logging step if there is a valid previous result.
-            // Otherwise, return the selection step.
-            if (previousClientData != nil), _inMemoryResult.selectedAnswers.count > 0 {
-                return getLoggingStep()
-            } else if self.introductionStep != nil {
-                return self.introductionStep
-            } else {
-                return getSelectionStep()
-            }
+            return firstStep()
         }
         
-        if identifier == self.introductionStep?.identifier {
-            return getSelectionStep()
-        }
-        
-        var nextStepPerNavigationRule: RSDStep?
+        // If there is next step identifier, then return whatever step that identifier indicates is next.
         if let navStep = step as? RSDNavigationRule,
-            let nextId = navStep.nextStepIdentifier(with: result, isPeeking: false),
-            let nextStep = self.step(with: nextId) {
-            nextStepPerNavigationRule = nextStep
+            let nextId = navStep.nextStepIdentifier(with: result, isPeeking: false) {
+            return self.step(with: nextId)
         }
         
-        // If this is a logging step, it is always the last step, unless the navigation rule suggests otherwise.
-        if identifier == self.loggingStep.identifier {
-            if let nextStep = nextStepPerNavigationRule {
-                return nextStep
-            }
+        return nextStep(after: identifier)
+    }
+    
+    open func nextStep(after identifier: String) -> RSDStep? {
+        // Look to see if there is a step after this one in the list.
+        guard let (stepId, nextId, step) = _recursiveNextStep(after: identifier) else {
             return nil
-        }
-
-        // If there is no review step then this should return the logging step.
-        guard let reviewStep = getReviewStep() else {
-            return getLoggingStep()
         }
         
-        if identifier == self.selectionStep.identifier {
-            // Selection is always followed by review.
-            return reviewStep
-        } else if identifier == reviewStep.identifier,
-            let nextStep = nextStepPerNavigationRule {
-            // If the review step has implemented custom navigation to go to a specific step, then
-            // repect that navigation rule.
-            return nextStep
-        } else if let nextStep = self.nextDetailStep(after: identifier, result: result) {
-            // If there is a step that doesn't have details added then return that.
-            return nextStep
-        } else if identifier == self.reminderStep?.identifier {
-            // Exit.
+        // Now, special cases...
+        
+        if stepId == .review, self.doesRequireReview() {
+            // If the current step is the review step and the review is not finished, then exit the task
+            // by returning nil.
             return nil
-        } else if identifier != reviewStep.identifier {
-            // If there are no items to review, go back to the selection step.
-            if self._inMemoryResult.selectedIdentifiers.count == 0 {
-                return selectionStep
-            }
-            // If this is *not* the review step then we are done adding details, so
-            // return the review step.
-            return reviewStep
-        } else {
-            // At this point we can assume that the previous step was the review step.
-            if previousClientData != nil {
-                // If we have existing client data, we can assume the user should go to logging next.
-                return getLoggingStep()
-            } else if let reminderStepUnwrapped = self.reminderStep {
-                return reminderStepUnwrapped
-            }
-            // Exit.
+        }
+        else if nextId == .reminder, !self.doesRequireSetReminder() {
+            // If the next step is a reminder step, but a reminder isn't required, then you are done.
             return nil
+        }
+        else {
+            // No special cases so return the step.
+            return step
         }
     }
     
-    private func _navigationDirection(for step: RSDStep?, result: RSDTaskResult) -> RSDStepDirection {
-        // If the tracked item was removed, we should navigate in the reverse direction.
-        if isRemoveTrackedItemResult(with: step?.identifier, result: result) {
-            return .reverse
+    private func _recursiveNextStep(after identifier: String, _ startId: StepIdentifiers? = nil) -> (stepId: StepIdentifiers, nextId: StepIdentifiers, step: RSDStep)? {
+        // Look to see if there is a step after this one in the list.
+        guard let stepId = StepIdentifiers(rawValue: identifier),
+            let nextId = StepIdentifiers.allCases.rsd_next(after: { $0 == stepId })
+            else {
+                return nil
         }
+        // Look to see if there is a step in the tracker with that key.
+        guard let step = self.step(with: nextId.stringValue) else {
+            return self._recursiveNextStep(after: nextId.stringValue, startId ?? stepId)
+        }
+        return (startId ?? stepId, nextId, step)
+    }
+    
+    private func _navigationDirection(for step: RSDStep?, result: RSDTaskResult) -> RSDStepDirection {
         return .forward
     }
     
@@ -634,12 +550,5 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     /// Returns `nil`. Progress is not used by default.
     open func progress(for step: RSDStep, with result: RSDTaskResult?) -> (current: Int, total: Int, isEstimated: Bool)? {
         return nil
-    }
-    
-    fileprivate func isRemoveTrackedItemResult(with identifier: String?, result: RSDTaskResult) -> Bool {
-        if let identifierUnwrapped = identifier {
-            return (result.findResult(with: identifierUnwrapped) as? SBARemoveTrackedItemsResultObject) != nil
-        }
-        return false
     }
 }
