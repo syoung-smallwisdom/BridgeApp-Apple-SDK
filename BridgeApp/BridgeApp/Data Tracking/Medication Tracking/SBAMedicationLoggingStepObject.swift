@@ -80,7 +80,7 @@ open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RS
              return true
         }
         let timeOfDay = Date()
-        let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay, includeLogged: false) }
+        let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay, includeLogged: false, includeAnytime: false) }
         return medTimings.count > 0
     }
 }
@@ -165,84 +165,99 @@ struct MedicationTiming {
 
 extension SBAMedicationAnswer {
     
-    /// The long title is the title and the dosage.
-    public var longTitle : String? {
-        guard let title = self.text, let dosage = self.dosage
-            else {
-                return nil
-        }
-        return String.localizedStringWithFormat("%@ %@", title, dosage)
-    }
-    
     /// Filter the medications based on what medications have *not* been marked as taken *or* are within range
     /// for the the time of day (morning/afternoon/evening).
-    func availableMedications(at timeOfDay: Date, includeLogged: Bool = true) -> MedicationTiming? {
-        guard let scheduleItems = self.scheduleItems?.sorted(), scheduleItems.count > 0
-            else {
-                return nil
-        }
-        
-        let timeRange = timeOfDay.timeRange()
-        let dayOfWeek = RSDWeekday(date: timeOfDay)
-        let upcomingTimeInterval: TimeInterval = 30 * 60  // 30 minutes
-        let upcomingTimeOfDay = timeOfDay.addingTimeInterval(upcomingTimeInterval)
-        
-        let formatter = RSDWeeklyScheduleFormatter()
-        formatter.style = .short
-        
-        var currentItems = [SBATrackedLoggingTableItem]()
-        var missedItems = [SBATrackedLoggingTableItem]()
-        var upcomingItems = [SBATrackedLoggingTableItem]()
-        
-        scheduleItems.forEach { (schedule) in
-            // Only include if the day of the week is valid.
-            guard schedule.daysOfWeek.contains(dayOfWeek)
-                else {
-                    return
-            }
-            
-            // Only include if the schedule time is either "anytime" or before now.
-            let scheduleTime = schedule.timeOfDay(on: timeOfDay)
-            let isCurrent = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
-            guard isCurrent || scheduleTime! <= upcomingTimeOfDay
-                else {
-                    return
-            }
-            
-            let timingIdentifier = schedule.timeOfDayString ?? timeRange.rawValue
-            let loggedDate = self.timestamps?.first(where: { $0.timingIdentifier == timingIdentifier })?.loggedDate
-            let isUpcoming = (scheduleTime != nil && scheduleTime! > timeOfDay)
-            
-            // Only include the schedule if either it has not been marked *or* the marked timestamp is within
-            // the time range.
-            guard loggedDate == nil || (includeLogged && (isCurrent || isUpcoming))
-                else {
-                    return
-            }
-            
-            func appendItem(to items: inout [SBATrackedLoggingTableItem]) {
-                let tableItem = SBATrackedMedicationLoggingTableItem(rowIndex: items.count, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString, groupCount: scheduleItems.count)
-                tableItem.title = self.longTitle
-                tableItem.detail = (scheduleTime == nil) ?
-                    Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
-                tableItem.loggedDate = loggedDate
-                items.append(tableItem)
-            }
-            
-            if isCurrent || isUpcoming {
-                appendItem(to: &currentItems)
-            }
-            else {
-                appendItem(to: &missedItems)
-            }
-        }
-        
-        // Only return available times if there are any in either the window or missed times.
-        guard currentItems.count > 0 || missedItems.count > 0 || upcomingItems.count > 0 else {
-            return nil
-        }
-    
-        return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: currentItems, missedItems: missedItems, upcomingItems: upcomingItems)
+    func availableMedications(at timeOfDay: Date, includeLogged: Bool = true, includeAnytime: Bool = true) -> MedicationTiming? {
+        return nil
+        // TODO: FIXME!! syoung 06/10/2019
+//        guard let dosageItems = self.dosageItems, dosageItems.count > 0 else { return nil }
+//
+//        let timeRange = timeOfDay.timeRange()
+//        let dayOfWeek = RSDWeekday(date: timeOfDay)
+//        let upcomingTimeInterval: TimeInterval = 30 * 60  // 30 minutes
+//        let upcomingTimeOfDay = timeOfDay.addingTimeInterval(upcomingTimeInterval)
+//
+//        let formatter = RSDWeeklyScheduleFormatter()
+//        formatter.style = .short
+//
+//        var currentItems = [SBATrackedLoggingTableItem]()
+//        var missedItems = [SBATrackedLoggingTableItem]()
+//        var upcomingItems = [SBATrackedLoggingTableItem]()
+//
+//        func appendItem(to items: inout [SBATrackedLoggingTableItem]) {
+//            let tableItem = SBATrackedMedicationLoggingTableItem(rowIndex: items.count, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString, groupCount: scheduleItems.count)
+//            tableItem.title = self.longTitle
+//            tableItem.detail = (scheduleTime == nil) ?
+//                Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
+//            tableItem.loggedDate = loggedDate
+//            items.append(tableItem)
+//        }
+//
+//        dosageItems.forEach { (dosage) in
+//            if (dosage.isAnytime ?? false) && includeAnytime {
+//                // If this is an anytime dosage *and* this is not an active task, then add a table item.
+//
+//
+//            }
+//
+//
+//
+//
+//
+//            guard let timestamps = dosage.timestamps
+//
+//        scheduleItems.forEach { (schedule) in
+//            // Only include if the day of the week is valid.
+//            guard schedule.daysOfWeek.contains(dayOfWeek)
+//                else {
+//                    return
+//            }
+//
+//            // Only include if the schedule time is either "anytime" or before now.
+//            let scheduleTime = schedule.timeOfDay(on: timeOfDay)
+//            let isCurrent = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
+//            guard isCurrent || scheduleTime! <= upcomingTimeOfDay
+//                else {
+//                    return
+//            }
+//
+//            let timingIdentifier = schedule.timeOfDayString ?? timeRange.rawValue
+//            let loggedDate = self.timestamps?.first(where: { $0.timingIdentifier == timingIdentifier })?.loggedDate
+//            let isUpcoming = (scheduleTime != nil && scheduleTime! > timeOfDay)
+//
+//            // Only include the schedule if either it has not been marked *or* the marked timestamp is within
+//            // the time range.
+//            guard loggedDate == nil || (includeLogged && (isCurrent || isUpcoming))
+//                else {
+//                    return
+//            }
+//
+////            /// The long title is the title and the dosage.
+////            public var longTitle : String? {
+////                guard let title = self.text, let dosage = self.dosage
+////                    else {
+////                        return nil
+////                }
+////                return String.localizedStringWithFormat("%@ %@", title, dosage)
+////            }
+//
+//
+//
+//            if isCurrent || isUpcoming {
+//                appendItem(to: &currentItems)
+//            }
+//            else {
+//                appendItem(to: &missedItems)
+//            }
+//        }
+//        }
+//
+//        // Only return available times if there are any in either the window or missed times.
+//        guard currentItems.count > 0 || missedItems.count > 0 || upcomingItems.count > 0 else {
+//            return nil
+//        }
+//
+//        return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: currentItems, missedItems: missedItems, upcomingItems: upcomingItems)
     }
 }
 

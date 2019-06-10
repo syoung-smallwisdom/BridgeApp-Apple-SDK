@@ -34,6 +34,10 @@
 import Foundation
 
 open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
+    
+    var medicationResult: SBAMedicationTrackingResult? {
+        return self._inMemoryResult as? SBAMedicationTrackingResult
+    }
 
     override open class func decodeItems(from decoder: Decoder) throws -> (items: [SBATrackedItem], sections: [SBATrackedSection]?) {
         let container = try decoder.container(keyedBy: ItemsCodingKeys.self)
@@ -47,19 +51,12 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
         let step = SBATrackedSelectionStepObject(identifier: stepId, items: items, sections: sections)
         step.title = Localization.localizedString("MEDICATION_SELECTION_TITLE")
         step.detail = Localization.localizedString("MEDICATION_SELECTION_DETAIL")
+        step.includePreviouslySelected = false
         return step
     }
     
     override open class func buildReviewStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep? {
         return SBATrackedMedicationReviewStepObject(identifier: StepIdentifiers.review.stringValue, items: items, sections: sections, type: .review)
-    }
-    
-    override open class func buildReminderStep() -> SBATrackedItemRemindersStepObject? {
-        return nil  // the reminder step is built by the JSON decoder
-    }
-    
-    override open class func buildDetailSteps(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> [SBATrackedItemDetailsStep]? {
-        return [SBATrackedMedicationDetailStepObject(identifier: SBATrackedItemsStepNavigator.StepIdentifiers.addDetails.stringValue, type: .medicationDetails)]
     }
     
     override open class func buildLoggingStep(items: [SBATrackedItem], sections: [SBATrackedSection]?) -> SBATrackedItemsStep {
@@ -68,6 +65,16 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
     override open func instantiateLoggingResult() -> SBATrackedItemsCollectionResult {
         return SBAMedicationTrackingResult(identifier: self.reviewStep!.identifier)
+    }
+    
+    /// Override to check that at least one item has been filled in.
+    override open func doesRequireReview() -> Bool {
+        return medicationResult?.medications.first(where: { $0.hasRequiredValues }) == nil
+    }
+    
+    /// Override to set reminder if the current reminders are nil.
+    override open func doesRequireSetReminder() -> Bool {
+        return medicationResult?.reminders == nil
     }
 }
 
@@ -82,14 +89,6 @@ public protocol SBAMedication : SBATrackedItem {
     /// Is the medication delivered via continuous injection? If this is the case, then questions about
     /// schedule timing and dosage should be skipped. Assumed `false` if `nil`.
     var isContinuousInjection: Bool? { get }
-}
-
-extension SBAMedication {
-    
-    /// The step identifier for mapping the results of a `RSDMedicationDetailsStepObject`.
-    public var addDetailsIdentifier: String? {
-        return (self.isContinuousInjection ?? false) ? nil : SBATrackedItemsStepNavigator.StepIdentifiers.addDetails.stringValue
-    }
 }
 
 /// A medication item includes details for displaying a given medication.
@@ -164,52 +163,207 @@ public struct SBAMedicationItem : Codable, SBAMedication, RSDEmbeddedIconVendor 
 }
 
 /// A medication answer for a given participant.
-///
-/// - example:
-/// ```
-///    let json = """
-///            {
-///                "identifier": "ibuprofen",
-///                "dosage": "10/100 mg",
-///                "scheduleItems" : [ { "daysOfWeek": [1,3,5], "timeOfDay" : "08:00" },
-///                                    { "daysOfWeek": [1,3,5], "timeOfDay" : "20:00" },
-///                                    { "daysOfWeek": [0,1,2,3,4,5,6] }],
-///                "timestamps" : [{"timeOfDay" : "08:00", "loggedDate" : "2019-05-02T08:10:00.000-07:00"},
-///                                {"timeOfDay" : "afternoon", "loggedDate" : "2019-05-02T13:15:00.000-07:00"}]
-///            }
-///            """.data(using: .utf8)! // our data in native (JSON) format
-///```
 public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
-    
     private enum CodingKeys : String, CodingKey {
-        case identifier, dosage, scheduleItems, isContinuousInjection = "injection", timestamps
+        case identifier, dosageItems, isContinuousInjection = "injection"
     }
     
     /// An identifier that maps to the associated `RSDMedicationItem`.
     public let identifier: String
     
-    /// A string answer value for the dosage.
-    public var dosage: String?
-    
     /// The scheduled items associated with this medication result.
-    public var scheduleItems: Set<RSDWeeklyScheduleObject>?
+    public var dosageItems: [SBADosage]?
     
     /// Is the medication delivered via continuous injection? If this is the case, then questions about
     /// schedule timing and dosage should be skipped.
     public var isContinuousInjection: Bool?
     
-    /// The timestamps to use to mark the medication as "taken".
-    public var timestamps: [SBATimestamp]?
-    
     /// Required items for a medication are dosage and schedule unless this is a continuous injection.
     public var hasRequiredValues: Bool {
-        return (isContinuousInjection ?? false) || (dosage != nil && scheduleItems != nil)
+        // exit early if this is a continuous injection
+        if (isContinuousInjection ?? false) { return true }
+        guard let items = self.dosageItems, items.count > 0 else { return false }
+        return items.reduce(true, { $0 && $1.hasRequiredValues })
     }
         
     /// Default initializer.
     /// - parameter identifier:
     public init(identifier: String) {
         self.identifier = identifier
+    }
+    
+    /// When the participant taps the "save" button, finalize editing of this dosage by stripping out the
+    /// information that should not be stored.
+    mutating public func finalizeEditing() {
+        guard let dosageItems = self.dosageItems else { return }
+        var items = [String : SBADosage]()
+        dosageItems.forEach {
+            guard let dosage = $0.dosage, !dosage.isEmpty else { return }
+            var newItem = $0
+            if newItem.isAnytime == nil {
+                // If the `isAnytime` property is not set, then figure out what it should be.
+                let hasTimeOfDay = (newItem.timestamps?.first(where: { $0.timeOfDay != nil }) != nil)
+                newItem.isAnytime = !hasTimeOfDay
+            }
+            if newItem.isAnytime! {
+                // If this is an `isAnytime` dosage, then nil out the days of the week and time of day.
+                newItem.daysOfWeek = nil
+                newItem.timestamps = newItem.timestamps?.compactMap { SBATimestamp (timeOfDay: nil, loggedDate: $0.loggedDate) }
+            }
+            if let existingItem = items[dosage], existingItem.daysOfWeek == $0.daysOfWeek, let existingTimestamps = existingItem.timestamps {
+                // If there is already an existing item, add this one to that one.
+                var timestamps = newItem.timestamps ?? []
+                timestamps.append(contentsOf: existingTimestamps)
+                newItem.timestamps = timestamps
+            }
+            // Filter and sort the timestamps.
+            newItem.timestamps = newItem.timestamps?
+                .filter { $0.timeOfDay != nil || $0.loggedDate != nil }
+                .sorted(by: { (lhs, rhs) -> Bool in
+                    if let lhsTime = lhs.timeOfDay, let rhsTime = rhs.timeOfDay {
+                        return lhsTime < rhsTime
+                    }
+                    else if let lhsTime = lhs.loggedDate, let rhsTime = rhs.loggedDate {
+                        return lhsTime < rhsTime
+                    }
+                    else {
+                        return false
+                    }
+                })
+            items[dosage] = newItem
+        }
+        self.dosageItems = items.map { $0.value }
+    }
+}
+
+/// A dosage includes the dosage label and timestamps/timeOfDay for a given medication.
+public struct SBADosage : Codable {    
+    private enum CodingKeys : String, CodingKey {
+        case dosage, daysOfWeek, timestamps
+    }
+    
+    /// A string answer value for the dosage.
+    public var dosage: String?
+    
+    /// The days of the week to include in the schedule. By default, this will be set to daily.
+    public var daysOfWeek: Set<RSDWeekday>?
+    
+    /// Logged date and time of day mapping (if any).
+    public var timestamps: [SBATimestamp]?
+    
+    /// Is this an "anytime" dosage?
+    public var isAnytime: Bool?
+    
+    public init(dosage: String? = nil, daysOfWeek: Set<RSDWeekday>? = nil, timestamps: [SBATimestamp]? = nil, isAnytime: Bool? = nil) {
+        self.dosage = dosage
+        self.daysOfWeek = daysOfWeek
+        self.timestamps = timestamps
+        self.isAnytime = isAnytime
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.dosage = try container.decode(String.self, forKey: .dosage)
+        let daysOfWeek = try container.decodeIfPresent(Set<RSDWeekday>.self, forKey: .daysOfWeek)
+        let timestamps = try container.decodeIfPresent([SBATimestamp].self, forKey: .timestamps)
+        let hasTimeOfDay = (daysOfWeek != nil) && (timestamps?.first(where: { $0.timeOfDay != nil }) != nil)
+        self.daysOfWeek = hasTimeOfDay ? daysOfWeek : nil
+        self.timestamps = timestamps
+        self.isAnytime = !hasTimeOfDay
+    }
+    
+    /// Required items for a medication are dosage and schedule unless this is a continuous injection.
+    public var hasRequiredValues: Bool {
+        guard dosage != nil, let isAnytime = self.isAnytime else { return false }
+        return isAnytime ? true : ((daysOfWeek?.count ?? 0) > 0 && self.selectedTimes.count > 0)
+    }
+    
+    /// Map each dosage to a set of schedule items.
+    public var scheduleItems: Set<RSDWeeklyScheduleObject>? {
+        guard let timestamps = self.timestamps,
+            let daysOfWeek = self.daysOfWeek
+            else {
+                return nil
+        }
+        return Set(timestamps.compactMap {
+            guard let timeOfDay = $0.timeOfDay else { return nil }
+            return RSDWeeklyScheduleObject(timeOfDayString: timeOfDay, daysOfWeek: daysOfWeek)
+        })
+    }
+    
+    /// Mapping of the selected times associated with this dosage. The `String` should be the timeOfDay
+    /// string in the format used to track time of day.
+    public var selectedTimes: Set<String> {
+        return Set(self.timestamps?.compactMap { $0.timeOfDay } ?? [])
+    }
+    
+    /// When the participant taps the "save" button, finalize editing of this dosage by stripping out the
+    /// information that should not be stored.
+    mutating public func finalizeEditing() {
+        if self.isAnytime ?? true {
+            self.isAnytime = true
+            self.daysOfWeek = nil
+            let timestamps = self.timestamps?.compactMap {
+                $0.loggedDate != nil ? SBATimestamp(timeOfDay: nil, loggedDate: $0.loggedDate) : nil
+            }
+            self.timestamps = (timestamps?.count ?? 0 > 0) ? timestamps : nil
+        }
+        else {
+            self.daysOfWeek = self.daysOfWeek ?? RSDWeekday.all
+            self.timestamps = self.timestamps?.filter { $0.timeOfDay != nil }
+        }
+    }
+    
+    /// Prepare this model object for logging by adding/removing the timestamps that are not applicable
+    /// for the given date.
+    mutating public func prepareForLogging(on date: Date = Date()) {
+        // Filter/nil out the timestamps where the loggedDate is *not* on the same day as the display date.
+        self.timestamps = self.timestamps?.compactMap {
+            guard let loggedDate = $0.loggedDate, Calendar.iso8601.isDate(loggedDate, inSameDayAs: date)
+                else {
+                    return $0.timeOfDay != nil ? SBATimestamp(timeOfDay: $0.timeOfDay, loggedDate: nil) : nil
+            }
+            return $0
+        }
+    }
+}
+
+
+/// V1 coding for a Medication Answer.
+public struct SBAMedicationAnswerV1 : Codable {
+    private enum CodingKeys : String, CodingKey {
+        case identifier, dosage, scheduleItems, isContinuousInjection = "injection", timestamps
+    }
+    public let identifier: String
+    public let dosage: String?
+    public let scheduleItems: Set<RSDWeeklyScheduleObject>?
+    public let isContinuousInjection: Bool?
+    public let timestamps: [SBATimestamp]?
+    
+    func convert() -> SBAMedicationAnswer {
+        var dosageItems = [SBADosage]()
+        scheduleItems?.forEach { (schedule) in
+            let timeOfDay = schedule.timeOfDayString
+            let isAnytime = (self.dosage == nil) ? nil : (timeOfDay == nil)
+            let timestamps: [SBATimestamp]? = {
+                guard let anytime = isAnytime else { return nil }
+                if anytime {
+                    return self.timestamps?.filter { $0.timeOfDay == nil }
+                }
+                else if let timestamp = self.timestamps?.first(where: { $0.timeOfDay == timeOfDay }) {
+                    return [timestamp]
+                }
+                else {
+                    return nil
+                }
+            }()
+            let daysOfWeek = (timeOfDay != nil) ? schedule.daysOfWeek : nil
+            dosageItems.append(SBADosage(dosage: self.dosage, daysOfWeek: daysOfWeek, timestamps: timestamps, isAnytime: isAnytime))
+        }
+        var med = SBAMedicationAnswer(identifier: self.identifier)
+        med.dosageItems = dosageItems
+        med.finalizeEditing()
+        return med
     }
 }
 
@@ -247,11 +401,14 @@ extension SBAMedicationAnswer : SBAMedication {
 public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionResult, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, type, startDate, endDate, medications = "items", reminders
+        case identifier, type, startDate, endDate, medications = "items", reminders, revision
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
     public let identifier: String
+    
+    /// The revision number is used to set the coding to V1 medication answers or V2 medication answers.
+    public private(set) var revision: Int?
     
     /// A String that indicates the type of the result. This is used to decode the result using a `RSDFactory`.
     public private(set) var type: RSDResultType = .medication
@@ -278,6 +435,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     
     public init(identifier: String) {
         self.identifier = identifier
+        self.revision = 2
     }
     
     public func copy(with identifier: String) -> SBAMedicationTrackingResult {
@@ -287,6 +445,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         copy.type = self.type
         copy.medications = self.medications
         copy.reminders = self.reminders
+        copy.revision = self.revision
         return copy
     }
     
@@ -318,10 +477,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating public func updateDetails(from result: RSDResult) {
-        if let detailsResult = result as? SBAMedicationDetailsResultObject {
-            updateMedicationDetails(from: detailsResult)
-        }
-        else if let loggingResult = result as? SBATrackedLoggingCollectionResultObject {
+        if let loggingResult = result as? SBATrackedLoggingCollectionResultObject {
             updateLogging(from: loggingResult)
         }
         else if result.identifier == RSDIdentifier.medicationReminders.stringValue {
@@ -329,23 +485,26 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         }
     }
     
-    mutating func updateMedicationDetails(from detailsResult: SBAMedicationDetailsResultObject) {
-        guard let idx = medications.firstIndex(where: { $0.identifier == detailsResult.identifier }) else {
-            return
-        }
-        
-        // Build a new answer from the detail.
-        var medication = SBAMedicationAnswer(identifier: detailsResult.identifier)
-        medication.dosage = detailsResult.dosage
-        if let schedulesUnwrapped = detailsResult.schedules {
-            medication.scheduleItems = Set(schedulesUnwrapped)
-        }
-
-        // Copy the timestamps from the previous answer.
-        medication.timestamps = self.medications[idx].timestamps
-        self.medications.remove(at: idx)
-        self.medications.insert(medication, at: idx)
-    }
+    // TODO: FIXME!!
+//    mutating func updateMedicationDetails(from detailsResult: SBAMedicationDetailsResultObject) {
+//        guard let idx = medications.firstIndex(where: { $0.identifier == detailsResult.identifier }) else {
+//            return
+//        }
+//
+//
+////        // Build a new answer from the detail.
+////        var medication = SBAMedicationAnswer(identifier: detailsResult.identifier)
+////
+////        medication.dosage = detailsResult.dosage
+////        if let schedulesUnwrapped = detailsResult.schedules {
+////            medication.scheduleItems = Set(schedulesUnwrapped)
+////        }
+////
+////        // Copy the timestamps from the previous answer.
+////        medication.timestamps = self.medications[idx].timestamps
+////        self.medications.remove(at: idx)
+////        self.medications.insert(medication, at: idx)
+//    }
     
     mutating func updateLogging(from loggingResult: SBATrackedLoggingCollectionResultObject) {
         loggingResult.loggingItems.forEach {
@@ -364,17 +523,20 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
             else {
                 return
         }
-        // If this is a timestamp logging then add/remove timestamp.
-        var medication = self.medications[idx]
-        var timestamps: [SBATimestamp] = medication.timestamps ?? []
-        timestamps.remove(where: { $0.timingIdentifier == timingIdentifier })
-        if let loggedDate = loggedDate {
-            let newTimestamp = SBATimestamp(timingIdentifier: timingIdentifier, loggedDate: loggedDate)
-            timestamps.append(newTimestamp)
-        }
-        medication.timestamps = timestamps
-        self.medications.remove(at: idx)
-        self.medications.insert(medication, at: idx)
+        // TODO: FIXME!!!
+        
+//        // If this is a timestamp logging then add/remove timestamp.
+//        var medication = self.medications[idx]
+//        var timestamps: [SBATimestamp] = medication.timestamps ?? []
+//        timestamps.remove(where: { $0.timingIdentifier == timingIdentifier })
+//        if let loggedDate = loggedDate {
+//
+//            let newTimestamp = SBATimestamp(timingIdentifier: timingIdentifier, loggedDate: loggedDate)
+//            timestamps.append(newTimestamp)
+//        }
+//        medication.timestamps = timestamps
+//        self.medications.remove(at: idx)
+//        self.medications.insert(medication, at: idx)
     }
     
     mutating func updateReminders(from result: RSDResult) {
@@ -389,7 +551,8 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         }
         let dictionary = try self.rsd_jsonEncodedDictionary()
         return
-            [CodingKeys.medications.stringValue : dictionary[CodingKeys.medications.stringValue],
+            [CodingKeys.revision.stringValue : dictionary[CodingKeys.revision.stringValue],
+             CodingKeys.medications.stringValue : dictionary[CodingKeys.medications.stringValue],
              CodingKeys.reminders.stringValue : dictionary[CodingKeys.reminders.stringValue]].jsonObject()
     }
     
@@ -403,11 +566,14 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
             self.reminders = clientDataMapUnwrapped[CodingKeys.reminders.stringValue] as? [Int]
             if let medJson = clientDataMapUnwrapped[CodingKeys.medications.stringValue] as? SBBJSONValue {
                 let decoder = SBAFactory.shared.createJSONDecoder()
-                let meds = try decoder.decode([SBAMedicationAnswer].self, from: medJson)
-                self.medications = meds.map { (input) in
-                    var med = input
-                    med.timestamps = med.timestamps?.filter { Calendar.current.isDateInToday($0.loggedDate) }
-                    return med
+                if let revision = clientDataMapUnwrapped[CodingKeys.revision.stringValue] as? Int {
+                    self.revision = revision
+                    let meds = try decoder.decode([SBAMedicationAnswer].self, from: medJson)
+                    self.medications = meds
+                }
+                else {
+                    let meds = try decoder.decode([SBAMedicationAnswerV1].self, from: medJson)
+                    self.medications = meds.map { $0.convert() }
                 }
             }
         }
@@ -417,35 +583,58 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
 /// A timestamp object is a light-weight Codable that can be used to record the timestamp for a logging event.
 /// This object includes a `timingIdentifier` that maps to either an `SBATimeRange` or an
 /// `RSDSchedule.timeOfDayString`.
-public struct SBATimestamp : Codable, Hashable, RSDScheduleTime {
+public struct SBATimestamp : Codable, RSDScheduleTime {
+    let uuid = UUID().uuidString
+    
     private enum CodingKeys : String, CodingKey {
-        case timingIdentifier = "timeOfDay", loggedDate
+        case timeOfDay, loggedDate, quantity
+    }
+    
+    public init?(timeOfDay: String? = nil, loggedDate: Date? = nil) {
+        guard timeOfDay != nil || loggedDate != nil else {
+            return nil
+        }
+        self.timeOfDay = timeOfDay
+        self.loggedDate = loggedDate
+        self.quantity = 1
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let timeOfDay = try container.decodeIfPresent(String.self, forKey: .timeOfDay)
+        var validTimeOfDay = false
+        if timeOfDay != nil {
+            let regEx = try! NSRegularExpression(pattern: "(?:[01]\\d|2[0123]):(?:[012345]\\d)")
+            let matches = regEx.numberOfMatches(in: timeOfDay!, options: [], range: NSRange(timeOfDay!.startIndex..., in: timeOfDay!))
+            validTimeOfDay = (matches == 1)
+        }
+        let loggedDate = try container.decodeIfPresent(Date.self, forKey: .loggedDate)
+        if loggedDate == nil && !validTimeOfDay {
+            let context = DecodingError.Context(codingPath: container.codingPath, debugDescription: "loggedDate and timeOfDay cannot both be nil")
+            throw DecodingError.keyNotFound(CodingKeys.loggedDate, context)
+        }
+        self.quantity = try container.decodeIfPresent(Int.self, forKey: .quantity) ?? 1
+        self.loggedDate = loggedDate
+        self.timeOfDay = validTimeOfDay ? timeOfDay : nil
     }
     
     /// When the logged event is scheduled to occur.
-    public let timingIdentifier: String
+    public var timeOfDay: String?
     
     /// The time/date for when the event was logged as *actually* occuring.
-    public let loggedDate: Date
+    public var loggedDate: Date?
     
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(timingIdentifier)
-        hasher.combine(loggedDate)
-    }
-    
-    /// The time range for this timestamp.
-    public var timeRange: SBATimeRange {
-        return SBATimeRange(rawValue: timingIdentifier) ?? loggedDate.timeRange()
-    }
+    /// The number of times the event was logged at a given time.
+    public var quantity: Int
     
     /// The time of day from the `RSDSchedule` that can be used to identify this schedule.
     public var timeOfDayString : String? {
-        if SBATimeRange(rawValue: timingIdentifier) == nil {
-            return timingIdentifier
-        }
-        else {
-            return nil
-        }
+        return timeOfDay
+    }
+    
+    /// The time range for this timestamp.
+    public func timeRange(on date: Date) -> SBATimeRange {
+        return self.timeOfDay(on: date)?.timeRange() ?? loggedDate?.timeRange() ?? date.timeRange()
     }
 }
 

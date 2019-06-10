@@ -1,8 +1,8 @@
 //
-//  SBATaskViewModel.swift
-//  BridgeApp
+//  SBAMedicationDosageTableViewCell.swift
+//  BridgeApp (iOS)
 //
-//  Copyright © 2018 Sage Bionetworks. All rights reserved.
+//  Copyright © 2019 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -31,17 +31,19 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-import Foundation
+import UIKit
 
-open class SBAModalTaskViewModel : RSDTaskViewModel {
-    
-    public let parentViewModel: RSDModalStepDataSource
-    
-    public init(task: RSDTask, parentViewModel: RSDModalStepDataSource) {
-        self.parentViewModel = parentViewModel
-        super.init(task: task, parentPath: nil)
-        self.dataManager = parentViewModel.rootPathComponent.dataManager
+class SBAMedicationDosageTableViewCell: UITableViewCell {
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
     }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+    
 }
-
-

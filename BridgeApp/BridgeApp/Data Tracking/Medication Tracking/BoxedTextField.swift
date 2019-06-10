@@ -1,8 +1,8 @@
 //
-//  SBATaskViewModel.swift
-//  BridgeApp
+//  BoxedTextField.swift
+//  BridgeApp (iOS)
 //
-//  Copyright © 2018 Sage Bionetworks. All rights reserved.
+//  Copyright © 2019 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -33,15 +33,20 @@
 
 import Foundation
 
-open class SBAModalTaskViewModel : RSDTaskViewModel {
+
+open class BoxedTextField: RSDStepTextField {
     
-    public let parentViewModel: RSDModalStepDataSource
+    let padding = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24);
     
-    public init(task: RSDTask, parentViewModel: RSDModalStepDataSource) {
-        self.parentViewModel = parentViewModel
-        super.init(task: task, parentPath: nil)
-        self.dataManager = parentViewModel.rootPathComponent.dataManager
+    override open func textRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+    
+    override open func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+    
+    override open func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
     }
 }
-
-

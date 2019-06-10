@@ -2,7 +2,7 @@
 //  SBATrackedMedicationReviewStepViewController.swift
 //  BridgeApp
 //
-//  Copyright © 2018 Sage Bionetworks. All rights reserved.
+//  Copyright © 2018-2019 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -33,11 +33,10 @@
 
 import Foundation
 
+extension SBATrackedMedicationReviewStepObject : RSDStepViewControllerVendor {
+}
+
 open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewController {
-    
-    open var reviewStep: SBATrackedItemsReviewStepObject? {
-        return self.step as? SBATrackedItemsReviewStepObject
-    }
     
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
@@ -53,11 +52,30 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
     
     open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if let reviewDataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
-        let selectedIdentifier = reviewDataSource.tableItem(at: indexPath)?.identifier {
-            self.assignSkipToIdentifier(selectedIdentifier)
-            self.goForward()
-        }
+        // TODO: show detail for this item
+        debugPrint("Did select row at \(indexPath)")
+    }
+    
+    /// Shoehorn in using the learn more to add medication b/c the new design has the "Add a medication"
+    /// button in the place where typically this should be a "learn more" action. syoung 06/11/2019
+    override open func showLearnMore() {
+        let action = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_ADD_BUTTON"))
+        let tableItem = SBAModalSelectionTableItem(identifier: RSDUIActionType.addMore.stringValue,
+                                                   rowIndex: 0,
+                                                   reuseIdentifier: RSDFormUIHint.button.stringValue,
+                                                   action: action)
+        self.didSelectModalItem(tableItem, at: IndexPath(item: 0, section: 1))
+    }
+    
+    /// Skip behavior should just do the same thing as "Save".
+    override open func skipForward() {
+        self.goForward()
+    }
+    
+    /// Override viewWillAppear to always check if the "Add details later" button should be shown.
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationFooter!.isSkipHidden = (self.stepViewModel as! SBATrackedMedicationReviewDataSource).allAnswersValid()
     }
 }
 
@@ -73,26 +91,7 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
         return UINib(nibName: nibName, bundle: bundle)
     }
     
-    @IBOutlet weak var chevronView: UIImageView!
-    
-    open override func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
-        super.setDesignSystem(designSystem, with: background)
-        chevronView.tintColor = designSystem.colorRules.palette.accent.normal.color
-    }
-    
-    /// Action button that is associated with this cell.
     @IBOutlet open var actionButton: UIButton!
-    
-    var loggedButton: RSDRoundedButton? {
-        return self.actionButton as? RSDRoundedButton
-    }
-    
-    override open func awakeFromNib() {
-        super.awakeFromNib()
-
-        self.loggedButton?.isSecondaryButton = false
-        self.actionButton.setTitle(Localization.localizedString("BUTTON_EDIT"), for: .normal)
-    }
     
     override open var tableItem: RSDTableItem! {
         didSet {
@@ -101,25 +100,25 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
                     return
             }
             
-            if let dosageUnwrapped = medItem.medication.dosage {
-                self.titleLabel?.text = String(format: "%@ %@", medItem.medication.identifier, dosageUnwrapped)
-                if let schedules = medItem.medication.scheduleItems {
-                    if schedules.first?.timeOfDayString == nil {
-                        self.detailLabel?.text = Localization.localizedString("MEDICATION_ANYTIME")
-                    } else {
-                        let formatter = RSDWeeklyScheduleFormatter()
-                        formatter.style = .medium
-                        self.detailLabel?.text = formatter.string(from: Array(schedules))
-                    }
-                }
-                self.actionButton.isHidden = false
-                self.chevronView.isHidden = true
+            self.titleLabel?.text = medItem.medication.identifier
+            if medItem.medication.hasRequiredValues {
+                self.actionButton.setTitle(Localization.localizedString("MEDICATION_EDIT_DETAILS"), for: .normal)
+                
+                let doseCount = medItem.medication.dosageItems?.count ?? 0
+                let formatString : String = NSLocalizedString("MEDICATION_DOSES",
+                                                              tableName: "BridgeApp",
+                                                              bundle: Bundle(for: SBATrackedMedicationReviewCell.self),
+                                                              value: "%u doses",
+                                                              comment: "Number of doses of medication")
+                self.detailLabel?.text = String.localizedStringWithFormat(formatString, doseCount)
             } else {
-                self.titleLabel?.text = medItem.medication.identifier
+                self.actionButton.setTitle(Localization.localizedString("MEDICATION_ADD_DETAILS"), for: .normal)
                 self.detailLabel?.text = nil
-                self.actionButton.isHidden = true
-                self.chevronView.isHidden = false
             }
         }
+    }
+    
+    override open var titleTextType: RSDDesignSystem.TextType {
+        return .heading4
     }
 }

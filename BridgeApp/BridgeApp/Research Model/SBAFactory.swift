@@ -69,6 +69,8 @@ extension RSDStepType {
 extension RSDResultType {
     
     public static let medication: RSDResultType = "medication"
+    
+    public static let medicationDetails: RSDResultType = "medicationDetails"
 }
 
 open class SBAFactory : RSDFactory {
@@ -102,8 +104,6 @@ open class SBAFactory : RSDFactory {
             return try SBARemoveTrackedItemStepObject(from: decoder)
         case .medicationReminders:
             return try SBATrackedItemRemindersStepObject(from: decoder)
-        case .medicationDetails:
-            return try SBATrackedMedicationDetailStepObject(from: decoder)
         case .taskInfo:
             if let taskInfo = try? SBAActivityInfoObject(from: decoder) {
                 return RSDTaskInfoStepObject(with: taskInfo)
@@ -123,5 +123,4 @@ open class SBAFactory : RSDFactory {
     open func decodeProfileDataSource(from decoder: Decoder) throws -> SBAProfileDataSource {
         return try SBAProfileDataSourceObject(from: decoder)
     }
-
 }

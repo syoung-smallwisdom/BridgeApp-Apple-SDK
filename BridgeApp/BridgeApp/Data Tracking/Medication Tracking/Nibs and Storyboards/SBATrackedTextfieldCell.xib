@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,23 +20,23 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mM6-Ae-bzg">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="118"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="125.5"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dosage" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fVg-UM-rk1">
-                                <rect key="frame" x="28" y="16" width="58.5" height="19.5"/>
+                                <rect key="frame" x="28" y="16" width="58.5" height="27"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qfO-hr-hg7" userLabel="Schedule Line Separator">
-                                <rect key="frame" x="0.0" y="37.5" width="375" height="1"/>
+                                <rect key="frame" x="0.0" y="45" width="375" height="1"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="uh6-UY-rdz"/>
                                 </constraints>
                             </view>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" placeholder="e.g.: 10/100 mg" textAlignment="natural" minimumFontSize="17" background="textfield" translatesAutoresizingMaskIntoConstraints="NO" id="75F-YE-8bO" customClass="TrackedTextField" customModule="BridgeApp" customModuleProvider="target">
-                                <rect key="frame" x="24" y="54.5" width="327" height="50"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" placeholder="  e.g.: 10/100 mg" textAlignment="natural" minimumFontSize="17" background="textfield" translatesAutoresizingMaskIntoConstraints="NO" id="75F-YE-8bO" customClass="TrackedTextField" customModule="BridgeApp" customModuleProvider="target">
+                                <rect key="frame" x="24" y="62" width="327" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="fcf-SF-r0q"/>
                                 </constraints>
@@ -63,7 +63,7 @@
                 <constraints>
                     <constraint firstItem="mM6-Ae-bzg" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="4uh-pu-x9H"/>
                     <constraint firstAttribute="trailing" secondItem="mM6-Ae-bzg" secondAttribute="trailing" id="YhX-U0-2WD"/>
-                    <constraint firstAttribute="bottom" secondItem="mM6-Ae-bzg" secondAttribute="bottom" constant="7.5" id="v68-h9-29B"/>
+                    <constraint firstAttribute="bottom" secondItem="mM6-Ae-bzg" secondAttribute="bottom" id="v68-h9-29B"/>
                     <constraint firstItem="mM6-Ae-bzg" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="xcm-mU-Hay"/>
                 </constraints>
             </tableViewCellContentView>

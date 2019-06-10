@@ -53,6 +53,9 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
     /// The section items for mapping each medication.
     public var sections: [SBATrackedSection]?
     
+    /// Should the previously selected items be included in the selection table?
+    public internal(set) var includePreviouslySelected: Bool = true
+    
     /// Initializer required for `copy(with:)` implementation.
     public required init(identifier: String, type: RSDStepType?) {
         self.items = []

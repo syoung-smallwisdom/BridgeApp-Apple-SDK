@@ -1,8 +1,9 @@
 //
-//  SBATaskViewModel.swift
-//  BridgeApp
+//  SBADayTimePickerViewController.swift
+//  BridgeApp (iOS)
 //
-//  Copyright © 2018 Sage Bionetworks. All rights reserved.
+//  Created by Shannon Young on 6/18/19.
+//  Copyright © 2019 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -31,17 +32,25 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-import Foundation
+import UIKit
 
-open class SBAModalTaskViewModel : RSDTaskViewModel {
-    
-    public let parentViewModel: RSDModalStepDataSource
-    
-    public init(task: RSDTask, parentViewModel: RSDModalStepDataSource) {
-        self.parentViewModel = parentViewModel
-        super.init(task: task, parentPath: nil)
-        self.dataManager = parentViewModel.rootPathComponent.dataManager
+class SBADayTimePickerViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
     }
+    
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
 }
-
-

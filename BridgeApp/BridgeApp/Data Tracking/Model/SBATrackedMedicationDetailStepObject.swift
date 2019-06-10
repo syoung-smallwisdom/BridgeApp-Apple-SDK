@@ -142,70 +142,70 @@ open class SBATrackedMedicationDetailsDataSource : RSDStepViewModel, RSDTableDat
         }
     }
     
-    fileprivate func createDosageSection(with previousAnswer: SBAMedicationAnswer?) -> RSDTableSection {
-        let inputField = RSDInputFieldObject(identifier: FieldIdentifiers.dosage.stringValue, dataType: .base(.string), uiHint: .textfield, prompt: Localization.localizedString("MEDICATION_DOSAGE_PROMPT"))
-        inputField.placeholder = Localization.localizedString("MEDICATION_DOSAGE_PLACEHOLDER")
-        let dosageTableItem = RSDTextInputTableItem(rowIndex: 0, inputField: inputField, uiHint: .textfield)
-        if let previousAnswerUnwrapped = previousAnswer {
-            try? dosageTableItem.setAnswer(previousAnswerUnwrapped.dosage)
-        }
-        let dosageSection = RSDTableSection(identifier: FieldIdentifiers.dosage.stringValue, sectionIndex: FieldIdentifiers.dosage.sectionIndex(), tableItems: [dosageTableItem])
-        return dosageSection
-    }
+//    fileprivate func createDosageSection(with previousAnswer: SBAMedicationAnswer?) -> RSDTableSection {
+//        let inputField = RSDInputFieldObject(identifier: FieldIdentifiers.dosage.stringValue, dataType: .base(.string), uiHint: .textfield, prompt: Localization.localizedString("MEDICATION_DOSAGE_PROMPT"))
+//        inputField.placeholder = Localization.localizedString("MEDICATION_DOSAGE_PLACEHOLDER")
+//        let dosageTableItem = RSDTextInputTableItem(rowIndex: 0, inputField: inputField, uiHint: .textfield)
+//        if let previousAnswerUnwrapped = previousAnswer {
+//            try? dosageTableItem.setAnswer(previousAnswerUnwrapped.dosage)
+//        }
+//        let dosageSection = RSDTableSection(identifier: FieldIdentifiers.dosage.stringValue, sectionIndex: FieldIdentifiers.dosage.sectionIndex(), tableItems: [dosageTableItem])
+//        return dosageSection
+//    }
+//
+//    fileprivate func createSchedulesSection(with previousAnswer: SBAMedicationAnswer?) -> RSDTableSection {
+//        var scheduleTableItems = [SBATrackedWeeklyScheduleTableItem]()
+//        if let previousAnswerUnwrapped = previousAnswer,
+//            let scheduleItemsUnwrapped = previousAnswerUnwrapped.scheduleItems {
+//            for schedule in scheduleItemsUnwrapped.sorted() {
+//                let scheduleItem = SBATrackedWeeklyScheduleTableItem(identifier:
+//                    String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, 0), rowIndex: 0, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId, schedule: schedule)
+//
+//                scheduleTableItems.append(scheduleItem)
+//            }
+//        } else {
+//            let scheduleItem = SBATrackedWeeklyScheduleTableItem(identifier:
+//                String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, 0), rowIndex: 0, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId)
+//            scheduleTableItems.append(scheduleItem)
+//        }
+//        let scheduleSections = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: scheduleTableItems)
+//        return scheduleSections
+//    }
+//
+//    fileprivate func shouldCreateAddScheduleSection(with previousAnswer: SBAMedicationAnswer?) -> Bool {
+//        if let previousAnswerUnwrapped = previousAnswer {
+//            for schedule in previousAnswerUnwrapped.scheduleItems ?? [] {
+//                if schedule.timeOfDayString == nil {
+//                    return false
+//                }
+//            }
+//        }
+//        return true
+//    }
+//
+//    fileprivate func createAddScheduleSection() -> RSDTableSection {
+//        let addScheduleTableItem = RSDTableItem(identifier: FieldIdentifiers.addSchedule.stringValue, rowIndex: 0, reuseIdentifier: FieldIdentifiers.addSchedule.stringValue)
+//        let addScheduleSection = RSDTableSection(identifier: FieldIdentifiers.addSchedule.stringValue, sectionIndex: FieldIdentifiers.addSchedule.sectionIndex(), tableItems: [addScheduleTableItem])
+//        return addScheduleSection
+//    }
     
-    fileprivate func createSchedulesSection(with previousAnswer: SBAMedicationAnswer?) -> RSDTableSection {
-        var scheduleTableItems = [SBATrackedWeeklyScheduleTableItem]()
-        if let previousAnswerUnwrapped = previousAnswer,
-            let scheduleItemsUnwrapped = previousAnswerUnwrapped.scheduleItems {
-            for schedule in scheduleItemsUnwrapped.sorted() {
-                let scheduleItem = SBATrackedWeeklyScheduleTableItem(identifier:
-                    String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, 0), rowIndex: 0, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId, schedule: schedule)
-                
-                scheduleTableItems.append(scheduleItem)
-            }
-        } else {
-            let scheduleItem = SBATrackedWeeklyScheduleTableItem(identifier:
-                String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, 0), rowIndex: 0, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId)
-            scheduleTableItems.append(scheduleItem)
-        }
-        let scheduleSections = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: scheduleTableItems)
-        return scheduleSections
-    }
-    
-    fileprivate func shouldCreateAddScheduleSection(with previousAnswer: SBAMedicationAnswer?) -> Bool {
-        if let previousAnswerUnwrapped = previousAnswer {
-            for schedule in previousAnswerUnwrapped.scheduleItems ?? [] {
-                if schedule.timeOfDayString == nil {
-                    return false
-                }
-            }
-        }
-        return true
-    }
-    
-    fileprivate func createAddScheduleSection() -> RSDTableSection {
-        let addScheduleTableItem = RSDTableItem(identifier: FieldIdentifiers.addSchedule.stringValue, rowIndex: 0, reuseIdentifier: FieldIdentifiers.addSchedule.stringValue)
-        let addScheduleSection = RSDTableSection(identifier: FieldIdentifiers.addSchedule.stringValue, sectionIndex: FieldIdentifiers.addSchedule.sectionIndex(), tableItems: [addScheduleTableItem])
-        return addScheduleSection
-    }
-    
-    /// Adds a schedule item to the schedules section.
-    /// While not strictly enforced, this should not be called if any existing
-    /// schedule items are set to schedule at anytime.
-    /// - returns: The index path of the section that was added.
-    @discardableResult public func addScheduleItem() -> IndexPath? {
-        guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first else {
-            return nil
-        }
-        let newIndex = schedulesSection.tableItems.count
-        let scheduleTableItem = SBATrackedWeeklyScheduleTableItem(identifier:
-            String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, newIndex), rowIndex: newIndex, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId)
-        var newTableItems = schedulesSection.tableItems
-        newTableItems.append(scheduleTableItem)
-        let newSchedulesSection = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: newTableItems)
-        sections[FieldIdentifiers.schedules.sectionIndex()] = newSchedulesSection
-        return IndexPath(item: newIndex, section: FieldIdentifiers.schedules.sectionIndex())
-    }
+//    /// Adds a schedule item to the schedules section.
+//    /// While not strictly enforced, this should not be called if any existing
+//    /// schedule items are set to schedule at anytime.
+//    /// - returns: The index path of the section that was added.
+//    @discardableResult public func addScheduleItem() -> IndexPath? {
+//        guard let schedulesSection = sections.filter({ $0.identifier == FieldIdentifiers.schedules.stringValue }).first else {
+//            return nil
+//        }
+//        let newIndex = schedulesSection.tableItems.count
+//        let scheduleTableItem = SBATrackedWeeklyScheduleTableItem(identifier:
+//            String(format: "%@%d", SBATrackedWeeklyScheduleCell.reuseId, newIndex), rowIndex: newIndex, reuseIdentifier: SBATrackedWeeklyScheduleCell.reuseId)
+//        var newTableItems = schedulesSection.tableItems
+//        newTableItems.append(scheduleTableItem)
+//        let newSchedulesSection = RSDTableSection(identifier: FieldIdentifiers.schedules.stringValue, sectionIndex: FieldIdentifiers.schedules.sectionIndex(), tableItems: newTableItems)
+//        sections[FieldIdentifiers.schedules.sectionIndex()] = newSchedulesSection
+//        return IndexPath(item: newIndex, section: FieldIdentifiers.schedules.sectionIndex())
+//    }
     
     
     /// Call this method when the user has selected that they schedule this at anytime.

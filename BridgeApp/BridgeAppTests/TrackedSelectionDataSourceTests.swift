@@ -59,7 +59,7 @@ class TrackedSelectionDataSourceTests: XCTestCase {
             // Must select at least one item
             XCTAssertFalse(dataSource.allAnswersValid(), "\(ii)")
             
-            let expectedCounts = [3,3,3,3,2,1]
+            let expectedCounts = [3,3,3,3,2]
             XCTAssertEqual(dataSource.sections.count, expectedCounts.count, "\(ii)")
             
             guard dataSource.sections.count == expectedCounts.count else {
