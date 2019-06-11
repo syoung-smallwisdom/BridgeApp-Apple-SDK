@@ -42,56 +42,17 @@ class ProfileManagerTests: XCTestCase {
     static let sourceKeyIsClientData: String = "sourceTestFlagIsClientData"
     static let profileKeyNotClientData: String = "testFlagNotClientData"
     static let sourceKeyNotClientData: String = "sourceTestFlagNotClientData"
-    let appConfigJSON: [String: Any] = [
-        "clientData": [
-            "profile": [
-                "manager": [
-                    "items": [
-                        [
-                            "profileKey": ProfileManagerTests.profileKey,
-                            "sourceKey": ProfileManagerTests.sourceKey,
-                            "itemType": "boolean",
-                            "readonly": false,
-                            "type": "report"
-                        ],
-                        [
-                            "profileKey": ProfileManagerTests.profileKeyIsClientData,
-                            "sourceKey": ProfileManagerTests.sourceKeyIsClientData,
-                            "clientDataIsItem": true,
-                            "itemType": "boolean",
-                            "readonly": false,
-                            "type": "report"
-                        ],
-                        [
-                            "profileKey": ProfileManagerTests.profileKeyNotClientData,
-                            "sourceKey": ProfileManagerTests.sourceKeyNotClientData,
-                            "clientDataIsItem": false,
-                            "itemType": "boolean",
-                            "readonly": false,
-                            "type": "report"
-                        ]
-                    ]
-                ],
-                "dataSource": [
-                    "sections": []
-                ]
-            ]
-        ]
-    ]
+    static let profileKeyParticipantEmail: String = "profileKeyParticipantEmail"
+    static let profileKeyParticipantPhone: String = "profileKeyParticipantPhone"
+    static let profileKeyParticipantFirst: String = "profileKeyParticipantFirst"
+    static let profileKeyParticipantClientDataFirst: String = "profileKeyParticipantClientDataFirst"
     
     override func setUp() {
         super.setUp()
-        
-        BridgeSDK.setup(withBridgeInfo: TestBridgeInfo())
-        BridgeSDK.participantManager = MockParticipantManager()
-        SBABridgeConfiguration.shared = SBABridgeConfiguration()
-        let appConfig = SBBAppConfig(dictionaryRepresentation: self.appConfigJSON)!
-        SBABridgeConfiguration.shared.setup(with: appConfig)
     }
 
     override func tearDown() {
         super.tearDown()
-        SBABridgeConfiguration.shared = SBABridgeConfiguration()
     }
     
     func checkFor(profileKey: String) {
@@ -99,21 +60,24 @@ class ProfileManagerTests: XCTestCase {
         let items = pm.profileItems()
         let keys = pm.profileKeys()
         XCTAssert(keys.contains(profileKey), "Expected profile keys to include '\(profileKey)' but it doesn't")
-        guard let reportItem = items[profileKey]
+        guard items[profileKey] != nil
             else {
                 XCTAssert(false, "Expected profile items to include one with the profile key '\(profileKey)' but it doesn't")
                 return
         }
-        XCTAssert(type(of: reportItem) == SBAReportProfileItem.self, "Expected report profile item to be of class SBAReportProfileItem, but it's a \(String(describing: type(of: reportItem))) instead")
     }
 
     func testProfileItems() {
         self.checkFor(profileKey: ProfileManagerTests.profileKey)
         self.checkFor(profileKey: ProfileManagerTests.profileKeyIsClientData)
         self.checkFor(profileKey: ProfileManagerTests.profileKeyNotClientData)
+        self.checkFor(profileKey: ProfileManagerTests.profileKeyParticipantEmail)
+        self.checkFor(profileKey: ProfileManagerTests.profileKeyParticipantFirst)
+        self.checkFor(profileKey: ProfileManagerTests.profileKeyParticipantPhone)
+        self.checkFor(profileKey: ProfileManagerTests.profileKeyParticipantClientDataFirst)
     }
     
-    func checkStorage(profileKey: String) {
+    func checkProfileItemStorage(profileKey: String) {
         let pm = SBAProfileManagerObject.shared
         let items = pm.profileItems()
         guard var reportItem = items[profileKey] as? SBAReportProfileItem
@@ -156,10 +120,119 @@ class ProfileManagerTests: XCTestCase {
         XCTAssert(reportItem.value as? Bool == true, "Expected reportItem.value to be 'true' but it's '\(String(describing: reportItem.value))'")
     }
     
-    func testReportProfileItems() {
-        self.checkStorage(profileKey: ProfileManagerTests.profileKey)
-        self.checkStorage(profileKey: ProfileManagerTests.profileKeyIsClientData)
-        self.checkStorage(profileKey: ProfileManagerTests.profileKeyNotClientData)
+    func checkParticipantItemStorage(profileKey: String) {
+        let pm = SBAProfileManagerObject.shared
+        let items = pm.profileItems()
+        guard var participantItem = items[profileKey] as? SBAStudyParticipantProfileItem
+            else {
+                XCTAssert(false, "Expected profile items to include a SBAStudyParticipantProfileItem with the profile key '\(profileKey)' but it doesn't")
+                return
+        }
+        
+        let testString = "garbage"
+        let savedValue = participantItem.value as? String
+        participantItem.value = testString
+        
+        // check that it's stored at the appropriate key path as the expected value
+        guard let participant = SBAParticipantManager.shared.studyParticipant
+            else {
+                XCTAssert(false, "Expected participant to exist but it's nil")
+                return
+        }
+        
+        let itemValue = participant.value(forKeyPath: participantItem.sourceKey) as? String
+        
+        if participantItem.readonly {
+            XCTAssert(itemValue == savedValue, "Expected participant.\(participantItem.sourceKey) to be '\(savedValue)' because it's readonly, but instead it's '\(String(describing: itemValue))'")
+            return
+        }
+        
+        if itemValue == nil {
+            XCTAssert(false, "Expected participant.\(participantItem.sourceKey) to be a String, but instead it's nil")
+            return
+        }
+        
+        guard let stringValue = itemValue as? String
+            else {
+                XCTAssert(false, "Expected participant.\(participantItem.sourceKey) value to be a String, but it's a \(String(describing: type(of: itemValue))) instead")
+                return
+        }
+        
+        XCTAssert(stringValue == testString, "Expected stringValue to be '\(testString)' but it's \(String(describing: stringValue))")
+    }
+    
+    func checkParticipantClientDataItemStorage(profileKey: String) {
+        let pm = SBAProfileManagerObject.shared
+        let items = pm.profileItems()
+        guard var clientDataItem = items[profileKey] as? SBAStudyParticipantClientDataProfileItem
+            else {
+                XCTAssert(false, "Expected profile items to include a SBAStudyParticipantClientDataProfileItem with the profile key '\(profileKey)' but it doesn't")
+                return
+        }
+        
+        if let fallback = clientDataItem.fallbackKeyPath {
+            guard let participantItemTuple = items.first(where: { (keyAndValue) -> Bool in
+                return keyAndValue.value.sourceKey == fallback
+            }) else {
+                XCTAssert(false, "Expected profile items to include an item with the source key '\(fallback)' but it doesn't")
+                return
+            }
+            guard var participantItem = participantItemTuple.value as? SBAStudyParticipantProfileItem
+                else {
+                    XCTAssert(false, "Expected profile items with the source key '\(fallback)' to be a SBAStudyParticipantProfileItem but instead it's a \(String(describing: type (of:participantItemTuple.value)))")
+                    return
+            }
+            
+            // set the fallback property's value
+            let testFirstString = "testfirst"
+            participantItem.value = testFirstString
+            
+            // make sure it falls back to the fallback property value until set
+            let startingValue = clientDataItem.value as! String
+            XCTAssert(startingValue == testFirstString, "Expected client data profile item to fall back to '\(testFirstString)' but instead it's '\(String(describing: startingValue))'")
+        }
+        
+        
+        let testString = "garbage"
+        clientDataItem.value = testString
+        
+        // check that it's stored at the appropriate key path as the expected value
+        guard let participant = SBAParticipantManager.shared.studyParticipant
+            else {
+                XCTAssert(false, "Expected participant to exist but it's nil")
+                return
+        }
+        
+        guard let clientData = participant.clientData as? [String : SBBJSONValue]
+            else {
+                XCTAssert(false, "Expected participant.clientData to be a [String : SBBJSONValue] but it's nil")
+                return
+        }
+        
+        guard let itemValue = clientData[clientDataItem.sourceKey]
+            else {
+                XCTAssert(false, "Expected client data item '\(clientDataItem.sourceKey)' value to be a String, but instead it's nil")
+                return
+        }
+        
+        guard let stringValue = itemValue as? String
+            else {
+                XCTAssert(false, "Expected client data item '\(clientDataItem.sourceKey)' value to be a String, but it's a \(String(describing: type(of: itemValue))) instead")
+                return
+        }
+        
+        XCTAssert(stringValue == testString, "Expected stringValue to be '\(testString)' but it's \(String(describing: stringValue))")
+
+    }
+    
+    func testProfileItemsStorage() {
+        self.checkProfileItemStorage(profileKey: ProfileManagerTests.profileKey)
+        self.checkProfileItemStorage(profileKey: ProfileManagerTests.profileKeyIsClientData)
+        self.checkProfileItemStorage(profileKey: ProfileManagerTests.profileKeyNotClientData)
+        self.checkParticipantItemStorage(profileKey: ProfileManagerTests.profileKeyParticipantEmail)
+        self.checkParticipantItemStorage(profileKey: ProfileManagerTests.profileKeyParticipantPhone)
+        self.checkParticipantItemStorage(profileKey: ProfileManagerTests.profileKeyParticipantFirst)
+        self.checkParticipantClientDataItemStorage(profileKey: ProfileManagerTests.profileKeyParticipantClientDataFirst)
     }
 
 }

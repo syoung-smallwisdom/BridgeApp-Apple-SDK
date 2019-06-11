@@ -47,21 +47,15 @@ public struct SBAProfileItemType : RawRepresentable, Codable {
     /// Defaults to creating a `SBAStudyParticipantProfileItem`.
     public static let participant: SBAProfileItemType = "participant"
     
-    /// Defaults to creating a `SBAStudyParticipantCustomAttributesProfileItem`.
-    public static let participantCustomAttributes: SBAProfileItemType = "participantCustomAttributes"
+    /// Defaults to creating a `SBAStudyParticipantClientDataProfileItem`.
+    public static let participantClientData: SBAProfileItemType = "participantClientData"
     
     /// Defaults to creating a `SBAReportProfileItem`.
     public static let report: SBAProfileItemType = "report"
     
-    /// Defaults to creating a `SBAFullNameProfileItem`.
-    public static let fullName: SBAProfileItemType = "fullName"
-    
-    /// Defaults to creating a `SBABirthDateProfileItem`.
-    public static let birthDate: SBAProfileItemType = "birthDate"
-    
     /// List of all the standard types.
     public static func allStandardTypes() -> [SBAProfileItemType] {
-        return [.participant, .participantCustomAttributes, .report, .fullName, .birthDate]
+        return [.participant, .participantClientData, .report]
     }
 }
 

@@ -33,17 +33,30 @@
 
 
 import UIKit
+import BridgeSDK
 import BridgeApp
+import BridgeSDK_Test
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    var testHarness: SBBBridgeTestHarness?
+
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        SBABridgeConfiguration.shared.setupBridge(with: SBAFactory())
-        
+        testHarness = SBBBridgeTestHarness(studyIdentifier: "bridgeApp-test")
+
+        let participantManager = ParticipantManager()
+        BridgeSDK.participantManager = participantManager
+
+        SBABridgeConfiguration.shared.setupBridge(with: SBAFactory()) {
+            SBABridgeConfiguration.shared.refreshAppConfig()
+        }
+                
+        self.testHarness!.post(participantManager.mockParticipant)
+
         return true
     }
 }

@@ -41,52 +41,12 @@ class ProfileDataSourceTests: XCTestCase {
     static let testSectionTitle: String = "testSectionTitle"
     static let testProfileItemTitle: String = "testProfileItemTitle"
     
-    let appConfigJSON: [String: Any] = [
-        "clientData": [
-            "profile": [
-                "manager": [
-                    "items": [
-                        [
-                            "profileKey": ProfileDataSourceTests.testReportProfileKey,
-                            "sourceKey": ProfileDataSourceTests.testReportSourceKey,
-                            "itemType": "boolean",
-                            "readonly": false,
-                            "type": "report"
-                        ]
-                    ]
-                ],
-                "dataSource": [
-                    "sections": [
-                        [
-                            "title": ProfileDataSourceTests.testSectionTitle,
-                            "items": [
-                                [
-                                    "type": "profileItem",
-                                    "title": ProfileDataSourceTests.testProfileItemTitle,
-                                    "profileItemKey": ProfileDataSourceTests.testReportProfileKey
-                                ]
-                            ],
-                            "type": "profileSection"
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    ]
-    
     override func setUp() {
         super.setUp()
-        
-        BridgeSDK.setup(withBridgeInfo: TestBridgeInfo())
-        BridgeSDK.participantManager = MockParticipantManager()
-        SBABridgeConfiguration.shared = SBABridgeConfiguration()
-        let appConfig = SBBAppConfig(dictionaryRepresentation: self.appConfigJSON)!
-        SBABridgeConfiguration.shared.setup(with: appConfig)
     }
 
     override func tearDown() {
         super.tearDown()
-        SBABridgeConfiguration.shared = SBABridgeConfiguration()
     }
     
     func testProfileTableItems() {

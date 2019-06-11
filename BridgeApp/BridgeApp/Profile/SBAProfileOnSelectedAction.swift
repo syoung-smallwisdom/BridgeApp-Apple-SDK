@@ -45,6 +45,7 @@ public struct SBAProfileOnSelectedAction : RawRepresentable, Codable {
     public static let showResource: SBAProfileOnSelectedAction = "showResource"
     public static let editProfileItem: SBAProfileOnSelectedAction = "editProfileItem"
     public static let showWithdrawal: SBAProfileOnSelectedAction = "showWithdrawal"
+    public static let showProfileView: SBAProfileOnSelectedAction = "showProfileView"
 }
 
 extension SBAProfileOnSelectedAction : Equatable {
