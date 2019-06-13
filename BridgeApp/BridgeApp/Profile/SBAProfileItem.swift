@@ -33,6 +33,7 @@
 
 import Foundation
 import HealthKit
+import BridgeSDK
 
 public protocol SBAProfileItem: Decodable {
     /// profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
@@ -94,6 +95,9 @@ fileprivate protocol SBAProfileItemInternal: SBAProfileItem {
     
     // backing store for non-default demographicKey value
     var _demographicKey: String? { get set }
+    
+    // backing store for non-default readonly value
+    var _readonly: Bool? { get set }
 }
 
 // extension where common implementation details for properties with default fallback values are implemented
@@ -113,6 +117,15 @@ extension SBAProfileItemInternal {
         }
         set {
             self._demographicKey = newValue
+        }
+    }
+    
+    public var readonly: Bool {
+        get {
+            return self._readonly ?? false
+        }
+        set {
+            self._readonly = newValue
         }
     }
 }
@@ -325,12 +338,14 @@ extension HKBiologicalSex {
 public struct SBAReportProfileItem: SBAProfileItemInternal {
     private enum CodingKeys: String, CodingKey {
         case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema,
-            _clientDataIsItem = "clientDataIsItem", itemType, readonly, type
+        _clientDataIsItem = "clientDataIsItem", itemType, _readonly = "readonly", type
     }
 
     fileprivate var _sourceKey: String?
     
     fileprivate var _demographicKey: String?
+    
+    fileprivate var _readonly: Bool?
     
     /// profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
     /// within an app.
@@ -358,9 +373,6 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
 
     /// itemType specifies what type to store the profileItem's value as. Defaults to String if not otherwise specified.
     public var itemType: RSDFormDataType
-    
-    /// Is the value read-only?
-    public var readonly: Bool
     
     /// The class type to which to deserialize this profile item.
     public var type: SBAProfileItemType
@@ -399,6 +411,194 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     }
     
 }
+
+// The valid keypaths into SBBStudyParticipant for SBAStudyParticipantProfileItems. This will be used to access the
+// values via their keypaths.
+fileprivate struct SBAParticipantKeyPath : RawRepresentable, Codable {
+    public typealias RawValue = String
+    
+    public private(set) var rawValue: String
+    
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+    
+    public static let email: SBAParticipantKeyPath = "email"
+    
+    public static let externalId: SBAParticipantKeyPath = "externalId"
+    
+    public static let firstName: SBAParticipantKeyPath = "firstName"
+    
+    public static let lastName: SBAParticipantKeyPath = "lastName"
+    
+    public static let phoneNumber: SBAParticipantKeyPath = "phoneNumber"
+    
+    /// List of all the allowed keypaths.
+    public static func allowedKeypaths() -> [SBAParticipantKeyPath] {
+        return [.email, .externalId, .firstName, .lastName, .phoneNumber]
+    }
+}
+
+extension SBAParticipantKeyPath : Equatable {
+    public static func ==(lhs: SBAParticipantKeyPath, rhs: SBAParticipantKeyPath) -> Bool {
+        return lhs.rawValue == rhs.rawValue
+    }
+    public static func ==(lhs: String, rhs: SBAParticipantKeyPath) -> Bool {
+        return lhs == rhs.rawValue
+    }
+    public static func ==(lhs: SBAParticipantKeyPath, rhs: String) -> Bool {
+        return lhs.rawValue == rhs
+    }
+}
+
+extension SBAParticipantKeyPath : Hashable {
+    public var hashValue : Int {
+        return self.rawValue.hashValue
+    }
+}
+
+extension SBAParticipantKeyPath : ExpressibleByStringLiteral {
+    public typealias StringLiteralType = String
+    
+    public init(stringLiteral value: String) {
+        self.init(rawValue: value)
+    }
+}
+
+extension SBAParticipantKeyPath {
+    static func allCodingKeys() -> [String] {
+        return allowedKeypaths().map{ $0.rawValue }
+    }
+}
+
+
+/// SBAStudyParticipantProfileItem allows storing and retrieving profile item values to/from the SBBStudyParticipant object.
+/// For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
+/// interpreted as the key path into the SBBStudyParticipant.
+public struct SBAStudyParticipantProfileItem: SBAProfileItemInternal {
+    private enum CodingKeys: String, CodingKey {
+        case profileKey, _sourceKey = "sourceKey", itemType, _readonly = "readonly", type
+    }
+    
+    fileprivate var _sourceKey: String?
+    
+    fileprivate var _demographicKey: String?
+
+    public var profileKey: String
+    
+    public var demographicSchema: String?
+    
+    /// itemType specifies what type to store the profileItem's value as. Defaults to String if not otherwise specified.
+    public var itemType: RSDFormDataType
+    
+    /// Is the value read-only?
+    /// Note that if the underlying SBBStudyParticipant field is effectively read-only, this
+    /// var will be true regardless of any "readonly" key specified in the item's json.
+    fileprivate var _readonly: Bool?
+    public var readonly: Bool {
+        var itemIsPotentiallyWritable: Bool
+        let path = SBAParticipantKeyPath(rawValue: self.sourceKey)
+        switch path {
+        case .firstName:
+            itemIsPotentiallyWritable = true
+        case .lastName:
+            itemIsPotentiallyWritable = true
+        default:
+            itemIsPotentiallyWritable = false
+        }
+        
+        // If the item isn't even *potentially* writable, ignore the readonly flag from json if any.
+        // If it is, then default to false (not readonly).
+        return itemIsPotentiallyWritable ? (self._readonly ?? false) : true
+    }
+    
+    /// The class type to which to deserialize this profile item.
+    public var type: SBAProfileItemType
+    
+    public func storedValue(forKey key: String) -> Any? {
+        guard let participant = SBAParticipantManager.shared.studyParticipant else { return nil }
+        return participant.value(forKeyPath: self.sourceKey)
+    }
+    
+    public func setStoredValue(_ newValue: Any?) {
+        guard !self.readonly, let participant = SBAParticipantManager.shared.studyParticipant else { return }
+        participant.setValue(newValue, forKey: self.sourceKey)
+        BridgeSDK.participantManager.updateParticipantRecord(withRecord: participant) { (_, _) in
+        }
+    }
+    
+}
+
+/// SBAStudyParticipantClientDataProfileItem allows storing and retrieving profile item values to/from the
+/// SBBStudyParticipant object's clientData field. For this type of profile item, the sourceKey (which defaults
+/// to the profileKey if not specifically set) is interpreted as the key into SBBStudyParticipant.clientData.
+/// If a fallbackKeyPath is set, and the item currently does not have a value specified in the clientData,
+/// the value will be retrieved from the SBBStudyParticipant object at the specified key path. New values
+/// are always set in the clientData and do not affect the value at the fallbackKeyPath.
+public struct SBAStudyParticipantClientDataProfileItem: SBAProfileItemInternal {
+    private enum CodingKeys: String, CodingKey {
+        case profileKey, _sourceKey = "sourceKey", _fallbackKeyPath = "fallbackKeyPath", itemType, _readonly = "readonly", type
+    }
+
+    fileprivate var _sourceKey: String?
+    
+    fileprivate var _demographicKey: String?
+    
+    fileprivate var _fallbackKeyPath: String?
+    public var fallbackKeyPath: String? {
+        get {
+            return _fallbackKeyPath
+        }
+        set {
+            guard let newValue = newValue
+                else {
+                    _fallbackKeyPath = nil
+                    return
+            }
+            guard SBAParticipantKeyPath.allCodingKeys().contains(newValue)
+                else {
+                    assertionFailure("Attempting to set fallbackKeyPath to an invalid key path: \(String(describing: newValue))")
+                    return
+            }
+            _fallbackKeyPath = newValue
+        }
+    }
+    
+    fileprivate var _readonly: Bool?
+    
+    /// profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
+    /// within an app.
+    public var profileKey: String
+    
+    public var demographicSchema: String?
+    
+    /// itemType specifies what type to store the profileItem's value as. Defaults to String if not otherwise specified.
+    public var itemType: RSDFormDataType
+    
+    /// The class type to which to deserialize this profile item.
+    public var type: SBAProfileItemType
+    
+    public func storedValue(forKey key: String) -> Any? {
+        guard let participant = SBAParticipantManager.shared.studyParticipant else { return nil }
+        var dict = participant.clientData as? [String : RSDJSONSerializable] ?? [:]
+        guard let json = dict[self.sourceKey]
+            else {
+                guard let keyPath = self.fallbackKeyPath else { return nil }
+                return participant.value(forKeyPath: keyPath)
+        }
+        return self.commonJsonToItemType(jsonVal: json)
+    }
+    
+    public func setStoredValue(_ newValue: Any?) {
+        guard !self.readonly, let participant = SBAParticipantManager.shared.studyParticipant else { return }
+        var dict = participant.clientData as? [String : RSDJSONSerializable] ?? [:]
+        dict[self.sourceKey] = self.commonItemTypeToJson(val: newValue)
+        participant.clientData = dict as SBBJSONValue
+        BridgeSDK.participantManager.updateParticipantRecord(withRecord: participant) { (_, _) in
+        }
+    }
+}
+
 
 /* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 open class SBAProfileItemBase: SBAProfileItem, Decodable {

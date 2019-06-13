@@ -52,6 +52,9 @@ public struct SBAProfileTableItemType : RawRepresentable, Codable {
     
     /// Defaults to creating a `SBAResourceProfileTableItem`.
     public static let resource: SBAProfileTableItemType = "resource"
+    
+    /// Defaults to creating a `SBAProfileViewProfileTableItem`.
+    public static let profileView: SBAProfileTableItemType = "profileView"
 
     /// List of all the standard types.
     public static func allStandardTypes() -> [SBAProfileTableItemType] {
@@ -548,3 +551,49 @@ public struct SBAResourceProfileTableItem: SBAProfileTableItem, Decodable, RSDRe
 
 }
  */
+
+/// A profile table item that, when selected, segues to another profile table view.
+public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
+    private enum CodingKeys: String, CodingKey {
+        case title, detail, inCohorts, notInCohorts, _icon = "icon", profileDataSource
+    }
+
+    // MARK: SBAProfileTableItem
+
+    /// Title to show for the table item.
+    public var title: String?
+    
+    /// Detail text to show for the table item.
+    public var detail: String?
+    
+    /// Profile view profile table items are not editable.
+    public var isEditable: Bool? {
+        return false
+    }
+    
+    /// A set of cohorts (data groups) the participant must be in, in order to show this item in its containing profile section.
+    public var inCohorts: Set<String>?
+    
+    /// A set of cohorts (data groups) the participant must not be in, in order to show this item in its containing profile section.
+    public var notInCohorts: Set<String>?
+    
+    /// Profile view profile table items segue to their associated profile table view when selected.
+    public var onSelected: SBAProfileOnSelectedAction? {
+        return .showProfileView
+    }
+    
+    // MARK: Profile View Profile Table Item
+
+    /// The image (specified by name in json) to use as the icon for this profile table item.
+    private var _icon: String?
+    public var icon: UIImage? {
+        get {
+            guard let imageName = _icon else { return nil }
+            return UIImage(named: imageName)
+        }
+    }
+    
+    /// The profile data source for the profile table view to which this item will segue when selected.
+    public var profileDataSource: SBAProfileDataSourceObject
+}
+

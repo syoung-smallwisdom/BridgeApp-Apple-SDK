@@ -324,15 +324,15 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
         switch (type) {
         case .report:
             return try SBAReportProfileItem(from: decoder)
+        case .participant:
+            return try SBAStudyParticipantProfileItem(from: decoder)
+        case .participantClientData:
+            return try SBAStudyParticipantClientDataProfileItem(from: decoder)
 /* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
         case .userDefaults:
             return try SBAUserDefaultsProfileItem(from: decoder)
         case .keychain:
             return try SBAKeychainProfileItem(from: decoder)
-        case .participant:
-            return try SBAStudyParticipantProfileItem(from: decoder)
-        case .participantCustomAttributes:
-            return try SBAStudyParticipantCustomAttributesProfileItem(from: decoder)
         case .clientData:
             return try SBAClientDataProfileItem(from: decoder)
         case .fullName:
@@ -341,7 +341,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
             return try SBABirthDateProfileItem(from: decoder)
  */
         default:
-            assertionFailure("Attempt to decode profile item of unknown type \(type.rawValue)")
+            assertionFailure("Attempt to decode profile item of unknown type '\(type.rawValue)'")
             return nil
         }
     }

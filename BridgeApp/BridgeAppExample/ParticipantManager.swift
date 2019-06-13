@@ -1,6 +1,6 @@
 //
-//  MockParticipantManager.swift
-//  BridgeAppTests
+//  ParticipantManager.swift
+//  BridgeAppExample
 //
 //  Copyright © 2019 Sage Bionetworks. All rights reserved.
 //
@@ -31,19 +31,50 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-import UIKit
+import BridgeApp
+import BridgeSDK_Test
 
-class MockParticipantManager: NSObject, SBBParticipantManagerProtocol {
+public struct StudySetup {
+    var email: String = "fake.address@fake.domain.tld"
+    var number: String = "206-555-1234"
+    var firstName: String = "Fürst"
+    
+    func createParticipant() -> SBBStudyParticipant {
+        return SBBStudyParticipant(dictionaryRepresentation: [
+            "firstName" : self.firstName,
+            "phoneVerified" : NSNumber(value: true),
+            "phone": [
+                "number": self.number
+            ],
+            "email": self.email,
+            ])!
+    }
+}
+
+class ParticipantManager: NSObject, SBBParticipantManagerProtocol {
     var timestampedReports: [String: [SBBReportData]] = [:]
     var datestampedReports: [String: [SBBReportData]] = [:]
     
+    var testHarness: SBBBridgeTestHarness? {
+        return (UIApplication.shared.delegate as? AppDelegate)?.testHarness
+    }
+    
+    var mockParticipant: SBBStudyParticipant = StudySetup().createParticipant()
+    
+    override init() {
+        super.init()
+        self.testHarness?.post(self.mockParticipant)
+    }
+    
     func getParticipantRecord(completion: SBBParticipantManagerGetRecordCompletionBlock? = nil) -> URLSessionTask? {
-        assert(false, "getParticipantRecord(completion:) not implemented in mock")
+        guard let completion = completion else { return nil }
+        completion(self.mockParticipant, nil)
         return nil
     }
     
     func updateParticipantRecord(withRecord participant: Any?, completion: SBBParticipantManagerCompletionBlock? = nil) -> URLSessionTask? {
-        assert(false, "updateParticipantRecord(withRecord:, completion:) not implemented in mock")
+        self.mockParticipant = participant as! SBBStudyParticipant
+        self.testHarness?.post(self.mockParticipant)
         return nil
     }
     
@@ -111,9 +142,9 @@ class MockParticipantManager: NSObject, SBBParticipantManagerProtocol {
     
     func getLatestCachedData(forReport identifier: String) throws -> SBBReportData {
         guard let reports = self.timestampedReports[identifier] ?? self.datestampedReports[identifier],
-                    reports.count > 0
-                else {
-            throw NSError(domain: SBB_ERROR_DOMAIN, code: 0, userInfo: ["description": "No cached data found for report \(identifier)"])
+            reports.count > 0
+            else {
+                throw NSError(domain: SBB_ERROR_DOMAIN, code: 0, userInfo: ["description": "No cached data found for report \(identifier)"])
         }
         
         return reports.sorted(by: {
@@ -121,5 +152,5 @@ class MockParticipantManager: NSObject, SBBParticipantManagerProtocol {
         }).first!
     }
     
-
+    
 }

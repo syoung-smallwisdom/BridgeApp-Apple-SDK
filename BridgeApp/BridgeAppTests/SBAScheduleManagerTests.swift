@@ -34,18 +34,6 @@
 import XCTest
 @testable import BridgeApp
 
-class TestBridgeInfo: NSObject, SBBBridgeInfoProtocol {
-    var studyIdentifier: String = "bridgeApp-test"
-    var certificateName: String? = "bridgeApp-test"
-    var cacheDaysAhead: Int = 365
-    var cacheDaysBehind: Int = 365
-    var environment: SBBEnvironment = .dev
-    var usesStandardUserDefaults: Bool = true
-    var userDefaultsSuiteName: String? = nil
-    var appGroupIdentifier: String? = nil
-    var keychainAccessGroup: String? = nil
-}
-
 class SBAScheduleManagerTests: XCTestCase {
     
     var scheduleManager: TestScheduleManager!
@@ -54,7 +42,6 @@ class SBAScheduleManagerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        BridgeSDK.setup(withBridgeInfo: TestBridgeInfo())
         let config = SBABridgeConfiguration()
         SBABridgeConfiguration.shared = config
         scheduleManager = TestScheduleManager()
@@ -65,9 +52,6 @@ class SBAScheduleManagerTests: XCTestCase {
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
-        
-        // flush the bridge config
-        SBABridgeConfiguration.shared = SBABridgeConfiguration()
     }
 
     // Helper methods
