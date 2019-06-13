@@ -557,7 +557,9 @@ public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
         case title, detail, inCohorts, notInCohorts, _icon = "icon", profileDataSource
     }
+
     // MARK: SBAProfileTableItem
+
     /// Title to show for the table item.
     public var title: String?
     
@@ -581,6 +583,7 @@ public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
     }
     
     // MARK: Profile View Profile Table Item
+
     /// The image (specified by name in json) to use as the icon for this profile table item.
     private var _icon: String?
     public var icon: UIImage? {
