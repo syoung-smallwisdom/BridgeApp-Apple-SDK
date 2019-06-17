@@ -103,7 +103,9 @@ public class SBAProfileManagerError: NSObject, Error {
 
 /// A protocol for defining a Profile Manager.
 public protocol SBAProfileManager {
-
+    /// A unique identifier for the profile manager.
+    var identifier: String { get }
+    
     /// Get a list of the profile keys defined for this app.
     /// - returns: A String array of profile item keys.
     func profileKeys() -> [String]
@@ -131,9 +133,11 @@ public protocol SBAProfileManager {
 open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decodable {
     static let groupIdentifier: String = "Profile Activity Group"
     
-    /// Return the shared instance of the Profile Manager from the shared Bridge configuration.
+    static let defaultIdentifier: String = "ProfileManager"
+    
+    /// Return the default instance of the Profile Manager from the shared Bridge configuration.
     public static var shared: SBAProfileManager {
-        return SBABridgeConfiguration.shared.profileManager ?? SBAProfileManagerObject()
+        return SBABridgeConfiguration.shared.profileManager(for: SBAProfileManagerObject.defaultIdentifier) ?? SBAProfileManagerObject()
     }
 
     public static let userDefaults = BridgeSDK.sharedUserDefaults()
@@ -153,8 +157,6 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     
     /// Is the account signed in?
     private var isAuthenticated: Bool = false
-    
-
    
     // MARK: Internal methods
     // TODO: emm 2019-05-03 Deal with this (or remove? is it obsolete?) for mPower 2.1
@@ -244,7 +246,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     
     // MARK: Codable
     private enum CodingKeys: String, CodingKey {
-        case items
+        case identifier, items
     }
     
     private enum TypeKeys: String, CodingKey {
@@ -266,6 +268,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     
     override public init() {
         super.init()
+        self.identifier = ""
     }
 
     public required init(from decoder: Decoder) throws {
@@ -285,7 +288,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
         }
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+        self.identifier = try container.decodeIfPresent(String.self, forKey: .identifier) ?? SBAProfileManagerObject.defaultIdentifier
         if container.contains(.items) {
             var items: [SBAProfileItem] = self.items
             var schemas: [RSDIdentifier] = []
@@ -323,7 +326,9 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
         
         switch (type) {
         case .report:
-            return try SBAReportProfileItem(from: decoder)
+            var item: SBAReportProfileItem = try SBAReportProfileItem(from: decoder)
+            item.reportManager = self
+            return item
         case .participant:
             return try SBAStudyParticipantProfileItem(from: decoder)
         case .participantClientData:
