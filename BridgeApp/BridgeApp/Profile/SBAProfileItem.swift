@@ -381,7 +381,7 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     ///
     /// By default, the profile manager that decodes this item will point this property at itself. If you point it at
     /// a different report manager, you will need to ensure that report manager is set up to handle the relevant report.
-    public var reportManager: SBAReportManager?
+    public weak var reportManager: SBAReportManager?
     
     public func storedValue(forKey key: String) -> Any? {
         guard let reportManager = self.reportManager,
