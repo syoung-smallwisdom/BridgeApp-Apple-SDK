@@ -290,7 +290,7 @@ public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResour
 /// A profile table item that displays, and allows editing, the value of a Profile Item.
 public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
-        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey, _editTaskIdentifier = "editTaskIdentifier"
+        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey, _profileManagerIdentifier = "profileManager", _editTaskIdentifier = "editTaskIdentifier"
     }
     // MARK: SBAProfileTableItem
     /// Title to show for the table item.
@@ -355,6 +355,19 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     /// - warning: Using a key that is not included in the Profile Manager's profileItems is a coding error.
     public let profileItemKey: String
     
+    /// The profile manager for this profile table item. If an identifier not specified in json, it will
+    /// use the default (shared) manager.
+    private let _profileManagerIdentifier: String?
+    public var profileManager: SBAProfileManager {
+        guard let identifier = self._profileManagerIdentifier,
+                let manager = SBABridgeConfiguration.shared.profileManager(for: identifier)
+            else {
+                return SBAProfileManagerObject.shared
+        }
+        
+        return manager
+    }
+    
     /// The task info identifier for the step to display to the participant when they ask to edit the value
     /// of the profile item. Falls back to the profile item's demographicSchema if not explicitly set.
     ///
@@ -368,11 +381,11 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     /// The actual profile item for the given profileItemKey.
     public var profileItem: SBAProfileItem {
         get {
-            let profileItems = SBAProfileManagerObject.shared.profileItems()
+            let profileItems = self.profileManager.profileItems()
             return profileItems[self.profileItemKey]!
         }
         set {
-            var profileItems = SBAProfileManagerObject.shared.profileItems()
+            var profileItems = self.profileManager.profileItems()
             profileItems[self.profileItemKey]!.value = newValue.value
        }
     }

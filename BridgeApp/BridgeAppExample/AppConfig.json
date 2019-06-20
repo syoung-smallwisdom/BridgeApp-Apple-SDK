@@ -1,79 +1,85 @@
 {
     "guid": "fake-appconfig-guid",
-    "clientData": {
-        "profile": {
-            "manager": {
-                "items": [
-                    {
-                        "profileKey": "testFlag",
-                        "sourceKey": "sourceTestFlag",
-                        "itemType": "boolean",
-                        "readonly": false,
-                        "type": "report"
-                    },
-                    {
-                        "profileKey": "testFlagIsClientData",
-                        "sourceKey": "sourceTestFlagIsClientData",
-                        "clientDataIsItem": true,
-                        "itemType": "boolean",
-                        "readonly": false,
-                        "type": "report"
-                    },
-                    {
-                        "profileKey": "testFlagNotClientData",
-                        "sourceKey": "sourceTestFlagNotClientData",
-                        "clientDataIsItem": false,
-                        "itemType": "boolean",
-                        "readonly": false,
-                        "type": "report"
-                    },
-                    {
-                        "profileKey": "profileKeyParticipantEmail",
-                        "sourceKey": "email",
-                        "itemType": "string",
-                        "readonly": false,
-                        "type": "participant"
-                    },
-                    {
-                        "profileKey": "profileKeyParticipantPhone",
-                        "sourceKey": "phone.number",
-                        "itemType": "string",
-                        "readonly": false,
-                        "type": "participant"
-                    },
-                    {
-                        "profileKey": "profileKeyParticipantFirst",
-                        "sourceKey": "firstName",
-                        "itemType": "string",
-                        "readonly": false,
-                        "type": "participant"
-                    },
-                    {
-                        "profileKey": "profileKeyParticipantClientDataFirst",
-                        "sourceKey": "firstNameInClientData",
-                        "fallbackKeyPath": "firstName",
-                        "itemType": "string",
-                        "readonly": false,
-                        "type": "participantClientData"
-                    }
-                ]
-            },
-            "dataSource": {
-                "sections": [
-                    {
-                        "title": "testSectionTitle",
-                        "items": [
-                            {
-                                "type": "profileItem",
-                                "title": "testProfileItemTitle",
-                                "profileItemKey": "testFlag"
-                            }
-                        ],
-                        "type": "profileSection"
-                    }
-                ]
-            }
+    "configElements": {
+        "ProfileManager": {
+            "identifier": "ProfileManager",
+            "catType": "profileManager",
+            "type": "profileManager",
+            "items": [
+                {
+                    "profileKey": "testFlag",
+                    "sourceKey": "sourceTestFlag",
+                    "itemType": "boolean",
+                    "readonly": false,
+                    "type": "report"
+                },
+                {
+                    "profileKey": "testFlagIsClientData",
+                    "sourceKey": "sourceTestFlagIsClientData",
+                    "clientDataIsItem": true,
+                    "itemType": "boolean",
+                    "readonly": false,
+                    "type": "report"
+                },
+                {
+                    "profileKey": "testFlagNotClientData",
+                    "sourceKey": "sourceTestFlagNotClientData",
+                    "clientDataIsItem": false,
+                    "itemType": "boolean",
+                    "readonly": false,
+                    "type": "report"
+                },
+                {
+                    "profileKey": "profileKeyParticipantEmail",
+                    "sourceKey": "email",
+                    "itemType": "string",
+                    "readonly": false,
+                    "type": "participant"
+                },
+                {
+                    "profileKey": "profileKeyParticipantPhone",
+                    "sourceKey": "phone.number",
+                    "itemType": "string",
+                    "readonly": false,
+                    "type": "participant"
+                },
+                {
+                    "profileKey": "profileKeyParticipantFirst",
+                    "sourceKey": "firstName",
+                    "itemType": "string",
+                    "readonly": false,
+                    "type": "participant"
+                },
+                {
+                    "profileKey": "profileKeyParticipantClientDataFirst",
+                    "sourceKey": "firstNameInClientData",
+                    "fallbackKeyPath": "firstName",
+                    "itemType": "string",
+                    "readonly": false,
+                    "type": "participantClientData"
+                }
+            ]
+        },
+        "ProfileDataSource": {
+            "identifier": "ProfileDataSource",
+            "catType": "profileDataSource",
+            "type": "profileDataSource",
+            "sections": [
+                {
+                    "title": "testSectionTitle",
+                    "items": [
+                        {
+                            "type": "profileItem",
+                            "title": "testProfileItemTitle",
+                            "profileItemKey": "testFlag"
+                        }
+                    ],
+                    "type": "profileSection"
+                }
+            ]
         }
+    },
+    "clientData": {
     },
     "createdOn": "2019-04-26T21:26:25.510Z",
     "modifiedOn": "2019-05-01T18:23:03.197Z",

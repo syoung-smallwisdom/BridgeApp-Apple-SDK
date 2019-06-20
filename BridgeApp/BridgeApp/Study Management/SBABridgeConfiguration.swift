@@ -105,6 +105,12 @@ open class SBABridgeConfiguration {
     /// A mapping of report identifier to report category.
     fileprivate var reportMap : [String : SBAReportCategory] = [:]
     
+    /// A mapping of profile manager identifier to profile manager.
+    fileprivate var profileManagerMap: [String: SBAProfileManager] = [:]
+    
+    /// A mapping of profile data source identifier to profile data source.
+    fileprivate var profileDataSourceMap: [String: SBAProfileDataSource] = [:]
+    
     /// The duration of the study. Default = 1 year.
     open var studyDuration : DateComponents = {
         var studyDuration = DateComponents()
@@ -116,12 +122,6 @@ open class SBABridgeConfiguration {
     ///
     /// - seealso: https://developer.sagebridge.org/articles/bundled_zip_file_uploads.html
     public var usesV1LegacyArchiving : Bool = false
-    
-    /// The profile manager for the study.
-    open private(set) var profileManager : SBAProfileManager?
-    
-    /// The profile data source for the study.
-    open private(set) var profileDataSource : SBAProfileDataSource?
     
     public init() {
     }
@@ -167,7 +167,7 @@ open class SBABridgeConfiguration {
     
     /// Refresh the app config by pinging Bridge services.
     open func refreshAppConfig() {
-        (SBBComponentManager.component(SBBStudyManager.classForCoder()) as! SBBStudyManagerProtocol).getAppConfig { (response, error) in
+        BridgeSDK.studyManager.getAppConfig { (response, error) in
             guard error == nil, let appConfig = response as? SBBAppConfig else { return }
             DispatchQueue.main.async {
                 self.setup(with: appConfig)
@@ -211,11 +211,6 @@ open class SBABridgeConfiguration {
                 if let v1Legacy = mappingObject.usesV1LegacyArchiving {
                     self.usesV1LegacyArchiving = v1Legacy
                 }
-                
-                if let profileMapping = mappingObject.profile {
-                    self.profileManager = profileMapping.manager
-                    self.profileDataSource = profileMapping.dataSource
-                }
             }
             if let configElements = appConfig.configElements as? [String : SBBJSONValue] {
                 try configElements.forEach {
@@ -231,18 +226,29 @@ open class SBABridgeConfiguration {
     
     /// Update the mappings by adding config elements from `SBBAppConfig` for each key.
     ///
-    /// The default will check the config element json to see if it can be decoded into a task. If successful,
-    /// the task will be added to the task mapping. If not, it is assumed that this version of the application
-    /// does not support this config element and it will be ignored.
+    /// The default will attempt to decode the config element json according to its catType. If successful, a decoded
+    /// SBAProfileManager will be added to the profile manager mapping, a decoded SBAProfileDataSource will be
+    /// added to the profile datasource mapping, and a decoded task will be added to the task mapping. If not, it is
+    /// assumed that this version of the application does not support this config element and it will be ignored.
     ///
     /// - parameters:
     ///     - key: The configuration element key (identifier).
     ///     - json: The JSON dictionary used to describe this object.
     open func addConfigElementMapping(for key: String, with json: SBBJSONValue) throws {
+        
         do {
             let decoder = self.factory(for: json, using: key).createJSONDecoder()
-            let taskWrapper = try decoder.decode(SBATaskMappingObject.self, from: json)
-            self.addMapping(with: taskWrapper.task)
+            let objWrapper = try decoder.decode(SBAObjectWrapper.self, from: json)
+            switch objWrapper.catType {
+            case .task:
+                self.addMapping(with: objWrapper.object as! RSDTask)
+            case .profileManager:
+                self.addMapping(with: objWrapper.object as! SBAProfileManager)
+            case .profileDataSource:
+                self.addMapping(with: objWrapper.object as! SBAProfileDataSource)
+            default:
+                debugPrint("\(self) doesn't know what to do with object decoded for catType '\(objWrapper.catType.rawValue)'--ignoring")
+            }
         } catch let err {
             debugPrint("Failed to decode config element for \(key) with \(json): \(err)")
         }
@@ -312,7 +318,21 @@ open class SBABridgeConfiguration {
             self.taskToSchemaIdentifierMap[activityIdentifier] = schemaIdentifier
         }
     }
-
+    
+    /// Update the mapping by adding the given profile manager.
+    open func addMapping(with profileManager: SBAProfileManager) {
+        syncQueue.async {
+            self.profileManagerMap[profileManager.identifier] = profileManager
+        }
+    }
+    
+    /// Update the mapping by adding the given profile data source.
+    open func addMapping(with profileDataSource: SBAProfileDataSource) {
+        syncQueue.async {
+            self.profileDataSourceMap[profileDataSource.identifier] = profileDataSource
+        }
+    }
+    
     /// Override this method to return a task transformer for a given task. This method is intended
     /// to be able to run active tasks such as "tapping" or "tremor" where the task module is described
     /// in another github repository.
@@ -393,6 +413,24 @@ open class SBABridgeConfiguration {
         var ret: SBAReportCategory?
         syncQueue.sync {
             ret = self.reportMap[reportIdentifier]
+        }
+        return ret
+    }
+    
+    /// Get the profile manager for a given config element identifier.
+    open func profileManager(for configElement: String) -> SBAProfileManager? {
+        var ret: SBAProfileManager?
+        syncQueue.sync {
+            ret = self.profileManagerMap[configElement]
+        }
+        return ret
+    }
+    
+    /// Get the profile data source for a given config element identifier.
+    open func profileDataSource(for configElement: String) -> SBAProfileDataSource? {
+        var ret: SBAProfileDataSource?
+        syncQueue.sync {
+            ret = self.profileDataSourceMap[configElement]
         }
         return ret
     }
@@ -499,7 +537,6 @@ struct SBAActivityMappingObject : Decodable {
     let tasks : [RSDTaskObject]?
     let taskToSchemaIdentifierMap : [String : String]?
     let reportMappings : [String : SBAReportCategory]?
-    let profile : SBAProfileMappingObject?
 }
 
 /// `SBAActivityGroupObject` is a `Decodable` implementation of a `SBAActivityGroup`.
@@ -759,32 +796,15 @@ extension SBAOptionalImageVendor {
     }
 }
 
-struct SBAProfileMappingObject : Decodable {
-    private enum CodingKeys: String, CodingKey {
-        case manager, dataSource
-    }
-    
-    let manager: SBAProfileManager
-    let dataSource: SBAProfileDataSource
-    
+struct SBAObjectWrapper : Decodable {
+    let catType: SBACategoryType
+    let object: Any
+
     init(from decoder: Decoder) throws {
         guard let factory: SBAFactory = decoder.factory as? SBAFactory else {
             let context = DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Expecting the factory to be a subclass of `SBAFactory`")
             throw DecodingError.typeMismatch(SBAFactory.self, context)
         }
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let managerDecoder = try container.superDecoder(forKey: .manager)
-        self.manager = try factory.decodeProfileManager(from: managerDecoder)
-        let dataSourceDecoder = try container.superDecoder(forKey: .dataSource)
-        self.dataSource = try factory.decodeProfileDataSource(from: dataSourceDecoder)
-    }
-}
-
-struct SBATaskMappingObject : Decodable {
-    let task: RSDTask
-    
-    init(from decoder: Decoder) throws {
-        let factory = decoder.factory
-        self.task = try factory.decodeTask(from: decoder)
+        (self.catType, self.object) = try factory.decodeObject(from: decoder)
     }
 }

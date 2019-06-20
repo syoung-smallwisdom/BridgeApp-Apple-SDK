@@ -377,8 +377,14 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     /// The class type to which to deserialize this profile item.
     public var type: SBAProfileItemType
     
+    /// The report manager to use when storing and retrieving the item's value.
+    ///
+    /// By default, the profile manager that decodes this item will point this property at itself. If you point it at
+    /// a different report manager, you will need to ensure that report manager is set up to handle the relevant report.
+    public weak var reportManager: SBAReportManager?
+    
     public func storedValue(forKey key: String) -> Any? {
-        guard let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager,
+        guard let reportManager = self.reportManager,
                 let clientData = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: key) })?.clientData
             else {
                 return nil
@@ -397,7 +403,7 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     }
     
     public func setStoredValue(_ newValue: Any?) {
-        guard !self.readonly, let reportManager = SBABridgeConfiguration.shared.profileManager as? SBAReportManager else { return }
+        guard !self.readonly, let reportManager = self.reportManager else { return }
         var clientData : SBBJSONValue = NSNull()
         if self.clientDataIsItem {
             clientData = self.commonItemTypeToJson(val: newValue) as? SBBJSONValue ?? NSNull()

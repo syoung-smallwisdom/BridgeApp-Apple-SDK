@@ -137,6 +137,9 @@ extension SBAProfileSectionType {
 
 /// A protocol for defining a profile data source.
 public protocol SBAProfileDataSource: class {
+    /// A unique identifier for the data source.
+    var identifier: String { get }
+    
     /// Number of sections in the data source.
     /// - returns: Number of sections.
     func numberOfSections() -> Int
@@ -174,11 +177,15 @@ public extension SBAProfileDataSource {
 }
 
 open class SBAProfileDataSourceObject: Decodable, SBAProfileDataSource {
-    /// Return the shared instance of the Profile Data Source from the shared Bridge configuration.
+    static let defaultIdentifier: String = "ProfileDataSource"
+    
+    /// Return the default instance of the Profile Data Source from the shared Bridge configuration.
     public static var shared: SBAProfileDataSource {
-        return SBABridgeConfiguration.shared.profileDataSource ?? SBAProfileDataSourceObject()
+        return SBABridgeConfiguration.shared.profileDataSource(for: SBAProfileDataSourceObject.defaultIdentifier) ?? SBAProfileDataSourceObject()
     }
-
+    
+    public private(set) var identifier: String = ""
+    
     private var sections: [SBAProfileSection] = [SBAProfileSection]()
 
     public init() {
@@ -186,7 +193,7 @@ open class SBAProfileDataSourceObject: Decodable, SBAProfileDataSource {
     
     // MARK: Decoder
     private enum CodingKeys: String, CodingKey {
-        case sections
+        case identifier, sections
     }
     
     private enum TypeKeys: String, CodingKey {
@@ -208,6 +215,7 @@ open class SBAProfileDataSourceObject: Decodable, SBAProfileDataSource {
     
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.identifier = try container.decodeIfPresent(String.self, forKey: .identifier) ?? SBAProfileDataSourceObject.defaultIdentifier
         if container.contains(.sections) {
             var sections: [SBAProfileSection] = []
             var nestedContainer = try container.nestedUnkeyedContainer(forKey: .sections)

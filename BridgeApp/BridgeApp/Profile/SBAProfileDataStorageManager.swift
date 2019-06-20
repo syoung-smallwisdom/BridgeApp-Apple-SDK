@@ -47,11 +47,12 @@ open class SBAProfileDataStorageManager: NSObject, RSDDataStorageManager {
 
     private var profileItem: SBAProfileItem
     
-    public init(with profileKey: String) throws {
-        let items = SBAProfileManagerObject.shared.profileItems()
-        guard let item = items[profileKey]
+    public init(with profileKey: String, in profileManagerIdentifier: String) throws {
+        let profileManager = SBABridgeConfiguration.shared.profileManager(for: profileManagerIdentifier)
+        guard let items = profileManager?.profileItems(),
+                let item = items[profileKey]
             else {
-                throw RSDValidationError.identifierNotFound(items, profileKey, "Profile item not found for key \(profileKey)")
+                throw RSDValidationError.identifierNotFound(profileManagerIdentifier, profileKey, "Profile item not found for key '\(profileKey)' in profile manager '\(profileManagerIdentifier)")
         }
         self.profileItem = item
     }
