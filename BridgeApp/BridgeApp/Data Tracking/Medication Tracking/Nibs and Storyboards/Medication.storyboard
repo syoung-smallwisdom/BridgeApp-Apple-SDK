@@ -23,10 +23,10 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="baH-Jl-ac1">
-                                <rect key="frame" x="0.0" y="165" width="414" height="594"/>
+                                <rect key="frame" x="0.0" y="179.5" width="414" height="579.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Summary" rowHeight="112" id="vY8-j2-Ctt">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="summary" rowHeight="112" id="vY8-j2-Ctt" customClass="DosageSummaryCell" customModule="BridgeApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="112"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="vY8-j2-Ctt" id="sYE-vK-ajp">
@@ -47,8 +47,11 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X9k-XR-DPm" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                    <rect key="frame" x="354" y="39.5" width="32" height="33"/>
+                                                    <rect key="frame" x="356" y="41" width="30" height="30"/>
                                                     <state key="normal" title="Edit"/>
+                                                    <connections>
+                                                        <action selector="editTapped:" destination="vY8-j2-Ctt" eventType="touchUpInside" id="Kkq-bf-qUL"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="6:00 AM, 6:00 PM, 9:00 PM, 10:00 PM Sun, Wed, Thur, Fri  " lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hcb-Zf-282">
                                                     <rect key="frame" x="25" y="46" width="200" height="41"/>
@@ -74,8 +77,15 @@
                                                 <constraint firstItem="X9k-XR-DPm" firstAttribute="centerY" secondItem="sYE-vK-ajp" secondAttribute="centerY" id="ysP-qF-cRL"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="detailLabel" destination="Hcb-Zf-282" id="1Ra-kx-kaz"/>
+                                            <outlet property="editButton" destination="X9k-XR-DPm" id="Vgk-u7-OY8"/>
+                                            <outlet property="separatorLine" destination="iA0-3Z-ryq" id="d2N-yY-gDM"/>
+                                            <outlet property="titleLabel" destination="jGU-vE-WCM" id="7mS-ea-SzX"/>
+                                            <outlet property="widthConstraint" destination="eFt-9U-gyr" id="2qM-mu-Leo"/>
+                                        </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="EditDose" rowHeight="216" id="tGk-Ad-tws">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="editDose" rowHeight="216" id="tGk-Ad-tws" customClass="EditDosageCell" customModule="BridgeApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="140" width="414" height="216"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="tGk-Ad-tws" id="SAz-q9-rXa">
@@ -105,21 +115,33 @@
                                                             </constraints>
                                                             <nil key="textColor"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                            <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                                            <textInputTraits key="textInputTraits" spellCheckingType="no" returnKeyType="done"/>
+                                                            <connections>
+                                                                <outlet property="delegate" destination="msa-hP-lX4" id="QS4-2C-4qw"/>
+                                                            </connections>
                                                         </textField>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j9M-rA-mhb" customClass="RSDRadioButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="24" y="121" width="242.5" height="43"/>
+                                                            <rect key="frame" x="24" y="121" width="220" height="43"/>
                                                             <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                                             <state key="normal" title="Take this medication at any time"/>
+                                                            <connections>
+                                                                <action selector="anytimeTapped:" destination="tGk-Ad-tws" eventType="touchUpInside" id="RKu-na-va1"/>
+                                                            </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Apu-i0-lXF" customClass="RSDRadioButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="24" y="180" width="240.5" height="32"/>
+                                                            <rect key="frame" x="24" y="180" width="160" height="43"/>
                                                             <state key="normal" title="When do you take this?"/>
+                                                            <connections>
+                                                                <action selector="useScheduleTapped:" destination="tGk-Ad-tws" eventType="touchUpInside" id="Wnj-b3-8Nl"/>
+                                                            </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ys5-LD-ZQ2" customClass="RSDUnderlinedButton" customModule="ResearchUI">
                                                             <rect key="frame" x="325" y="8" width="65" height="33.5"/>
                                                             <color key="tintColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
                                                             <state key="normal" title="Remove"/>
+                                                            <connections>
+                                                                <action selector="removeTapped:" destination="tGk-Ad-tws" eventType="touchUpInside" id="sM5-4G-pnG"/>
+                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -150,8 +172,14 @@
                                                 <constraint firstAttribute="trailing" secondItem="clx-U5-s7C" secondAttribute="trailing" id="iyZ-vM-SRY"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="anytimeButton" destination="j9M-rA-mhb" id="hYD-hf-HiX"/>
+                                            <outlet property="doseTextField" destination="sk4-sH-wh7" id="Mm8-pN-zc6"/>
+                                            <outlet property="removeButton" destination="ys5-LD-ZQ2" id="bbw-Pk-Dw7"/>
+                                            <outlet property="useScheduleButton" destination="Apu-i0-lXF" id="aBX-Fa-8h6"/>
+                                        </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="EditDays" rowHeight="70" id="qTf-XQ-zzH">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="editDays" rowHeight="70" id="qTf-XQ-zzH" customClass="EditDosageScheduleCell" customModule="BridgeApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="356" width="414" height="70"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="qTf-XQ-zzH" id="aUH-KR-x9N">
@@ -159,14 +187,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qij-l5-G19">
-                                                    <rect key="frame" x="70" y="0.0" width="305" height="1"/>
+                                                    <rect key="frame" x="70" y="0.0" width="344" height="1"/>
                                                     <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="1" id="Jl7-t2-eja"/>
                                                     </constraints>
                                                 </view>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x5P-my-hpd">
-                                                    <rect key="frame" x="344" y="25" width="11" height="20"/>
+                                                    <rect key="frame" x="383" y="25" width="11" height="20"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="0Iw-GN-Z8Y"/>
                                                         <constraint firstAttribute="width" constant="11" id="1D5-tI-1WM"/>
@@ -174,7 +202,7 @@
                                                     <state key="normal" title="Button" image="disclosureArrow"/>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mon, Wed, Fri" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="72G-tI-b0F">
-                                                    <rect key="frame" x="70" y="25" width="258" height="20"/>
+                                                    <rect key="frame" x="70" y="25" width="297" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -193,10 +221,12 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="arrowButton" destination="x5P-my-hpd" id="yjT-fp-ZIy"/>
+                                            <outlet property="titleLabel" destination="72G-tI-b0F" id="E2m-AM-pwm"/>
                                             <segue destination="TZ4-kR-Uo4" kind="presentation" id="cuz-FJ-1EF"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="EditTimes" rowHeight="70" id="2jx-Ly-oou">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="editTimes" rowHeight="70" id="2jx-Ly-oou" customClass="EditDosageScheduleCell" customModule="BridgeApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="426" width="414" height="70"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="2jx-Ly-oou" id="SDA-JZ-BxK">
@@ -204,14 +234,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fng-sI-use">
-                                                    <rect key="frame" x="70" y="0.0" width="305" height="1"/>
+                                                    <rect key="frame" x="70" y="0.0" width="344" height="1"/>
                                                     <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="1" id="VOj-Mx-fee"/>
                                                     </constraints>
                                                 </view>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GQU-0x-ufX">
-                                                    <rect key="frame" x="344" y="25" width="11" height="20"/>
+                                                    <rect key="frame" x="383" y="25" width="11" height="20"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="ImN-9I-J8r"/>
                                                         <constraint firstAttribute="width" constant="11" id="tLe-MD-oN1"/>
@@ -219,13 +249,13 @@
                                                     <state key="normal" title="Button" image="disclosureArrow"/>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="8:00am, 2:00pm" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f2M-ew-u10">
-                                                    <rect key="frame" x="70" y="25" width="258" height="20"/>
+                                                    <rect key="frame" x="70" y="25" width="297" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dok-Dw-sTt">
-                                                    <rect key="frame" x="70" y="69" width="305" height="1"/>
+                                                    <rect key="frame" x="70" y="69" width="344" height="1"/>
                                                     <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="1" id="gL9-5T-lmt"/>
@@ -249,21 +279,30 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="arrowButton" destination="GQU-0x-ufX" id="nXR-9d-tpP"/>
+                                            <outlet property="titleLabel" destination="f2M-ew-u10" id="7rZ-EB-mcM"/>
                                             <segue destination="TZ4-kR-Uo4" kind="presentation" id="41W-NZ-gPG"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="msa-hP-lX4" id="xfD-tD-znX"/>
+                                    <outlet property="delegate" destination="msa-hP-lX4" id="sYf-7b-tzk"/>
+                                </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gnc-4o-KQe">
-                                <rect key="frame" x="0.0" y="44" width="414" height="121"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="135.5"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="db1-xk-7t7">
-                                        <rect key="frame" x="12" y="8" width="32" height="32"/>
+                                        <rect key="frame" x="12" y="8" width="50" height="50"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="32" id="3dp-Iw-Lp4"/>
-                                            <constraint firstAttribute="height" constant="32" id="yoy-F7-fhk"/>
+                                            <constraint firstAttribute="width" constant="50" id="3dp-Iw-Lp4"/>
+                                            <constraint firstAttribute="height" constant="50" id="yoy-F7-fhk"/>
                                         </constraints>
                                         <state key="normal" image="closeActivity"/>
+                                        <connections>
+                                            <action selector="cancelTapped:" destination="msa-hP-lX4" eventType="touchUpInside" id="dtt-bn-fc7"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tyu-EA-B9H">
                                         <rect key="frame" x="376" y="8" width="22" height="30"/>
@@ -272,19 +311,25 @@
                                             <constraint firstAttribute="height" constant="30" id="qOd-PL-Cp1"/>
                                         </constraints>
                                         <state key="normal" image="delete"/>
+                                        <connections>
+                                            <segue destination="MUs-PZ-Ven" kind="presentation" id="ObL-rA-FMC"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vPk-8Z-eUg" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                        <rect key="frame" x="135" y="79.5" width="144" height="33.5"/>
+                                        <rect key="frame" x="146" y="97.5" width="122" height="30"/>
                                         <state key="normal" title="Add another dose"/>
+                                        <connections>
+                                            <action selector="addTapped:" destination="msa-hP-lX4" eventType="touchUpInside" id="hsv-j8-ohi"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Foo Maru Babaganoo Et tu" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1H2-uy-gEG">
-                                        <rect key="frame" x="52" y="40" width="310" height="31.5"/>
+                                        <rect key="frame" x="52" y="58" width="310" height="31.5"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ev3-9n-7dt" customClass="RSDShadowGradient" customModule="ResearchUI">
-                                        <rect key="frame" x="0.0" y="121" width="414" height="5"/>
+                                        <rect key="frame" x="0.0" y="135.5" width="414" height="5"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="5" id="HpV-rU-aJ6"/>
@@ -351,15 +396,127 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="5Wd-7t-s06"/>
                     </view>
+                    <connections>
+                        <outlet property="addButton" destination="vPk-8Z-eUg" id="Hoh-7m-NXW"/>
+                        <outlet property="cancelButton" destination="db1-xk-7t7" id="S0R-Gc-e7e"/>
+                        <outlet property="deleteButton" destination="tyu-EA-B9H" id="bYk-yD-3az"/>
+                        <outlet property="footerMarginView" destination="hKs-92-GBO" id="XdA-2h-JHk"/>
+                        <outlet property="footerView" destination="cwo-HW-yJg" id="IHw-I5-Xc2"/>
+                        <outlet property="headerShadow" destination="ev3-9n-7dt" id="vfp-lB-NRP"/>
+                        <outlet property="headerView" destination="Gnc-4o-KQe" id="Dh5-Ss-8BJ"/>
+                        <outlet property="tableView" destination="baH-Jl-ac1" id="WXK-ti-pdJ"/>
+                        <outlet property="titleLabel" destination="1H2-uy-gEG" id="hwB-D0-R1D"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="em1-AM-jtQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-707.24637681159425" y="9.375"/>
+            <point key="canvasLocation" x="-1139" y="-9"/>
         </scene>
-        <!--View Controller-->
+        <!--Warning View Controller-->
+        <scene sceneID="vUm-8x-nga">
+            <objects>
+                <viewController storyboardIdentifier="Warning" id="MUs-PZ-Ven" customClass="SBAWarningViewController" customModule="BridgeApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ItY-x6-HLh" customClass="RSDStepNavigationView" customModule="ResearchUI">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FYU-1e-Sfy" userLabel="Status Background" customClass="RSDStatusBarBackgroundView" customModule="ResearchUI">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="overlayColor">
+                                        <color key="value" red="0.93333333330000001" green="0.37647058820000001" blue="0.43921568630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Rf-99-7Ax" userLabel="Header">
+                                <rect key="frame" x="0.0" y="44" width="414" height="225"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xg5-tM-1Ni" userLabel="Back Button">
+                                        <rect key="frame" x="16" y="16" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="s5q-Bb-xT8"/>
+                                            <constraint firstAttribute="width" secondItem="xg5-tM-1Ni" secondAttribute="height" multiplier="1:1" id="zOO-l8-dFV"/>
+                                        </constraints>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" image="closeActivity"/>
+                                        <connections>
+                                            <action selector="cancelTapped:" destination="MUs-PZ-Ven" eventType="touchUpInside" id="LX9-0C-I9N"/>
+                                        </connections>
+                                    </button>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" image="removeInstruction" translatesAutoresizingMaskIntoConstraints="NO" id="hky-d3-XZe">
+                                        <rect key="frame" x="32" y="32" width="350" height="161.00000000000003"/>
+                                        <color key="backgroundColor" red="0.50980392159999999" green="0.8980392157" blue="0.71372549019999998" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" red="0.93333333330000001" green="0.37647058820000001" blue="0.43921568630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstItem="hky-d3-XZe" firstAttribute="leading" secondItem="9Rf-99-7Ax" secondAttribute="leading" constant="32" id="Asd-Bp-iml"/>
+                                    <constraint firstItem="xg5-tM-1Ni" firstAttribute="leading" secondItem="9Rf-99-7Ax" secondAttribute="leading" constant="16" id="AuB-Mv-TZj"/>
+                                    <constraint firstAttribute="trailing" secondItem="hky-d3-XZe" secondAttribute="trailing" constant="32" id="JSi-5a-tmc"/>
+                                    <constraint firstAttribute="bottom" secondItem="hky-d3-XZe" secondAttribute="bottom" constant="32" id="fTS-RG-Hbl"/>
+                                    <constraint firstItem="hky-d3-XZe" firstAttribute="top" secondItem="9Rf-99-7Ax" secondAttribute="top" constant="32" id="tXG-Dv-BuR"/>
+                                    <constraint firstItem="xg5-tM-1Ni" firstAttribute="top" secondItem="9Rf-99-7Ax" secondAttribute="top" constant="16" id="y6e-TH-blW"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bXy-Bf-vTy" customClass="RSDGenericNavigationFooterView" customModule="ResearchUI">
+                                <rect key="frame" x="0.0" y="765" width="414" height="97"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="97" placeholder="YES" id="mCC-fL-Cnk"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="isBackHidden" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="1000" text="Are you sure you want to remove Sinemet from your current medication list?" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ssM-wY-f0I">
+                                <rect key="frame" x="32" y="317" width="350" height="86"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="950" text="Removing this medication will remove it from your Medications list. If you wish to re-add it, it will not be saved." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="imH-oO-xG2">
+                                <rect key="frame" x="32" y="421" width="350" height="64.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="9Rf-99-7Ax" firstAttribute="trailing" secondItem="8dP-ZX-Rg8" secondAttribute="trailing" id="0OQ-Pg-EvT"/>
+                            <constraint firstItem="bXy-Bf-vTy" firstAttribute="leading" secondItem="8dP-ZX-Rg8" secondAttribute="leading" id="0Zm-3L-3qK"/>
+                            <constraint firstItem="8dP-ZX-Rg8" firstAttribute="trailing" secondItem="ssM-wY-f0I" secondAttribute="trailing" constant="32" id="2yl-JL-Q0f"/>
+                            <constraint firstItem="8dP-ZX-Rg8" firstAttribute="top" secondItem="FYU-1e-Sfy" secondAttribute="bottom" id="44U-mh-9ZO"/>
+                            <constraint firstItem="bXy-Bf-vTy" firstAttribute="bottom" secondItem="8dP-ZX-Rg8" secondAttribute="bottom" id="58t-mz-VVq"/>
+                            <constraint firstItem="ssM-wY-f0I" firstAttribute="top" secondItem="9Rf-99-7Ax" secondAttribute="bottom" constant="48" id="9Wm-s0-ZJZ"/>
+                            <constraint firstItem="bXy-Bf-vTy" firstAttribute="trailing" secondItem="8dP-ZX-Rg8" secondAttribute="trailing" id="CsC-lM-sq5"/>
+                            <constraint firstItem="ssM-wY-f0I" firstAttribute="leading" secondItem="8dP-ZX-Rg8" secondAttribute="leading" constant="32" id="Mhi-Js-3BR"/>
+                            <constraint firstItem="bXy-Bf-vTy" firstAttribute="top" relation="greaterThanOrEqual" secondItem="imH-oO-xG2" secondAttribute="bottom" constant="10" id="Owu-rD-fpC"/>
+                            <constraint firstAttribute="trailing" secondItem="FYU-1e-Sfy" secondAttribute="trailing" id="S1g-Pt-Dn7"/>
+                            <constraint firstItem="FYU-1e-Sfy" firstAttribute="top" secondItem="ItY-x6-HLh" secondAttribute="top" id="XVG-zl-naO"/>
+                            <constraint firstItem="FYU-1e-Sfy" firstAttribute="leading" secondItem="ItY-x6-HLh" secondAttribute="leading" id="ckf-OW-5XZ"/>
+                            <constraint firstItem="9Rf-99-7Ax" firstAttribute="leading" secondItem="8dP-ZX-Rg8" secondAttribute="leading" id="jY6-6n-vHc"/>
+                            <constraint firstItem="9Rf-99-7Ax" firstAttribute="top" secondItem="FYU-1e-Sfy" secondAttribute="bottom" id="jZ3-Hn-r2X"/>
+                            <constraint firstItem="imH-oO-xG2" firstAttribute="leading" secondItem="8dP-ZX-Rg8" secondAttribute="leading" constant="32" id="jsL-Y3-SK9"/>
+                            <constraint firstItem="imH-oO-xG2" firstAttribute="top" secondItem="ssM-wY-f0I" secondAttribute="bottom" constant="18" id="vOF-Vr-whz"/>
+                            <constraint firstItem="8dP-ZX-Rg8" firstAttribute="trailing" secondItem="imH-oO-xG2" secondAttribute="trailing" constant="32" id="xaO-Gz-HYT"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="8dP-ZX-Rg8"/>
+                    </view>
+                    <connections>
+                        <outlet property="detailLabel" destination="imH-oO-xG2" id="IIS-a9-Aip"/>
+                        <outlet property="footerView" destination="bXy-Bf-vTy" id="S7g-94-9ip"/>
+                        <outlet property="headerView" destination="9Rf-99-7Ax" id="2B1-gi-YI2"/>
+                        <outlet property="statusBarView" destination="FYU-1e-Sfy" id="JfA-B1-jRI"/>
+                        <outlet property="titleLabel" destination="ssM-wY-f0I" id="IHv-Au-rWR"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6R6-hQ-smf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="289" y="-706"/>
+        </scene>
+        <!--Day Time Picker View Controller-->
         <scene sceneID="OWL-eb-hE8">
             <objects>
-                <viewController id="TZ4-kR-Uo4" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DayTimePicker" id="TZ4-kR-Uo4" customClass="SBADayTimePickerViewController" customModule="BridgeApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pvC-ao-8zQ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -368,24 +525,31 @@
                                 <rect key="frame" x="0.0" y="208" width="414" height="551"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="72" id="1w5-Ux-06r">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="twoButton" rowHeight="72" id="1w5-Ux-06r" customClass="TwoChoicePickerCell" customModule="BridgeApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="72"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1w5-Ux-06r" id="oUp-wV-ebl">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="71.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qjg-IQ-wYt" customClass="RoundedToggleButton" customModule="BridgeApp" customModuleProvider="target">
-                                                    <rect key="frame" x="29" y="10" width="169" height="52"/>
-                                                    <state key="normal" title="Button"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qjg-IQ-wYt" customClass="RoundedToggleButton" customModule="BridgeApp" customModuleProvider="target">
+                                                    <rect key="frame" x="29" y="10" width="169" height="51.5"/>
+                                                    <state key="normal" title="Button Left"/>
+                                                    <connections>
+                                                        <action selector="buttonTapped:" destination="1w5-Ux-06r" eventType="touchUpInside" id="S5f-53-iNb"/>
+                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aVI-rr-CWd" customClass="RoundedToggleButton" customModule="BridgeApp" customModuleProvider="target">
-                                                    <rect key="frame" x="216" y="10" width="169" height="52"/>
-                                                    <state key="normal" title="Button"/>
+                                                    <rect key="frame" x="216" y="10" width="169" height="51.5"/>
+                                                    <state key="normal" title="Button Right"/>
+                                                    <connections>
+                                                        <action selector="buttonTapped:" destination="1w5-Ux-06r" eventType="touchUpInside" id="2eU-Gq-4ql"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="Qjg-IQ-wYt" firstAttribute="centerY" secondItem="oUp-wV-ebl" secondAttribute="centerY" id="5lp-gZ-8vH"/>
+                                                <constraint firstItem="Qjg-IQ-wYt" firstAttribute="top" secondItem="oUp-wV-ebl" secondAttribute="top" constant="10" id="9eq-M9-6hR"/>
                                                 <constraint firstItem="aVI-rr-CWd" firstAttribute="centerY" secondItem="Qjg-IQ-wYt" secondAttribute="centerY" id="Sjv-Ja-24h"/>
                                                 <constraint firstAttribute="trailing" secondItem="aVI-rr-CWd" secondAttribute="trailing" constant="29" id="W1T-JI-qvo"/>
                                                 <constraint firstItem="Qjg-IQ-wYt" firstAttribute="leading" secondItem="oUp-wV-ebl" secondAttribute="leading" constant="29" id="nWb-bE-Tfj"/>
@@ -394,8 +558,16 @@
                                                 <constraint firstItem="aVI-rr-CWd" firstAttribute="leading" secondItem="Qjg-IQ-wYt" secondAttribute="trailing" constant="18" id="uTJ-tC-m0N"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outletCollection property="buttons" destination="Qjg-IQ-wYt" collectionClass="NSMutableArray" id="KYd-li-Xn2"/>
+                                            <outletCollection property="buttons" destination="aVI-rr-CWd" collectionClass="NSMutableArray" id="k0K-pi-cma"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="TZ4-kR-Uo4" id="vmJ-m7-4lO"/>
+                                    <outlet property="delegate" destination="TZ4-kR-Uo4" id="8df-zZ-MXF"/>
+                                </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GXm-ab-udk">
                                 <rect key="frame" x="0.0" y="44" width="414" height="164"/>
@@ -407,6 +579,9 @@
                                             <constraint firstAttribute="width" constant="32" id="O29-uc-sAZ"/>
                                         </constraints>
                                         <state key="normal" image="closeActivity"/>
+                                        <connections>
+                                            <action selector="cancelTapped:" destination="TZ4-kR-Uo4" eventType="touchUpInside" id="Wbn-nK-wFP"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="On which days do you take Foo Maru Babaganoo Et tu?" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GxD-M2-o3e">
                                         <rect key="frame" x="52" y="40" width="310" height="63.5"/>
@@ -450,6 +625,7 @@
                                     <constraint firstAttribute="trailing" secondItem="5l3-hl-Gcx" secondAttribute="trailing" id="gTW-2w-wxg"/>
                                     <constraint firstAttribute="bottom" secondItem="5l3-hl-Gcx" secondAttribute="bottom" id="lUX-xs-G87"/>
                                     <constraint firstItem="kmh-WR-H1n" firstAttribute="leading" secondItem="GxD-M2-o3e" secondAttribute="leading" id="nMf-2c-nDR"/>
+                                    <constraint firstAttribute="trailing" secondItem="ozG-eV-gDb" secondAttribute="trailing" constant="370" id="oUD-fH-dhv"/>
                                     <constraint firstItem="GxD-M2-o3e" firstAttribute="top" secondItem="ozG-eV-gDb" secondAttribute="bottom" id="zKI-ov-NQP"/>
                                 </constraints>
                             </view>
@@ -489,6 +665,16 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="HFb-2b-I1N"/>
                     </view>
+                    <connections>
+                        <outlet property="cancelButton" destination="ozG-eV-gDb" id="oKd-T1-XBJ"/>
+                        <outlet property="detailLabel" destination="kmh-WR-H1n" id="GqW-s8-bvz"/>
+                        <outlet property="footerMargin" destination="gre-Qv-2D8" id="I3P-cm-zcb"/>
+                        <outlet property="footerView" destination="Nxa-y2-CDW" id="Ln2-Fb-K3h"/>
+                        <outlet property="headerShadow" destination="5l3-hl-Gcx" id="myq-G2-tPo"/>
+                        <outlet property="headerView" destination="GXm-ab-udk" id="s9X-ks-PIE"/>
+                        <outlet property="tableView" destination="L33-eM-YZ7" id="wPr-7f-lWy"/>
+                        <outlet property="titleLabel" destination="GxD-M2-o3e" id="tY3-lF-auy"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HWN-Es-XDO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -499,6 +685,7 @@
         <image name="closeActivity" width="50" height="50"/>
         <image name="delete" width="22" height="30"/>
         <image name="disclosureArrow" width="11" height="20"/>
+        <image name="removeInstruction" width="190" height="161"/>
         <image name="textfield" width="324" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>

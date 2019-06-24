@@ -36,6 +36,8 @@ import Foundation
 
 open class BoxedTextField: RSDStepTextField {
     
+    var identifier: String?
+    
     let padding = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24);
     
     override open func textRect(forBounds bounds: CGRect) -> CGRect {
