@@ -50,6 +50,8 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
         }
     }
     
+    var hasChanges = false
+    
     var items: [DosageItem] = []
     
     var editingItem: DosageItem? {
@@ -71,6 +73,11 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
         
         footerView.nextButton?.setTitle(Localization.localizedString("BUTTON_SAVE"), for: .normal)
         updateColorsAndFonts()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -176,6 +183,11 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     }
     
     @IBAction func cancelTapped(_ sender: Any) {
+        guard self.hasChanges else {
+            self.dismiss(animated: true, completion: nil)
+            return
+        }
+        
         var actions: [UIAlertAction] = []
         
         // Always add a choice to discard the results.
@@ -278,6 +290,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
                 dosageItem.dosage.isAnytime = true
                 return  // Do nothing if the anytime is already selected
         }
+        self.hasChanges = true
         tableView.beginUpdates()
         dosageItem.isAnytime = true
         tableView.deleteRows(at: dosageItem.daysAndTimesIndexPaths(for: section), with: .automatic)
@@ -290,6 +303,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
             else {
                 return  // Do nothing if "uses schedule" is already selected
         }
+        self.hasChanges = true
         tableView.beginUpdates()
         dosageItem.isAnytime = false
         tableView.insertRows(at: dosageItem.daysAndTimesIndexPaths(for: section), with: .automatic)
@@ -316,6 +330,7 @@ extension SBAMedicationEditDetailsViewController : SBADayTimePickerViewControlle
             assertionFailure("This editor does not handle changing the logged time.")
         }
         
+        self.hasChanges = true
         picker.dismiss(animated: true, completion: nil)
     }
     
@@ -345,6 +360,7 @@ extension SBAMedicationEditDetailsViewController : UITextFieldDelegate {
             else {
                 return
         }
+        self.hasChanges = true
         dosageItem.dosage.dosage = textField.text
     }
     

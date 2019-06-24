@@ -148,12 +148,14 @@
                                                     <constraints>
                                                         <constraint firstItem="Apu-i0-lXF" firstAttribute="leading" secondItem="j9M-rA-mhb" secondAttribute="leading" id="0Gf-wd-ksH"/>
                                                         <constraint firstItem="7Mq-SA-pD3" firstAttribute="top" secondItem="dg7-lw-veh" secondAttribute="bottom" constant="2" id="0bW-Ss-TPh"/>
+                                                        <constraint firstAttribute="bottom" secondItem="Apu-i0-lXF" secondAttribute="bottom" constant="19" id="3vt-ur-WSK"/>
                                                         <constraint firstItem="dg7-lw-veh" firstAttribute="leading" secondItem="clx-U5-s7C" secondAttribute="leading" constant="28" id="8F7-T3-MVz"/>
                                                         <constraint firstItem="dg7-lw-veh" firstAttribute="top" secondItem="clx-U5-s7C" secondAttribute="top" constant="16" id="9ZA-V1-3m9"/>
                                                         <constraint firstItem="sk4-sH-wh7" firstAttribute="top" secondItem="7Mq-SA-pD3" secondAttribute="bottom" constant="16" id="A91-aJ-zI0"/>
                                                         <constraint firstAttribute="trailing" secondItem="ys5-LD-ZQ2" secondAttribute="trailing" constant="24" id="CVe-4K-kuF"/>
                                                         <constraint firstItem="sk4-sH-wh7" firstAttribute="leading" secondItem="clx-U5-s7C" secondAttribute="leading" constant="24" id="NL6-k1-1tU"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Apu-i0-lXF" secondAttribute="trailing" constant="24" id="Nxn-Ou-xOp"/>
+                                                        <constraint firstItem="ys5-LD-ZQ2" firstAttribute="top" secondItem="clx-U5-s7C" secondAttribute="topMargin" constant="10.5" id="W7y-GE-k6t"/>
                                                         <constraint firstAttribute="trailing" secondItem="sk4-sH-wh7" secondAttribute="trailing" constant="24" id="WEv-pK-s0R"/>
                                                         <constraint firstAttribute="trailing" secondItem="7Mq-SA-pD3" secondAttribute="trailing" id="ZNk-UC-gDI"/>
                                                         <constraint firstItem="Apu-i0-lXF" firstAttribute="top" secondItem="j9M-rA-mhb" secondAttribute="bottom" constant="16" id="ctf-vh-mHI"/>
@@ -430,7 +432,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Rf-99-7Ax" userLabel="Header">
-                                <rect key="frame" x="0.0" y="44" width="414" height="80"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="225"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xg5-tM-1Ni" userLabel="Back Button">
                                         <rect key="frame" x="16" y="16" width="50" height="50"/>
@@ -445,7 +447,7 @@
                                         </connections>
                                     </button>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" image="removeInstruction" translatesAutoresizingMaskIntoConstraints="NO" id="hky-d3-XZe">
-                                        <rect key="frame" x="32" y="32" width="350" height="16"/>
+                                        <rect key="frame" x="32" y="32" width="350" height="161.00000000000003"/>
                                         <color key="backgroundColor" red="0.50980392159999999" green="0.8980392157" blue="0.71372549019999998" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </imageView>
@@ -471,11 +473,11 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="1000" text="Are you sure you want to remove Sinemet from your current medication list?" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ssM-wY-f0I">
-                                <rect key="frame" x="32" y="172" width="350" height="86"/>
+                                <rect key="frame" x="32" y="317" width="350" height="86"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="950" text="Removing this medication will remove it from your Medications list. If you wish to re-add it, it will not be saved." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="imH-oO-xG2">
-                                <rect key="frame" x="32" y="276" width="350" height="64.5"/>
+                                <rect key="frame" x="32" y="421" width="350" height="64.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                             </label>
                         </subviews>

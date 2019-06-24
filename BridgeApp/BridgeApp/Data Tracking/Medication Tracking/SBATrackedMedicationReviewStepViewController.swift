@@ -58,6 +58,7 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
             let tableItem = self.tableData?.tableItem(at: indexPath) as? SBATrackedMedicationReviewItem {
             vc.delegate = self
             vc.medication = tableItem.medication
+            vc.designSystem = self.designSystem
             self.present(vc, animated: true) {
             }
         }
