@@ -154,6 +154,41 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingReviewDataSource {
             return super.action(for: actionType)
         }
     }
+
+    /// Remove a medcation from the list.
+    func removeMedication(at item: SBATrackedMedicationReviewItem) {
+        
+        // Update the step result.
+        var stepResult = self.trackingResult() as! SBAMedicationTrackingResult
+        var meds = stepResult.medications
+        meds.remove(at: item.indexPath.item)
+        stepResult.medications = meds
+        self.taskResult.appendStepHistory(with: stepResult)
+        
+        self.reloadDataSource(with: stepResult)
+    }
+    
+    /// Save changes to a medication back to the item.
+    func saveMedication(_ medication: SBAMedicationAnswer, to item: SBATrackedMedicationReviewItem) {
+        
+        // Update the data source.
+        item.medication = medication
+        
+        // Update the step result.
+        var stepResult = self.trackingResult() as! SBAMedicationTrackingResult
+        var meds = stepResult.medications
+        meds.remove(at: item.indexPath.item)
+        meds.insert(medication, at: item.indexPath.item)
+        stepResult.medications = meds
+        self.taskResult.appendStepHistory(with: stepResult)
+    }
+    
+    /// Get the table item for a given medication.
+    func tableItem(for medication: SBAMedicationAnswer) -> SBATrackedMedicationReviewItem? {
+        return self.sections.first?.tableItems.first(where: {
+            ($0 as? SBATrackedMedicationReviewItem)?.medication.identifier == medication.identifier
+        }) as? SBATrackedMedicationReviewItem
+    }
 }
 
 /// The medication review table item is tracked using the result object.

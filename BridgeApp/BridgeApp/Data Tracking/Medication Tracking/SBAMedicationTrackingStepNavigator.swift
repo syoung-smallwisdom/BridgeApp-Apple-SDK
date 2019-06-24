@@ -313,12 +313,12 @@ public struct SBADosage : Codable {
         if days == RSDWeekday.all {
             return Localization.localizedString("SCHEDULE_EVERY_DAY")
         }
-        else if days.count == 1 {
-            return days.first!.text!
+        else if days.count == 1, let text = days.first!.text {
+            return text
         }
         else {
             let delimiter = Localization.localizedString("LIST_FORMAT_DELIMITER")
-            return days.sorted().map({ $0.shortText! }).joined(separator: delimiter)
+            return days.sorted().compactMap({ $0.shortText }).joined(separator: delimiter)
         }
     }
     
@@ -510,7 +510,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         }
     }
     
-    // TODO: FIXME!!
+    // TODO: FIXME!! syoung 06/24/2019
 //    mutating func updateMedicationDetails(from detailsResult: SBAMedicationDetailsResultObject) {
 //        guard let idx = medications.firstIndex(where: { $0.identifier == detailsResult.identifier }) else {
 //            return
@@ -548,7 +548,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
             else {
                 return
         }
-        // TODO: FIXME!!!
+        // TODO: FIXME!!! syoung 06/24/2019
         
 //        // If this is a timestamp logging then add/remove timestamp.
 //        var medication = self.medications[idx]

@@ -52,8 +52,15 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
     
     open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // TODO: show detail for this item
-        debugPrint("Did select row at \(indexPath)")
+        
+        let storyboard = UIStoryboard(name: "Medication", bundle: Bundle(for: SBAMedicationEditDetailsViewController.self))
+        if let vc = storyboard.instantiateViewController(withIdentifier: "MedicationEditDetails") as? SBAMedicationEditDetailsViewController,
+            let tableItem = self.tableData?.tableItem(at: indexPath) as? SBATrackedMedicationReviewItem {
+            vc.delegate = self
+            vc.medication = tableItem.medication
+            self.present(vc, animated: true) {
+            }
+        }
     }
     
     /// Shoehorn in using the learn more to add medication b/c the new design has the "Add a medication"
@@ -79,7 +86,37 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
     }
 }
 
-/// Table cell for displayiing medication information to review.
+extension SBATrackedMedicationReviewStepViewController: SBAMedicationEditDetailsViewControllerDelegate {
+    
+    func save(_ medication: SBAMedicationAnswer, from sender: SBAMedicationEditDetailsViewController) {
+        if let dataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
+            let item = dataSource.tableItem(for: medication) {
+            dataSource.saveMedication(medication, to: item)
+            self.tableView.reloadRows(at: [item.indexPath], with: .automatic)
+        }
+        else {
+            assertionFailure("Data source not of expected type")
+        }
+        sender.dismiss(animated: true, completion: nil)
+    }
+    
+    func delete(_ medication: SBAMedicationAnswer, from sender: SBAMedicationEditDetailsViewController) {
+        if let dataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
+            let item = dataSource.tableItem(for: medication) {
+            self.tableView.beginUpdates()
+            let indexPath = item.indexPath
+            dataSource.removeMedication(at: item)
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            self.tableView.endUpdates()
+        }
+        else {
+            assertionFailure("Data source not of expected type")
+        }
+        sender.dismiss(animated: true, completion: nil)
+    }
+}
+
+/// Table cell for displaying medication information to review.
 open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
     
     public static let reuseId = "medicationReview"

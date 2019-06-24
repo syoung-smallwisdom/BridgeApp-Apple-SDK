@@ -121,6 +121,7 @@
 		F8FD5681214714A000BA2FA6 /* SBATaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */; };
 		FF3A810B22C16D0000CD737D /* SBATimeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810A22C16D0000CD737D /* SBATimeRange.swift */; };
 		FF3A810D22C16DE100CD737D /* SBAWarningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */; };
+		FF3A810F22C17B9300CD737D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF3A810E22C17B9300CD737D /* Images.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -280,6 +281,7 @@
 		F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATaskViewModel.swift; sourceTree = "<group>"; };
 		FF3A810A22C16D0000CD737D /* SBATimeRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATimeRange.swift; sourceTree = "<group>"; };
 		FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAWarningViewController.swift; sourceTree = "<group>"; };
+		FF3A810E22C17B9300CD737D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -667,6 +669,7 @@
 			isa = PBXGroup;
 			children = (
 				F8C7D4152092CF36007490BC /* UIColor+BridgeKeyNames.swift */,
+				FF3A810E22C17B9300CD737D /* Images.xcassets */,
 			);
 			path = StyleGuide;
 			sourceTree = "<group>";
@@ -814,6 +817,7 @@
 				CBC1F46220F98F8A003DFF9B /* SBATrackedReminderModalButtonCell.xib in Resources */,
 				F8C7D4132092A1F5007490BC /* SBASymptomLoggingCell.xib in Resources */,
 				F8A7FA0322B31E660053FF74 /* SBAMedicationDosageTableCell.xib in Resources */,
+				FF3A810F22C17B9300CD737D /* Images.xcassets in Resources */,
 				CB74DC9320D88EC4008DBB6C /* SBATrackedTextfieldCell.xib in Resources */,
 				F85AABE920800D120059F019 /* SBATrackedLoggingCell.xib in Resources */,
 				CBED325D20C83538009D32F0 /* Assets.xcassets in Resources */,
