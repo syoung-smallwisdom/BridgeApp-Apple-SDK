@@ -119,6 +119,8 @@
 		F8F367BB2159C03C00A49F89 /* SBAArchiveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F367BA2159C03C00A49F89 /* SBAArchiveManager.swift */; };
 		F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7241D203D007800AC0E5B /* SurveyTests.swift */; };
 		F8FD5681214714A000BA2FA6 /* SBATaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */; };
+		FF3A810B22C16D0000CD737D /* SBATimeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810A22C16D0000CD737D /* SBATimeRange.swift */; };
+		FF3A810D22C16DE100CD737D /* SBAWarningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -276,6 +278,8 @@
 		F8F367BA2159C03C00A49F89 /* SBAArchiveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAArchiveManager.swift; sourceTree = "<group>"; };
 		F8F7241D203D007800AC0E5B /* SurveyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyTests.swift; sourceTree = "<group>"; };
 		F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATaskViewModel.swift; sourceTree = "<group>"; };
+		FF3A810A22C16D0000CD737D /* SBATimeRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATimeRange.swift; sourceTree = "<group>"; };
+		FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAWarningViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -482,6 +486,7 @@
 			isa = PBXGroup;
 			children = (
 				F825BA5D207FD64200D29F60 /* SBATrackedItem.swift */,
+				FF3A810A22C16D0000CD737D /* SBATimeRange.swift */,
 				F825BA74207FD96100D29F60 /* SBATrackingDataSource.swift */,
 				F825BA6C207FD83300D29F60 /* SBATrackedItemsLoggingStepObject.swift */,
 				F825BA69207FD83300D29F60 /* SBATrackedItemsStepNavigator.swift */,
@@ -622,6 +627,7 @@
 				CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */,
 				F8A7FA0D22B815570053FF74 /* SBAMedicationEditDetailsViewController.swift */,
 				F8A7FA1322B9B3820053FF74 /* SBADayTimePickerViewController.swift */,
+				FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */,
 				F8A7FA0B22B814760053FF74 /* BoxedTextField.swift */,
 				F8A7FA1122B843E50053FF74 /* RoundedToggleButton.swift */,
 			);
@@ -855,6 +861,7 @@
 				F8A7FA1222B843E50053FF74 /* RoundedToggleButton.swift in Sources */,
 				F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */,
 				F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */,
+				FF3A810B22C16D0000CD737D /* SBATimeRange.swift in Sources */,
 				CB267A9D20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */,
 				F8C7D3F6209285A8007490BC /* SBASymptomLoggingStepObject.swift in Sources */,
 				F8479521207FEA9D0024A230 /* SBATrackedItemsLoggingStepObject.swift in Sources */,
@@ -881,6 +888,7 @@
 				CB185396210650670076EFBB /* SBARemoveTrackedItemStepObject.swift in Sources */,
 				F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */,
 				60D9611E20BF161300B5CFEB /* SBAProfileItem.swift in Sources */,
+				FF3A810D22C16DE100CD737D /* SBAWarningViewController.swift in Sources */,
 				F8479525207FEA9D0024A230 /* SBATrackedSelectionDataSource.swift in Sources */,
 				F89B3DEC20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift in Sources */,
 				CB18538021064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift in Sources */,

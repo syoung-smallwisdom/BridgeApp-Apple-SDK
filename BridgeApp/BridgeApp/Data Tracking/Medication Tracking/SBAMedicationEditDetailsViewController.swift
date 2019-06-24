@@ -496,9 +496,9 @@ class EditDosageScheduleCell : DosageCell {
             }
             switch fieldId {
             case .editDays:
-                titleLabel.text = dosageItem.dosage.daysText()
+                titleLabel.text = dosageItem.dosage.daysText() ?? Localization.localizedString("SCHEDULING_SELECTION_NO_DAYS")
             case .editTimes:
-                titleLabel.text = dosageItem.dosage.timesText()
+                titleLabel.text = dosageItem.dosage.timesText() ?? Localization.localizedString("SCHEDULING_SELECTION_NO_TIMES")
             default:
                 break
             }

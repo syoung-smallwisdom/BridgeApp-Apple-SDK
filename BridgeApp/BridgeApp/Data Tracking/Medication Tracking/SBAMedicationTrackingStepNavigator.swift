@@ -297,6 +297,31 @@ public struct SBADosage : Codable {
         return Set(self.timestamps?.compactMap { $0.timeOfDay } ?? [])
     }
     
+    /// Localize and join the time of day strings.
+    public func timesText() -> String? {
+        guard let timestamps = self.timestamps?.filter({ $0.timeOfDay != nil }), timestamps.count > 0 else {
+            return nil
+        }
+        let times = timestamps.sorted(by: { $0.timeOfDay! < $1.timeOfDay! }).compactMap { $0.localizedTime() }
+        let delimiter = Localization.localizedString("LIST_FORMAT_DELIMITER")
+        return times.joined(separator: delimiter)
+    }
+    
+    /// Localize and join the days of the week string.
+    public func daysText() -> String? {
+        guard let days = self.daysOfWeek, days.count > 0 else { return nil }
+        if days == RSDWeekday.all {
+            return Localization.localizedString("SCHEDULE_EVERY_DAY")
+        }
+        else if days.count == 1 {
+            return days.first!.text!
+        }
+        else {
+            let delimiter = Localization.localizedString("LIST_FORMAT_DELIMITER")
+            return days.sorted().map({ $0.shortText! }).joined(separator: delimiter)
+        }
+    }
+    
     /// When the participant taps the "save" button, finalize editing of this dosage by stripping out the
     /// information that should not be stored.
     mutating public func finalizeEditing() {

@@ -93,7 +93,7 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
         }
         guard let choices = selectedChoices as? [SBATime] else { return nil }
         let filteredInput = times?.reduce(into: [SBATime : SBATimestamp]()) { (hashtable, value) in
-            guard let time = self.selectedTime(from: value.loggedDate?.timeOfDay()) else { return }
+            guard let time = self.selectedTime(from: value.loggedDate?.timeOnly()) else { return }
             hashtable[time] = value
             } ?? [:]
         let timestamps: [SBATimestamp] = choices.compactMap {
@@ -144,7 +144,7 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
         self.identifier = identifier
         self.pickerType = .loggedTime
         var selectedTimes = [SBATime]()
-        if let time = self.selectedTime(from: loggedTime?.timeOfDay()) {
+        if let time = self.selectedTime(from: loggedTime?.timeOnly()) {
             selectedTimes.append(time)
         }
         self.sections = buildSections(selectedTimes)
