@@ -47,7 +47,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X9k-XR-DPm" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                    <rect key="frame" x="356" y="41" width="30" height="30"/>
+                                                    <rect key="frame" x="354" y="39.5" width="32" height="33.5"/>
                                                     <state key="normal" title="Edit"/>
                                                     <connections>
                                                         <action selector="editTapped:" destination="vY8-j2-Ctt" eventType="touchUpInside" id="Kkq-bf-qUL"/>
@@ -74,6 +74,7 @@
                                                 <constraint firstItem="Hcb-Zf-282" firstAttribute="leading" secondItem="jGU-vE-WCM" secondAttribute="leading" id="XUj-fo-Vfa"/>
                                                 <constraint firstItem="iA0-3Z-ryq" firstAttribute="leading" secondItem="sYE-vK-ajp" secondAttribute="leading" id="bwT-GV-8P0"/>
                                                 <constraint firstItem="X9k-XR-DPm" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="jGU-vE-WCM" secondAttribute="trailing" constant="16" id="erd-Fa-y76"/>
+                                                <constraint firstItem="iA0-3Z-ryq" firstAttribute="top" secondItem="Hcb-Zf-282" secondAttribute="bottom" constant="18" id="jQN-9o-JCm"/>
                                                 <constraint firstItem="X9k-XR-DPm" firstAttribute="centerY" secondItem="sYE-vK-ajp" secondAttribute="centerY" id="ysP-qF-cRL"/>
                                             </constraints>
                                         </tableViewCellContentView>

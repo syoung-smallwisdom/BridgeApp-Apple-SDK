@@ -87,14 +87,21 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
         updateColorsAndFonts()
     }
     
+    var isFirstAppearance: Bool = true
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadData()
+        if isFirstAppearance {
+            reloadData()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        focusEmptyTextField()
+        if isFirstAppearance {
+            focusEmptyTextField()
+        }
+        isFirstAppearance = false
     }
     
     func focusEmptyTextField() {
@@ -134,7 +141,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     
     func reloadData() {
         titleLabel.text = self.medication.title ?? self.medication.identifier
-        items = medication.dosageItems?.map { DosageItem(dosage: $0, isEditing: false) } ?? [DosageItem()]
+        items = medication.dosageItems?.map { DosageItem(dosage: $0, isEditing: false) } ?? [DosageItem(dosage: SBADosage(), isEditing: true)]
         tableView.reloadData()
         updateButtonStates()
     }
@@ -220,7 +227,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     
     @IBAction func addTapped(_ sender: Any) {
         activeTextField?.resignFirstResponder()
-        beginEdit(DosageItem())
+        beginEdit(DosageItem(dosage: SBADosage(), isEditing: false))
     }
     
     @IBAction func saveTapped(_ sender: Any) {
@@ -236,40 +243,35 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
         activeTextField?.resignFirstResponder()
         guard !dosageItem.isEditing else { return }
         
-        tableView.beginUpdates()
-        
-        var removePaths: [IndexPath] = []
-        var addPaths: [IndexPath] = []
-        
-        var section = items.firstIndex(of: dosageItem)
-        let insertSection = 0
-        
+        // If there is a table item that is currently being edited, collapse it.
         if let editingItem = self.editingItem,
             let editSection = items.firstIndex(of: editingItem) {
-            removePaths.append(IndexPath(row: 0, section: editSection))
-            let newEditSection = ((section != nil) || (insertSection > editSection)) ? editSection : editSection + 1
-            addPaths.append(IndexPath(row: 0, section: newEditSection))
-            if !editingItem.isAnytime {
-                removePaths.append(contentsOf: editingItem.daysAndTimesIndexPaths(for: newEditSection))
-            }
+            tableView.beginUpdates()
             editingItem.isEditing = false
+            let reloadPath = IndexPath(row: 0, section: editSection)
+            var removePaths = [reloadPath]
+            removePaths.append(contentsOf: editingItem.isAnytime ? [] : editingItem.daysAndTimesIndexPaths(for: editSection))
+            tableView.deleteRows(at: removePaths, with: .automatic)
+            tableView.insertRows(at: [reloadPath], with: .automatic)
+            tableView.endUpdates()
         }
         
-        if section != nil {
-            removePaths.append(IndexPath(row: 0, section: section!))
+        // Next, either insert or begin editing the new section.
+        tableView.beginUpdates()
+        
+        dosageItem.isEditing = true
+        if let section = items.firstIndex(of: dosageItem) {
+            let reloadPath = IndexPath(row: 0, section: section)
+            var addPaths = [reloadPath]
+            addPaths.append(contentsOf: dosageItem.isAnytime ? [] : dosageItem.daysAndTimesIndexPaths(for: section))
+            tableView.deleteRows(at: [reloadPath], with: .automatic)
+            tableView.insertRows(at: addPaths, with: .automatic)
         }
         else {
-            section = insertSection
+            let insertSection = 0
             items.insert(dosageItem, at: insertSection)
+            tableView.insertSections([insertSection], with: .automatic)
         }
-        addPaths.append(IndexPath(row: 0, section: section!))
-        if !dosageItem.isAnytime {
-            addPaths.append(contentsOf: dosageItem.daysAndTimesIndexPaths(for: section!))
-        }
-        dosageItem.isEditing = true
-
-        tableView.deleteRows(at: removePaths, with: .automatic)
-        tableView.insertRows(at: addPaths, with: .automatic)
         
         tableView.endUpdates()
     }
@@ -336,11 +338,12 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
 extension SBAMedicationEditDetailsViewController : SBADayTimePickerViewControllerDelegate {
     
     func saveSelection(_ picker: SBADayTimePickerViewController) {
-        guard let dosageItem = self.items.first(where: { $0.uuid.uuidString == picker.identifier })
+        guard let section = self.items.firstIndex(where: { $0.uuid.uuidString == picker.identifier })
             else {
                 fatalError("Could not find dose to edit")
         }
         
+        let dosageItem = self.items[section]
         switch picker.pickerType! {
         case .daysOfWeek:
             dosageItem.dosage.daysOfWeek = picker.selectedWeekdays()
@@ -351,6 +354,7 @@ extension SBAMedicationEditDetailsViewController : SBADayTimePickerViewControlle
         default:
             assertionFailure("This editor does not handle changing the logged time.")
         }
+        tableView.reloadSections([section], with: .none)
         
         self.hasChanges = true
         picker.dismiss(animated: true, completion: nil)
@@ -453,9 +457,9 @@ class DosageItem : UniqueTableItem {
         }
     }
     
-    init(dosage: SBADosage = SBADosage(), isEditing: Bool? = nil) {
+    init(dosage: SBADosage, isEditing: Bool) {
         self.dosage = dosage
-        self.isEditing = isEditing ?? !dosage.hasRequiredValues
+        self.isEditing = isEditing
     }
 
     func numberOfRows() -> Int {
@@ -585,17 +589,17 @@ class DosageSummaryCell : DosageCell {
     override var dosageItem: DosageItem! {
         didSet {
             guard let dosageItem = self.dosageItem else { return }
-            titleLabel.text = dosageItem.dosage.dosage
+            titleLabel?.text = dosageItem.dosage.dosage
             // Not anytime AND has valid values for the days and times.
             if !(dosageItem.dosage.isAnytime ?? true),
                 let days = dosageItem.dosage.daysText(),
                 let times = dosageItem.dosage.timesText() {
-                widthConstraint.isActive = false
-                detailLabel.text = Localization.localizedStringWithFormatKey("MEDICATION_SCHEDULE_SUMMARY", times, days)
+                widthConstraint?.isActive = false
+                detailLabel?.text = Localization.localizedStringWithFormatKey("MEDICATION_SCHEDULE_SUMMARY", times, days)
             }
             else {
-                detailLabel.text = Localization.localizedString("MEDICATION_TAKE_ANYTIME")
-                widthConstraint.isActive = true
+                detailLabel?.text = Localization.localizedString("MEDICATION_TAKE_ANYTIME")
+                widthConstraint?.isActive = true
             }
         }
     }
