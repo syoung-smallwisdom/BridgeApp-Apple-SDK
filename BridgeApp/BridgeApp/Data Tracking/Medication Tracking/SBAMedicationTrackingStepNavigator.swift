@@ -401,7 +401,7 @@ extension SBAMedicationAnswer : SBAMedication {
     }
     
     public var title: String? {
-        return nil
+        return self.identifier
     }
     
     public var detail: String? {

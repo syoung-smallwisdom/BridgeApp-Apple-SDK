@@ -50,13 +50,19 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
         }
     }
     
-    var hasChanges = false
+    var hasChanges = false {
+        didSet {
+            updateButtonStates()
+        }
+    }
     
     var items: [DosageItem] = []
     
     var editingItem: DosageItem? {
         return items.first(where: { $0.isEditing })
     }
+    
+    var activeTextField: UITextField?
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var headerView: UIView!
@@ -71,7 +77,13 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        footerView.nextButton?.setTitle(Localization.localizedString("BUTTON_SAVE"), for: .normal)
+        if let nextButton = footerView.nextButton {
+            nextButton.setTitle(Localization.localizedString("BUTTON_SAVE"), for: .normal)
+            nextButton.addTarget(self, action: #selector(saveTapped(_:)), for: .touchUpInside)
+        }
+        else {
+            assertionFailure("Expecting this view controller to be set up with a next button in the footer.")
+        }
         updateColorsAndFonts()
     }
     
@@ -121,14 +133,14 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     }
     
     func reloadData() {
-        titleLabel.text = self.medication.title
+        titleLabel.text = self.medication.title ?? self.medication.identifier
         items = medication.dosageItems?.map { DosageItem(dosage: $0, isEditing: false) } ?? [DosageItem()]
         tableView.reloadData()
         updateButtonStates()
     }
     
     func updateButtonStates() {
-        let hasRequiredValues = editingItem?.dosage.hasRequiredValues ?? false
+        let hasRequiredValues = items.reduce(false, { $0 || $1.dosage.hasRequiredValues })
         addButton.isEnabled = hasRequiredValues
         footerView.nextButton?.isEnabled = hasRequiredValues
     }
@@ -183,6 +195,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     }
     
     @IBAction func cancelTapped(_ sender: Any) {
+        activeTextField?.resignFirstResponder()
         guard self.hasChanges else {
             self.dismiss(animated: true, completion: nil)
             return
@@ -206,6 +219,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     }
     
     @IBAction func addTapped(_ sender: Any) {
+        activeTextField?.resignFirstResponder()
         beginEdit(DosageItem())
     }
     
@@ -219,6 +233,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     }
     
     func beginEdit(_ dosageItem: DosageItem) {
+        activeTextField?.resignFirstResponder()
         guard !dosageItem.isEditing else { return }
         
         tableView.beginUpdates()
@@ -260,6 +275,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     }
     
     func remove(_ dosageItem: DosageItem) {
+        activeTextField?.resignFirstResponder()
         guard let section = items.firstIndex(of: dosageItem) else {
             assertionFailure("Failed to find the dose to remove. \(dosageItem)")
             return
@@ -284,30 +300,36 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     }
     
     func anytimeTapped(_ dosageItem: DosageItem) {
-        guard !dosageItem.isAnytime,
-            let section = items.firstIndex(of: dosageItem)
-            else {
-                dosageItem.dosage.isAnytime = true
-                return  // Do nothing if the anytime is already selected
-        }
-        self.hasChanges = true
-        tableView.beginUpdates()
-        dosageItem.isAnytime = true
-        tableView.deleteRows(at: dosageItem.daysAndTimesIndexPaths(for: section), with: .automatic)
-        tableView.endUpdates()
+        setIsAnytime(true, on: dosageItem)
     }
     
     func useScheduleTapped(_ dosageItem: DosageItem) {
-        guard dosageItem.isAnytime,
-            let section = items.firstIndex(of: dosageItem)
+        setIsAnytime(false, on: dosageItem)
+    }
+    
+    func setIsAnytime(_ isAnytime: Bool, on dosageItem: DosageItem) {
+        activeTextField?.resignFirstResponder()
+        
+        if dosageItem.isAnytime != isAnytime,
+            let section = items.firstIndex(of: dosageItem) {
+        
+            // Animate changing the rows to add/hide the schedule.
+            tableView.beginUpdates()
+            dosageItem.isAnytime = isAnytime
+            if isAnytime {
+                tableView.deleteRows(at: dosageItem.daysAndTimesIndexPaths(for: section), with: .automatic)
+            }
             else {
-                return  // Do nothing if "uses schedule" is already selected
+                tableView.insertRows(at: dosageItem.daysAndTimesIndexPaths(for: section), with: .automatic)
+            }
+            tableView.endUpdates()
         }
+        else {
+            // If the dosage item isn't adding or deleting any rows, then just set the value directly.
+            dosageItem.dosage.isAnytime = isAnytime
+        }
+        
         self.hasChanges = true
-        tableView.beginUpdates()
-        dosageItem.isAnytime = false
-        tableView.insertRows(at: dosageItem.daysAndTimesIndexPaths(for: section), with: .automatic)
-        tableView.endUpdates()
     }
 }
 
@@ -354,7 +376,26 @@ extension SBAMedicationEditDetailsViewController : SBAWarningViewControllerDeleg
 
 extension SBAMedicationEditDetailsViewController : UITextFieldDelegate {
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.activeTextField = textField
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let text = textField.text,
+            let textRange = Range(range, in: text),
+            let uuidString = (textField as? BoxedTextField)?.identifier,
+            let dosageItem = self.items.first(where: { $0.uuid.uuidString == uuidString })
+            else {
+                return true
+        }
+        self.hasChanges = true
+        dosageItem.dosage.dosage = text.replacingCharacters(in: textRange, with: string)
+        self.updateButtonStates()
+        return true
+    }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
+        self.activeTextField = nil
         guard let uuidString = (textField as? BoxedTextField)?.identifier,
             let dosageItem = self.items.first(where: { $0.uuid.uuidString == uuidString })
             else {
@@ -362,6 +403,7 @@ extension SBAMedicationEditDetailsViewController : UITextFieldDelegate {
         }
         self.hasChanges = true
         dosageItem.dosage.dosage = textField.text
+        self.updateButtonStates()
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -475,7 +517,7 @@ class EditDosageCell : DosageCell {
             doseTextField.text = dosageItem.dosage.dosage
             doseTextField.identifier = dosageItem.uuid.uuidString
             anytimeButton.isSelected = dosageItem.dosage.isAnytime ?? false
-            useScheduleButton.isSelected = !(dosageItem.dosage.isAnytime ?? false)
+            useScheduleButton.isSelected = !(dosageItem.dosage.isAnytime ?? true)
             anytimeButton.setTitle(Localization.localizedString("MEDICATION_TAKE_ANYTIME"), for: .normal)
             useScheduleButton.setTitle(Localization.localizedString("MEDICATION_TAKE_USING_SCHEDULE"), for: .normal)
         }
@@ -495,6 +537,12 @@ class EditDosageCell : DosageCell {
         useScheduleButton.isSelected = true
         anytimeButton.isSelected = false
         self.controller?.useScheduleTapped(self.dosageItem)
+    }
+    
+    override func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
+        super.setDesignSystem(designSystem, with: background)
+        anytimeButton.setDesignSystem(designSystem, with: background)
+        useScheduleButton.setDesignSystem(designSystem, with: background)
     }
 }
 

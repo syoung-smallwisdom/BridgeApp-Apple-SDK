@@ -89,6 +89,8 @@
 "MEDICATION_REVIEW_SKIP" = "I'll add details later";
 "SCHEDULING_SELECTION_NO_TIMES" = "Select Time(s)";
 "SCHEDULING_SELECTION_NO_DAYS" = "Select Day(s)";
+"MEDICATION_TAKE_ANYTIME" = "Take this medication at any time";
+"MEDICATION_TAKE_USING_SCHEDULE" = "When do you take this?";
 
 
 /* Failure messages */
