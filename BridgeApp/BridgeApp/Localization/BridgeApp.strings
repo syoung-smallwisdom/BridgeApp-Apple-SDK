@@ -91,7 +91,16 @@
 "SCHEDULING_SELECTION_NO_DAYS" = "Select Day(s)";
 "MEDICATION_TAKE_ANYTIME" = "Take this medication at any time";
 "MEDICATION_TAKE_USING_SCHEDULE" = "When do you take this?";
+"MEDICATION_TIME_PICKER_TEXT" = "At what times do you take %@?";
+"MEDICATION_DAY_PICKER_TEXT" = "On which days do you take %@?";
+"MEDICATION_REMOVE_YES" = "Yes, remove dose";
+"MEDICATION_REMOVE_NO" = "No, keep dose";
+"MEDICATION_REMOVE_DOSAGE_CONFIRMATION_MESSAGE" = "Are you sure you want to remove this dose?";
 
+"MORNING_PICKER_SECTION_TITLE" = "Morning";
+"AFTERNOON_PICKER_SECTION_TITLE" = "Afternoon";
+"EVENING_PICKER_SECTION_TITLE" = "Evening";
+"NIGHT_PICKER_SECTION_TITLE" = "Night";
 
 /* Failure messages */
 "NETWORK_FAILURE_TITLE" = "Could Not Complete"; // Title for a step or alert indicating a network failure

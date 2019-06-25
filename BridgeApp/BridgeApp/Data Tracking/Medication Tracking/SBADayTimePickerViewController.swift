@@ -41,6 +41,8 @@ protocol SBADayTimePickerViewControllerDelegate : class {
 class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     weak var delegate: SBADayTimePickerViewControllerDelegate?
+    
+
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var cancelButton: UIButton!
@@ -52,8 +54,19 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
     @IBOutlet weak var footerMargin: UIView!
     
     public private(set) var identifier: String!
-    public private(set) var pickerType : PickerType!
     public private(set) var sections: [PickerSection]!
+    
+    public private(set) var pickerType : PickerType! {
+        didSet {
+            self.detailLabel?.isHidden = (self.pickerType == .loggedTime)
+        }
+    }
+    
+    var titleText: String? {
+        didSet {
+            self.titleLabel?.text = titleText
+        }
+    }
     
     public var singleChoice: Bool {
         return pickerType == .loggedTime
@@ -181,6 +194,8 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
         self.headerShadow.isHidden = true
         updateColorsAndFonts()
         self.footerView!.nextButton!.addTarget(self, action: #selector(saveTapped(_:)), for: .touchUpInside)
+        self.titleLabel.text = titleText
+        self.detailLabel.isHidden = (self.pickerType == .loggedTime)
     }
     
     var designSystem: RSDDesignSystem? {

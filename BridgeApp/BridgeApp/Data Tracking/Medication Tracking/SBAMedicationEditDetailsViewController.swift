@@ -184,8 +184,10 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
             switch editType {
             case .editDays:
                 vc.setSelected(identifier: cell.dosageItem.uuid.uuidString, daysOfWeek: cell.dosageItem.dosage.daysOfWeek)
+                vc.titleText = Localization.localizedStringWithFormatKey("MEDICATION_DAY_PICKER_TEXT", self.medication.title ?? self.medication.identifier)
             case .editTimes:
                 vc.setSelected(identifier: cell.dosageItem.uuid.uuidString, times: cell.dosageItem.dosage.timestamps)
+                vc.titleText = Localization.localizedStringWithFormatKey("MEDICATION_TIME_PICKER_TEXT", self.medication.title ?? self.medication.identifier)
             default:
                 assertionFailure("\(reuseId) not supported.")
             }
@@ -361,6 +363,11 @@ extension SBAMedicationEditDetailsViewController : SBADayTimePickerViewControlle
     }
     
     func cancel(_ picker: SBADayTimePickerViewController) {
+        guard let section = self.items.firstIndex(where: { $0.uuid.uuidString == picker.identifier })
+            else {
+                fatalError("Could not find dose to edit")
+        }
+        tableView.reloadSections([section], with: .none)
         picker.dismiss(animated: true, completion: nil)
     }
 }
