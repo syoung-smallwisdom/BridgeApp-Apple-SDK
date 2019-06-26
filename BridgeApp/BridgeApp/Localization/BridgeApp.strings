@@ -96,6 +96,7 @@
 "MEDICATION_REMOVE_YES" = "Yes, remove dose";
 "MEDICATION_REMOVE_NO" = "No, keep dose";
 "MEDICATION_REMOVE_DOSAGE_CONFIRMATION_MESSAGE" = "Are you sure you want to remove this dose?";
+"MEDICATION_SCHEDULE_SUMMARY" = "%1$@\n%2$@";
 
 "MORNING_PICKER_SECTION_TITLE" = "Morning";
 "AFTERNOON_PICKER_SECTION_TITLE" = "Afternoon";

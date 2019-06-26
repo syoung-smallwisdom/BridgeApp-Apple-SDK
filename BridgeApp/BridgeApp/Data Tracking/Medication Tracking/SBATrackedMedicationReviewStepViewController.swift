@@ -83,7 +83,11 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
     /// Override viewWillAppear to always check if the "Add details later" button should be shown.
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationFooter!.isSkipHidden = (self.stepViewModel as! SBATrackedMedicationReviewDataSource).allAnswersValid()
+        if let source = self.stepViewModel as? SBATrackedMedicationReviewDataSource {
+            let allValid = source.allAnswersValid()
+            self.navigationFooter!.isSkipHidden = allValid || source.trackingResult().selectedAnswers.count == 0
+            self.navigationFooter!.nextButton?.isEnabled = allValid
+        }
     }
 }
 
@@ -113,7 +117,7 @@ extension SBATrackedMedicationReviewStepViewController: SBAMedicationEditDetails
         else {
             assertionFailure("Data source not of expected type")
         }
-        sender.dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 }
 

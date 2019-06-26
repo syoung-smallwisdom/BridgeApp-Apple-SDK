@@ -135,7 +135,10 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingReviewDataSource {
     /// Override to check if the medications all have required values.
     open override func allAnswersValid() -> Bool {
         guard let result = self.mostRecentResult else { return true }
-        return result.medications.reduce(true, { $0 && $1.hasRequiredValues })
+        let isValid =
+            result.medications.count > 0 &&
+            result.medications.reduce(true, { $0 && $1.hasRequiredValues })
+        return isValid
     }
     
     /// Override to customize the actions for skip and learn more.
