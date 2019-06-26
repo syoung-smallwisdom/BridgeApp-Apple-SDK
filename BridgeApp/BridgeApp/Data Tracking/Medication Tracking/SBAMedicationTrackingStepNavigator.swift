@@ -514,27 +514,6 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         }
     }
     
-    // TODO: FIXME!! syoung 06/24/2019
-//    mutating func updateMedicationDetails(from detailsResult: SBAMedicationDetailsResultObject) {
-//        guard let idx = medications.firstIndex(where: { $0.identifier == detailsResult.identifier }) else {
-//            return
-//        }
-//
-//
-////        // Build a new answer from the detail.
-////        var medication = SBAMedicationAnswer(identifier: detailsResult.identifier)
-////
-////        medication.dosage = detailsResult.dosage
-////        if let schedulesUnwrapped = detailsResult.schedules {
-////            medication.scheduleItems = Set(schedulesUnwrapped)
-////        }
-////
-////        // Copy the timestamps from the previous answer.
-////        medication.timestamps = self.medications[idx].timestamps
-////        self.medications.remove(at: idx)
-////        self.medications.insert(medication, at: idx)
-//    }
-    
     mutating func updateLogging(from loggingResult: SBATrackedLoggingCollectionResultObject) {
         loggingResult.loggingItems.forEach {
             let loggingResult = $0
