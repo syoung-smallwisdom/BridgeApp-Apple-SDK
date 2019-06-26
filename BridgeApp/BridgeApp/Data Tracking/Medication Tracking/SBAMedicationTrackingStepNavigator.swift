@@ -274,7 +274,11 @@ public struct SBADosage : Codable {
     
     /// Required items for a medication are dosage and schedule unless this is a continuous injection.
     public var hasRequiredValues: Bool {
-        guard dosage != nil, let isAnytime = self.isAnytime else { return false }
+        guard let dosage = self.dosage, !dosage.isEmpty,
+            let isAnytime = self.isAnytime
+            else {
+                return false
+        }
         return isAnytime ? true : ((daysOfWeek?.count ?? 0) > 0 && self.selectedTimes.count > 0)
     }
     

@@ -72,6 +72,10 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
         return pickerType == .loggedTime
     }
     
+    public var hasSelectAll: Bool {
+        return pickerType == .daysOfWeek
+    }
+    
     public var selectedChoices: [PickerChoice] {
         guard let sections = self.sections else { return [] }
         return sections.compactMap({ section in
@@ -257,21 +261,43 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
     func toggleSelect(_ selectedItem: PickerItem) {
         
         let isSelected = !selectedItem.isSelected
+        selectedItem.isSelected = isSelected
         
-        if isSelected && (selectedItem.choice.isExclusive || singleChoice){
+        func updateButton(_ item: PickerItem, _ sectionIndex: Int, _ itemIndex: Int) {
+            let rowIndex = itemIndex / 2
+            let indexPath = IndexPath(row: rowIndex, section: sectionIndex)
+            guard let cell = tableView.cellForRow(at: indexPath) as? TwoChoicePickerCell else { return }
+            let buttonIndex = itemIndex % 2
+            cell.buttons[buttonIndex].isSelected = item.isSelected
+        }
+        
+        if isSelected, singleChoice {
             sections.enumerated().forEach { (sectionIndex, section) in
                 section.items.enumerated().forEach { (itemIndex, item) in
-                    guard item != selectedItem else { return }
+                    guard selectedItem != item, item.isSelected else { return }
                     item.isSelected = false
-                    let rowIndex = itemIndex / 2
-                    let indexPath = IndexPath(row: rowIndex, section: sectionIndex)
-                    guard let cell = tableView.cellForRow(at: indexPath) as? TwoChoicePickerCell else { return }
-                    let buttonIndex = itemIndex % 2
-                    cell.buttons[buttonIndex].isSelected = false
+                    updateButton(item, sectionIndex, itemIndex)
                 }
             }
         }
-        selectedItem.isSelected = isSelected
+        else if hasSelectAll,
+            let items = sections.first?.items {
+            if selectedItem.choice is Everyday {
+                // If the user has toggled "everyday" then toggle all the choices.
+                items.enumerated().forEach { (itemIndex, item) in
+                    guard selectedItem != item else { return }
+                    item.isSelected = isSelected
+                    updateButton(item, 0, itemIndex)
+                }
+            }
+            else if let selectedDays = selectedWeekdays(),
+                let itemIndex = items.firstIndex(where: { $0.choice is Everyday }) {
+                // Otherwise, need to update the "everyday" option state.
+                let item = items[itemIndex]
+                item.isSelected = (selectedDays == RSDWeekday.all)
+                updateButton(item, 0, itemIndex)
+            }
+        }
     }
     
     @IBAction func saveTapped(_ sender: Any) {
