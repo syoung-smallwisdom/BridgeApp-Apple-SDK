@@ -112,7 +112,6 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
         let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay) }
         let currentItems = medTimings.flatMap { $0.currentItems }
         let missedItems = medTimings.flatMap { $0.missedItems }
-        let upcomingItems = medTimings.flatMap { $0.upcomingItems }
         
         var itemGroups = [RSDTableItemGroup]()
         var sections = [RSDTableSection]()
@@ -137,13 +136,6 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
             sections.append(section)
             itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: missedItems))
         }
-        
-        if upcomingItems.count > 0 {
-            let section = RSDTableSection(identifier: "upcoming", sectionIndex: sections.count, tableItems: upcomingItems)
-            section.title = Localization.localizedString("UPCOMING_MEDICATION_SECTION_TITLE")
-            sections.append(section)
-            itemGroups.append(RSDTableItemGroup(beginningRowIndex: 0, items: upcomingItems))
-        }
 
         return (sections, itemGroups)
     }
@@ -158,9 +150,8 @@ extension RSDFormUIHint {
 struct MedicationTiming {
     let medication : SBAMedicationAnswer
     let timeOfDay: Date
-    let currentItems : [SBATrackedLoggingTableItem]
+    let currentItems : [RSDTableItem]
     let missedItems : [SBATrackedLoggingTableItem]
-    let upcomingItems : [SBATrackedLoggingTableItem]
 }
 
 extension SBAMedicationAnswer {
@@ -168,110 +159,114 @@ extension SBAMedicationAnswer {
     /// Filter the medications based on what medications have *not* been marked as taken *or* are within range
     /// for the the time of day (morning/afternoon/evening).
     func availableMedications(at timeOfDay: Date, includeLogged: Bool = true, includeAnytime: Bool = true) -> MedicationTiming? {
-        return nil
-        // TODO: FIXME!! syoung 06/10/2019
-//        guard let dosageItems = self.dosageItems, dosageItems.count > 0 else { return nil }
-//
-//        let timeRange = timeOfDay.timeRange()
-//        let dayOfWeek = RSDWeekday(date: timeOfDay)
-//        let upcomingTimeInterval: TimeInterval = 30 * 60  // 30 minutes
-//        let upcomingTimeOfDay = timeOfDay.addingTimeInterval(upcomingTimeInterval)
-//
-//        let formatter = RSDWeeklyScheduleFormatter()
-//        formatter.style = .short
-//
-//        var currentItems = [SBATrackedLoggingTableItem]()
-//        var missedItems = [SBATrackedLoggingTableItem]()
-//        var upcomingItems = [SBATrackedLoggingTableItem]()
-//
-//        func appendItem(to items: inout [SBATrackedLoggingTableItem]) {
-//            let tableItem = SBATrackedMedicationLoggingTableItem(rowIndex: items.count, itemIdentifier: self.identifier, timingIdentifier: timingIdentifier, timeOfDayString: schedule.timeOfDayString, groupCount: scheduleItems.count)
-//            tableItem.title = self.longTitle
-//            tableItem.detail = (scheduleTime == nil) ?
-//                Localization.localizedString("MEDICATION_ANYTIME") :  formatter.string(from: schedule.daysOfWeek)
-//            tableItem.loggedDate = loggedDate
-//            items.append(tableItem)
-//        }
-//
-//        dosageItems.forEach { (dosage) in
-//            if (dosage.isAnytime ?? false) && includeAnytime {
-//                // If this is an anytime dosage *and* this is not an active task, then add a table item.
-//
-//
-//            }
-//
-//
-//
-//
-//
-//            guard let timestamps = dosage.timestamps
-//
-//        scheduleItems.forEach { (schedule) in
-//            // Only include if the day of the week is valid.
-//            guard schedule.daysOfWeek.contains(dayOfWeek)
-//                else {
-//                    return
-//            }
-//
-//            // Only include if the schedule time is either "anytime" or before now.
-//            let scheduleTime = schedule.timeOfDay(on: timeOfDay)
-//            let isCurrent = (scheduleTime == nil || scheduleTime!.timeRange() == timeRange)
-//            guard isCurrent || scheduleTime! <= upcomingTimeOfDay
-//                else {
-//                    return
-//            }
-//
-//            let timingIdentifier = schedule.timeOfDayString ?? timeRange.rawValue
-//            let loggedDate = self.timestamps?.first(where: { $0.timingIdentifier == timingIdentifier })?.loggedDate
-//            let isUpcoming = (scheduleTime != nil && scheduleTime! > timeOfDay)
-//
-//            // Only include the schedule if either it has not been marked *or* the marked timestamp is within
-//            // the time range.
-//            guard loggedDate == nil || (includeLogged && (isCurrent || isUpcoming))
-//                else {
-//                    return
-//            }
-//
-////            /// The long title is the title and the dosage.
-////            public var longTitle : String? {
-////                guard let title = self.text, let dosage = self.dosage
-////                    else {
-////                        return nil
-////                }
-////                return String.localizedStringWithFormat("%@ %@", title, dosage)
-////            }
-//
-//
-//
-//            if isCurrent || isUpcoming {
-//                appendItem(to: &currentItems)
-//            }
-//            else {
-//                appendItem(to: &missedItems)
-//            }
-//        }
-//        }
-//
-//        // Only return available times if there are any in either the window or missed times.
-//        guard currentItems.count > 0 || missedItems.count > 0 || upcomingItems.count > 0 else {
-//            return nil
-//        }
-//
-//        return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: currentItems, missedItems: missedItems, upcomingItems: upcomingItems)
+        guard let dosageItems = self.dosageItems, dosageItems.count > 0
+            else {
+                // If this is not for setting reminders, then include a medication review item.
+                if includeAnytime {
+                    return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: [SBATrackedMedicationReviewItem(medication: self, rowIndex: 0)], missedItems: [])
+                } else {
+                    return nil
+                }
+        }
+
+        let timeRange = timeOfDay.timeRange()
+        let dayOfWeek = RSDWeekday(date: timeOfDay)
+        let upcomingTimeInterval: TimeInterval = 30 * 60  // 30 minutes
+        let upcomingTimeOfDay = timeOfDay.addingTimeInterval(upcomingTimeInterval)
+
+        var currentItems = [RSDTableItem]()
+        var missedItems = [SBATrackedLoggingTableItem]()
+        
+        dosageItems.forEach { (dose) in
+            guard dose.daysOfWeek?.contains(dayOfWeek) ?? true else { return }
+            var timestamps = dose.timestamps ?? []
+            
+            // Build the current timestamp grouping for this dosage.
+            var currentTimestamps = timestamps.remove(where: { (timestamp) -> Bool in
+                guard let scheduleTime = timestamp.timeOfDay(on: timeOfDay)
+                    else {
+                        return includeAnytime && includeLogged
+                }
+                let isCurrent = (scheduleTime.timeRange() == timeRange) || (scheduleTime >= timeOfDay && scheduleTime <= upcomingTimeOfDay)
+                return isCurrent && (includeLogged || (timestamp.loggedDate == nil))
+            })
+            if includeAnytime && (dose.isAnytime ?? false) {
+                currentTimestamps.insert(SBATimestamp(), at: 0)
+            }
+            
+            // Build the missed timestamps.
+            let missedTimestamps = timestamps.filter { (timestamp) -> Bool in
+                guard timestamp.loggedDate == nil,
+                    let scheduleTime = timestamp.timeOfDay(on: timeOfDay)
+                    else {
+                        return false
+                }
+                return scheduleTime < timeOfDay
+            }
+            
+            // For each grouping, build the table items.
+            currentItems.append(contentsOf: currentTimestamps.enumerated().map {
+                SBATrackedMedicationLoggingTableItem(rowIndex: $0.offset,
+                                                     medication: self,
+                                                     dosage: dose,
+                                                     timestamp: $0.element,
+                                                     groupCount: currentTimestamps.count)
+            })
+            
+            missedItems.append(contentsOf: missedTimestamps.enumerated().map {
+                SBATrackedMedicationLoggingTableItem(rowIndex: $0.offset,
+                                                     medication: self,
+                                                     dosage: dose,
+                                                     timestamp: $0.element,
+                                                     groupCount: missedTimestamps.count)
+            })
+        }
+
+        // Only return available times if there are any in either the window or missed times.
+        guard currentItems.count > 0 || missedItems.count > 0 else {
+            return nil
+        }
+
+        return MedicationTiming(medication: self, timeOfDay: timeOfDay, currentItems: currentItems, missedItems: missedItems)
     }
 }
 
+let weekdayFormatter: RSDWeeklyScheduleFormatter = {
+    let formatter = RSDWeeklyScheduleFormatter()
+    formatter.style = .short
+    return formatter
+}()
+
 open class SBATrackedMedicationLoggingTableItem: SBATrackedLoggingTableItem {
     
+    /// The dosage associated with this table item.
+    public var dosage: SBADosage
+    
+    /// The timestamp associated with this table item.
+    public var timestamp: SBATimestamp
+    
     /// The number of items in this item's subgrouping (for schedules that are grouped).
-    public private(set) var groupCount: Int
+    public let groupCount: Int
     
     /// Used to keep track of the state of editing the display time
     public var isEditingDisplayTime = false
     
-    public init(rowIndex: Int, itemIdentifier: String, timingIdentifier: String? = nil, timeOfDayString: String? = nil, groupCount: Int, uiHint: RSDFormUIHint = .medicationLogging) {
+    open override var loggedDate: Date? {
+        get { return timestamp.loggedDate }
+        set { timestamp.loggedDate = newValue }
+    }
+    
+    public init(rowIndex: Int, medication: SBAMedicationAnswer, dosage: SBADosage, timestamp: SBATimestamp, groupCount: Int, uiHint: RSDFormUIHint = .medicationLogging) {
         self.groupCount = groupCount
-        super.init(rowIndex: rowIndex, itemIdentifier: itemIdentifier, timingIdentifier: timingIdentifier, timeOfDayString: timeOfDayString, uiHint: uiHint)
+        self.dosage = dosage
+        self.timestamp = timestamp
+        super.init(rowIndex: rowIndex, itemIdentifier: medication.identifier, timingIdentifier: timestamp.uuid, timeOfDayString: timestamp.timeOfDayString, uiHint: uiHint)
+        
+        // Set the title and
+        self.title = String.localizedStringWithFormat("%@ %@", medication.title ?? medication.identifier, dosage.dosage ?? "")
+        if let days = dosage.daysOfWeek {
+            self.detail = weekdayFormatter.string(from: days)
+        }
     }
 }
 

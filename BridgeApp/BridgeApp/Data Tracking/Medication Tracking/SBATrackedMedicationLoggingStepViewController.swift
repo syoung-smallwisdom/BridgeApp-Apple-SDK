@@ -44,7 +44,11 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
         
         if reuseIdentifier == SBAMedicationLoggingCell.reuseId {
             tableView.register(SBAMedicationLoggingCell.nib, forCellReuseIdentifier: reuseIdentifier)
-        } else {
+        }
+        else if reuseIdentifier == SBATrackedMedicationReviewCell.reuseId {
+            tableView.register(SBATrackedMedicationReviewCell.nib, forCellReuseIdentifier: reuseIdentifier)
+        }
+        else {
             super.registerReuseIdentifierIfNeeded(reuseIdentifier)
         }
     }

@@ -496,7 +496,7 @@ class DosageItem : UniqueTableItem {
         }
         if dosage.selectedTimes.count == 0 {
             var timestamps = dosage.timestamps ?? []
-            timestamps.append(SBATimestamp(timeOfDay: "08:00", loggedDate: nil)!)
+            timestamps.append(SBATimestamp(timeOfDay: "08:00", loggedDate: nil))
             dosage.timestamps = timestamps
         }
     }

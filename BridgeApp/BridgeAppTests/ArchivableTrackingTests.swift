@@ -214,12 +214,12 @@ class ArchivableTrackingTests: XCTestCase {
         var medA3 = SBAMedicationAnswer(identifier: "medA3")
         medA3.dosageItems = [ SBADosage(dosage: "1 ml",
                                         daysOfWeek: [.monday, .wednesday, .friday],
-                                        timestamps: [SBATimestamp(timeOfDay: "08:00", loggedDate: nil)!],
+                                        timestamps: [SBATimestamp(timeOfDay: "08:00", loggedDate: nil)],
                                         isAnytime: false) ]
         var medC3 = SBAMedicationAnswer(identifier: "medC3")
         medC3.dosageItems = [ SBADosage(dosage: "3 mg",
                                         daysOfWeek: [.sunday, .thursday],
-                                        timestamps: [SBATimestamp(timeOfDay: "20:00", loggedDate: nil)!],
+                                        timestamps: [SBATimestamp(timeOfDay: "20:00", loggedDate: nil)],
                                         isAnytime: false) ]
         result.reminders = [45, 60]
         result.medications = [medA3, medC3]

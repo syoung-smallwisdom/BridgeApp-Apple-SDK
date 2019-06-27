@@ -171,7 +171,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
             if med.identifier == "medA2" {
                 med.dosageItems =  [ SBADosage(dosage: "1",
                                                daysOfWeek: [.monday, .wednesday, .friday],
-                                               timestamps: [SBATimestamp(timeOfDay: "08:00", loggedDate: nil)!],
+                                               timestamps: [SBATimestamp(timeOfDay: "08:00", loggedDate: nil)],
                                                isAnytime: false) ]
             }
             return med
@@ -215,12 +215,12 @@ class MedicationTrackingNavigationTests: XCTestCase {
         var medA3 = SBAMedicationAnswer(identifier: "medA3")
         medA3.dosageItems = [ SBADosage(dosage: "1",
                                         daysOfWeek: [.monday, .wednesday, .friday],
-                                        timestamps: [SBATimestamp(timeOfDay: "08:00", loggedDate: nil)!],
+                                        timestamps: [SBATimestamp(timeOfDay: "08:00", loggedDate: nil)],
                                         isAnytime: false) ]
         var medC3 = SBAMedicationAnswer(identifier: "medC3")
         medC3.dosageItems = [ SBADosage(dosage: "1",
                                         daysOfWeek: [.sunday, .thursday],
-                                        timestamps: [SBATimestamp(timeOfDay: "20:00", loggedDate: nil)!],
+                                        timestamps: [SBATimestamp(timeOfDay: "20:00", loggedDate: nil)],
                                         isAnytime: false) ]
         initialResult.medications = [medA3, medC3]
         // This is how the previous answer of "no reminders please" looks.
@@ -283,7 +283,7 @@ class MedicationTrackingNavigationTests: XCTestCase {
             var med = $0
             med.dosageItems =  [ SBADosage(dosage: "1",
                                            daysOfWeek: [.monday, .wednesday, .friday],
-                                           timestamps: [SBATimestamp(timeOfDay: "08:00", loggedDate: nil)!],
+                                           timestamps: [SBATimestamp(timeOfDay: "08:00", loggedDate: nil)],
                                            isAnytime: false) ]
             return med
         }

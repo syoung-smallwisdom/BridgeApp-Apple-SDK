@@ -598,10 +598,7 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
         case timeOfDay, loggedDate, quantity
     }
     
-    public init?(timeOfDay: String? = nil, loggedDate: Date? = nil) {
-        guard timeOfDay != nil || loggedDate != nil else {
-            return nil
-        }
+    public init(timeOfDay: String? = nil, loggedDate: Date? = nil) {
         self.timeOfDay = timeOfDay
         self.loggedDate = loggedDate
         self.quantity = 1
