@@ -177,6 +177,7 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     @IBOutlet weak var titleLabelHeight: NSLayoutConstraint!
     
     @IBOutlet weak var weekdayLabel: UILabel!
+    @IBOutlet weak var takeAnytimeLabel: UILabel!
     @IBOutlet weak var checkmarkView: RSDCheckmarkView!
     
     @IBOutlet weak var loggedView: UIView!
@@ -223,6 +224,9 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
         self.weekdayLabel.font = designSystem.fontRules.font(for: .small, compatibleWith: traitCollection)
         self.notLoggedTimeLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .body)
         self.notLoggedTimeLabel.font = designSystem.fontRules.font(for: .body, compatibleWith: traitCollection)
+        self.takeAnytimeLabel.text = Localization.localizedString("MEDICATION_TAKE_ANYTIME")
+        self.takeAnytimeLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .body)
+        self.takeAnytimeLabel.font = designSystem.fontRules.font(for: .body, compatibleWith: traitCollection)
         
         self.loggedTimeButton.setDesignSystem(designSystem, with: backgroundColor)
         self.undoButton.setDesignSystem(designSystem, with: backgroundColor)
@@ -256,9 +260,17 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
             self.loggedTimeButton.isHidden = (loggingItem.timeText == nil)
             self.notLoggedTimeLabel.isHidden = (loggingItem.timeText == nil)
             let timeFormat = !isLogged ? "%@" : Localization.localizedString("MEDICATION_LOGGING_TIME_EDIT_%@")
-            let timeStr = String(format: timeFormat, loggingItem.timeText ?? "")
-            self.loggedTimeButton.setTitle(timeStr, for: .normal)
-            self.notLoggedTimeLabel.text = timeStr
+            if let timeText = loggingItem.timeText {
+                let timeStr = String(format: timeFormat, timeText)
+                self.loggedTimeButton.setTitle(timeStr, for: .normal)
+                self.notLoggedTimeLabel.text = timeStr
+                self.takeAnytimeLabel.isHidden = true
+            }
+            else {
+                self.takeAnytimeLabel.isHidden = false
+                self.weekdayLabel.isHidden = true
+                self.notLoggedTimeLabel.isHidden = true
+            }
             
             self.datePicker.date = loggingItem.displayDate ?? Date()
             if loggingItem.isEditingDisplayTime {

@@ -205,7 +205,7 @@ open class SBATrackedMedicationReviewItem : RSDModalStepTableItem {
     ///     - identifier: The cell identifier.
     ///     - rowIndex: The index of this item relative to all rows in the section in which this item resides.
     ///     - reuseIdentifier: The string to use as the reuse identifier.
-    public init(medication: SBAMedicationAnswer, rowIndex: Int, reuseIdentifier: String = RSDFormUIHint.logging.rawValue) {
+    public init(medication: SBAMedicationAnswer, rowIndex: Int, reuseIdentifier: String = SBATrackedMedicationReviewCell.reuseId) {
         self.medication = medication
         super.init(identifier: medication.identifier, rowIndex: rowIndex, reuseIdentifier: reuseIdentifier)
     }
