@@ -36,34 +36,8 @@ import Foundation
 extension SBATrackedMedicationReviewStepObject : RSDStepViewControllerVendor {
 }
 
-open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewController {
-    
-    override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
-        guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
-        _registeredIdentifiers.insert(reuseIdentifier)
+open class SBATrackedMedicationReviewStepViewController: SBAMedicationListStepViewController {
 
-        if reuseIdentifier == SBATrackedMedicationReviewCell.reuseId {
-            tableView.register(SBATrackedMedicationReviewCell.nib, forCellReuseIdentifier: reuseIdentifier)
-        } else {
-            super.registerReuseIdentifierIfNeeded(reuseIdentifier)
-        }
-    }
-    private var _registeredIdentifiers = Set<String>()
-    
-    open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        let storyboard = UIStoryboard(name: "Medication", bundle: Bundle(for: SBAMedicationEditDetailsViewController.self))
-        if let vc = storyboard.instantiateViewController(withIdentifier: "MedicationEditDetails") as? SBAMedicationEditDetailsViewController,
-            let tableItem = self.tableData?.tableItem(at: indexPath) as? SBATrackedMedicationReviewItem {
-            vc.delegate = self
-            vc.medication = tableItem.medication
-            vc.designSystem = self.designSystem
-            self.present(vc, animated: true) {
-            }
-        }
-    }
-    
     /// Shoehorn in using the learn more to add medication b/c the new design has the "Add a medication"
     /// button in the place where typically this should be a "learn more" action. syoung 06/11/2019
     override open func showLearnMore() {
@@ -91,7 +65,41 @@ open class SBATrackedMedicationReviewStepViewController: RSDTableStepViewControl
     }
 }
 
-extension SBATrackedMedicationReviewStepViewController: SBAMedicationEditDetailsViewControllerDelegate {
+open class SBAMedicationListStepViewController: RSDTableStepViewController {
+    
+    override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
+        guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
+        _registeredIdentifiers.insert(reuseIdentifier)
+        
+        if reuseIdentifier == SBATrackedMedicationReviewCell.reuseId {
+            tableView.register(SBATrackedMedicationReviewCell.nib, forCellReuseIdentifier: reuseIdentifier)
+        } else {
+            super.registerReuseIdentifierIfNeeded(reuseIdentifier)
+        }
+    }
+    private var _registeredIdentifiers = Set<String>()
+    
+    open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let tableItem = self.tableData?.tableItem(at: indexPath) as? SBATrackedMedicationReviewItem
+            else {
+                super.tableView(tableView, didSelectRowAt: indexPath)
+                return
+        }
+
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let storyboard = UIStoryboard(name: "Medication", bundle: Bundle(for: SBAMedicationEditDetailsViewController.self))
+        if let vc = storyboard.instantiateViewController(withIdentifier: "MedicationEditDetails") as? SBAMedicationEditDetailsViewController {
+            vc.delegate = self
+            vc.medication = tableItem.medication
+            vc.designSystem = self.designSystem
+            self.present(vc, animated: true) {
+            }
+        }
+    }
+}
+
+extension SBAMedicationListStepViewController: SBAMedicationEditDetailsViewControllerDelegate {
     
     func save(_ medication: SBAMedicationAnswer, from sender: SBAMedicationEditDetailsViewController) {
         if let dataSource = self.tableData as? SBATrackedMedicationReviewDataSource,

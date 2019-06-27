@@ -36,7 +36,7 @@ import UIKit
 /// `SBATrackedMedicationLoggingStepViewController` is the default view controller shown for a `SBAMedicationLoggingStepObject`.
 ///
 /// - seealso: `SBAMedicationLoggingStepObject`
-open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewController {
+open class SBATrackedMedicationLoggingStepViewController: SBAMedicationListStepViewController {
     
     override open func registerReuseIdentifierIfNeeded(_ reuseIdentifier: String) {
         guard !_registeredIdentifiers.contains(reuseIdentifier) else { return }
@@ -44,9 +44,6 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
         
         if reuseIdentifier == SBAMedicationLoggingCell.reuseId {
             tableView.register(SBAMedicationLoggingCell.nib, forCellReuseIdentifier: reuseIdentifier)
-        }
-        else if reuseIdentifier == SBATrackedMedicationReviewCell.reuseId {
-            tableView.register(SBATrackedMedicationReviewCell.nib, forCellReuseIdentifier: reuseIdentifier)
         }
         else {
             super.registerReuseIdentifierIfNeeded(reuseIdentifier)
@@ -93,7 +90,9 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
     
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let source = tableData as? SBAMedicationLoggingDataSource,
-            let tableItem = source.tableItem(at: indexPath) as? SBATrackedMedicationLoggingTableItem else {
+            let tableItem = source.tableItem(at: indexPath) as? SBATrackedMedicationLoggingTableItem
+            else {
+                super.tableView(tableView, didSelectRowAt: indexPath)
                 return
         }
         tableItem.isEditingDisplayTime = false
