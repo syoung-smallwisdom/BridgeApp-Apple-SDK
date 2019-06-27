@@ -115,6 +115,12 @@
                                     <constraint firstAttribute="width" constant="140" id="cbr-QV-x6O"/>
                                 </constraints>
                             </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Take this medication at any time" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZrQ-YY-giI">
+                                <rect key="frame" x="20" y="10" width="140" height="71.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Rf-LQ-ucb" userLabel="Taken Button" customClass="RSDRoundedButton" customModule="ResearchUI">
                                 <rect key="frame" x="160" y="20" width="140" height="52"/>
                                 <constraints>
@@ -132,10 +138,14 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Tof-1h-r3E" firstAttribute="centerY" secondItem="BwH-d1-odP" secondAttribute="centerY" id="4R8-4w-rHe"/>
+                            <constraint firstItem="ZrQ-YY-giI" firstAttribute="leading" secondItem="Tof-1h-r3E" secondAttribute="leading" id="5aV-zL-z1H"/>
                             <constraint firstItem="Tof-1h-r3E" firstAttribute="leading" secondItem="BwH-d1-odP" secondAttribute="leading" constant="20" id="5fG-BL-acz"/>
+                            <constraint firstItem="5Rf-LQ-ucb" firstAttribute="leading" secondItem="ZrQ-YY-giI" secondAttribute="trailing" constant="10" id="6IO-zh-X9v"/>
+                            <constraint firstItem="ZrQ-YY-giI" firstAttribute="centerY" secondItem="5Rf-LQ-ucb" secondAttribute="centerY" id="DfN-Nv-Lx9"/>
                             <constraint firstAttribute="trailing" secondItem="5Rf-LQ-ucb" secondAttribute="trailing" constant="20" id="OYR-6A-tOb"/>
-                            <constraint firstAttribute="height" constant="91.5" id="YLV-l5-jW6"/>
+                            <constraint firstAttribute="bottom" secondItem="ZrQ-YY-giI" secondAttribute="bottom" constant="10" id="btx-5f-X0v"/>
                             <constraint firstItem="5Rf-LQ-ucb" firstAttribute="centerY" secondItem="BwH-d1-odP" secondAttribute="centerY" id="uQK-OG-0p8"/>
+                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="5Rf-LQ-ucb" secondAttribute="bottom" constant="18" id="y2B-pV-OrK"/>
                         </constraints>
                     </view>
                     <datePicker contentMode="scaleToFill" verticalHuggingPriority="980" verticalCompressionResistancePriority="980" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="3Hi-ub-rDv">
@@ -191,6 +201,7 @@
                 <outlet property="loggedView" destination="Fmn-bX-ino" id="Tfy-QS-CLY"/>
                 <outlet property="notLoggedTimeLabel" destination="hrm-L5-BqF" id="9xv-Z5-phi"/>
                 <outlet property="notLoggedView" destination="BwH-d1-odP" id="NJ6-gC-hOP"/>
+                <outlet property="takeAnytimeLabel" destination="ZrQ-YY-giI" id="OOp-fw-BHt"/>
                 <outlet property="takenButton" destination="5Rf-LQ-ucb" id="ldT-yT-lYv"/>
                 <outlet property="titleLabel" destination="tQR-rc-Cks" id="ScZ-vw-IyY"/>
                 <outlet property="titleLabelHeight" destination="nyx-le-fKo" id="YGX-NN-Vgq"/>

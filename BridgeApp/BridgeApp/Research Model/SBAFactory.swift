@@ -53,9 +53,6 @@ extension RSDStepType {
     /// Defaults to creating a `SBATrackedSelectionStepObject`.
     public static let selection: RSDStepType = "selection"
     
-    /// Defaults to creating a `SBARemoveTrackedItemStepObject`.
-    public static let removeTrackedItem: RSDStepType = "removeTrackedItem"
-    
     /// Defaults to creating a `SBASymptomLoggingStepObject`.
     public static let symptomLogging: RSDStepType = "symptomLogging"
     
@@ -100,8 +97,6 @@ open class SBAFactory : RSDFactory {
             return try SBATrackedItemsLoggingStepObject(from: decoder)
         case .symptomLogging:
             return try SBASymptomLoggingStepObject(from: decoder)
-        case .removeTrackedItem:
-            return try SBARemoveTrackedItemStepObject(from: decoder)
         case .medicationReminders:
             return try SBATrackedItemRemindersStepObject(from: decoder)
         case .taskInfo:
