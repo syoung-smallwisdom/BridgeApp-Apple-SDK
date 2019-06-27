@@ -157,13 +157,6 @@ open class SBATrackedMedicationReviewDataSource : SBAMedicationLoggingDataSource
             return super.action(for: actionType)
         }
     }
-    
-    /// Get the table item for a given medication.
-    func tableItem(for medication: SBAMedicationAnswer) -> SBATrackedMedicationReviewItem? {
-        return self.sections.first?.tableItems.first(where: {
-            ($0 as? SBATrackedMedicationReviewItem)?.medication.identifier == medication.identifier
-        }) as? SBATrackedMedicationReviewItem
-    }
 }
 
 /// The medication review table item is tracked using the result object.

@@ -34,10 +34,10 @@
 import Foundation
 
 /// The medication logging step is used to log information about each item that is being tracked.
-open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RSDNavigationSkipRule {
+open class SBAMedicationLoggingStepObject : SBATrackedSelectionStepObject, RSDNavigationSkipRule {
     
     #if !os(watchOS)
-    open override func instantiateViewController(with parent: RSDPathComponent?) -> (UIViewController & RSDStepController)? {
+    open func instantiateViewController(with parent: RSDPathComponent?) -> (UIViewController & RSDStepController)? {
         return SBATrackedMedicationLoggingStepViewController(step: self, parent: parent)
     }
     #endif
@@ -69,6 +69,22 @@ open class SBAMedicationLoggingStepObject : SBATrackedItemsLoggingStepObject, RS
             actions[.addMore] = RSDUIActionObject(buttonTitle: Localization.localizedString("MEDICATION_VIEW_LIST"))
             self.actions = actions
         }
+    }
+    
+    /// Override to add the "submit" button for the action.
+    override open func action(for actionType: RSDUIActionType, on step: RSDStep) -> RSDUIAction? {
+        // If the dictionary includes an action then return that.
+        if let action = self.actions?[actionType] { return action }
+        // Only special-case for the goForward action.
+        guard actionType == .navigation(.goForward) else { return nil }
+        
+        // If this is the goForward action then special-case to use the "Submit" button
+        // if there isn't a button in the dictionary.
+        let goForwardAction = RSDUIActionObject(buttonTitle: Localization.localizedString("BUTTON_SUBMIT"))
+        var actions = self.actions ?? [:]
+        actions[actionType] = goForwardAction
+        self.actions = actions
+        return goForwardAction
     }
     
     // MARK: RSDNavigationSkipRule
@@ -166,6 +182,19 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
         meds.insert(medication, at: item.indexPath.item)
         stepResult.medications = meds
         self.taskResult.appendStepHistory(with: stepResult)
+    }
+    
+    /// Get the table item for a given medication.
+    func tableItem(for medication: SBAMedicationAnswer) -> SBATrackedMedicationReviewItem? {
+        for section in self.sections {
+            for tableItem in section.tableItems {
+                if let medItem = tableItem as? SBATrackedMedicationReviewItem,
+                    medItem.medication.identifier == medication.identifier {
+                    return medItem
+                }
+            }
+        }
+        return nil
     }
 }
 

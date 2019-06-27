@@ -33,6 +33,10 @@
 
 import UIKit
 
+/// Extend `SBAMedicationLoggingStepObject` to implement the step view controller vendor.
+extension SBAMedicationLoggingStepObject : RSDStepViewControllerVendor {
+}
+
 /// `SBATrackedMedicationLoggingStepViewController` is the default view controller shown for a `SBAMedicationLoggingStepObject`.
 ///
 /// - seealso: `SBAMedicationLoggingStepObject`

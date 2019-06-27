@@ -102,7 +102,7 @@ open class SBAMedicationListStepViewController: RSDTableStepViewController {
 extension SBAMedicationListStepViewController: SBAMedicationEditDetailsViewControllerDelegate {
     
     func save(_ medication: SBAMedicationAnswer, from sender: SBAMedicationEditDetailsViewController) {
-        if let dataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
+        if let dataSource = self.tableData as? SBAMedicationLoggingDataSource,
             let item = dataSource.tableItem(for: medication) {
             dataSource.saveMedication(medication, to: item)
             self.tableView.reloadRows(at: [item.indexPath], with: .automatic)
@@ -114,7 +114,7 @@ extension SBAMedicationListStepViewController: SBAMedicationEditDetailsViewContr
     }
     
     func delete(_ medication: SBAMedicationAnswer, from sender: SBAMedicationEditDetailsViewController) {
-        if let dataSource = self.tableData as? SBATrackedMedicationReviewDataSource,
+        if let dataSource = self.tableData as? SBAMedicationLoggingDataSource,
             let item = dataSource.tableItem(for: medication) {
             self.tableView.beginUpdates()
             let indexPath = item.indexPath
