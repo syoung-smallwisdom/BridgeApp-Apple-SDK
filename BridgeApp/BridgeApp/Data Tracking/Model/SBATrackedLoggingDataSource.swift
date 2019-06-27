@@ -48,7 +48,7 @@ extension RSDUIActionType {
 /// `SBATrackedLoggingDataSource` is a concrete implementation of the `RSDTableDataSource` protocol
 /// that is designed to be used with a `SBATrackedItemsStep` intended for logging of items that were
 /// selected in a previous step.
-open class SBATrackedLoggingDataSource : SBATrackingReviewDataSource {
+open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepDataSource {
 
     /// Overridable class function for building the sections of the table.
     /// - parameters:
@@ -150,10 +150,6 @@ open class SBATrackedLoggingDataSource : SBATrackingReviewDataSource {
     override open func allAnswersValid() -> Bool {
         return self.trackingResult().selectedAnswers.reduce(false, { $0 || $1.hasRequiredValues })
     }
-    
-}
-
-open class SBATrackingReviewDataSource : SBATrackingDataSource, RSDModalStepDataSource {
     
     open func taskViewModel(for tableItem: RSDModalStepTableItem) -> RSDTaskViewModel? {
         guard let step = self.step(for: tableItem) else {

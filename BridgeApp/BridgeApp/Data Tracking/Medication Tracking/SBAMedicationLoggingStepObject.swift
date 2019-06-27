@@ -139,6 +139,34 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
 
         return (sections, itemGroups)
     }
+    
+    /// Remove a medcation from the list.
+    func removeMedication(at item: SBATrackedMedicationReviewItem) {
+        
+        // Update the step result.
+        var stepResult = self.trackingResult() as! SBAMedicationTrackingResult
+        var meds = stepResult.medications
+        meds.remove(at: item.indexPath.item)
+        stepResult.medications = meds
+        self.taskResult.appendStepHistory(with: stepResult)
+        
+        self.reloadDataSource(with: stepResult)
+    }
+    
+    /// Save changes to a medication back to the item.
+    func saveMedication(_ medication: SBAMedicationAnswer, to item: SBATrackedMedicationReviewItem) {
+        
+        // Update the data source.
+        item.medication = medication
+        
+        // Update the step result.
+        var stepResult = self.trackingResult() as! SBAMedicationTrackingResult
+        var meds = stepResult.medications
+        meds.remove(at: item.indexPath.item)
+        meds.insert(medication, at: item.indexPath.item)
+        stepResult.medications = meds
+        self.taskResult.appendStepHistory(with: stepResult)
+    }
 }
 
 extension RSDFormUIHint {

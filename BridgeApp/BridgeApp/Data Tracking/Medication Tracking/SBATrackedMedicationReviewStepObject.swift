@@ -79,7 +79,7 @@ open class SBATrackedMedicationReviewStepObject : SBATrackedSelectionStepObject 
 }
 
 /// A data source used to handle tracked medication review.
-open class SBATrackedMedicationReviewDataSource : SBATrackingReviewDataSource {
+open class SBATrackedMedicationReviewDataSource : SBAMedicationLoggingDataSource {
 
     fileprivate var mostRecentResult: SBAMedicationTrackingResult? {
         return self.trackingResult() as? SBAMedicationTrackingResult
@@ -122,7 +122,7 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingReviewDataSource {
     }
     
     /// Override the instantiation of the table item to return a medication review table item
-    open class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
+    open override class func instantiateTableItem(at rowIndex: Int, inputField: RSDInputField, itemAnswer: SBATrackedItemAnswer, choice: RSDChoice) -> RSDTableItem {
 
         guard let medAnswer = itemAnswer as? SBAMedicationAnswer else {
             return RSDTextTableItem(rowIndex: rowIndex, text: "Invalid SBATrackedItemAnswer format")
@@ -156,34 +156,6 @@ open class SBATrackedMedicationReviewDataSource : SBATrackingReviewDataSource {
         default:
             return super.action(for: actionType)
         }
-    }
-
-    /// Remove a medcation from the list.
-    func removeMedication(at item: SBATrackedMedicationReviewItem) {
-        
-        // Update the step result.
-        var stepResult = self.trackingResult() as! SBAMedicationTrackingResult
-        var meds = stepResult.medications
-        meds.remove(at: item.indexPath.item)
-        stepResult.medications = meds
-        self.taskResult.appendStepHistory(with: stepResult)
-        
-        self.reloadDataSource(with: stepResult)
-    }
-    
-    /// Save changes to a medication back to the item.
-    func saveMedication(_ medication: SBAMedicationAnswer, to item: SBATrackedMedicationReviewItem) {
-        
-        // Update the data source.
-        item.medication = medication
-        
-        // Update the step result.
-        var stepResult = self.trackingResult() as! SBAMedicationTrackingResult
-        var meds = stepResult.medications
-        meds.remove(at: item.indexPath.item)
-        meds.insert(medication, at: item.indexPath.item)
-        stepResult.medications = meds
-        self.taskResult.appendStepHistory(with: stepResult)
     }
     
     /// Get the table item for a given medication.

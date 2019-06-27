@@ -21,7 +21,6 @@
 		CB18538021064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB18537F21064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift */; };
 		CB267A9D20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */; };
 		CB267AB320FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB267AB220FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib */; };
-		CB65717D20E2953100A8E61C /* SBARemoveTrackedItemStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB65717C20E2953000A8E61C /* SBARemoveTrackedItemStepViewController.swift */; };
 		CB74DC9320D88EC4008DBB6C /* SBATrackedTextfieldCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB74DC9220D88EC4008DBB6C /* SBATrackedTextfieldCell.xib */; };
 		CBC1F46220F98F8A003DFF9B /* SBATrackedReminderModalButtonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CBC1F44D20F98F8A003DFF9B /* SBATrackedReminderModalButtonCell.xib */; };
 		CBED324420C5E2F6009D32F0 /* SBATrackedMedicationReviewStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBED324320C5E2F6009D32F0 /* SBATrackedMedicationReviewStepObject.swift */; };
@@ -175,7 +174,6 @@
 		CB18537F21064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATrackedItemRemindersStepObject.swift; sourceTree = "<group>"; };
 		CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATrackedMedicationLoggingStepViewController.swift; sourceTree = "<group>"; };
 		CB267AB220FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBAMedicationLoggingCell.xib; sourceTree = "<group>"; };
-		CB65717C20E2953000A8E61C /* SBARemoveTrackedItemStepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBARemoveTrackedItemStepViewController.swift; sourceTree = "<group>"; };
 		CB74DC9220D88EC4008DBB6C /* SBATrackedTextfieldCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBATrackedTextfieldCell.xib; sourceTree = "<group>"; };
 		CBC1F44D20F98F8A003DFF9B /* SBATrackedReminderModalButtonCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBATrackedReminderModalButtonCell.xib; sourceTree = "<group>"; };
 		CBED324320C5E2F6009D32F0 /* SBATrackedMedicationReviewStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATrackedMedicationReviewStepObject.swift; sourceTree = "<group>"; };
@@ -501,7 +499,6 @@
 			children = (
 				F847952F207FF0C90024A230 /* Default Nibs and Storyboards */,
 				F8479518207FEA4C0024A230 /* SBATrackedLoggingStepViewController.swift */,
-				CB65717C20E2953000A8E61C /* SBARemoveTrackedItemStepViewController.swift */,
 				0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */,
 			);
 			path = iOS;
@@ -876,7 +873,6 @@
 				F80F17A32033CB1B00352C3E /* SBBSurvey+RSDTask.swift in Sources */,
 				F8A5CE4A20A2AE7100E9FD75 /* SBARootViewController.swift in Sources */,
 				F8A5CE4C20A2B5C400E9FD75 /* SBAAppDelegate.swift in Sources */,
-				CB65717D20E2953100A8E61C /* SBARemoveTrackedItemStepViewController.swift in Sources */,
 				F8479523207FEA9D0024A230 /* SBATrackedItemsStepNavigator.swift in Sources */,
 				60D9611D20BF161300B5CFEB /* SBAProfileSection.swift in Sources */,
 				60D9611F20BF161300B5CFEB /* SBAProfileDataSource.swift in Sources */,
