@@ -68,10 +68,11 @@ open class SBATrackedMedicationLoggingStepViewController: RSDTableStepViewContro
             header.detailLabel.rsd_alignBelow(view: titleLabelRef, padding: 20.0)
             
             // Style the header to match design
-            header.contentView.backgroundColor = self.designSystem.colorRules.backgroundPrimary.color
-            header.titleLabel.textColor = UIColor.white
+            let backgroundColor = self.designSystem.colorRules.backgroundPrimary
+            header.contentView.backgroundColor = backgroundColor.color
+            header.titleLabel.textColor = self.designSystem.colorRules.textColor(on: backgroundColor, for: .heading2)
             header.titleLabel.textAlignment = .center
-            header.titleLabel.font = self.designSystem.fontRules.font(for: .fieldHeader, compatibleWith: traitCollection)
+            header.titleLabel.font = self.designSystem.fontRules.font(for: .heading2, compatibleWith: traitCollection)
         }
         return view
     }
@@ -180,6 +181,8 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     
     @IBOutlet weak var loggedView: UIView!
     @IBOutlet weak var loggedTimeButton: RSDUnderlinedButton!
+    @IBOutlet weak var takenButton: RSDRoundedButton!
+    @IBOutlet weak var undoButton: RSDUnderlinedButton!
     
     @IBOutlet weak var notLoggedView: UIView!
     @IBOutlet weak var notLoggedTimeLabel: UILabel!
@@ -196,24 +199,36 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     }
     
     open override var usesTableBackgroundColor: Bool {
-        return true
+        return false
     }
     
     override open func awakeFromNib() {
         super.awakeFromNib()
-
-        updateCheckmarkColor()
+        updateColorsAndFonts()
     }
     
     override open func setDesignSystem(_ designSystem: RSDDesignSystem, with background: RSDColorTile) {
         super.setDesignSystem(designSystem, with: background)
-        updateDividerColor()
-        updateCheckmarkColor()
+        updateColorsAndFonts()
     }
     
-    func updateCheckmarkColor() {
+    func updateColorsAndFonts() {
         let designSystem = self.designSystem ?? RSDDesignSystem()
+        let backgroundColor = self.backgroundColorTile ?? designSystem.colorRules.backgroundLight
+        
         self.checkmarkView.backgroundColor = designSystem.colorRules.palette.secondary.normal.color
+        self.titleLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .heading3)
+        self.titleLabel.font = designSystem.fontRules.font(for: .heading3, compatibleWith: traitCollection)
+        self.weekdayLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .small)
+        self.weekdayLabel.font = designSystem.fontRules.font(for: .small, compatibleWith: traitCollection)
+        self.notLoggedTimeLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .body)
+        self.notLoggedTimeLabel.font = designSystem.fontRules.font(for: .body, compatibleWith: traitCollection)
+        
+        self.loggedTimeButton.setDesignSystem(designSystem, with: backgroundColor)
+        self.undoButton.setDesignSystem(designSystem, with: backgroundColor)
+        self.takenButton.setDesignSystem(designSystem, with: backgroundColor)
+        
+        updateDividerColor()
     }
     
     func updateDividerColor() {

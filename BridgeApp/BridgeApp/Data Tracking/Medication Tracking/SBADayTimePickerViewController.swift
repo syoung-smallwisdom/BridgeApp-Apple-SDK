@@ -72,10 +72,6 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
         return pickerType == .loggedTime
     }
     
-    public var hasSelectAll: Bool {
-        return pickerType == .daysOfWeek
-    }
-    
     public var selectedChoices: [PickerChoice] {
         guard let sections = self.sections else { return [] }
         return sections.compactMap({ section in
@@ -258,10 +254,8 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
     
     // MARK: Actions
     
-    func toggleSelect(_ selectedItem: PickerItem) {
-        
+    func toggleSelect(_ selectedItem: PickerItem, _ sender: UIButton) {
         let isSelected = !selectedItem.isSelected
-        selectedItem.isSelected = isSelected
         
         func updateButton(_ item: PickerItem, _ sectionIndex: Int, _ itemIndex: Int) {
             let rowIndex = itemIndex / 2
@@ -271,32 +265,49 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
             cell.buttons[buttonIndex].isSelected = item.isSelected
         }
         
-        if isSelected, singleChoice {
+        if singleChoice {
+            // If this is a single choice and the button being toggled is the currently selected
+            // option then do not allow change. Exit early.
+            guard isSelected else { return }
+            
+            // Otherwise, update the button state for all choices.
             sections.enumerated().forEach { (sectionIndex, section) in
                 section.items.enumerated().forEach { (itemIndex, item) in
-                    guard selectedItem != item, item.isSelected else { return }
-                    item.isSelected = false
+                    item.isSelected = (selectedItem != item)
                     updateButton(item, sectionIndex, itemIndex)
                 }
             }
         }
-        else if hasSelectAll,
-            let items = sections.first?.items {
-            if selectedItem.choice is Everyday {
-                // If the user has toggled "everyday" then toggle all the choices.
+        else if pickerType == .daysOfWeek,
+            let items = sections.first?.items,
+            items.count > 0 {
+            // If this is the everyday choice, cannot *deselect* that choice. Exit early.
+            guard !selectedItem.choice.isExclusive || isSelected else { return }
+            
+            selectedItem.isSelected = isSelected
+            let allSelected = selectedItem.choice.isExclusive ||
+                (Set(items.compactMap {
+                        $0.isSelected ? $0.choice as? RSDWeekday : nil
+                    }) == RSDWeekday.all)
+            if allSelected {
+                // If all are selected, then deselect all *except* the exclusive choice.
                 items.enumerated().forEach { (itemIndex, item) in
-                    guard selectedItem != item else { return }
-                    item.isSelected = isSelected
+                    item.isSelected = item.choice.isExclusive
                     updateButton(item, 0, itemIndex)
                 }
             }
-            else if let selectedDays = selectedWeekdays(),
-                let itemIndex = items.firstIndex(where: { $0.choice is Everyday }) {
-                // Otherwise, need to update the "everyday" option state.
-                let item = items[itemIndex]
-                item.isSelected = (selectedDays == RSDWeekday.all)
-                updateButton(item, 0, itemIndex)
+            else {
+                // Update the sender button and the exclusive button.
+                sender.isSelected = isSelected
+                let exclusiveItem = items.last!
+                exclusiveItem.isSelected = false
+                updateButton(exclusiveItem, 0, items.count - 1)
             }
+        }
+        else {
+            // Otherwise, just toggle the button.
+            selectedItem.isSelected = isSelected
+            sender.isSelected = isSelected
         }
     }
     
@@ -390,7 +401,6 @@ class TwoChoicePickerCell : RSDDesignableTableViewCell {
             assertionFailure("Attempting to tap an item that is not mapped.")
             return
         }
-        sender.isSelected = !sender.isSelected
-        controller.toggleSelect(choices[idx])
+        controller.toggleSelect(choices[idx], sender)
     }
 }

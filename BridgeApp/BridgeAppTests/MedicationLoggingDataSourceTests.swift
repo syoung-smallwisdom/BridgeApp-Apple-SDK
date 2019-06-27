@@ -504,10 +504,10 @@ class MedicationLoggingDataSourceTests: XCTestCase {
         XCTAssertEqual(firstSection.tableItems.count, 4)
 
         guard firstSection.tableItems.count >= 4,
-            let medA3Item0 = firstSection.tableItems[0] as? SBATrackedLoggingTableItem,
-            let medA5Item0 = firstSection.tableItems[1] as? SBATrackedLoggingTableItem,
-            let medA5ItemMorning = firstSection.tableItems[2] as? SBATrackedLoggingTableItem,
-            let medA5ItemAfternoon = firstSection.tableItems[3] as? SBATrackedLoggingTableItem
+            let medA3Item0 = firstSection.tableItems[0] as? SBATrackedMedicationLoggingTableItem,
+            let medA5Item0 = firstSection.tableItems[1] as? SBATrackedMedicationLoggingTableItem,
+            let medA5ItemMorning = firstSection.tableItems[2] as? SBATrackedMedicationLoggingTableItem,
+            let medA5ItemAfternoon = firstSection.tableItems[3] as? SBATrackedMedicationLoggingTableItem
             else {
                 XCTFail("Table items weren't build. \(firstSection)")
                 return
@@ -516,6 +516,7 @@ class MedicationLoggingDataSourceTests: XCTestCase {
         XCTAssertEqual(medA3Item0.title, "medA3 10 mg")
         XCTAssertEqual(medA3Item0.groupIndex, 0)
         XCTAssertEqual(medA3Item0.rowIndex, 0)
+        XCTAssertEqual(medA3Item0.groupCount, 1)
         XCTAssertEqual(medA3Item0.itemIdentifier, "medA3")
         XCTAssertEqual(medA3Item0.timeText, "12:15 PM")
         XCTAssertEqual(medA3Item0.detail, "Every day")
@@ -524,6 +525,7 @@ class MedicationLoggingDataSourceTests: XCTestCase {
         XCTAssertEqual(medA5Item0.title, "medA5 5 ml")
         XCTAssertEqual(medA5Item0.groupIndex, 0)
         XCTAssertEqual(medA5Item0.rowIndex, 1)
+        XCTAssertEqual(medA5Item0.groupCount, 3)
         XCTAssertEqual(medA5Item0.itemIdentifier, "medA5")
         XCTAssertNil(medA5Item0.timeText)
         XCTAssertNil(medA5Item0.detail)
@@ -532,6 +534,7 @@ class MedicationLoggingDataSourceTests: XCTestCase {
         XCTAssertEqual(medA5ItemMorning.title, "medA5 5 ml")
         XCTAssertEqual(medA5ItemMorning.groupIndex, 1)
         XCTAssertEqual(medA5ItemMorning.rowIndex, 2)
+        XCTAssertEqual(medA5ItemMorning.groupCount, 3)
         XCTAssertEqual(medA5ItemMorning.itemIdentifier, "medA5")
         XCTAssertEqual(medA5ItemMorning.timeText, "8:00 AM")
         XCTAssertNil(medA5ItemMorning.detail)
@@ -540,6 +543,7 @@ class MedicationLoggingDataSourceTests: XCTestCase {
         XCTAssertEqual(medA5ItemAfternoon.title, "medA5 5 ml")
         XCTAssertEqual(medA5ItemAfternoon.groupIndex, 2)
         XCTAssertEqual(medA5ItemAfternoon.rowIndex, 3)
+        XCTAssertEqual(medA5ItemAfternoon.groupCount, 3)
         XCTAssertEqual(medA5ItemAfternoon.itemIdentifier, "medA5")
         XCTAssertEqual(medA5ItemAfternoon.timeText, "12:15 PM")
         XCTAssertNil(medA5ItemAfternoon.detail)

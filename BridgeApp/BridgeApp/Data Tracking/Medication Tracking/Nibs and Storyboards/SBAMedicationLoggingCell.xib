@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -28,6 +28,70 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fmn-bX-ino" userLabel="Already Taken View">
+                        <rect key="frame" x="0.0" y="72" width="320" height="91.5"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cEH-ar-7Xi" userLabel="Check Container">
+                                <rect key="frame" x="20" y="19.5" width="160" height="52.5"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UXu-Vi-gvR" customClass="RSDCheckmarkView" customModule="ResearchUI">
+                                        <rect key="frame" x="0.0" y="12.5" width="28" height="28"/>
+                                        <color key="backgroundColor" red="0.33090239110000003" green="0.7223454118" blue="0.21358691399999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="28" id="Qql-fR-hZL"/>
+                                            <constraint firstAttribute="width" secondItem="UXu-Vi-gvR" secondAttribute="height" multiplier="1:1" id="ZTg-1Y-kcq"/>
+                                        </constraints>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9NR-dy-INI">
+                                        <rect key="frame" x="36" y="-1" width="72.5" height="55"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Taken at" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NzJ-39-cT4">
+                                                <rect key="frame" x="0.0" y="0.0" width="72.5" height="21.5"/>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pnw-lD-zAG" customClass="RSDUnderlinedButton" customModule="ResearchUI">
+                                                <rect key="frame" x="0.0" y="21.5" width="72.5" height="33.5"/>
+                                                <state key="normal" title="Time"/>
+                                                <connections>
+                                                    <action selector="timeTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="7Tj-S0-1BR"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="NzJ-39-cT4" firstAttribute="leading" secondItem="9NR-dy-INI" secondAttribute="leading" id="3PV-tT-RQS"/>
+                                            <constraint firstAttribute="trailing" secondItem="NzJ-39-cT4" secondAttribute="trailing" id="6i0-h6-8Q5"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="UXu-Vi-gvR" firstAttribute="leading" secondItem="cEH-ar-7Xi" secondAttribute="leading" id="2XY-Hu-w34"/>
+                                    <constraint firstAttribute="width" constant="160" id="HUA-Mb-aBG"/>
+                                    <constraint firstItem="9NR-dy-INI" firstAttribute="centerY" secondItem="cEH-ar-7Xi" secondAttribute="centerY" id="OWQ-89-GbC"/>
+                                    <constraint firstAttribute="height" constant="52.5" id="dfW-LN-3HJ"/>
+                                    <constraint firstItem="9NR-dy-INI" firstAttribute="leading" secondItem="UXu-Vi-gvR" secondAttribute="trailing" constant="8" id="p1F-GC-7yj"/>
+                                    <constraint firstItem="UXu-Vi-gvR" firstAttribute="centerY" secondItem="cEH-ar-7Xi" secondAttribute="centerY" id="p9a-qw-gd1"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9lU-GV-kPA" userLabel="Undo Button" customClass="RSDUnderlinedButton" customModule="ResearchUI">
+                                <rect key="frame" x="256" y="29" width="44" height="33.5"/>
+                                <state key="normal" title="Undo"/>
+                                <connections>
+                                    <action selector="undoTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="UJe-Fi-ani"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="91.5" id="1z3-Xl-18B"/>
+                            <constraint firstItem="9lU-GV-kPA" firstAttribute="centerY" secondItem="Fmn-bX-ino" secondAttribute="centerY" id="Csc-V7-keW"/>
+                            <constraint firstItem="cEH-ar-7Xi" firstAttribute="centerY" secondItem="Fmn-bX-ino" secondAttribute="centerY" id="GSb-oY-Aif"/>
+                            <constraint firstItem="cEH-ar-7Xi" firstAttribute="leading" secondItem="Fmn-bX-ino" secondAttribute="leading" constant="20" id="tv4-FL-HfN"/>
+                            <constraint firstAttribute="trailing" secondItem="9lU-GV-kPA" secondAttribute="trailing" constant="20" id="y8u-ct-ga4"/>
+                        </constraints>
+                    </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BwH-d1-odP" userLabel="Needs Taken View">
                         <rect key="frame" x="0.0" y="72" width="320" height="91.5"/>
                         <subviews>
@@ -52,7 +116,7 @@
                                 </constraints>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Rf-LQ-ucb" userLabel="Taken Button" customClass="RSDRoundedButton" customModule="ResearchUI">
-                                <rect key="frame" x="160" y="31" width="140" height="30"/>
+                                <rect key="frame" x="160" y="20" width="140" height="52"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="140" id="dT3-7A-2Ao"/>
                                 </constraints>
@@ -72,70 +136,6 @@
                             <constraint firstAttribute="trailing" secondItem="5Rf-LQ-ucb" secondAttribute="trailing" constant="20" id="OYR-6A-tOb"/>
                             <constraint firstAttribute="height" constant="91.5" id="YLV-l5-jW6"/>
                             <constraint firstItem="5Rf-LQ-ucb" firstAttribute="centerY" secondItem="BwH-d1-odP" secondAttribute="centerY" id="uQK-OG-0p8"/>
-                        </constraints>
-                    </view>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fmn-bX-ino" userLabel="Already Taken View">
-                        <rect key="frame" x="0.0" y="72" width="320" height="91.5"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cEH-ar-7Xi" userLabel="Check Container">
-                                <rect key="frame" x="20" y="19.5" width="160" height="52.5"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UXu-Vi-gvR" customClass="RSDCheckmarkView" customModule="ResearchUI">
-                                        <rect key="frame" x="0.0" y="12.5" width="28" height="28"/>
-                                        <color key="backgroundColor" red="0.33090239110000003" green="0.7223454118" blue="0.21358691399999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="28" id="Qql-fR-hZL"/>
-                                            <constraint firstAttribute="width" secondItem="UXu-Vi-gvR" secondAttribute="height" multiplier="1:1" id="ZTg-1Y-kcq"/>
-                                        </constraints>
-                                    </view>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9NR-dy-INI">
-                                        <rect key="frame" x="36" y="0.5" width="72.5" height="51.5"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Taken at" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NzJ-39-cT4">
-                                                <rect key="frame" x="0.0" y="0.0" width="72.5" height="21.5"/>
-                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pnw-lD-zAG" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                <rect key="frame" x="0.0" y="21.5" width="72.5" height="30"/>
-                                                <state key="normal" title="Time"/>
-                                                <connections>
-                                                    <action selector="timeTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="7Tj-S0-1BR"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <constraints>
-                                            <constraint firstItem="NzJ-39-cT4" firstAttribute="leading" secondItem="9NR-dy-INI" secondAttribute="leading" id="3PV-tT-RQS"/>
-                                            <constraint firstAttribute="trailing" secondItem="NzJ-39-cT4" secondAttribute="trailing" id="6i0-h6-8Q5"/>
-                                        </constraints>
-                                    </stackView>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="UXu-Vi-gvR" firstAttribute="leading" secondItem="cEH-ar-7Xi" secondAttribute="leading" id="2XY-Hu-w34"/>
-                                    <constraint firstAttribute="width" constant="160" id="HUA-Mb-aBG"/>
-                                    <constraint firstItem="9NR-dy-INI" firstAttribute="centerY" secondItem="cEH-ar-7Xi" secondAttribute="centerY" id="OWQ-89-GbC"/>
-                                    <constraint firstAttribute="height" constant="52.5" id="dfW-LN-3HJ"/>
-                                    <constraint firstItem="9NR-dy-INI" firstAttribute="leading" secondItem="UXu-Vi-gvR" secondAttribute="trailing" constant="8" id="p1F-GC-7yj"/>
-                                    <constraint firstItem="UXu-Vi-gvR" firstAttribute="centerY" secondItem="cEH-ar-7Xi" secondAttribute="centerY" id="p9a-qw-gd1"/>
-                                </constraints>
-                            </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9lU-GV-kPA" userLabel="Undo Button" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                <rect key="frame" x="263" y="31" width="37" height="30"/>
-                                <state key="normal" title="Undo"/>
-                                <connections>
-                                    <action selector="undoTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="UJe-Fi-ani"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="91.5" id="1z3-Xl-18B"/>
-                            <constraint firstItem="9lU-GV-kPA" firstAttribute="centerY" secondItem="Fmn-bX-ino" secondAttribute="centerY" id="Csc-V7-keW"/>
-                            <constraint firstItem="cEH-ar-7Xi" firstAttribute="centerY" secondItem="Fmn-bX-ino" secondAttribute="centerY" id="GSb-oY-Aif"/>
-                            <constraint firstItem="cEH-ar-7Xi" firstAttribute="leading" secondItem="Fmn-bX-ino" secondAttribute="leading" constant="20" id="tv4-FL-HfN"/>
-                            <constraint firstAttribute="trailing" secondItem="9lU-GV-kPA" secondAttribute="trailing" constant="20" id="y8u-ct-ga4"/>
                         </constraints>
                     </view>
                     <datePicker contentMode="scaleToFill" verticalHuggingPriority="980" verticalCompressionResistancePriority="980" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="3Hi-ub-rDv">
@@ -191,8 +191,10 @@
                 <outlet property="loggedView" destination="Fmn-bX-ino" id="Tfy-QS-CLY"/>
                 <outlet property="notLoggedTimeLabel" destination="hrm-L5-BqF" id="9xv-Z5-phi"/>
                 <outlet property="notLoggedView" destination="BwH-d1-odP" id="NJ6-gC-hOP"/>
+                <outlet property="takenButton" destination="5Rf-LQ-ucb" id="ldT-yT-lYv"/>
                 <outlet property="titleLabel" destination="tQR-rc-Cks" id="ScZ-vw-IyY"/>
                 <outlet property="titleLabelHeight" destination="nyx-le-fKo" id="YGX-NN-Vgq"/>
+                <outlet property="undoButton" destination="9lU-GV-kPA" id="xH7-dy-Zxb"/>
                 <outlet property="weekdayLabel" destination="2JQ-of-a44" id="9XJ-bQ-uzN"/>
             </connections>
             <point key="canvasLocation" x="34" y="202"/>
