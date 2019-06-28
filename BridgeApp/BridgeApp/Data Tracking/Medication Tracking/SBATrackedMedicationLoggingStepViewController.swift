@@ -61,12 +61,9 @@ open class SBATrackedMedicationLoggingStepViewController: SBAMedicationListStepV
             
             // Keep a strong reference to the label so it sticks around when removeFromSuperview is called
             let titleLabelRef = header.titleLabel!
-            header.titleLabel.removeFromSuperview() // Removes all associated constraints
-            // The RSDStepChoiceSectionHeader uses autolayout so to center the label appropriately,
-            // we need to have the label span the full width of the cell
-            header.contentView.addSubview(titleLabelRef)
-            titleLabelRef.rsd_alignToSuperview([.leading, .trailing, .top], padding: 20.0)
-            header.detailLabel.rsd_alignBelow(view: titleLabelRef, padding: 20.0)
+            if let constraints = titleLabelRef.rsd_constraint(for: .leading, relation: .equal) {
+                titleLabelRef.rsd_alignToSuperview([.trailing], padding: constraints.constant)
+            }
             
             // Style the header to match design
             let backgroundColor = self.designSystem.colorRules.backgroundPrimary

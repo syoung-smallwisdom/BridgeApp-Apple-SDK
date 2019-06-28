@@ -23,7 +23,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="baH-Jl-ac1">
-                                <rect key="frame" x="0.0" y="179.5" width="414" height="579.5"/>
+                                <rect key="frame" x="0.0" y="183" width="414" height="576"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="summary" rowHeight="112" id="vY8-j2-Ctt" customClass="DosageSummaryCell" customModule="BridgeApp" customModuleProvider="target">
@@ -121,23 +121,23 @@
                                                                 <outlet property="delegate" destination="msa-hP-lX4" id="QS4-2C-4qw"/>
                                                             </connections>
                                                         </textField>
-                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j9M-rA-mhb" customClass="RSDRadioButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="24" y="120.5" width="220" height="32"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j9M-rA-mhb" customClass="RSDRadioButton" customModule="ResearchUI">
+                                                            <rect key="frame" x="24" y="120.5" width="220" height="43"/>
                                                             <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                                             <state key="normal" title="Take this medication at any time"/>
                                                             <connections>
                                                                 <action selector="anytimeTapped:" destination="tGk-Ad-tws" eventType="touchUpInside" id="RKu-na-va1"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Apu-i0-lXF" customClass="RSDRadioButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="24" y="168.5" width="160" height="32"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Apu-i0-lXF" customClass="RSDRadioButton" customModule="ResearchUI">
+                                                            <rect key="frame" x="24" y="179.5" width="160" height="43"/>
                                                             <state key="normal" title="When do you take this?"/>
                                                             <connections>
                                                                 <action selector="useScheduleTapped:" destination="tGk-Ad-tws" eventType="touchUpInside" id="Wnj-b3-8Nl"/>
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ys5-LD-ZQ2" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="335" y="10.5" width="55" height="30"/>
+                                                            <rect key="frame" x="325" y="8" width="65" height="33.5"/>
                                                             <color key="tintColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
                                                             <state key="normal" title="Remove"/>
                                                             <connections>
@@ -156,7 +156,6 @@
                                                         <constraint firstAttribute="trailing" secondItem="ys5-LD-ZQ2" secondAttribute="trailing" constant="24" id="CVe-4K-kuF"/>
                                                         <constraint firstItem="sk4-sH-wh7" firstAttribute="leading" secondItem="clx-U5-s7C" secondAttribute="leading" constant="24" id="NL6-k1-1tU"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Apu-i0-lXF" secondAttribute="trailing" constant="24" id="Nxn-Ou-xOp"/>
-                                                        <constraint firstItem="ys5-LD-ZQ2" firstAttribute="top" secondItem="clx-U5-s7C" secondAttribute="topMargin" constant="10.5" id="W7y-GE-k6t"/>
                                                         <constraint firstAttribute="trailing" secondItem="sk4-sH-wh7" secondAttribute="trailing" constant="24" id="WEv-pK-s0R"/>
                                                         <constraint firstAttribute="trailing" secondItem="7Mq-SA-pD3" secondAttribute="trailing" id="ZNk-UC-gDI"/>
                                                         <constraint firstItem="Apu-i0-lXF" firstAttribute="top" secondItem="j9M-rA-mhb" secondAttribute="bottom" constant="16" id="ctf-vh-mHI"/>
@@ -294,7 +293,7 @@
                                 </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gnc-4o-KQe">
-                                <rect key="frame" x="0.0" y="44" width="414" height="135.5"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="139"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="db1-xk-7t7">
                                         <rect key="frame" x="12" y="8" width="50" height="50"/>
@@ -319,7 +318,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vPk-8Z-eUg" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                        <rect key="frame" x="146" y="97.5" width="122" height="30"/>
+                                        <rect key="frame" x="135" y="97.5" width="144" height="33.5"/>
                                         <state key="normal" title="Add another dose"/>
                                         <connections>
                                             <action selector="addTapped:" destination="msa-hP-lX4" eventType="touchUpInside" id="hsv-j8-ohi"/>
@@ -332,7 +331,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ev3-9n-7dt" customClass="RSDShadowGradient" customModule="ResearchUI">
-                                        <rect key="frame" x="0.0" y="135.5" width="414" height="5"/>
+                                        <rect key="frame" x="0.0" y="139" width="414" height="5"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="5" id="HpV-rU-aJ6"/>
@@ -433,7 +432,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Rf-99-7Ax" userLabel="Header">
-                                <rect key="frame" x="0.0" y="44" width="414" height="225"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="80"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xg5-tM-1Ni" userLabel="Back Button">
                                         <rect key="frame" x="16" y="16" width="50" height="50"/>
@@ -448,7 +447,7 @@
                                         </connections>
                                     </button>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" image="removeInstruction" translatesAutoresizingMaskIntoConstraints="NO" id="hky-d3-XZe">
-                                        <rect key="frame" x="32" y="32" width="350" height="161.00000000000003"/>
+                                        <rect key="frame" x="32" y="32" width="350" height="16"/>
                                         <color key="backgroundColor" red="0.50980392159999999" green="0.8980392157" blue="0.71372549019999998" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </imageView>
@@ -474,11 +473,11 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="1000" text="Are you sure you want to remove Sinemet from your current medication list?" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ssM-wY-f0I">
-                                <rect key="frame" x="32" y="317" width="350" height="86"/>
+                                <rect key="frame" x="32" y="172" width="350" height="86"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="950" text="Removing this medication will remove it from your Medications list. If you wish to re-add it, it will not be saved." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="imH-oO-xG2">
-                                <rect key="frame" x="32" y="421" width="350" height="64.5"/>
+                                <rect key="frame" x="32" y="276" width="350" height="64.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                             </label>
                         </subviews>
@@ -525,25 +524,25 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="72" estimatedRowHeight="72" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="L33-eM-YZ7">
-                                <rect key="frame" x="0.0" y="194" width="718" height="565"/>
+                                <rect key="frame" x="0.0" y="226" width="414" height="533"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="twoButton" rowHeight="72" id="1w5-Ux-06r" customClass="TwoChoicePickerCell" customModule="BridgeApp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="718" height="72"/>
+                                        <rect key="frame" x="0.0" y="28" width="414" height="72"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1w5-Ux-06r" id="oUp-wV-ebl">
-                                            <rect key="frame" x="0.0" y="0.0" width="718" height="71.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="72"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qjg-IQ-wYt" customClass="RoundedToggleButton" customModule="BridgeApp" customModuleProvider="target">
-                                                    <rect key="frame" x="29" y="10" width="321" height="51.5"/>
+                                                    <rect key="frame" x="29" y="10" width="321" height="52"/>
                                                     <state key="normal" title="Button Left"/>
                                                     <connections>
                                                         <action selector="buttonTapped:" destination="1w5-Ux-06r" eventType="touchUpInside" id="S5f-53-iNb"/>
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aVI-rr-CWd" customClass="RoundedToggleButton" customModule="BridgeApp" customModuleProvider="target">
-                                                    <rect key="frame" x="368" y="10" width="321" height="51.5"/>
+                                                    <rect key="frame" x="368" y="10" width="321" height="52"/>
                                                     <state key="normal" title="Button Right"/>
                                                     <connections>
                                                         <action selector="buttonTapped:" destination="1w5-Ux-06r" eventType="touchUpInside" id="2eU-Gq-4ql"/>
@@ -573,7 +572,7 @@
                                 </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GXm-ab-udk">
-                                <rect key="frame" x="0.0" y="44" width="718" height="150"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="182"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ozG-eV-gDb">
                                         <rect key="frame" x="12" y="8" width="50" height="50"/>
@@ -587,19 +586,19 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="On which days do you take Foo Maru Babaganoo Et tu?" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GxD-M2-o3e">
-                                        <rect key="frame" x="52" y="58" width="614" height="31.5"/>
+                                        <rect key="frame" x="52" y="58" width="310" height="63.5"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select all that apply" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kmh-WR-H1n">
-                                        <rect key="frame" x="52" y="109.5" width="614" height="20.5"/>
+                                        <rect key="frame" x="52" y="141.5" width="310" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5l3-hl-Gcx" customClass="RSDShadowGradient" customModule="ResearchUI">
-                                        <rect key="frame" x="0.0" y="145" width="718" height="5"/>
+                                        <rect key="frame" x="0.0" y="177" width="414" height="5"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="5" id="RhE-Ja-mgz"/>
@@ -628,16 +627,15 @@
                                     <constraint firstAttribute="trailing" secondItem="5l3-hl-Gcx" secondAttribute="trailing" id="gTW-2w-wxg"/>
                                     <constraint firstAttribute="bottom" secondItem="5l3-hl-Gcx" secondAttribute="bottom" id="lUX-xs-G87"/>
                                     <constraint firstItem="kmh-WR-H1n" firstAttribute="leading" secondItem="GxD-M2-o3e" secondAttribute="leading" id="nMf-2c-nDR"/>
-                                    <constraint firstAttribute="trailing" secondItem="ozG-eV-gDb" secondAttribute="trailing" constant="370" id="oUD-fH-dhv"/>
                                     <constraint firstItem="GxD-M2-o3e" firstAttribute="top" secondItem="ozG-eV-gDb" secondAttribute="bottom" id="zKI-ov-NQP"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gre-Qv-2D8" userLabel="Footer Margin">
-                                <rect key="frame" x="0.0" y="759" width="718" height="137"/>
+                                <rect key="frame" x="0.0" y="759" width="414" height="137"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nxa-y2-CDW" customClass="RSDGenericNavigationFooterView" customModule="ResearchUI">
-                                <rect key="frame" x="0.0" y="759" width="718" height="103"/>
+                                <rect key="frame" x="0.0" y="759" width="414" height="103"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="103" placeholder="YES" id="i0X-xO-XMV"/>
