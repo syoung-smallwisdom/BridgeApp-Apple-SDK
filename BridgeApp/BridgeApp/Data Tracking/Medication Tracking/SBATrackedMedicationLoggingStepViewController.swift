@@ -128,19 +128,26 @@ extension SBATrackedMedicationLoggingStepViewController: SBAMedicationLoggingCel
     }
     
     public func logTapped(cell: SBAMedicationLoggingCell) {
-        guard let source = tableData as? SBAMedicationLoggingDataSource,
-            let loggingItem = cell.loggingTableItem else {
-                return
-        }
-        source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
+        updateLogging(for: cell)
     }
     
     public func undoTapped(cell: SBAMedicationLoggingCell) {
+        updateLogging(for: cell)
+    }
+    
+    func updateLogging(for cell: SBAMedicationLoggingCell) {
         guard let source = tableData as? SBAMedicationLoggingDataSource,
             let loggingItem = cell.loggingTableItem else {
                 return
         }
-        source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
+        if loggingItem.dosage.isAnytime ?? true {
+            source.reloadLoggingDetails(for: loggingItem, at: cell.indexPath)
+            self.tableView.reloadSections([cell.indexPath.section], with: .automatic)
+        }
+        else {
+            source.updateLoggingDetails(for: loggingItem, at: cell.indexPath)
+            cell.tableItem = loggingItem
+        }
     }
 
     public func timeTapped(cell: SBAMedicationLoggingCell) {
@@ -310,14 +317,12 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     @IBAction func takenTapped() {
         guard let loggingItem = self.loggingTableItem else { return }
         loggingItem.logTimestamp()
-        self.tableItem = loggingItem
         self.delegate?.logTapped(cell: self)
     }
     
     @IBAction func undoTapped() {
         guard let loggingItem = self.loggingTableItem else { return }
         loggingItem.undo()
-        self.tableItem = loggingItem
         self.delegate?.undoTapped(cell: self)
     }
     

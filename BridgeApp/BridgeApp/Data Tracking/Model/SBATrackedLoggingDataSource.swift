@@ -126,15 +126,31 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
     @discardableResult open func updateLoggingDetails(for loggingItem: SBATrackedLoggingTableItem, at indexPath: IndexPath) -> (isSelected: Bool, reloadSection: Bool) {
         
         // Update the answers.
-        let loggedResult = buildAnswer(for: loggingItem)
-        var stepResult = self.trackingResult()
-        stepResult.updateDetails(from: loggedResult)
-        self.taskResult.appendStepHistory(with: stepResult)
+        updateStepResult(for: loggingItem, at: indexPath)
         
         // Inform delegate that answers have changed.
         delegate?.tableDataSource(self, didChangeAnswersIn: indexPath.section)
         
         return (true, false)
+    }
+    
+    /// Update and reload the logged details
+    open func reloadLoggingDetails(for loggingItem: SBATrackedLoggingTableItem, at indexPath: IndexPath) {
+        // Update the result set for this source.
+        let stepResult = updateStepResult(for: loggingItem, at: indexPath)
+        self.reloadDataSource(with: stepResult)
+        
+        // Inform delegate that answers have changed.
+        delegate?.tableDataSource(self, didChangeAnswersIn: indexPath.section)
+    }
+    
+    @discardableResult
+    func updateStepResult(for loggingItem: SBATrackedLoggingTableItem, at indexPath: IndexPath) -> SBATrackedItemsResult {
+        let loggedResult = buildAnswer(for: loggingItem)
+        var stepResult = self.trackingResult()
+        stepResult.updateDetails(from: loggedResult)
+        self.taskResult.appendStepHistory(with: stepResult)
+        return stepResult
     }
     
     /// Build the answer object appropriate to this tracked logging item.

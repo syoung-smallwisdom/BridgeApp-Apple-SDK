@@ -550,15 +550,22 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         var dosageItems = medication.dosageItems!
         var dose = dosageItems[doseIndex]
         var timestamps = dose.timestamps ?? []
-        var timestamp = (timestampIndex == nil) ? SBATimestamp() : timestamps[timestampIndex]
-        timestamp.loggedDate = loggedDate
-        timestamp.uuid = timingIdentifier
-        if (timestampIndex == nil) {
-            timestamps.append(timestamp)
+        if loggedDate == nil && (dose.isAnytime ?? false) {
+            if let removeIdx = timestampIndex {
+                timestamps.remove(at: removeIdx)
+            }
         }
         else {
-            timestamps.remove(at: timestampIndex)
-            timestamps.insert(timestamp, at: timestampIndex)
+            var timestamp = (timestampIndex == nil) ? SBATimestamp() : timestamps[timestampIndex]
+            timestamp.loggedDate = loggedDate
+            timestamp.uuid = timingIdentifier
+            if (timestampIndex == nil) {
+                timestamps.append(timestamp)
+            }
+            else {
+                timestamps.remove(at: timestampIndex)
+                timestamps.insert(timestamp, at: timestampIndex)
+            }
         }
         dose.timestamps = timestamps
         

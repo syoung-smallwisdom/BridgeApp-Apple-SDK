@@ -33,8 +33,8 @@
 
 import Foundation
 
-
-open class BoxedTextField: RSDStepTextField {
+@IBDesignable
+class BoxedTextField: RSDStepTextField {
     
     var identifier: String?
     
