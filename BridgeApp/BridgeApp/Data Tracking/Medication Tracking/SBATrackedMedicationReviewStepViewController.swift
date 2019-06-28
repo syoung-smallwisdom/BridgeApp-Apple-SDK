@@ -49,8 +49,48 @@ open class SBATrackedMedicationReviewStepViewController: SBAMedicationListStepVi
         self.didSelectModalItem(tableItem, at: IndexPath(item: 0, section: 1))
     }
     
-    /// Skip behavior should just do the same thing as "Save".
+    override open func goForward() {
+        // If saving, then check that the med result doesn't yet have reminders set. That means that this is a
+        // "first time" set-up of the medications, in which case either logging or set reminders will come next.
+        // Ask the user which to show.
+        guard let medResult = self.stepViewModel.findStepResult() as? SBAMedicationTrackingResult,
+            medResult.reminders == nil
+            else {
+                super.goForward()
+                return
+        }
+        
+        guard medResult.hasMedicationsToLog(at: Date()) else {
+            // If there are no meds to log right now then do not show logging.
+            self.assignSkipToIdentifier(SBATrackedItemsStepNavigator.StepIdentifiers.reminder.stringValue)
+            super.goForward()
+            return
+        }
+        
+        var actions: [UIAlertAction] = []
+
+        // Always add a choice to discard the results.
+        let logging = UIAlertAction(title: Localization.localizedString("MEDICATION_RECORD_TODAY_YES"), style: .default) { (_) in
+            // Default is to show logging.
+            self.assignSkipToIdentifier(SBATrackedItemsStepNavigator.StepIdentifiers.logging.stringValue)
+            super.goForward()
+        }
+        actions.append(logging)
+        
+        // Always add a choice to keep going.
+        let doneAdding = UIAlertAction(title: Localization.localizedString("MEDICATION_RECORD_TODAY_NO"), style: .cancel) { (_) in
+            // If the user does not want to log meds, then take them to reminders.
+            self.assignSkipToIdentifier(SBATrackedItemsStepNavigator.StepIdentifiers.reminder.stringValue)
+            super.goForward()
+        }
+        actions.append(doneAdding)
+        
+        self.presentAlertWithActions(title: nil, message: Localization.localizedString("MEDICATION_RECORD_TODAY_QUESTION"), preferredStyle: .actionSheet, actions: actions)
+    }
+    
+    /// Tapping the skip button should exit the task.
     override open func skipForward() {
+        self.assignSkipToIdentifier(RSDIdentifier.exit.stringValue)
         self.goForward()
     }
     

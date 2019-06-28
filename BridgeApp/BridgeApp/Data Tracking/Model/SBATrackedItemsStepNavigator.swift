@@ -44,7 +44,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     
     /// Publicly accessible coding keys for the steps used by this navigator.
     public enum StepIdentifiers : String, CodingKey, CaseIterable {
-        case introduction, selection, review, reminder, logging
+        case introduction, selection, review, logging, reminder
     }
     
     public enum RequiredStepCodingKeys : String, CodingKey {
@@ -508,9 +508,8 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
             return nil
         }
         else if nextId == .reminder, !self.doesRequireSetReminder() {
-            // If the next step is a reminder step, need to check if the reminder still needs to be shown or
-            // jump to logging if not.
-            return getLoggingStep()
+            // If the next step is a reminder step, but a reminder isn't required, then you are done.
+            return nil
         }
         else {
             // No special cases so return the step.

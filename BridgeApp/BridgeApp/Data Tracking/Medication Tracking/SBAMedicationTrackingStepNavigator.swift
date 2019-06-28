@@ -81,6 +81,8 @@ open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
 extension RSDIdentifier {
     
     public static let medicationReminders: RSDIdentifier = "medicationReminders"
+    
+    public static let logging: RSDIdentifier = "logging"
 }
 
 /// A medication item includes details for displaying a given medication.

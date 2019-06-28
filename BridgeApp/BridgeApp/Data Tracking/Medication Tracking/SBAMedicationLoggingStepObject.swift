@@ -217,6 +217,32 @@ struct MedicationTiming {
     let missedItems : [SBATrackedLoggingTableItem]
 }
 
+extension SBAMedicationTrackingResult {
+    
+    func hasMedicationsToLog(at now: Date) -> Bool {
+        for medication in self.medications {
+            if let dosageItems = medication.dosageItems {
+                for dose in dosageItems {
+                    if let timestamps = dose.timestamps {
+                        if timestamps.contains(where: { (timestamp) -> Bool in
+                            guard let time = timestamp.timeOfDay(on: now) else { return false }
+                            return time < now
+                        }){
+                            // Found a timestamp that is less than "now".
+                            return true
+                        }
+                    }
+                    else {
+                        // Found an "anytime" medication. This can be logged.
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+}
+
 extension SBAMedicationAnswer {
     
     /// Filter the medications based on what medications have *not* been marked as taken *or* are within range

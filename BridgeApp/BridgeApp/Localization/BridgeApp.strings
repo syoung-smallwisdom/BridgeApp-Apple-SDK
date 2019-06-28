@@ -97,6 +97,11 @@
 "MEDICATION_REMOVE_NO" = "No, keep dose";
 "MEDICATION_REMOVE_DOSAGE_CONFIRMATION_MESSAGE" = "Are you sure you want to remove this dose?";
 "MEDICATION_SCHEDULE_SUMMARY" = "%1$@\n%2$@";
+"MEDICATION_RECORD_TODAY_QUESTION" = "Would you like to  record a medication for today?";
+"MEDICATION_RECORD_TODAY_YES" = "Record a medication";
+"MEDICATION_RECORD_TODAY_NO" = "Not right now";
+"MEDICATION_RECORD_NONE" = "You have no medications to record right now.";
+
 
 "MORNING_PICKER_SECTION_TITLE" = "Morning";
 "AFTERNOON_PICKER_SECTION_TITLE" = "Afternoon";
