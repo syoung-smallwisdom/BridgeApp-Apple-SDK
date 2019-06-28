@@ -506,7 +506,10 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating public func updateDetails(from result: RSDResult) {
-        if let loggingResult = result as? SBATrackedLoggingCollectionResultObject {
+        if let medsResult = result as? SBAMedicationTrackingResult {
+            self.medications = medsResult.medications
+        }
+        else if let loggingResult = result as? SBATrackedLoggingResultObject {
             updateLogging(from: loggingResult)
         }
         else if result.identifier == RSDIdentifier.medicationReminders.stringValue {
@@ -514,16 +517,13 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         }
     }
     
-    mutating func updateLogging(from loggingResult: SBATrackedLoggingCollectionResultObject) {
-        loggingResult.loggingItems.forEach {
-            let loggingResult = $0
-            guard let itemIdentifier = loggingResult.itemIdentifier,
-                let timingIdentifier = loggingResult.timingIdentifier
+    mutating func updateLogging(from loggingResult: SBATrackedLoggingResultObject) {
+        guard let itemIdentifier = loggingResult.itemIdentifier,
+            let timingIdentifier = loggingResult.timingIdentifier
                 else {
                     return
             }
-            self.updateLogging(itemIdentifier: itemIdentifier, timingIdentifier: timingIdentifier, loggedDate: loggingResult.loggedDate)
-        }
+        self.updateLogging(itemIdentifier: itemIdentifier, timingIdentifier: timingIdentifier, loggedDate: loggingResult.loggedDate)
     }
     
     mutating func updateLogging(itemIdentifier: String, timingIdentifier: String, loggedDate: Date?) {
@@ -531,32 +531,51 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
             else {
                 return
         }
-        // TODO: FIXME!!! syoung 06/24/2019
+        var medication = self.medications[idx]
         
-//        // If this is a timestamp logging then add/remove timestamp.
-//        var medication = self.medications[idx]
-//        var timestamps: [SBATimestamp] = medication.timestamps ?? []
-//        timestamps.remove(where: { $0.timingIdentifier == timingIdentifier })
-//        if let loggedDate = loggedDate {
-//
-//            let newTimestamp = SBATimestamp(timingIdentifier: timingIdentifier, loggedDate: loggedDate)
-//            timestamps.append(newTimestamp)
-//        }
-//        medication.timestamps = timestamps
-//        self.medications.remove(at: idx)
-//        self.medications.insert(medication, at: idx)
+        var timestampIndex: Int!
+        guard let doseIndex = medication.dosageItems?.firstIndex(where: { (dose) -> Bool in
+            guard let tIndex = dose.timestamps?.firstIndex(where: { $0.uuid == timingIdentifier })
+                else {
+                    return false
+            }
+            timestampIndex = tIndex
+            return true
+        }) ?? medication.dosageItems?.firstIndex(where: { $0.isAnytime ?? false })
+            else {
+                assertionFailure("Couldn't find a dose to attach the logged date to.")
+                return
+        }
+        
+        var dosageItems = medication.dosageItems!
+        var dose = dosageItems[doseIndex]
+        var timestamps = dose.timestamps ?? []
+        var timestamp = (timestampIndex == nil) ? SBATimestamp() : timestamps[timestampIndex]
+        timestamp.loggedDate = loggedDate
+        timestamp.uuid = timingIdentifier
+        if (timestampIndex == nil) {
+            timestamps.append(timestamp)
+        }
+        else {
+            timestamps.remove(at: timestampIndex)
+            timestamps.insert(timestamp, at: timestampIndex)
+        }
+        dose.timestamps = timestamps
+        
+        dosageItems.remove(at: doseIndex)
+        dosageItems.insert(dose, at: doseIndex)
+        medication.dosageItems = dosageItems
+        
+        self.medications.remove(at: idx)
+        self.medications.insert(medication, at: idx)
     }
     
     mutating func updateReminders(from result: RSDResult) {
         let aResult = (result as? RSDCollectionResult)?.inputResults.first ?? result
-        self.reminders = (aResult as? RSDAnswerResult)?.value as? [Int]
+        self.reminders = (aResult as? RSDAnswerResult)?.value as? [Int] ?? []
     }
     
     public func dataScore() throws -> RSDJSONSerializable? {
-        guard identifier == RSDIdentifier.trackedItemsResult.stringValue
-            else {
-                return nil
-        }
         let dictionary = try self.rsd_jsonEncodedDictionary()
         return
             [CodingKeys.revision.stringValue : dictionary[CodingKeys.revision.stringValue],
@@ -592,7 +611,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
 /// This object includes a `timingIdentifier` that maps to either an `SBATimeRange` or an
 /// `RSDSchedule.timeOfDayString`.
 public struct SBATimestamp : Codable, RSDScheduleTime {
-    let uuid = UUID().uuidString
+    internal fileprivate(set) var uuid = UUID().uuidString
     
     private enum CodingKeys : String, CodingKey {
         case timeOfDay, loggedDate, quantity

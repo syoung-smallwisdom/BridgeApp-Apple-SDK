@@ -297,10 +297,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
             return
         }
         
-        if let removeItemResult = result as? SBARemoveTrackedItemsResultObject {
-            self.updateSelectedInMemoryResult(byRemoving: removeItemResult.items.map({ $0.identifier }))
-        }
-        else if step.identifier == self.selectionStep.identifier {
+        if step.identifier == self.selectionStep.identifier {
             let selectedIdentifiers = (result as? SBATrackedItemsResult)?.selectedIdentifiers
             self.updateSelectedInMemoryResult(to: selectedIdentifiers, with: self.items)
         }
@@ -536,10 +533,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     }
     
     private func _navigationDirection(for step: RSDStep?, result: RSDTaskResult) -> RSDStepDirection {
-        // If the tracked item was removed, we should navigate in the reverse direction.
-        if isRemoveTrackedItemResult(with: step?.identifier, result: result) {
-            return .reverse
-        }
         return .forward
     }
     
@@ -558,12 +551,5 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     /// Returns `nil`. Progress is not used by default.
     open func progress(for step: RSDStep, with result: RSDTaskResult?) -> (current: Int, total: Int, isEstimated: Bool)? {
         return nil
-    }
-    
-    fileprivate func isRemoveTrackedItemResult(with identifier: String?, result: RSDTaskResult) -> Bool {
-        if let identifierUnwrapped = identifier {
-            return (result.findResult(with: identifierUnwrapped) as? SBARemoveTrackedItemsResultObject) != nil
-        }
-        return false
     }
 }
