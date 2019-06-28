@@ -102,10 +102,9 @@ open class SBAMedicationListStepViewController: RSDTableStepViewController {
 extension SBAMedicationListStepViewController: SBAMedicationEditDetailsViewControllerDelegate {
     
     func save(_ medication: SBAMedicationAnswer, from sender: SBAMedicationEditDetailsViewController) {
-        if let dataSource = self.tableData as? SBAMedicationLoggingDataSource,
-            let item = dataSource.tableItem(for: medication) {
-            dataSource.saveMedication(medication, to: item)
-            self.tableView.reloadRows(at: [item.indexPath], with: .automatic)
+        if let dataSource = self.tableData as? SBAMedicationLoggingDataSource {
+            dataSource.saveMedication(medication)
+            self.tableView.reloadData()
         }
         else {
             assertionFailure("Data source not of expected type")

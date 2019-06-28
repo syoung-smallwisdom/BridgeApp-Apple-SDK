@@ -170,18 +170,24 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
     }
     
     /// Save changes to a medication back to the item.
-    func saveMedication(_ medication: SBAMedicationAnswer, to item: SBATrackedMedicationReviewItem) {
-        
-        // Update the data source.
-        item.medication = medication
+    @discardableResult
+    func saveMedication(_ medication: SBAMedicationAnswer)  -> (addedRows: [IndexPath], removedRows: [IndexPath]) {
+        guard let result = self.trackingResult() as? SBAMedicationTrackingResult,
+            let idx = result.medications.firstIndex(where: { $0.identifier == medication.identifier })
+            else {
+                assertionFailure("Result is not of expected type or medication is not in the current set.")
+                return ([],[])
+        }
         
         // Update the step result.
         var stepResult = self.trackingResult() as! SBAMedicationTrackingResult
         var meds = stepResult.medications
-        meds.remove(at: item.indexPath.item)
-        meds.insert(medication, at: item.indexPath.item)
+        meds.remove(at: idx)
+        meds.insert(medication, at: idx)
         stepResult.medications = meds
         self.taskResult.appendStepHistory(with: stepResult)
+        
+        return self.reloadDataSource(with: stepResult)
     }
     
     /// Get the table item for a given medication.
