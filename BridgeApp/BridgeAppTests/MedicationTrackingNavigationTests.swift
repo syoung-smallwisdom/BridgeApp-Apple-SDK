@@ -178,8 +178,19 @@ class MedicationTrackingNavigationTests: XCTestCase {
         }
         taskResult.appendStepHistory(with: reviewResult)
         
-        // Next should be reminder
-        let (remStep, _) = medTracker.step(after: reviewStep, with: &taskResult)
+        // Then logging
+        let (logStep, _) = medTracker.step(after: reviewStep, with: &taskResult)
+        XCTAssertNotNil(logStep)
+        
+        guard let loggingStep = logStep as? SBAMedicationLoggingStepObject else {
+            XCTFail("Failed to create the expected step. Exiting. \(String(describing: logStep))")
+            return
+        }
+        
+        taskResult.appendStepHistory(with: loggingStep.instantiateStepResult())
+        
+        // Then reminder
+        let (remStep, _) = medTracker.step(after: logStep, with: &taskResult)
         XCTAssertNotNil(remStep)
         
         guard let reminderStep = remStep as? SBATrackedItemRemindersStepObject else {
@@ -190,18 +201,8 @@ class MedicationTrackingNavigationTests: XCTestCase {
         
         taskResult.appendStepHistory(with: reminderStep.instantiateStepResult())
         
-        // Then logging
-        let (logStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
-        XCTAssertNotNil(logStep)
         
-        guard let loggingStep = logStep as? SBAMedicationLoggingStepObject else {
-            XCTFail("Failed to create the expected step. Exiting. \(String(describing: logStep))")
-            return
-        }
-        
-        taskResult.appendStepHistory(with: loggingStep.instantiateStepResult())
-        
-        let (exitStep, _) = medTracker.step(after: loggingStep, with: &taskResult)
+        let (exitStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
         XCTAssertNil(exitStep)
     }
     
@@ -289,20 +290,8 @@ class MedicationTrackingNavigationTests: XCTestCase {
         }
         taskResult.appendStepHistory(with: reviewResult)
         
-        // Next should be reminder
-        let (remStep, _) = medTracker.step(after: reviewStep, with: &taskResult)
-        XCTAssertNotNil(remStep)
-        
-        guard let reminderStep = remStep as? SBATrackedItemRemindersStepObject else {
-            XCTFail("Failed to return the reminderStep. Exiting. \(String(describing: remStep))")
-            return
-        }
-        XCTAssertTrue(medTracker.hasStep(after: reminderStep, with: taskResult))
-
-        taskResult.appendStepHistory(with: reminderStep.instantiateStepResult())
-
         // Then logging
-        let (logStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
+        let (logStep, _) = medTracker.step(after: reviewStep, with: &taskResult)
         XCTAssertNotNil(logStep)
         
         guard let loggingStep = logStep as? SBAMedicationLoggingStepObject else {
@@ -312,7 +301,20 @@ class MedicationTrackingNavigationTests: XCTestCase {
         
         taskResult.appendStepHistory(with: loggingStep.instantiateStepResult())
         
-        let (exitStep, _) = medTracker.step(after: loggingStep, with: &taskResult)
+        // Then reminder
+        let (remStep, _) = medTracker.step(after: logStep, with: &taskResult)
+        XCTAssertNotNil(remStep)
+        
+        guard let reminderStep = remStep as? SBATrackedItemRemindersStepObject else {
+            XCTFail("Failed to return the reminderStep. Exiting. \(String(describing: remStep))")
+            return
+        }
+        XCTAssertTrue(medTracker.hasStep(after: reminderStep, with: taskResult))
+        
+        taskResult.appendStepHistory(with: reminderStep.instantiateStepResult())
+        
+        
+        let (exitStep, _) = medTracker.step(after: reminderStep, with: &taskResult)
         XCTAssertNil(exitStep)
     }
 }
