@@ -351,7 +351,7 @@ open class SBATrackedMedicationLoggingTableItem: SBATrackedLoggingTableItem {
         self.timestamp = timestamp
         super.init(rowIndex: rowIndex, itemIdentifier: medication.identifier, timingIdentifier: timestamp.uuid, timeOfDayString: timestamp.timeOfDayString, uiHint: uiHint)
         
-        // Set the title and
+        // Set the title and the weekdays.
         self.title = String.localizedStringWithFormat("%@ %@", medication.title ?? medication.identifier, dosage.dosage ?? "")
         if let days = dosage.daysOfWeek {
             self.detail = weekdayFormatter.string(from: days)
