@@ -96,7 +96,6 @@
 		F8A7FA0822B809FA0053FF74 /* Medication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8A7FA0722B809FA0053FF74 /* Medication.storyboard */; };
 		F8A7FA0C22B814760053FF74 /* BoxedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA0B22B814760053FF74 /* BoxedTextField.swift */; };
 		F8A7FA0E22B815570053FF74 /* SBAMedicationEditDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA0D22B815570053FF74 /* SBAMedicationEditDetailsViewController.swift */; };
-		F8A7FA1222B843E50053FF74 /* RoundedToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA1122B843E50053FF74 /* RoundedToggleButton.swift */; };
 		F8A7FA1422B9B3820053FF74 /* SBADayTimePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA1322B9B3820053FF74 /* SBADayTimePickerViewController.swift */; };
 		F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */; };
 		F8B86AA520C074E800943127 /* ScheduleFilteringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B86AA420C074E800943127 /* ScheduleFilteringTests.swift */; };
@@ -253,7 +252,6 @@
 		F8A7FA0722B809FA0053FF74 /* Medication.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Medication.storyboard; sourceTree = "<group>"; };
 		F8A7FA0B22B814760053FF74 /* BoxedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxedTextField.swift; sourceTree = "<group>"; };
 		F8A7FA0D22B815570053FF74 /* SBAMedicationEditDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationEditDetailsViewController.swift; sourceTree = "<group>"; };
-		F8A7FA1122B843E50053FF74 /* RoundedToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedToggleButton.swift; sourceTree = "<group>"; };
 		F8A7FA1322B9B3820053FF74 /* SBADayTimePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBADayTimePickerViewController.swift; sourceTree = "<group>"; };
 		F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAModuleIdentifier.swift; sourceTree = "<group>"; };
 		F8B86AA420C074E800943127 /* ScheduleFilteringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFilteringTests.swift; sourceTree = "<group>"; };
@@ -621,7 +619,6 @@
 				F8A7FA1322B9B3820053FF74 /* SBADayTimePickerViewController.swift */,
 				FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */,
 				F8A7FA0B22B814760053FF74 /* BoxedTextField.swift */,
-				F8A7FA1122B843E50053FF74 /* RoundedToggleButton.swift */,
 			);
 			path = "Medication Tracking";
 			sourceTree = "<group>";
@@ -852,7 +849,6 @@
 				F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */,
 				60E84E5C20D306A9000DDCB1 /* SBAProfileItemType.swift in Sources */,
 				F8A7FA1422B9B3820053FF74 /* SBADayTimePickerViewController.swift in Sources */,
-				F8A7FA1222B843E50053FF74 /* RoundedToggleButton.swift in Sources */,
 				F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */,
 				F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */,
 				FF3A810B22C16D0000CD737D /* SBATimeRange.swift in Sources */,
