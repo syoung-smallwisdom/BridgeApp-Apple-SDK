@@ -180,7 +180,8 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
         return UINib(nibName: nibName, bundle: bundle)
     }
     
-    @IBOutlet open var actionButton: UIButton!
+    @IBOutlet open var editButton: UIButton!
+    @IBOutlet weak var addDetailsButton: RSDRoundedButton!
     
     override open var tableItem: RSDTableItem! {
         didSet {
@@ -189,10 +190,14 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
                     return
             }
             
-            self.titleLabel?.text = medItem.medication.identifier
-            if medItem.medication.hasRequiredValues {
-                self.actionButton.setTitle(Localization.localizedString("MEDICATION_EDIT_DETAILS"), for: .normal)
-                
+            self.titleLabel?.text = medItem.medication.title ?? medItem.medication.identifier
+            self.editButton.setTitle(Localization.localizedString("MEDICATION_EDIT_DETAILS"), for: .normal)
+            self.addDetailsButton.setTitle(Localization.localizedString("MEDICATION_ADD_DETAILS"), for: .normal)
+            
+            let hasDetails = medItem.medication.hasRequiredValues
+            self.editButton.isHidden = !hasDetails
+            self.addDetailsButton.isHidden = hasDetails
+            if hasDetails {
                 let doseCount = medItem.medication.dosageItems?.count ?? 0
                 let formatString : String = NSLocalizedString("MEDICATION_DOSES",
                                                               tableName: "BridgeApp",
@@ -201,7 +206,6 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
                                                               comment: "Number of doses of medication")
                 self.detailLabel?.text = String.localizedStringWithFormat(formatString, doseCount)
             } else {
-                self.actionButton.setTitle(Localization.localizedString("MEDICATION_ADD_DETAILS"), for: .normal)
                 self.detailLabel?.text = nil
             }
         }

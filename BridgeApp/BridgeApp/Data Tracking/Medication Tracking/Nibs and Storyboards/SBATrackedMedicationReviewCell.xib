@@ -20,17 +20,17 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" text="Exercise" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tQR-rc-Cks">
-                        <rect key="frame" x="16" y="101" width="203" height="24"/>
+                        <rect key="frame" x="16" y="101" width="248" height="24"/>
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="900" horizontalCompressionResistancePriority="900" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xJu-Gz-sXN" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                        <rect key="frame" x="227" y="98" width="77" height="30"/>
-                        <state key="normal" title="Add details"/>
+                        <rect key="frame" x="272" y="96" width="32" height="33.5"/>
+                        <state key="normal" title="Edit"/>
                     </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" verticalCompressionResistancePriority="749" text="Exercise" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0mj-TB-jvp">
-                        <rect key="frame" x="16" y="125" width="203" height="19.5"/>
+                        <rect key="frame" x="16" y="125" width="248" height="19.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
@@ -42,17 +42,27 @@
                             <constraint firstAttribute="height" constant="1" id="m0c-iW-9iD"/>
                         </constraints>
                     </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tgP-9f-ro4" customClass="RSDRoundedButton" customModule="ResearchUI">
+                        <rect key="frame" x="274" y="87" width="30" height="52"/>
+                        <state key="normal" title="Add details"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="isSecondaryButton" value="NO"/>
+                        </userDefinedRuntimeAttributes>
+                    </button>
                 </subviews>
                 <color key="backgroundColor" red="0.9900637747553046" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                 <constraints>
+                    <constraint firstItem="tgP-9f-ro4" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="1qr-Pq-myd"/>
                     <constraint firstItem="tQR-rc-Cks" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" constant="24" id="42T-Gp-SSN"/>
                     <constraint firstAttribute="trailing" secondItem="HVl-8W-XGS" secondAttribute="trailing" id="5wo-pv-iNf"/>
                     <constraint firstItem="0mj-TB-jvp" firstAttribute="top" secondItem="tQR-rc-Cks" secondAttribute="bottom" id="65L-z0-aM7"/>
                     <constraint firstAttribute="bottom" secondItem="HVl-8W-XGS" secondAttribute="bottom" constant="0.5" id="EOL-gd-no8"/>
+                    <constraint firstItem="tgP-9f-ro4" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="tQR-rc-Cks" secondAttribute="trailing" constant="10" id="T4z-Va-UVI"/>
                     <constraint firstItem="HVl-8W-XGS" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="U9O-Ke-Ai2"/>
                     <constraint firstItem="xJu-Gz-sXN" firstAttribute="leading" secondItem="tQR-rc-Cks" secondAttribute="trailing" constant="8" id="X7n-Mw-UHd"/>
                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="0mj-TB-jvp" secondAttribute="bottom" constant="24.5" id="XAT-gj-DVp"/>
                     <constraint firstItem="0mj-TB-jvp" firstAttribute="leading" secondItem="tQR-rc-Cks" secondAttribute="leading" id="f1S-ZT-bTx"/>
+                    <constraint firstItem="tgP-9f-ro4" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="gMc-Ye-9Df"/>
                     <constraint firstAttribute="trailing" secondItem="xJu-Gz-sXN" secondAttribute="trailing" constant="16" id="hcr-it-V3d"/>
                     <constraint firstItem="xJu-Gz-sXN" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="jQs-D8-RXY"/>
                     <constraint firstItem="0mj-TB-jvp" firstAttribute="trailing" secondItem="tQR-rc-Cks" secondAttribute="trailing" id="qac-TJ-WLy"/>
@@ -63,8 +73,9 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
             <connections>
-                <outlet property="actionButton" destination="xJu-Gz-sXN" id="QGb-kH-rDx"/>
+                <outlet property="addDetailsButton" destination="tgP-9f-ro4" id="WUA-O6-ycp"/>
                 <outlet property="detailLabel" destination="0mj-TB-jvp" id="GTs-Yj-f0n"/>
+                <outlet property="editButton" destination="xJu-Gz-sXN" id="QGb-kH-rDx"/>
                 <outlet property="separatorLine" destination="HVl-8W-XGS" id="U4i-SY-edF"/>
                 <outlet property="titleLabel" destination="tQR-rc-Cks" id="KCG-hu-btV"/>
             </connections>
