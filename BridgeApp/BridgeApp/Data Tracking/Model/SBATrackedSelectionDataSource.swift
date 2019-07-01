@@ -50,10 +50,17 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
         let dataType: RSDFormDataType = .collection(.multipleChoice, .string)
         var trackedItems = step.items
         var trackedAnswers = initialResult?.selectedAnswers ?? []
+        let trackedAnswerIdentifiers = trackedAnswers.map { $0.identifier }
         var tableSections: [RSDTableSection] = []
         var itemGroups: [RSDChoicePickerTableItemGroup] = []
         
-        func appendSection(choices: [SBATrackedItem], section: SBATrackedSection?) {
+        func appendSection(items: [SBATrackedItem], section: SBATrackedSection?) {
+            
+            var choices = items
+            if !step.includePreviouslySelected {
+                choices.remove(where: { trackedAnswerIdentifiers.contains($0.identifier) })
+            }
+            
             let identifier = section?.identifier ?? step.identifier
             let idx = tableSections.count
             let field = RSDChoiceInputFieldObject(identifier: identifier, choices: choices, dataType: dataType, uiHint: .list)
@@ -72,19 +79,21 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
             let choiceIdentifiers = choices.map { $0.identifier }
             let answers = trackedAnswers.remove(where: { choiceIdentifiers.contains($0.identifier) }).map { $0.identifier }
             let selectableItems = group.items as! [RSDChoiceTableItem]
-            selectableItems.forEach {
-                $0.selected = answers.contains(($0.choice as! SBATrackedItem).identifier)
+            if step.includePreviouslySelected {
+                selectableItems.forEach {
+                    $0.selected = answers.contains(($0.choice as! SBATrackedItem).identifier)
+                }
             }
             try! group.setAnswer(answers)
         }
         
-        // Look through the sections first for a mapped item
+        // Look through the sections first for a mapped item.
         sectionItems.forEach { (section) in
             let choices = trackedItems.remove(where: { $0.sectionIdentifier == section.identifier })
-            appendSection(choices: choices, section: section)
+            appendSection(items: choices, section: section)
         }
         
-        // Look through the items for a sectionIdentifier without a matching section
+        // Look through the items for a sectionIdentifier without a matching section.
         var otherSections: [String] = []
         trackedItems.forEach { (item) in
             if let sectionIdentifier = item.sectionIdentifier, !otherSections.contains(sectionIdentifier) {
@@ -94,16 +103,18 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
         otherSections.forEach { (sectionIdentifier) in
             let choices = trackedItems.remove(where: { $0.sectionIdentifier == sectionIdentifier })
             let section = SBATrackedSectionObject(identifier: sectionIdentifier)
-            appendSection(choices: choices, section: section)
+            appendSection(items: choices, section: section)
         }
         
-        // Look for answers and items without a matching section and add those last
-        let otherItems: [SBATrackedItem] = trackedAnswers.map {
-            return ($0 as? SBATrackedItem) ?? RSDIdentifier(rawValue: $0.identifier)
-        }
-        trackedItems.append(contentsOf: otherItems)
-        if trackedItems.count > 0 {
-            appendSection(choices: trackedItems, section: nil)
+        // Look for answers and items without a matching section and add those last.
+        if step.includePreviouslySelected {
+            let otherItems: [SBATrackedItem] = trackedAnswers.map {
+                return ($0 as? SBATrackedItem) ?? RSDIdentifier(rawValue: $0.identifier)
+            }
+            trackedItems.append(contentsOf: otherItems)
+            if trackedItems.count > 0 {
+                appendSection(items: trackedItems, section: nil)
+            }
         }
 
         return (tableSections, itemGroups)
@@ -126,7 +137,11 @@ open class SBATrackedSelectionDataSource : SBATrackingDataSource {
         // update selection for this group
         let ret = try itemGroup.select(choiceItem, indexPath: indexPath)
         let choiceGroups = self.itemGroups.filter { $0 is RSDChoicePickerTableItemGroup } as! [RSDChoicePickerTableItemGroup]
-        let selectedIdentifiers = choiceGroups.compactMap({ $0.answer as? [String] }).flatMap{$0}
+        var selectedIdentifiers = choiceGroups.compactMap({ $0.answer as? [String] }).flatMap{$0}
+        if let include = (self.step as? SBATrackedItemsStep)?.includePreviouslySelected, !include,
+            let previousAnswers = initialResult?.selectedAnswers {
+            selectedIdentifiers.append(contentsOf: previousAnswers.map { $0.identifier })
+        }
         let items = (self.step as? SBATrackedItemsStep)?.items ?? []
         
         // Update the answers

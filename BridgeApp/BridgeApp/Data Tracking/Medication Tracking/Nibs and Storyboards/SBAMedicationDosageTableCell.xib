@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_0" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="366" id="KGk-i7-Jjw" customClass="SBAMedicationDosageTableCell" customModule="BridgeApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="366"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="365.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fcr-0L-gLf">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="118"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dosage" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AM3-lC-9wA">
+                                <rect key="frame" x="28" y="16" width="58.5" height="19.5"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aji-mF-Mkg" userLabel="Schedule Line Separator">
+                                <rect key="frame" x="0.0" y="37.5" width="320" height="1"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="1" id="iWL-79-Rpe"/>
+                                </constraints>
+                            </view>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" placeholder="  e.g.: 10/100 mg" textAlignment="natural" minimumFontSize="17" background="textfield" translatesAutoresizingMaskIntoConstraints="NO" id="hrj-XE-Njp" customClass="TrackedTextField" customModule="BridgeApp" customModuleProvider="target">
+                                <rect key="frame" x="24" y="54.5" width="272" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="b1y-Wn-75f"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="hrj-XE-Njp" secondAttribute="bottom" constant="13.5" id="1IN-T6-eWy"/>
+                            <constraint firstAttribute="trailing" secondItem="hrj-XE-Njp" secondAttribute="trailing" constant="24" id="3bq-O2-3fe"/>
+                            <constraint firstItem="hrj-XE-Njp" firstAttribute="top" secondItem="aji-mF-Mkg" secondAttribute="bottom" constant="16" id="9R2-6m-Fdp"/>
+                            <constraint firstItem="AM3-lC-9wA" firstAttribute="top" secondItem="fcr-0L-gLf" secondAttribute="top" constant="16" id="A5I-fi-8kd"/>
+                            <constraint firstItem="AM3-lC-9wA" firstAttribute="leading" secondItem="fcr-0L-gLf" secondAttribute="leading" constant="28" id="adm-aE-m35"/>
+                            <constraint firstItem="aji-mF-Mkg" firstAttribute="leading" secondItem="fcr-0L-gLf" secondAttribute="leading" id="cL0-lQ-DoS"/>
+                            <constraint firstAttribute="trailing" secondItem="aji-mF-Mkg" secondAttribute="trailing" id="n9t-B0-6vg"/>
+                            <constraint firstItem="hrj-XE-Njp" firstAttribute="leading" secondItem="fcr-0L-gLf" secondAttribute="leading" constant="24" id="nMO-Nu-ZAf"/>
+                            <constraint firstItem="aji-mF-Mkg" firstAttribute="top" secondItem="AM3-lC-9wA" secondAttribute="bottom" constant="2" id="qDC-z9-ZVR"/>
+                        </constraints>
+                    </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u5A-sr-gwh" customClass="RSDRadioButton" customModule="ResearchUI">
+                        <rect key="frame" x="26" y="126" width="268" height="43"/>
+                        <state key="normal" title="Take this medication at any time"/>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RaT-5U-5pY" customClass="RSDRadioButton" customModule="ResearchUI">
+                        <rect key="frame" x="26" y="174" width="268" height="32"/>
+                        <state key="normal" title="When do you take this?"/>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailingMargin" secondItem="u5A-sr-gwh" secondAttribute="trailing" constant="10" id="ANX-Ee-ii7"/>
+                    <constraint firstItem="u5A-sr-gwh" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="10" id="R2c-We-7MI"/>
+                    <constraint firstItem="fcr-0L-gLf" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Tag-wS-3GT"/>
+                    <constraint firstItem="RaT-5U-5pY" firstAttribute="leading" secondItem="u5A-sr-gwh" secondAttribute="leading" id="Vpe-oJ-H3S"/>
+                    <constraint firstItem="RaT-5U-5pY" firstAttribute="trailing" secondItem="u5A-sr-gwh" secondAttribute="trailing" id="dz6-Kg-ixI"/>
+                    <constraint firstItem="RaT-5U-5pY" firstAttribute="top" secondItem="u5A-sr-gwh" secondAttribute="bottom" constant="5" id="ksJ-5q-ECJ"/>
+                    <constraint firstAttribute="trailing" secondItem="fcr-0L-gLf" secondAttribute="trailing" id="mu2-1f-cC1"/>
+                    <constraint firstItem="u5A-sr-gwh" firstAttribute="top" secondItem="fcr-0L-gLf" secondAttribute="bottom" constant="8" id="sPT-oz-ZK5"/>
+                    <constraint firstItem="fcr-0L-gLf" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="v5Y-Al-4dp"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <point key="canvasLocation" x="34" y="-5"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="textfield" width="324" height="50"/>
+    </resources>
+</document>

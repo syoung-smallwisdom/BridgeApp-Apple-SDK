@@ -43,10 +43,6 @@ public protocol SBATrackedItem : RSDChoice, RSDComparable {
     /// An optional identifier that can be used to group the tracked items by section.
     var sectionIdentifier: String? { get }
     
-    /// An optional identifier that can be used to map a tracked item to a mutable step that can be used
-    /// to input additional details about the tracked item.
-    var addDetailsIdentifier: String? { get }
-    
     /// Localized text to display as the full descriptor.
     var title: String? { get }
     
@@ -182,6 +178,9 @@ public protocol SBATrackedItemsStep : class, RSDStep {
     
     /// The section items for mapping each medication.
     var sections: [SBATrackedSection]? { get set }
+    
+    /// Should the previously selected items be included in the selection table?
+    var includePreviouslySelected: Bool { get }
 }
 
 extension SBATrackedItemsStep {
@@ -190,11 +189,4 @@ extension SBATrackedItemsStep {
     public var hasRequiredValues: Bool {
         return self.result?.hasRequiredValues ?? false
     }
-}
-
-/// The tracked item detail step is used to add additional details to the tracked item.
-public protocol SBATrackedItemDetailsStep : RSDStep {
-    
-    /// Create a copy of the step using this step as a template for the given tracked item.
-    func copy(from trackedItem: SBATrackedItem, with previousAnswer: SBATrackedItemAnswer?) -> RSDStep?
 }

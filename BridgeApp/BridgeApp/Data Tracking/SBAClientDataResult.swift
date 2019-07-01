@@ -33,34 +33,6 @@
 
 import Foundation
 
-/// An `SBAClientDataResult` is an archivable result that can also save a clientData scoring object on
-/// an associated `SBBScheduledActivity` or `SBBStudyParticipant` object.
-///
-/// - Deprecated. Use `RSDScoringResult` directly instead
-@available(*, deprecated)
-public protocol SBAClientDataResult : RSDScoringResult {
-    
-    /// Build the client data object appropriate to this result.
-    func clientData() throws -> SBBJSONValue?
-}
-
-// TODO: syoung 05/07/2019 Remove once `SBAClientDataResult` is marked as unavailable.
-public extension SBAClientDataResult {
-    
-    func dataScore() throws -> RSDJSONSerializable? {
-        guard let data = try self.clientData() else { return nil }
-        if let result = data as? RSDJSONSerializable {
-            return result
-        }
-        else if let result = data as? RSDJSONValue {
-            return result.jsonObject()
-        }
-        else {
-            throw RSDValidationError.invalidType("Cannot convert \(data) to a `RSDJSONSerializable` object.")
-        }
-    }
-}
-
 public extension RSDJSONSerializable {
     func toClientData() -> SBBJSONValue {
         guard let data = self as? SBBJSONValue else {

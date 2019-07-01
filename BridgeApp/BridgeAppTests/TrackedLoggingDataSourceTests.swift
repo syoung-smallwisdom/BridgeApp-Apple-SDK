@@ -153,7 +153,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         NSLocale.setCurrentTest(Locale(identifier: "en_US"))
         
         guard let (source, parentModel) = buildDataSource(),
-            let dataSource = source as? SBATrackingReviewDataSource
+            let dataSource = source as? SBATrackedLoggingDataSource
             else {
             XCTFail("Failed to instantiate the data source. Exiting.")
             return
@@ -170,7 +170,7 @@ class TrackedLoggingDataSourceTests: XCTestCase {
         XCTAssertNotNil(parentModel)
     }
     
-    func addMore(_ dataSource: SBATrackingReviewDataSource, _ initialIdentifiers: Set<String>, _ addIdentifiers: Set<String>, _ removeIdentifiers: Set<String>, _ expectedIdentifiers: Set<String>, _ previouslyLogged: [String], _ expectedAdded: Set<Int>, _ expectedRemoved: Set<Int>) {
+    func addMore(_ dataSource: SBATrackedLoggingDataSource, _ initialIdentifiers: Set<String>, _ addIdentifiers: Set<String>, _ removeIdentifiers: Set<String>, _ expectedIdentifiers: Set<String>, _ previouslyLogged: [String], _ expectedAdded: Set<Int>, _ expectedRemoved: Set<Int>) {
 
         // Then edit the selection state
         let indexPath = IndexPath(row: 0, section: 1)

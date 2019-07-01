@@ -112,9 +112,6 @@ extension RSDStepType {
     /// Defaults to creating a `SBATrackedSelectionStepObject`.
     public static let selection: RSDStepType = "selection"
     
-    /// Defaults to creating a `SBARemoveTrackedItemStepObject`.
-    public static let removeTrackedItem: RSDStepType = "removeTrackedItem"
-    
     /// Defaults to creating a `SBASymptomLoggingStepObject`.
     public static let symptomLogging: RSDStepType = "symptomLogging"
     
@@ -128,6 +125,8 @@ extension RSDStepType {
 extension RSDResultType {
     
     public static let medication: RSDResultType = "medication"
+    
+    public static let medicationDetails: RSDResultType = "medicationDetails"
 }
 
 open class SBAFactory : RSDFactory {
@@ -193,12 +192,8 @@ open class SBAFactory : RSDFactory {
             return try SBATrackedItemsLoggingStepObject(from: decoder)
         case .symptomLogging:
             return try SBASymptomLoggingStepObject(from: decoder)
-        case .removeTrackedItem:
-            return try SBARemoveTrackedItemStepObject(from: decoder)
         case .medicationReminders:
             return try SBATrackedItemRemindersStepObject(from: decoder)
-        case .medicationDetails:
-            return try SBATrackedMedicationDetailStepObject(from: decoder)
         case .taskInfo:
             if let taskInfo = try? SBAActivityInfoObject(from: decoder) {
                 return RSDTaskInfoStepObject(with: taskInfo)
@@ -234,5 +229,4 @@ open class SBAFactory : RSDFactory {
             throw DecodingError.typeMismatch(SBAProfileDataSourceType.self, context)
         }
     }
-
 }

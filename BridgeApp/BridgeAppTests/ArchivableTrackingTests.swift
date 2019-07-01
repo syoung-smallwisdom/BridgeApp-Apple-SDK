@@ -212,11 +212,15 @@ class ArchivableTrackingTests: XCTestCase {
         let identifier = RSDIdentifier.trackedItemsResult.identifier
         var result = SBAMedicationTrackingResult(identifier: identifier)
         var medA3 = SBAMedicationAnswer(identifier: "medA3")
-        medA3.dosage = "1 ml"
-        medA3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "08:00", daysOfWeek: [.monday, .wednesday, .friday])]
+        medA3.dosageItems = [ SBADosage(dosage: "1 ml",
+                                        daysOfWeek: [.monday, .wednesday, .friday],
+                                        timestamps: [SBATimestamp(timeOfDay: "08:00", loggedDate: nil)],
+                                        isAnytime: false) ]
         var medC3 = SBAMedicationAnswer(identifier: "medC3")
-        medC3.dosage = "3 mg"
-        medC3.scheduleItems = [RSDWeeklyScheduleObject(timeOfDayString: "20:00", daysOfWeek: [.sunday, .thursday])]
+        medC3.dosageItems = [ SBADosage(dosage: "3 mg",
+                                        daysOfWeek: [.sunday, .thursday],
+                                        timestamps: [SBATimestamp(timeOfDay: "20:00", loggedDate: nil)],
+                                        isAnytime: false) ]
         result.reminders = [45, 60]
         result.medications = [medA3, medC3]
         
@@ -227,16 +231,19 @@ class ArchivableTrackingTests: XCTestCase {
                 XCTAssertEqual(items.count, 2)
                 if let item = items.first {
                     XCTAssertEqual(item["identifier"] as? String, "medA3")
-                    XCTAssertEqual(item["dosage"] as? String, "1 ml")
-                    if let schedules = item["scheduleItems"] as? [[String : Any]],
-                        let schedule = schedules.first {
-                        XCTAssertEqual(schedules.count, 1)
-                        XCTAssertEqual(schedule["timeOfDay"] as? String, "08:00")
-                        if let daysOfWeek = schedule["daysOfWeek"] as? [Int] {
+                    if let dosageItems = item["dosageItems"] as? [[String : Any]],
+                        let dosageItem = dosageItems.first {
+                        XCTAssertEqual(dosageItem["dosage"] as? String, "1 ml")
+                        if let daysOfWeek = dosageItem["daysOfWeek"] as? [Int] {
                             XCTAssertEqual(Set(daysOfWeek), [6,4,2])
                         }
                         else {
                             XCTFail("Failed to encode `daysOfWeek`.")
+                        }
+                        if let timestamps = dosageItem["timestamps"] as? [[String : Any]],
+                            let timestamp = timestamps.first {
+                            XCTAssertEqual(timestamps.count, 1)
+                            XCTAssertEqual(timestamp["timeOfDay"] as? String, "08:00")
                         }
                     }
                     else {
@@ -245,7 +252,6 @@ class ArchivableTrackingTests: XCTestCase {
                 }
                 if let item = items.last {
                     XCTAssertEqual(item["identifier"] as? String, "medC3")
-                    XCTAssertEqual(item["dosage"] as? String, "3 mg")
                 }
             } else {
                 XCTFail("Client data 'items' missing or unexpected type. \(String(describing: clientData))")
@@ -263,26 +269,29 @@ class ArchivableTrackingTests: XCTestCase {
         }
     }
     
-    func testMedicationResult_UpdateFromClientData_NoItems() {
+    func testMedicationResult_UpdateFromClientData() {
         let clientData: [String : Any] = [
+            "revision": 2,
             "items": [
             [
-                "dosage" : "1 ml",
+                
                 "identifier" : "medA3",
-                "scheduleItems" : [
+                "dosageItems" : [
                     [
+                        "dosage" : "1 ml",
                         "daysOfWeek" : [ 6, 4, 2 ],
-                        "timeOfDay" : "08:00"
+                        "timestamps" : [[ "timeOfDay" : "08:00" ]]
                     ]
                 ]
             ],
             [
-                "dosage" : "3 mg",
+                
                 "identifier" : "medC3",
-                "scheduleItems" : [
+                "dosageItems" : [
                         [
+                            "dosage" : "3 mg",
                             "daysOfWeek" : [ 1, 5 ],
-                            "timeOfDay" : "20:00"
+                            "timestamps" : [[ "timeOfDay" : "20:00" ]]
                         ]
                     ]
             ]],
@@ -305,10 +314,10 @@ class ArchivableTrackingTests: XCTestCase {
             }
 
             XCTAssertEqual(firstItem.identifier, "medA3")
-            XCTAssertEqual(firstItem.dosage, "1 ml")
+            XCTAssertEqual(firstItem.dosageItems?.first?.dosage, "1 ml")
 
             XCTAssertEqual(lastItem.identifier, "medC3")
-            XCTAssertEqual(lastItem.dosage, "3 mg")
+            XCTAssertEqual(lastItem.dosageItems?.first?.dosage, "3 mg")
 
             XCTAssertEqual(result.reminders?.count, 1)
             XCTAssertEqual(result.reminders?.first, 45)

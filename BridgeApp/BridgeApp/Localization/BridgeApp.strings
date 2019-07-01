@@ -72,7 +72,41 @@
 "MEDICATION_LOGGING_TIME_EDIT_%@" = "%@ - Edit";
 "MEDICATION_VIEW_LIST" = "View medication list";
 "MEDICATION_REMOVE_TEXT" = "Removing this medication will remove it from your Medications list. If you wish to re-add it, it will not be saved.";
+"MEDICATION_ADD_DETAILS" = "Add details";
+"MEDICATION_EDIT_DETAILS" = "Edit details";
+"MEDICATION_ADD_BUTTON" = "Add a medication";
+"MEDICATION_ADD_DOSE_BUTTON" = "Add another dose";
+"OTHER_SECTION_TITLE" = "Other";
+"MEDICATION_SELECTION_TITLE" = "What medications are you taking?";
+"MEDICATION_SELECTION_DETAIL" = "Select all that apply";
+"MEDICATION_ADD_DETAILS_TITLE" = "Add medication details to start tracking your medications";
+"MEDICATION_ADD_DETAILS_DETAIL" = "Select to add your medication dosing information and schedule.";
+"MEDICATION_ADD_MORE_BUTTON" = "＋ Add medications";
+"MEDICATION_DOSAGE_PROMPT" = "Dosage";
+"MEDICATION_DOSAGE_PLACEHOLDER" = "e.g. 10/100 mg";    // Placeholder text for medication dosage.
+"MEDICATION_DAYS_OF_WEEK_TITLE_%1$@_at_%2$@" = "Which days do you take %1$@ at %2$@?"; // ex. "Advil at 7:00 AM"
+"MEDICATION_REVIEW_TITLE" = "Medication list";
+"MEDICATION_REVIEW_SKIP" = "I'll add details later";
+"SCHEDULING_SELECTION_NO_TIMES" = "Select Time(s)";
+"SCHEDULING_SELECTION_NO_DAYS" = "Select Day(s)";
+"MEDICATION_TAKE_ANYTIME" = "Take this medication at any time";
+"MEDICATION_TAKE_USING_SCHEDULE" = "When do you take this?";
+"MEDICATION_TIME_PICKER_TEXT" = "At what times do you take %@?";
+"MEDICATION_DAY_PICKER_TEXT" = "On which days do you take %@?";
+"MEDICATION_REMOVE_YES" = "Yes, remove dose";
+"MEDICATION_REMOVE_NO" = "No, keep dose";
+"MEDICATION_REMOVE_DOSAGE_CONFIRMATION_MESSAGE" = "Are you sure you want to remove this dose?";
+"MEDICATION_SCHEDULE_SUMMARY" = "%1$@\n%2$@";
+"MEDICATION_RECORD_TODAY_QUESTION" = "Would you like to  record a medication for today?";
+"MEDICATION_RECORD_TODAY_YES" = "Record a medication";
+"MEDICATION_RECORD_TODAY_NO" = "Not right now";
+"MEDICATION_RECORD_NONE" = "You have no medications to record right now.";
 
+
+"MORNING_PICKER_SECTION_TITLE" = "Morning";
+"AFTERNOON_PICKER_SECTION_TITLE" = "Afternoon";
+"EVENING_PICKER_SECTION_TITLE" = "Evening";
+"NIGHT_PICKER_SECTION_TITLE" = "Night";
 
 /* Failure messages */
 "NETWORK_FAILURE_TITLE" = "Could Not Complete"; // Title for a step or alert indicating a network failure
