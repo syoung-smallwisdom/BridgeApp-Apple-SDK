@@ -20,17 +20,17 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" text="Exercise" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tQR-rc-Cks">
-                        <rect key="frame" x="16" y="101" width="248" height="24"/>
+                        <rect key="frame" x="16" y="101" width="158" height="24"/>
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="900" horizontalCompressionResistancePriority="900" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xJu-Gz-sXN" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                        <rect key="frame" x="272" y="96" width="32" height="33.5"/>
+                        <rect key="frame" x="182" y="98" width="122" height="30"/>
                         <state key="normal" title="Edit"/>
                     </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="500" verticalCompressionResistancePriority="749" text="Exercise" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0mj-TB-jvp">
-                        <rect key="frame" x="16" y="125" width="248" height="19.5"/>
+                        <rect key="frame" x="16" y="125" width="158" height="19.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
@@ -42,8 +42,11 @@
                             <constraint firstAttribute="height" constant="1" id="m0c-iW-9iD"/>
                         </constraints>
                     </view>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tgP-9f-ro4" customClass="RSDRoundedButton" customModule="ResearchUI">
-                        <rect key="frame" x="274" y="87" width="30" height="52"/>
+                    <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="900" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tgP-9f-ro4" customClass="RSDRoundedButton" customModule="ResearchUI">
+                        <rect key="frame" x="184" y="96" width="120" height="34"/>
+                        <constraints>
+                            <constraint firstAttribute="width" priority="950" constant="120" id="yi2-ZP-6T8"/>
+                        </constraints>
                         <state key="normal" title="Add details"/>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="boolean" keyPath="isSecondaryButton" value="NO"/>
