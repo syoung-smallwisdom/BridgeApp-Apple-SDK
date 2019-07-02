@@ -570,7 +570,7 @@ public struct SBAResourceProfileTableItem: SBAProfileTableItem, Decodable, RSDRe
 /// A profile table item that, when selected, segues to another profile table view.
 public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
-        case title, detail, inCohorts, notInCohorts, _icon = "icon", _profileDataSource = "profileDataSource"
+        case title, detail, inCohorts, notInCohorts, _iconName = "icon", _profileDataSourceIdentifier = "profileDataSource"
     }
 
     // MARK: SBAProfileTableItem
@@ -600,22 +600,22 @@ public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
     // MARK: Profile View Profile Table Item
 
     /// The image (specified by name in json) to use as the icon for this profile table item.
-    private var _icon: String?
+    private var _iconName: String?
     public var icon: UIImage? {
         get {
-            guard let imageName = _icon else { return nil }
+            guard let imageName = _iconName else { return nil }
             return UIImage(named: imageName)
         }
     }
     
     /// The profile data source for the profile table view to which this item will segue when selected.
-    private var _profileDataSource: String
+    private var _profileDataSourceIdentifier: String
     public var profileDataSource: SBAProfileDataSource {
         get {
-            return SBABridgeConfiguration.shared.profileDataSource(for: self._profileDataSource)!
+            return SBABridgeConfiguration.shared.profileDataSource(for: self._profileDataSourceIdentifier)!
         }
         set {
-            self._profileDataSource = newValue.identifier
+            self._profileDataSourceIdentifier = newValue.identifier
         }
     }
 }
