@@ -131,8 +131,6 @@ public protocol SBAProfileManager {
 
 /// Concrete implementation of the SBAProfileManager protocol.
 open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decodable {
-    static let groupIdentifier: String = "Profile Activity Group"
-    
     static let defaultIdentifier: String = "ProfileManager"
     
     /// Return the default instance of the Profile Manager from the shared Bridge configuration.
@@ -201,9 +199,9 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
             return RSDIdentifier(rawValue: $0.sourceKey)
         }
         
-        let queries = reportIdentifiers.map({
+        let queries = Array(Set(reportIdentifiers.map({
             return ReportQuery(reportKey: $0, queryType: .mostRecent, dateRange: nil)
-        })
+        })))
         
         return queries
     }
@@ -268,7 +266,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     
     override public init() {
         super.init()
-        self.identifier = ""
+        self.identifier = SBAProfileManagerObject.defaultIdentifier
     }
 
     public required init(from decoder: Decoder) throws {
@@ -309,7 +307,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
             
             guard schemas.count > 0 else { return }
             
-            let profileActivityGroup = SBAActivityGroupObject(identifier: SBAProfileManagerObject.groupIdentifier, title: nil, journeyTitle: nil, image: nil, activityIdentifiers: schemas, notificationIdentifier: nil, schedulePlanGuid: nil, activityGuidMap: nil)
+            let profileActivityGroup = SBAActivityGroupObject(identifier: self.identifier, title: nil, journeyTitle: nil, image: nil, activityIdentifiers: schemas, notificationIdentifier: nil, schedulePlanGuid: nil, activityGuidMap: nil)
             self.activityGroup = profileActivityGroup
             SBABridgeConfiguration.shared.addMapping(with: profileActivityGroup)
         }

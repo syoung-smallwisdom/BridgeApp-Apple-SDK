@@ -58,7 +58,7 @@ public struct SBAProfileTableItemType : RawRepresentable, Codable {
 
     /// List of all the standard types.
     public static func allStandardTypes() -> [SBAProfileTableItemType] {
-        return [.html, .profileItem, .resource]
+        return [.html, .profileItem, .resource, .profileView]
     }
 }
 
@@ -212,6 +212,8 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
             // TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 //        case .resource:
 //            return try SBAResourceProfileTableItem(from: decoder)
+        case .profileView:
+            return try SBAProfileViewProfileTableItem(from: decoder)
         default:
             assertionFailure("Attempt to decode profile table item of unknown type \(type.rawValue)")
             return nil
@@ -568,7 +570,7 @@ public struct SBAResourceProfileTableItem: SBAProfileTableItem, Decodable, RSDRe
 /// A profile table item that, when selected, segues to another profile table view.
 public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
-        case title, detail, inCohorts, notInCohorts, _icon = "icon", profileDataSource
+        case title, detail, inCohorts, notInCohorts, _iconName = "icon", _profileDataSourceIdentifier = "profileDataSource"
     }
 
     // MARK: SBAProfileTableItem
@@ -598,15 +600,23 @@ public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
     // MARK: Profile View Profile Table Item
 
     /// The image (specified by name in json) to use as the icon for this profile table item.
-    private var _icon: String?
+    private var _iconName: String?
     public var icon: UIImage? {
         get {
-            guard let imageName = _icon else { return nil }
+            guard let imageName = _iconName else { return nil }
             return UIImage(named: imageName)
         }
     }
     
     /// The profile data source for the profile table view to which this item will segue when selected.
-    public var profileDataSource: SBAProfileDataSourceObject
+    private var _profileDataSourceIdentifier: String
+    public var profileDataSource: SBAProfileDataSource {
+        get {
+            return SBABridgeConfiguration.shared.profileDataSource(for: self._profileDataSourceIdentifier)!
+        }
+        set {
+            self._profileDataSourceIdentifier = newValue.identifier
+        }
+    }
 }
 

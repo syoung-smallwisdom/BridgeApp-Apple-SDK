@@ -477,6 +477,14 @@ extension SBAParticipantKeyPath {
     }
 }
 
+/// This extends the SBBStudyParticipant to allow accessing the phone number via a phoneNumber key.
+@objc
+extension SBBStudyParticipant {
+    @objc
+    public var phoneNumber: String? {
+        return self.phone?.number
+    }
+}
 
 /// SBAStudyParticipantProfileItem allows storing and retrieving profile item values to/from the SBBStudyParticipant object.
 /// For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
