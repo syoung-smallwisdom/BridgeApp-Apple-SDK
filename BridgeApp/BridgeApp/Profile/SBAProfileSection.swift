@@ -58,7 +58,7 @@ public struct SBAProfileTableItemType : RawRepresentable, Codable {
 
     /// List of all the standard types.
     public static func allStandardTypes() -> [SBAProfileTableItemType] {
-        return [.html, .profileItem, .resource]
+        return [.html, .profileItem, .resource, .profileView]
     }
 }
 
@@ -212,6 +212,8 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
             // TODO: emm 2018-08-19 deal with this for mPower 2 2.1
 //        case .resource:
 //            return try SBAResourceProfileTableItem(from: decoder)
+        case .profileView:
+            return try SBAProfileViewProfileTableItem(from: decoder)
         default:
             assertionFailure("Attempt to decode profile table item of unknown type \(type.rawValue)")
             return nil
@@ -568,7 +570,7 @@ public struct SBAResourceProfileTableItem: SBAProfileTableItem, Decodable, RSDRe
 /// A profile table item that, when selected, segues to another profile table view.
 public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
-        case title, detail, inCohorts, notInCohorts, _icon = "icon", profileDataSource
+        case title, detail, inCohorts, notInCohorts, _icon = "icon", _profileDataSource = "profileDataSource"
     }
 
     // MARK: SBAProfileTableItem
@@ -607,6 +609,14 @@ public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
     }
     
     /// The profile data source for the profile table view to which this item will segue when selected.
-    public var profileDataSource: SBAProfileDataSourceObject
+    private var _profileDataSource: String
+    public var profileDataSource: SBAProfileDataSource {
+        get {
+            return SBABridgeConfiguration.shared.profileDataSource(for: self._profileDataSource)!
+        }
+        set {
+            self._profileDataSource = newValue.identifier
+        }
+    }
 }
 
