@@ -127,14 +127,28 @@ open class SBAMedicationListStepViewController: RSDTableStepViewController {
         }
 
         tableView.deselectRow(at: indexPath, animated: true)
+        showMedicationDetails(for: tableItem)
+    }
+    
+    func showMedicationDetails(for tableItem: SBATrackedMedicationReviewItem) {
         
         let storyboard = UIStoryboard(name: "Medication", bundle: Bundle(for: SBAMedicationEditDetailsViewController.self))
-        if let vc = storyboard.instantiateViewController(withIdentifier: "MedicationEditDetails") as? SBAMedicationEditDetailsViewController {
-            vc.delegate = self
-            vc.medication = tableItem.medication
-            vc.designSystem = self.designSystem
-            self.present(vc, animated: true) {
-            }
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "MedicationEditDetails") as? SBAMedicationEditDetailsViewController
+            else {
+                assertionFailure("Failed to instantiate expected view controller")
+                return
+        }
+        vc.delegate = self
+        vc.medication = tableItem.medication
+        vc.designSystem = self.designSystem
+        self.present(vc, animated: true) {
+        }
+    }
+    
+    open override func configure(cell: UITableViewCell, in tableView: UITableView, at indexPath: IndexPath) {
+        super.configure(cell: cell, in: tableView, at: indexPath)
+        if let reviewCell = cell as? SBATrackedMedicationReviewCell {
+            reviewCell.controller = self
         }
     }
 }
@@ -173,6 +187,8 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
     
     public static let reuseId = "medicationReview"
     
+    weak var controller: SBAMedicationListStepViewController?
+    
     /// The nib to use with this cell. Default will instantiate a `SBATrackedMedicationReviewCell`.
     open class var nib: UINib {
         let bundle = Bundle(for: SBATrackedMedicationReviewCell.self)
@@ -182,6 +198,16 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
     
     @IBOutlet open var editButton: UIButton!
     @IBOutlet weak var addDetailsButton: RSDRoundedButton!
+    
+    @IBAction func editTapped(_ sender: Any) {
+        guard let medItem = tableItem as? SBATrackedMedicationReviewItem else { return }
+        controller?.showMedicationDetails(for: medItem)
+    }
+    
+    @IBAction func addDetailsTapped(_ sender: Any) {
+        guard let medItem = tableItem as? SBATrackedMedicationReviewItem else { return }
+        controller?.showMedicationDetails(for: medItem)
+    }
     
     override open var tableItem: RSDTableItem! {
         didSet {
