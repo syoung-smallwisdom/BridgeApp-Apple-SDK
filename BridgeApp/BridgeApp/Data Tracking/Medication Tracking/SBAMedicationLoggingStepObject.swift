@@ -202,6 +202,39 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
         }
         return nil
     }
+    
+    
+    /// Update and reload the logged details.
+    @discardableResult
+    open func reloadLoggingDetails(for loggingItem: SBATrackedMedicationLoggingTableItem, at indexPath: IndexPath) -> (addedRows: [IndexPath], removedRows: [IndexPath]) {
+        // Update the result set for this source.
+        let stepResult = updateStepResult(for: loggingItem, at: indexPath)
+        
+        let logging = type(of: self).buildLoggingSections(step: trackedStep, result: stepResult)
+        guard
+            loggingItem.dosage.isAnytime ?? true,
+            let newSection0 = logging.sections.first
+            else {
+                return ([], [])
+        }
+        
+        let newGroups = logging.itemGroups.filter { $0.sectionIndex == 0 }
+        var sections = self.sections
+        var groups = self.itemGroups.filter { $0.sectionIndex != 0 }
+        sections.remove(at: 0)
+        sections.insert(newSection0, at: 0)
+        groups.insert(contentsOf: newGroups, at: 0)
+        
+        let changed = self.reload(withSections: sections, groups: groups)
+        
+        let added = Set(changed.addedRows).subtracting(changed.removedRows)
+        let removed = Set(changed.removedRows).subtracting(changed.addedRows)
+        
+        // Inform delegate that answers have changed.
+        delegate?.tableDataSource(self, didChangeAnswersIn: indexPath.section)
+        
+        return (added.sorted(), removed.sorted())
+    }
 }
 
 extension RSDFormUIHint {

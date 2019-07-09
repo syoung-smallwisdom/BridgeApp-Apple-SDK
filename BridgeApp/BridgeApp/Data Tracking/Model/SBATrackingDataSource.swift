@@ -88,6 +88,13 @@ open class SBATrackingDataSource : RSDStepViewModel, RSDTableDataSource {
     @discardableResult
     public func reloadDataSource(with selectionResult: SBATrackedItemsResult) -> (addedRows: [IndexPath], removedRows: [IndexPath]) {
         let (sections, groups) = type(of: self).buildSections(step: trackedStep, initialResult: selectionResult)
+        return reload(withSections: sections, groups: groups)
+    }
+    
+    /// Reload the sections and groups for this table.
+    /// - parameter selectionResult: The updated selection result.
+    @discardableResult
+    public func reload(withSections sections: [RSDTableSection], groups: [RSDTableItemGroup]) -> (addedRows: [IndexPath], removedRows: [IndexPath]) {
         
         // Get the previous and new items
         let previousItems = Set(self.sections.flatMap { $0.tableItems })
