@@ -134,16 +134,6 @@ open class SBATrackedLoggingDataSource : SBATrackingDataSource, RSDModalStepData
         return (true, false)
     }
     
-    /// Update and reload the logged details.
-    open func reloadLoggingDetails(for loggingItem: SBATrackedLoggingTableItem, at indexPath: IndexPath) {
-        // Update the result set for this source.
-        let stepResult = updateStepResult(for: loggingItem, at: indexPath)
-        self.reloadDataSource(with: stepResult)
-        
-        // Inform delegate that answers have changed.
-        delegate?.tableDataSource(self, didChangeAnswersIn: indexPath.section)
-    }
-    
     @discardableResult
     func updateStepResult(for loggingItem: SBATrackedLoggingTableItem, at indexPath: IndexPath) -> SBATrackedItemsResult {
         let loggedResult = buildAnswer(for: loggingItem)

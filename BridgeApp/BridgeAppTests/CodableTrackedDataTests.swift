@@ -809,5 +809,61 @@ class CodableTrackedDataTests: XCTestCase {
             ]
         }
         """.data(using: .utf8)! // our data in native (JSON) format
+        
+        
+        do {
+            let clientData = try JSONSerialization.jsonObject(with: json, options: []) as! SBBJSONValue
+            var trackingResult = SBAMedicationTrackingResult(identifier: "Foo")
+            try trackingResult.updateSelected(from: clientData, with: [])
+            
+            XCTAssertNotNil(trackingResult.reminders)
+            XCTAssertEqual(trackingResult.reminders?.first, 0)
+            XCTAssertEqual(trackingResult.reminders?.count, 1)
+            
+            let items = trackingResult.medications
+            XCTAssertEqual(items.map { $0.identifier }, ["medA3", "medA4", "medA5", "medC3"])
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA3" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "10 mg")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertFalse(dosageItem.isAnytime ?? true)
+                    XCTAssertEqual(dosageItem.daysOfWeek, RSDWeekday.all)
+                    XCTAssertEqual(dosageItem.timestamps?.count, 3)
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertEqual(timestamp.timeOfDay, "08:00")
+                        XCTAssertNotNil(timestamp.loggedDate)
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA5" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "5 ml")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertTrue(dosageItem.isAnytime ?? false)
+                    XCTAssertNil(dosageItem.daysOfWeek)
+                    XCTAssertEqual(dosageItem.timestamps?.count, 3)
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertNil(timestamp.timeOfDay)
+                        XCTAssertNotNil(timestamp.loggedDate)
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
+            
+            
+        }
+        catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
     }
 }
