@@ -140,8 +140,6 @@ extension SBATrackedMedicationLoggingStepViewController: SBAMedicationLoggingCel
             let loggingItem = cell.loggingTableItem else {
                 return
         }
-        
-        
         if loggingItem.dosage.isAnytime ?? true, let indexPath = cell.indexPath {
             source.reloadLoggingDetails(for: loggingItem, at: cell.indexPath)
             self.tableView.reloadSections([indexPath.section], with: .none)

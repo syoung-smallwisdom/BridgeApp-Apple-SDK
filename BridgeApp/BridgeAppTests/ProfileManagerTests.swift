@@ -140,10 +140,10 @@ class ProfileManagerTests: XCTestCase {
                 return
         }
         
-        let itemValue = participant.value(forKeyPath: participantItem.sourceKey) as? String
+        let itemValue = participant.value(forKeyPath: participantItem.sourceKey)
         
         if participantItem.readonly {
-            XCTAssert(itemValue == savedValue, "Expected participant.\(participantItem.sourceKey) to be '\(savedValue)' because it's readonly, but instead it's '\(String(describing: itemValue))'")
+            XCTAssert((itemValue as? String) == savedValue, "Expected participant.\(participantItem.sourceKey) to be '\(String(describing: savedValue))' because it's readonly, but instead it's '\(String(describing: itemValue))'")
             return
         }
         
