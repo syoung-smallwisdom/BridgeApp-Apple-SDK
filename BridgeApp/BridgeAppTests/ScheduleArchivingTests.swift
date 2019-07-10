@@ -456,11 +456,12 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         task.tracker = tracker
         task.schemaInfo = RSDSchemaInfoObject(identifier: mainTaskSchemaIdentifier, revision: mainTaskSchemaRevision)
         
+        let now = self.scheduleManager.nowValue
         self.scheduleManager.reports = [SBAReport(identifier: mainTaskSchemaIdentifier,
-                                                  date: Date().addingNumberOfDays(-2),
+                                                  date: now.addingNumberOfDays(-2),
                                                   json: ["addedInfo" : "blu"]),
                                         SBAReport(identifier: mainTaskSchemaIdentifier,
-                                                  date: Date().addingNumberOfDays(-1),
+                                                  date: now.addingNumberOfDays(-1),
                                                   json: ["addedInfo" : "ragu"])]
         
         let taskController = TestTaskController()
