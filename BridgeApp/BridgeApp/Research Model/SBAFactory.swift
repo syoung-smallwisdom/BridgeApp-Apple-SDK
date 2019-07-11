@@ -120,6 +120,9 @@ extension RSDStepType {
 
     /// Defaults to creating a 'SBATrackedMedicationDetailStepObject'
     public static let medicationDetails: RSDStepType = "medicationDetails"
+    
+    /// Defaults to creating a 'SBAMedicationTrackingStep'
+    public static let medicationTracking: RSDStepType = "medicationTracking"
 }
 
 extension RSDResultType {

@@ -34,7 +34,34 @@
 import Foundation
 
 /// The medication logging step is used to log information about each item that is being tracked.
-open class SBAMedicationLoggingStepObject : SBATrackedSelectionStepObject, RSDNavigationSkipRule {
+open class SBAMedicationLoggingStepObject : SBATrackedSelectionStepObject {
+    
+    var shouldIncludeAll: Bool = true
+    
+    open override var title: String? {
+        get {
+            if shouldIncludeAll {
+                return nil
+            }
+            else {
+                return Localization.localizedString("MEDICATION_ACTIVE_TASK_TITLE")
+            }
+        }
+        set { } // ignore setter
+    }
+    
+    open override var detail: String? {
+        get {
+            if shouldIncludeAll {
+                return nil
+            }
+            else {
+                return Localization.localizedString("MEDICATION_ACTIVE_TASK_DETAIL")
+            }
+        }
+        set { } // ignore setter
+    }
+    
     
     #if !os(watchOS)
     open func instantiateViewController(with parent: RSDPathComponent?) -> (UIViewController & RSDStepController)? {
@@ -73,6 +100,11 @@ open class SBAMedicationLoggingStepObject : SBATrackedSelectionStepObject, RSDNa
     
     /// Override to add the "submit" button for the action.
     override open func action(for actionType: RSDUIActionType, on step: RSDStep) -> RSDUIAction? {
+        // Exit early with `nil` if *not* including anytime meds.
+        if !self.shouldIncludeAll, actionType == .addMore {
+          return nil
+        }
+        
         // If the dictionary includes an action then return that.
         if let action = self.actions?[actionType] { return action }
         // Only special-case for the goForward action.
@@ -89,15 +121,15 @@ open class SBAMedicationLoggingStepObject : SBATrackedSelectionStepObject, RSDNa
     
     // MARK: RSDNavigationSkipRule
     
-    public func shouldSkipStep(with result: RSDTaskResult?, isPeeking: Bool) -> Bool {
+    func medicationTimings(at timeOfDay: Date = Date(), with initialResult: SBAMedicationTrackingResult? = nil) -> [MedicationTiming] {
         // If this does not have a medication tracking result then it should be skipped.
-        guard let medicationResult = self.result as? SBAMedicationTrackingResult
+        guard let medicationResult = initialResult ?? self.result as? SBAMedicationTrackingResult
             else {
-             return true
+             return []
         }
-        let timeOfDay = Date()
-        let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay, includeLogged: false, includeAnytime: false) }
-        return medTimings.count > 0
+        return medicationResult.medications.compactMap {
+            $0.availableMedications(at: timeOfDay, includeLogged: shouldIncludeAll, includeAnytime: shouldIncludeAll)
+        }
     }
 }
 
@@ -119,13 +151,15 @@ open class SBAMedicationLoggingDataSource : SBATrackedLoggingDataSource {
     /// schedules to include in the table. By default, these are grouped by time range for the time of day
     /// (morning, afternoon, evening) with the "missed" medications in a separate section.
     open class func buildLoggingSections(step: SBATrackedItemsStep, result: SBATrackedItemsResult, timeOfDay: Date) -> (sections: [RSDTableSection], itemGroups: [RSDTableItemGroup]) {
-        guard let medicationResult = result as? SBAMedicationTrackingResult else {
-            assertionFailure("The initial result is not of the expected type.")
-            return ([], [])
+        guard let medicationResult = result as? SBAMedicationTrackingResult,
+            let loggingStep = step as? SBAMedicationLoggingStepObject
+            else {
+                assertionFailure("The initial result is not of the expected type.")
+                return ([], [])
         }
         
         let timeRange = timeOfDay.timeRange()
-        let medTimings = medicationResult.medications.compactMap { $0.availableMedications(at: timeOfDay) }
+        let medTimings = loggingStep.medicationTimings(at: timeOfDay, with: medicationResult)
         let currentItems = medTimings.flatMap { $0.currentItems }
         let missedItems = medTimings.flatMap { $0.missedItems }
         
