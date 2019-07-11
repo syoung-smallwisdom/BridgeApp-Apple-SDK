@@ -36,8 +36,11 @@ import Foundation
 /// The medication logging step is used to log information about each item that is being tracked.
 open class SBAMedicationLoggingStepObject : SBATrackedSelectionStepObject {
     
+    /// By default, include all medication dosages and *not* just the ones that
+    /// have not been marked as taken before the current time.
     var shouldIncludeAll: Bool = true
     
+    /// Override to set a value if this is for an active task step.
     open override var title: String? {
         get {
             if shouldIncludeAll {
@@ -50,6 +53,7 @@ open class SBAMedicationLoggingStepObject : SBATrackedSelectionStepObject {
         set { } // ignore setter
     }
     
+    /// Override to set a value if this is for an active task step.
     open override var detail: String? {
         get {
             if shouldIncludeAll {
@@ -121,6 +125,7 @@ open class SBAMedicationLoggingStepObject : SBATrackedSelectionStepObject {
     
     // MARK: RSDNavigationSkipRule
     
+    /// Get the medication timings for the logging step.
     func medicationTimings(at timeOfDay: Date = Date(), with initialResult: SBAMedicationTrackingResult? = nil) -> [MedicationTiming] {
         // If this does not have a medication tracking result then it should be skipped.
         guard let medicationResult = initialResult ?? self.result as? SBAMedicationTrackingResult

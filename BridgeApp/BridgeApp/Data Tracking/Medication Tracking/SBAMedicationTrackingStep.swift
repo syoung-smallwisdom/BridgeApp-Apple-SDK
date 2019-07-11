@@ -33,17 +33,31 @@
 
 import Foundation
 
+/// The medication tracking step is a step that can be displayed prior to an active task to query
+/// the user about whether or not they have taken their medications that were scheduled for some
+/// point prior to "now" but have not been marked as taken.
+///
+/// Note: Currently, there is no model for marking a participant's response where they have
+/// explicitly said that they have *not* taken the medication.
+///
+/// This step is run as a subtask for two reasons:
+/// 1. Simplifies the upload of changes by using the same model and identifier as the main task.
+/// 2. At some point the UI/UX might change to include additional steps and/or structure.
+///
 public struct SBAMedicationTrackingStep : RSDSubtaskStep {
     public let stepType: RSDStepType = .medicationTracking
     public let task: RSDTask
     
+    /// A logging subtask step is built from the main medication tracking task and is used to
+    /// *only* show the medications that are currently *not* marked as taken at the time when the
+    /// step is displayed.
     public init(mainTask: RSDTask) throws {
         self.task = try SBAMedicationLoggingTask(mainTask: mainTask)
     }
 }
 
 struct SBAMedicationLoggingTask : RSDTask, RSDStepNavigator, RSDTrackingTask {
-
+    
     init(mainTask: RSDTask) throws {
         guard let navigator = mainTask.stepNavigator as? SBAMedicationTrackingStepNavigator,
             let loggingStep = navigator.loggingStep as? SBAMedicationLoggingStepObject
@@ -56,6 +70,7 @@ struct SBAMedicationLoggingTask : RSDTask, RSDStepNavigator, RSDTrackingTask {
         self.loggingStep.shouldIncludeAll = false
     }
     
+    /// The logging step used by this task.
     public let loggingStep: SBAMedicationLoggingStepObject
     
     
@@ -94,6 +109,7 @@ struct SBAMedicationLoggingTask : RSDTask, RSDStepNavigator, RSDTrackingTask {
         return false
     }
     
+    /// Only one step.
     func hasStep(after step: RSDStep?, with result: RSDTaskResult) -> Bool {
         return _step(after: step) != nil
     }
