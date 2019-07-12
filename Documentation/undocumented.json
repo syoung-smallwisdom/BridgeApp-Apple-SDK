@@ -2,21 +2,21 @@
   "warnings": [
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Medication Tracking/SBAMedicationLoggingStepObject.swift",
-      "line": 40,
+      "line": 71,
       "symbol": "SBAMedicationLoggingStepObject.instantiateViewController(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Medication Tracking/SBAMedicationLoggingStepObject.swift",
-      "line": 104,
+      "line": 141,
       "symbol": "SBAMedicationLoggingDataSource",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Medication Tracking/SBAMedicationLoggingStepObject.swift",
-      "line": 362,
+      "line": 401,
       "symbol": "SBATrackedMedicationLoggingTableItem",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
@@ -1255,21 +1255,21 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBAFactory.swift",
-      "line": 127,
+      "line": 130,
       "symbol": "RSDResultType.medication",
       "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBAFactory.swift",
-      "line": 129,
+      "line": 132,
       "symbol": "RSDResultType.medicationDetails",
       "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBAFactory.swift",
-      "line": 132,
+      "line": 135,
       "symbol": "SBAFactory",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
