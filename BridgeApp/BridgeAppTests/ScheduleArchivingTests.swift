@@ -464,9 +464,32 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
                                                   date: now.addingNumberOfDays(-1),
                                                   json: ["addedInfo" : "ragu"])]
         
+        // Test assumptions - Part 1
+        // There is some odd condition that only happens when this test is run on the travis
+        // that I can't get to happen on device. Check for that failure here. I suspect that it was
+        // because of a bug where the task to schema mapping was checked outside of the sync queue
+        // but really, that's so very weird since that sync queue shouldn't be necessary when
+        // running a unit test (as oppose to when asyncronously accessing services).
+        // syoung 07/11/2019
+        let reportIdentifier = self.scheduleManager.reportIdentifier(for: task.identifier)
+        XCTAssertEqual(reportIdentifier, mainTaskSchemaIdentifier, "The config is not set up correctly for this test.")
+        let previousReport = self.scheduleManager.previousTaskData(for: RSDIdentifier(rawValue: task.identifier))
+        XCTAssertNotNil(previousReport, "The schedule manager should have a previous report.\n\n now=\(self.scheduleManager.nowValue) \n\n reports=\(self.scheduleManager.reports)")
+
         let taskController = TestTaskController()
         taskController.task = task
         taskController.taskViewModel.dataManager = self.scheduleManager
+        
+        // Test assumptions - Part 2
+        if tracker.setupTask_data == nil {
+            guard let taskViewModel = taskController.taskViewModel else {
+                XCTFail("TaskViewModel is unexpectedly nil.")
+                return
+            }
+
+            XCTAssertNotNil(taskViewModel.task, "Task was previously set. Should not be nil.")
+            XCTAssertNotNil(taskViewModel.dataManager, "DataManager should be set. Should not be nil.")
+        }
         
         // Check that the setup method was called as expected
         XCTAssertNotNil(tracker.setupTask_data)
