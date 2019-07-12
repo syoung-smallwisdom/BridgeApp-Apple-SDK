@@ -119,6 +119,7 @@
 		FF3A810B22C16D0000CD737D /* SBATimeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810A22C16D0000CD737D /* SBATimeRange.swift */; };
 		FF3A810D22C16DE100CD737D /* SBAWarningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */; };
 		FF3A810F22C17B9300CD737D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF3A810E22C17B9300CD737D /* Images.xcassets */; };
+		FF3CC62322D69C8C0037E65B /* SBAMedicationTrackingStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3CC62222D69C8C0037E65B /* SBAMedicationTrackingStep.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -276,6 +277,7 @@
 		FF3A810A22C16D0000CD737D /* SBATimeRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATimeRange.swift; sourceTree = "<group>"; };
 		FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAWarningViewController.swift; sourceTree = "<group>"; };
 		FF3A810E22C17B9300CD737D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		FF3CC62222D69C8C0037E65B /* SBAMedicationTrackingStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationTrackingStep.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -622,6 +624,7 @@
 				F8A7FA1322B9B3820053FF74 /* SBADayTimePickerViewController.swift */,
 				FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */,
 				F8A7FA0B22B814760053FF74 /* BoxedTextField.swift */,
+				FF3CC62222D69C8C0037E65B /* SBAMedicationTrackingStep.swift */,
 			);
 			path = "Medication Tracking";
 			sourceTree = "<group>";
@@ -881,6 +884,7 @@
 				F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */,
 				60D9611E20BF161300B5CFEB /* SBAProfileItem.swift in Sources */,
 				FF3A810D22C16DE100CD737D /* SBAWarningViewController.swift in Sources */,
+				FF3CC62322D69C8C0037E65B /* SBAMedicationTrackingStep.swift in Sources */,
 				F8479525207FEA9D0024A230 /* SBATrackedSelectionDataSource.swift in Sources */,
 				F89B3DEC20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift in Sources */,
 				CB18538021064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift in Sources */,

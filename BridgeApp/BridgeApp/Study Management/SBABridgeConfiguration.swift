@@ -391,9 +391,9 @@ open class SBABridgeConfiguration {
     /// Get the schema info associated with the given activity identifier. By default, this looks at the
     /// shared bridge configuration's schema reference map.
     open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
-        let schemaIdentifier = self.taskToSchemaIdentifierMap[activityIdentifier] ?? activityIdentifier
         var ret: RSDSchemaInfo?
         syncQueue.sync {
+            let schemaIdentifier = self.taskToSchemaIdentifierMap[activityIdentifier] ?? activityIdentifier
             ret = self.schemaReferenceMap[schemaIdentifier]
         }
         return ret
