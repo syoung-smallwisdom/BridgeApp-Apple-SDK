@@ -140,7 +140,15 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             self.addReports(with: newReports)
         }
         
-        self.loadReports()
+        if shouldLoadOnInit {
+            self.loadReports()
+        }
+    }
+    
+    /// Should the reports be loaded on initialization of the manager (default) or should the
+    /// initial loading be handled *after* some set up or using lazy loading.
+    open var shouldLoadOnInit: Bool {
+        return true
     }
     
     /// Instantiate a new instance of a task view model from the given information. At least one of the input
