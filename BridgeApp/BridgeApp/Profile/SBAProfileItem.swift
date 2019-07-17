@@ -187,6 +187,13 @@ extension SBAProfileItem {
         case .integer:
             return val as? NSNumber
             
+        case .year:
+            return val as? NSNumber
+            
+        case .fraction:
+            guard let fraction = val as? RSDFraction else { return nil }
+            return fraction.jsonObject()
+            
         case .decimal:
             return val as? NSNumber
 
@@ -224,6 +231,14 @@ extension SBAProfileItem {
         case .integer:
             guard let val = jsonValue as? Int else { return nil }
             itemValue = val
+            
+        case .year:
+            guard let val = jsonValue as? Int else { return nil }
+            itemValue = val
+            
+        case .fraction:
+            guard let doubleValue = jsonValue as? Double else { return nil }
+            itemValue = RSDFraction(floatLiteral: doubleValue)
             
         case .decimal:
             guard let val = jsonValue as? Decimal else { return nil }
@@ -285,6 +300,12 @@ extension SBAProfileItem {
         case .integer:
             return newValue as? NSNumber != nil
             
+        case .year:
+            return newValue as? NSNumber != nil
+            
+        case .fraction:
+            return newValue as? NSNumber != nil
+            
         case .decimal:
             return newValue as? NSNumber != nil
             
@@ -322,6 +343,15 @@ extension HKBiologicalSex {
     }
 }
  */
+
+// Profile items need these extensions to be able to convert between RSDJSONSerializable and SBBJSONValue.
+// Since the only NSArray and NSDictionary objects we expect to see will have come from BridgeSDK, this
+// should be safe.
+extension NSDictionary : RSDJSONSerializable {
+}
+
+extension NSArray : RSDJSONSerializable {
+}
 
 /// SBAReportProfileItem allows storing and retrieving profile item values to/from Bridge Participant Reports.
 /// For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
