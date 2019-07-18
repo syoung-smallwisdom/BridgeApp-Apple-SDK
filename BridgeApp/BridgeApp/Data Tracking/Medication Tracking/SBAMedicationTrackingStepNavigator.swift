@@ -630,6 +630,7 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
         self.timeOfDay = timeOfDay
         self.loggedDate = loggedDate
         self.quantity = 1
+        self.timeZone = TimeZone.current
     }
     
     public init(from decoder: Decoder) throws {
@@ -649,6 +650,14 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
         self.quantity = try container.decodeIfPresent(Int.self, forKey: .quantity) ?? 1
         self.loggedDate = loggedDate
         self.timeOfDay = validTimeOfDay ? timeOfDay : nil
+        
+        if let dateString = try container.decodeIfPresent(String.self, forKey: .loggedDate),
+            let timeZone = TimeZone(iso8601: dateString) {
+            self.timeZone = timeZone
+        }
+        else {
+            self.timeZone = TimeZone.current
+        }
     }
     
     /// When the logged event is scheduled to occur.
@@ -659,6 +668,8 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
     
     /// The number of times the event was logged at a given time.
     public var quantity: Int
+    
+    public let timeZone: TimeZone
     
     /// The time of day from the `RSDSchedule` that can be used to identify this schedule.
     public var timeOfDayString : String? {

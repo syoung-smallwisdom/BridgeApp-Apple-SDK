@@ -64,11 +64,6 @@ open class SBAScheduleManager: SBAReportManager {
         return BridgeSDK.activityManager
     }
     
-    /// Pointer to the default factory to use for serialization.
-    open var factory: RSDFactory {
-        return SBAFactory.shared
-    }
-    
     public override init() {
         super.init()
         

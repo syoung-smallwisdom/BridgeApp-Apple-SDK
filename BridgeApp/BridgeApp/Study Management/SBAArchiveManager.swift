@@ -40,6 +40,11 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
         return SBABridgeConfiguration.shared
     }
     
+    /// Pointer to the default factory to use for serialization.
+    open var factory: RSDFactory {
+        return SBAFactory.shared
+    }
+    
     /// Get the schema info associated with the given activity identifier. By default, this looks at the
     /// shared bridge configuration's schema reference map.
     open func schemaInfo(for activityIdentifier: String) -> RSDSchemaInfo? {
