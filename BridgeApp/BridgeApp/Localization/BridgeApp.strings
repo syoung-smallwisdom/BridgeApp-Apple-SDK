@@ -136,3 +136,8 @@
 "SETTINGS_STATE_ON" = "On";                                      // Boolean profile item table item detail text when setting is on
 "SETTINGS_STATE_OFF" = "Off";                                    // Boolean profile item table item detail text when setting is off
 
+/* Severity Levels */
+"SYMPTOM_SEVERITY_NONE" = "None";
+"SYMPTOM_SEVERITY_MILD" = "Mild";
+"SYMPTOM_SEVERITY_MODERATE" = "Moderate";
+"SYMPTOM_SEVERITY_SEVERE" = "Severe";
