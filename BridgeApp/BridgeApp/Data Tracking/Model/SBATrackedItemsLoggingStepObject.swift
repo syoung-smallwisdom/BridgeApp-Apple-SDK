@@ -272,14 +272,20 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         try container.encodeIfPresent(loggedDate, forKey: .loggedDate)
 
         var anyContainer = encoder.container(keyedBy: AnyCodingKey.self)
-        for result in inputResults {
+        try inputResults.forEach { result in
             let key = AnyCodingKey(stringValue: result.identifier)!
-            let nestedEncoder = anyContainer.superEncoder(forKey: key)
-            guard let answerResult = result as? RSDAnswerResult else {
-                let context = EncodingError.Context(codingPath: nestedEncoder.codingPath, debugDescription: "Result does not conform to RSDAnswerResult protocol")
-                throw EncodingError.invalidValue(result, context)
+            guard let answerResult = result as? RSDAnswerResult
+                else {
+                    var codingPath = encoder.codingPath
+                    codingPath.append(key)
+                    let context = EncodingError.Context(codingPath: codingPath, debugDescription: "Result does not conform to RSDAnswerResult protocol")
+                    throw EncodingError.invalidValue(result, context)
             }
-            guard let value = answerResult.value else { continue }
+            guard let value = answerResult.value
+                else {
+                    return
+            }
+            let nestedEncoder = anyContainer.superEncoder(forKey: key)
             try answerResult.answerType.encode(value, to: nestedEncoder)
         }
     }
