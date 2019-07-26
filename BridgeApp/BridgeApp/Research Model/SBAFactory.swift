@@ -154,7 +154,8 @@ open class SBAFactory : RSDFactory {
     /// - throws: `DecodingError` if the category name cannot be decoded.
     open func catTypeName(from decoder:Decoder) throws -> String {
         let container = try decoder.container(keyedBy: CatTypeKeys.self)
-        return try container.decode(String.self, forKey: .catType)
+        // Return the task as the default catType syoung 07/26/2019
+        return try container.decodeIfPresent(String.self, forKey: .catType) ?? SBACategoryType.task.rawValue
     }
     
     /// Decode an object. This will check the category type to decide which decode* method to call.
