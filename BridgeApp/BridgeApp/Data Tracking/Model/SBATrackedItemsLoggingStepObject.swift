@@ -79,6 +79,9 @@ extension RSDResultType {
     public static let loggingItem: RSDResultType = "loggingItem"
     public static let loggingCollection: RSDResultType = "loggingCollection"
     public static let symptom: RSDResultType = "symptom"
+    public static let symptomCollection: RSDResultType = "symptomCollection"
+    public static let trigger: RSDResultType = "trigger"
+    public static let triggerCollection: RSDResultType = "triggerCollection"
 }
 
 /// `SBATrackedLoggingCollectionResultObject` is used include multiple logged items in a single logging result.

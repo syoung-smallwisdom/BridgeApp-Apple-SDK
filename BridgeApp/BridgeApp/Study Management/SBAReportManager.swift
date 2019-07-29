@@ -651,10 +651,18 @@ extension TimeZone {
     /// - note: This handles both the format used by iOS and Android.
     /// Copied from https://stackoverflow.com/a/50384957
     init?(iso8601: String) {
-        let tz = iso8601.dropFirst(19) // remove yyyy-MM-ddTHH:mm:ss part
-        if tz == "Z" {
+        if iso8601.hasSuffix("Z") {
             self.init(secondsFromGMT: 0)
-        } else if tz.count == 3 { // assume +/-HH
+            return
+        }
+        
+        guard let zoneStart = iso8601.lastIndex(where: { $0 == "+" }) ?? iso8601.lastIndex(where: { $0 == "-" })
+            else {
+                return nil
+        }
+
+        let tz = iso8601[zoneStart...]
+        if tz.count == 3 { // assume +/-HH
             if let hour = Int(tz) {
                 self.init(secondsFromGMT: hour * 3600)
                 return

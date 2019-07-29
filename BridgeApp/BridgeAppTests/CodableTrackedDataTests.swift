@@ -866,4 +866,188 @@ class CodableTrackedDataTests: XCTestCase {
             return
         }
     }
+    
+    func testSymptomDecodingV2() {
+        let json = """
+        {
+          "logging" : {
+            "Hallucinations" : {
+              "severity" : 2,
+              "duration" : "DURATION_CHOICE_NOW",
+              "medicationTiming" : "pre-medication"
+            },
+            "Anger" : 3
+          },
+          "trackedItems" : {
+            "startDate" : "2019-07-29T14:15:43.776-06:00",
+            "endDate" : "2019-07-29T14:15:43.776-06:00",
+            "type" : "loggingCollection",
+            "identifier" : "trackedItems",
+            "items" : [
+              {
+                "text" : "Amnesia",
+                "identifier" : "Amnesia"
+              },
+              {
+                "loggedDate" : "2019-07-29T14:16:24.561-06:00",
+                "severity" : 3,
+                "text" : "Anger",
+                "identifier" : "Anger"
+              },
+              {
+                "loggedDate" : "2019-07-29T14:16:14.711-06:00",
+                "identifier" : "Hallucinations",
+                "duration" : "DURATION_CHOICE_NOW",
+                "text" : "Hallucinations",
+                "medicationTiming" : "pre-medication",
+                "severity" : 2
+              }
+            ]
+          }
+        }
+        """.data(using: .utf8)! // our data in native (JSON) format
+        
+        do {
+            let object = try decoder.decode(SBASymptomReportData.self, from: json)
+
+            let results = object.trackedItems.symptomResults
+            XCTAssertEqual(results.count, 3)
+            
+            if let first = results.first {
+                XCTAssertEqual(first.identifier, "Amnesia")
+                XCTAssertNil(first.loggedDate)
+            }
+            
+            if results.count >= 2 {
+                let second = results[1]
+                XCTAssertEqual(second.identifier, "Anger")
+                XCTAssertNotNil(second.loggedDate)
+                XCTAssertEqual(second.timeZone.secondsFromGMT(), -6 * 3600)
+                XCTAssertEqual(second.severity, .severe)
+            }
+            
+            if let third = results.last {
+                XCTAssertEqual(third.identifier, "Hallucinations")
+                XCTAssertNotNil(third.loggedDate)
+                XCTAssertEqual(third.timeZone.secondsFromGMT(), -6 * 3600)
+                XCTAssertEqual(third.severity, .moderate)
+                XCTAssertEqual(third.duration, .now)
+                XCTAssertEqual(third.medicationTiming, .preMedication)
+            }
+            
+            
+            let jsonData = try encoder.encode(object.trackedItems)
+            let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dictionary = json as? [String : Any],
+                let items = dictionary["items"] as? NSArray else {
+                    XCTFail("Failed to encode object. \(json)")
+                    return
+            }
+            
+            let expectedItems: NSArray = [
+                [
+                    "text" : "Amnesia",
+                    "identifier" : "Amnesia"
+                ],
+                [
+                    "loggedDate" : "2019-07-29T14:16:24.561-06:00",
+                    "severity" : 3,
+                    "text" : "Anger",
+                    "identifier" : "Anger"
+                ],
+                [
+                    "loggedDate" : "2019-07-29T14:16:14.711-06:00",
+                    "identifier" : "Hallucinations",
+                    "duration" : "DURATION_CHOICE_NOW",
+                    "text" : "Hallucinations",
+                    "medicationTiming" : "pre-medication",
+                    "severity" : 2
+                ]
+            ]
+            
+            XCTAssertEqual(items, expectedItems)
+            
+        } catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
+    
+    func testSymptomDecodingV1() {
+        // There is a bug in the old encodings that would add a empty dictionary if the result
+        // was nil, check for this.
+        let json = """
+        {
+          "logging" : {
+            "Hallucinations" : {
+              "severity" : 2,
+              "duration" : "DURATION_CHOICE_NOW",
+              "medicationTiming" : "pre-medication"
+            },
+            "Anger" : 3
+          },
+          "trackedItems" : {
+            "startDate" : "2019-07-29T14:15:43.776-06:00",
+            "endDate" : "2019-07-29T14:15:43.776-06:00",
+            "type" : "loggingCollection",
+            "identifier" : "trackedItems",
+            "items" : [
+              {
+                "text" : "Amnesia",
+                "identifier" : "Amnesia",
+                "severity" : {},
+                "duration" : {}
+              },
+              {
+                "loggedDate" : "2019-07-29T14:16:24.561-06:00",
+                "severity" : 3,
+                "text" : "Anger",
+                "identifier" : "Anger"
+              },
+              {
+                "loggedDate" : "2019-07-29T14:16:14.711-06:00",
+                "identifier" : "Hallucinations",
+                "duration" : "DURATION_CHOICE_NOW",
+                "text" : "Hallucinations",
+                "medicationTiming" : "pre-medication",
+                "severity" : 2
+              }
+            ]
+          }
+        }
+        """.data(using: .utf8)! // our data in native (JSON) format
+        
+        do {
+            let object = try decoder.decode(SBASymptomReportData.self, from: json)
+            
+            let results = object.trackedItems.symptomResults
+            XCTAssertEqual(results.count, 3)
+            
+            if let first = results.first {
+                XCTAssertEqual(first.identifier, "Amnesia")
+                XCTAssertNil(first.loggedDate)
+            }
+            
+            if results.count >= 2 {
+                let second = results[1]
+                XCTAssertEqual(second.identifier, "Anger")
+                XCTAssertNotNil(second.loggedDate)
+                XCTAssertEqual(second.timeZone.secondsFromGMT(), -6 * 3600)
+                XCTAssertEqual(second.severity, .severe)
+            }
+            
+            if let third = results.last {
+                XCTAssertEqual(third.identifier, "Hallucinations")
+                XCTAssertNotNil(third.loggedDate)
+                XCTAssertEqual(third.timeZone.secondsFromGMT(), -6 * 3600)
+                XCTAssertEqual(third.severity, .moderate)
+                XCTAssertEqual(third.duration, .now)
+                XCTAssertEqual(third.medicationTiming, .preMedication)
+            }
+            
+        } catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
 }
