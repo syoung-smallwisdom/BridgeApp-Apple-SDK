@@ -974,7 +974,7 @@ class CodableTrackedDataTests: XCTestCase {
     }
     
     func testSymptomDecodingV1() {
-        // There is a bug in the old encodings that would add a empty dictionary if the result
+        // There is a bug in the old encodings that would add an empty dictionary if the result
         // was nil, check for this.
         let json = """
         {
