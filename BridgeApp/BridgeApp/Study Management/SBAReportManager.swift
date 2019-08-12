@@ -648,7 +648,7 @@ extension TimeZone {
     
     /// Parse the TimeZone from an iso8601 string.
     ///
-    /// - note: This handles both the format used by iOS and Android.
+    /// - note: This handles the formats used by both iOS and Android.
     /// Copied from https://stackoverflow.com/a/50384957
     init?(iso8601: String) {
         if iso8601.hasSuffix("Z") {
