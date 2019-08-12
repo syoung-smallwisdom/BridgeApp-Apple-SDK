@@ -389,7 +389,7 @@ public struct SBASymptomResult : Codable, RSDScoringResult {
     /// The date timestamp for when the item was logged.
     public var loggedDate: Date?
     
-    /// Time zone.
+    /// The time zone in effect when the item was logged.
     public var timeZone: TimeZone = TimeZone.current
     
     /// The severity level of the symptom.

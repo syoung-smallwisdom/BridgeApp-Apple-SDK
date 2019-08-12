@@ -54,7 +54,7 @@ public struct SBATriggerResult : RSDResult, Codable, RSDScoringResult {
     /// The date timestamp for when the item was logged.
     public var loggedDate: Date?
     
-    /// Time zone.
+    /// The timezone in effect when the event was logged.
     public var timeZone: TimeZone = TimeZone.current
     
     public func dataScore() throws -> RSDJSONSerializable? {
