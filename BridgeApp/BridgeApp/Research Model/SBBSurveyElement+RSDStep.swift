@@ -426,6 +426,17 @@ extension SBBDateConstraints : sbb_DateRange {
     }
 }
 
+extension SBBDateConstraints : RSDDatePickerDataSource {
+    
+    public var datePickerMode: RSDDatePickerMode {
+        return .date
+    }
+    
+    public var dateFormatter: DateFormatter {
+        return RSDDateCoderObject.dateOnly.inputFormatter
+    }
+}
+
 extension SBBDateTimeConstraints : sbb_DateRange {
     
     public var defaultDate: Date? {
@@ -434,6 +445,17 @@ extension SBBDateTimeConstraints : sbb_DateRange {
     
     public var dateCoder: RSDDateCoder? {
         return RSDDateCoderObject.timestamp
+    }
+}
+
+extension SBBDateTimeConstraints : RSDDatePickerDataSource {
+    
+    public var datePickerMode: RSDDatePickerMode {
+        return .dateAndTime
+    }
+    
+    public var dateFormatter: DateFormatter {
+        return RSDDateCoderObject.timestamp.inputFormatter
     }
 }
 
@@ -488,5 +510,15 @@ extension SBBTimeConstraints : RSDDateRange {
     
     public var dateCoder: RSDDateCoder? {
         return RSDDateCoderObject.timeOfDay
+    }
+}
+
+extension SBBTimeConstraints : RSDDatePickerDataSource {
+    public var datePickerMode: RSDDatePickerMode {
+        return .time
+    }
+    
+    public var dateFormatter: DateFormatter {
+        return RSDDateCoderObject.timeOfDay.inputFormatter
     }
 }
