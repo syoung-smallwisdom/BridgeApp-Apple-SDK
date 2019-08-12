@@ -151,7 +151,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     }
     
     /// Should the reports be loaded on initialization of the manager (default) or should the
-    /// initial loading be handled *after* some set up or using lazy loading.
+    /// initial loading be handled *after* some set up or using lazy loading?
     open var shouldLoadOnInit: Bool {
         return true
     }
