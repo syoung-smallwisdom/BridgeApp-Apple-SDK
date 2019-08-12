@@ -669,6 +669,7 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
     /// The number of times the event was logged at a given time.
     public var quantity: Int
     
+    /// The time zone when the event was logged.
     public let timeZone: TimeZone
     
     /// The time of day from the `RSDSchedule` that can be used to identify this schedule.
