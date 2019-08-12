@@ -414,6 +414,15 @@
                 <a href="Structs/SBAStudyParticipantProfileItem.html">SBAStudyParticipantProfileItem</a>
               </li>
               <li class="nav-group-task">
+                <a href="Structs/SBASymptomCollectionResult.html">SBASymptomCollectionResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs.html#/s:9BridgeApp20SBASymptomReportDataV">SBASymptomReportData</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBASymptomResult.html">SBASymptomResult</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Structs/SBATime.html">SBATime</a>
               </li>
               <li class="nav-group-task">
@@ -433,6 +442,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="Structs/SBATrackedSectionObject.html">SBATrackedSectionObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/SBATriggerCollectionResult.html">SBATriggerCollectionResult</a>
               </li>
             </ul>
           </li>
@@ -687,6 +699,93 @@ This object includes a <code>timingIdentifier</code> that maps to either an <cod
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:9BridgeApp16SBASymptomResultV"></a>
+                    <a name="//apple_ref/swift/Struct/SBASymptomResult" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp16SBASymptomResultV">SBASymptomResult</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The symptom table item is tracked using the result object.</p>
+
+                        <a href="Structs/SBASymptomResult.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBASymptomResult</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">RSDScoringResult</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp20SBASymptomReportDataV"></a>
+                    <a name="//apple_ref/swift/Struct/SBASymptomReportData" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBASymptomReportDataV">SBASymptomReportData</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Wrapper for the clientData from a report.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBASymptomReportData</span> <span class="p">:</span> <span class="kt">Codable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp26SBASymptomCollectionResultV"></a>
+                    <a name="//apple_ref/swift/Struct/SBASymptomCollectionResult" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp26SBASymptomCollectionResultV">SBASymptomCollectionResult</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Wrapper for a collection of symptoms as a result.</p>
+
+                        <a href="Structs/SBASymptomCollectionResult.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBASymptomCollectionResult</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">RSDCollectionResult</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:9BridgeApp7SBATimeV"></a>
                     <a name="//apple_ref/swift/Struct/SBATime" class="dashAnchor"></a>
                     <a class="token" href="#/s:9BridgeApp7SBATimeV">SBATime</a>
@@ -884,6 +983,38 @@ let json = &quot;&quot;&quot;
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBATrackedItemsResultObject</span> <span class="p">:</span> <span class="kt"><a href="Protocols/SBATrackedItemsResult.html">SBATrackedItemsResult</a></span><span class="p">,</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">RSDNavigationResult</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp26SBATriggerCollectionResultV"></a>
+                    <a name="//apple_ref/swift/Struct/SBATriggerCollectionResult" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp26SBATriggerCollectionResultV">SBATriggerCollectionResult</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Wrapper for a collection of symptoms as a result.</p>
+
+                        <a href="Structs/SBATriggerCollectionResult.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SBATriggerCollectionResult</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">RSDCollectionResult</span></code></pre>
 
                         </div>
                       </div>
