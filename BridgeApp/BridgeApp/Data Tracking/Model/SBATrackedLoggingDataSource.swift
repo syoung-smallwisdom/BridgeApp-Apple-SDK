@@ -244,6 +244,9 @@ open class SBATrackedLoggingTableItem : RSDTableItem, RSDScheduleTime {
     /// The date when the event was logged.
     open var loggedDate: Date?
     
+    /// The timezone in effect when the event was logged.
+    public var timeZone: TimeZone = TimeZone.current
+    
     /// The index position of the item within its subgrouping (for schedules that are grouped).
     public let groupIndex: Int
     

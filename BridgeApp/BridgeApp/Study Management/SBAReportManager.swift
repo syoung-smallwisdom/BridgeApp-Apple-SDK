@@ -57,6 +57,9 @@ public struct SBAReport : Hashable {
     /// The date for the report.
     public let date: Date
     
+    /// The time zone of the report.
+    public let timeZone: TimeZone
+    
     /// The client data blob associated with this report.
     public let clientData: SBBJSONValue
     
@@ -69,16 +72,18 @@ public struct SBAReport : Hashable {
         return lhs.reportKey == rhs.reportKey && lhs.date == rhs.date
     }
     
-    public init(reportKey: RSDIdentifier, date: Date, clientData: SBBJSONValue) {
+    public init(reportKey: RSDIdentifier, date: Date, clientData: SBBJSONValue, timeZone: TimeZone = TimeZone.current) {
         self.reportKey = reportKey
         self.date = date
         self.clientData = clientData
+        self.timeZone = timeZone
     }
     
-    public init(identifier: String, date: Date?, json: RSDJSONSerializable) {
+    public init(identifier: String, date: Date?, json: RSDJSONSerializable, timeZone: TimeZone = TimeZone.current) {
         self.reportKey = RSDIdentifier(rawValue: identifier)
         self.date = date ?? SBAReportSingletonDate
         self.clientData = json.toClientData()
+        self.timeZone = timeZone
     }
     
     init(taskData: RSDTaskData) {
@@ -140,7 +145,15 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             self.addReports(with: newReports)
         }
         
-        self.loadReports()
+        if shouldLoadOnInit {
+            self.loadReports()
+        }
+    }
+    
+    /// Should the reports be loaded on initialization of the manager (default) or should the
+    /// initial loading be handled *after* some set up or using lazy loading?
+    open var shouldLoadOnInit: Bool {
+        return true
     }
     
     /// Instantiate a new instance of a task view model from the given information. At least one of the input
@@ -492,7 +505,8 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
                 let date = self.date(for: schemaIdentifier, from: taskResult)
                 let report = SBAReport(reportKey: RSDIdentifier(rawValue: schemaIdentifier),
                                        date: date,
-                                       clientData: clientData)
+                                       clientData: clientData,
+                                       timeZone: TimeZone.current)
                 newReports.append(report)
             }
             taskResult.stepHistory.forEach {
@@ -590,7 +604,9 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         let newReports: [SBAReport] = reportDataObjects.compactMap {
             guard let clientData = $0.data, let date = $0.date else { return nil }
             let reportDate = (category == .groupByDay) ? date.startOfDay() : date
-            return SBAReport(reportKey: query.reportKey, date: reportDate, clientData: clientData)
+            let isoString = $0.dateTime ?? $0.localDate ?? ""
+            let timeZone = TimeZone(iso8601: isoString) ?? TimeZone.current
+            return SBAReport(reportKey: query.reportKey, date: reportDate, clientData: clientData, timeZone: timeZone)
         }
         
         let error: Error? = {
@@ -625,5 +641,46 @@ extension SBBReportData {
     
     var isEmpty: Bool {
         return data == nil && date == nil
+    }
+}
+
+extension TimeZone {
+    
+    /// Parse the TimeZone from an iso8601 string.
+    ///
+    /// - note: This handles the formats used by both iOS and Android.
+    /// Copied from https://stackoverflow.com/a/50384957
+    init?(iso8601: String) {
+        if iso8601.hasSuffix("Z") {
+            self.init(secondsFromGMT: 0)
+            return
+        }
+        
+        guard let zoneStart = iso8601.lastIndex(where: { $0 == "+" }) ?? iso8601.lastIndex(where: { $0 == "-" })
+            else {
+                return nil
+        }
+
+        let tz = iso8601[zoneStart...]
+        if tz.count == 3 { // assume +/-HH
+            if let hour = Int(tz) {
+                self.init(secondsFromGMT: hour * 3600)
+                return
+            }
+        } else if tz.count == 5 { // assume +/-HHMM
+            if let hour = Int(tz.dropLast(2)), let min = Int(tz.dropFirst(3)) {
+                self.init(secondsFromGMT: (hour * 60 + min) * 60)
+                return
+            }
+        } else if tz.count == 6 { // assime +/-HH:MM
+            let parts = tz.components(separatedBy: ":")
+            if parts.count == 2 {
+                if let hour = Int(parts[0]), let min = Int(parts[1]) {
+                    self.init(secondsFromGMT: (hour * 60 + min) * 60)
+                    return
+                }
+            }
+        }
+        return nil
     }
 }

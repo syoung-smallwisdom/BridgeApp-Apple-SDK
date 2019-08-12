@@ -117,6 +117,10 @@ public struct SBATime: Hashable, Codable, RSDScheduleTime {
         self.timeOfDay = timeOfDay
     }
     
+    public var timeZone: TimeZone {
+        return TimeZone.current
+    }
+    
     public init(hour: Int, minute: Int) {
         guard hour >= 0, hour < 24, minute >= 0, minute < 60
             else {

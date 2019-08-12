@@ -630,6 +630,7 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
         self.timeOfDay = timeOfDay
         self.loggedDate = loggedDate
         self.quantity = 1
+        self.timeZone = TimeZone.current
     }
     
     public init(from decoder: Decoder) throws {
@@ -649,6 +650,26 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
         self.quantity = try container.decodeIfPresent(Int.self, forKey: .quantity) ?? 1
         self.loggedDate = loggedDate
         self.timeOfDay = validTimeOfDay ? timeOfDay : nil
+        
+        if let dateString = try container.decodeIfPresent(String.self, forKey: .loggedDate),
+            let timeZone = TimeZone(iso8601: dateString) {
+            self.timeZone = timeZone
+        }
+        else {
+            self.timeZone = TimeZone.current
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(self.timeOfDay, forKey: .timeOfDay)
+        try container.encode(self.quantity, forKey: .quantity)
+        if let loggedDate = self.loggedDate {
+            let formatter = encoder.factory.timestampFormatter
+            formatter.timeZone = self.timeZone
+            let loggingString = formatter.string(from: loggedDate)
+            try container.encode(loggingString, forKey: .loggedDate)
+        }
     }
     
     /// When the logged event is scheduled to occur.
@@ -659,6 +680,9 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
     
     /// The number of times the event was logged at a given time.
     public var quantity: Int
+    
+    /// The time zone when the event was logged.
+    public let timeZone: TimeZone
     
     /// The time of day from the `RSDSchedule` that can be used to identify this schedule.
     public var timeOfDayString : String? {

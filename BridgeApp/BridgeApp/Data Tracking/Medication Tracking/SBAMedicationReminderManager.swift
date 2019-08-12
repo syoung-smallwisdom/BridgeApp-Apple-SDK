@@ -125,6 +125,11 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
         public var timeOfDayString : String? {
             return timingIdentifier
         }
+        
+        /// TimeZone is always current.
+        public var timeZone: TimeZone {
+            return TimeZone.current
+        }
     }
     
     func getMedicationResult() -> SBAMedicationTrackingResult? {
