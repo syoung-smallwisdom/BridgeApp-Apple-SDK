@@ -660,6 +660,18 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
         }
     }
     
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(self.timeOfDay, forKey: .timeOfDay)
+        try container.encode(self.quantity, forKey: .quantity)
+        if let loggedDate = self.loggedDate {
+            let formatter = encoder.factory.timestampFormatter
+            formatter.timeZone = self.timeZone
+            let loggingString = formatter.string(from: loggedDate)
+            try container.encode(loggingString, forKey: .loggedDate)
+        }
+    }
+    
     /// When the logged event is scheduled to occur.
     public var timeOfDay: String?
     
