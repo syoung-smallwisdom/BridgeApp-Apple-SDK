@@ -56,9 +56,10 @@ public protocol SBALearnItem {
 /// The learn item object is a concrete, serializable implementation of the `SBALearnItem` protocol.
 public struct SBALearnItemObject : SBALearnItem, Codable {
     private enum CodingKeys: String, CodingKey {
-        case learnTitle = "title", detail, href, iconImage
+        case learnTitle = "title", learnDetail = "detail", href, iconImage
     }
     
+    /// A valid learn item has an href value.
     public func isValidLearnItem() -> Bool {
         return (_learnURL != nil)
     }
@@ -71,11 +72,11 @@ public struct SBALearnItemObject : SBALearnItem, Codable {
         return _learnURL!
     }
     private var _learnURL: URL? {
-        // Use of the "detail" for the url is deprecated, but is still supported for now. syoung 08/13/2019
-        guard let urlString = href ?? detail else { return nil }
         if href == nil {
-            print("WARNING! Missing `href` value for the URL")
+            print("WARNING! Missing `href` value for \(learnTitle)")
         }
+        // Use of the "detail" for the url is deprecated, but is still supported for now. syoung 08/13/2019
+        guard let urlString = href ?? learnDetail else { return nil }
         
         if urlString.hasPrefix("http") || urlString.hasPrefix("file") {
             return URL(string: urlString)
@@ -95,7 +96,7 @@ public struct SBALearnItemObject : SBALearnItem, Codable {
     private let href: String?
     
     /// An added detail string for the learn item.
-    public let detail: String?
+    public let learnDetail: String?
     
     /// The image icon for the learn item.
     public var learnIconImage : UIImage? {
