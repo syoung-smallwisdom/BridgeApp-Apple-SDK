@@ -33,6 +33,28 @@
 
 import XCTest
 @testable import BridgeApp
+@testable import DataTracking
+
+struct TestImageWrapperDelegate : RSDImageWrapperDelegate {
+    func fetchImage(for imageWrapper: RSDImageWrapper, callback: @escaping ((String?, UIImage?) -> Void)) {
+        DispatchQueue.main.async {
+            callback(imageWrapper.imageName, nil)
+        }
+    }
+}
+
+let testFactory: RSDFactory = {
+    RSDFactory.shared = SBADataTrackingFactory()
+    return RSDFactory.shared
+}()
+
+var decoder: JSONDecoder {
+    return testFactory.createJSONDecoder()
+}
+
+var encoder: JSONEncoder {
+    return testFactory.createJSONEncoder()
+}
 
 class CodableTrackedDataTests: XCTestCase {
     

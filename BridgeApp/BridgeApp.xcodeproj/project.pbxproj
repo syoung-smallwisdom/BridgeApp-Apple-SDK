@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0356943A20EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */; };
 		602BB7A7226130D400C17E12 /* SBAProfileDataStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602BB7A6226130D400C17E12 /* SBAProfileDataStorageManager.swift */; };
 		6035687822AEF39600AAF37D /* ParticipantManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6035687722AEF39600AAF37D /* ParticipantManager.swift */; };
 		6035687A22AEF58E00AAF37D /* AppConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = 6035687922AEF58E00AAF37D /* AppConfig.json */; };
@@ -19,14 +18,6 @@
 		60D9612220BF161300B5CFEB /* SBAProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9611A20BF161200B5CFEB /* SBAProfileManager.swift */; };
 		60E84E5C20D306A9000DDCB1 /* SBAProfileItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E84E5B20D306A9000DDCB1 /* SBAProfileItemType.swift */; };
 		8002800422136822000B00B0 /* ProfileManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8002800322136822000B00B0 /* ProfileManagerTests.swift */; };
-		CB18538021064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB18537F21064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift */; };
-		CB267A9D20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */; };
-		CB267AB320FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB267AB220FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib */; };
-		CB74DC9320D88EC4008DBB6C /* SBATrackedTextfieldCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB74DC9220D88EC4008DBB6C /* SBATrackedTextfieldCell.xib */; };
-		CBC1F46220F98F8A003DFF9B /* SBATrackedReminderModalButtonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CBC1F44D20F98F8A003DFF9B /* SBATrackedReminderModalButtonCell.xib */; };
-		CBED324420C5E2F6009D32F0 /* SBATrackedMedicationReviewStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBED324320C5E2F6009D32F0 /* SBATrackedMedicationReviewStepObject.swift */; };
-		CBED325A20C5E349009D32F0 /* SBATrackedMedicationReviewStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBED325920C5E349009D32F0 /* SBATrackedMedicationReviewStepViewController.swift */; };
-		CBED325C20C5EBDA009D32F0 /* SBATrackedMedicationReviewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CBED325B20C5EBDA009D32F0 /* SBATrackedMedicationReviewCell.xib */; };
 		CBED325D20C83538009D32F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F83B450B20324A33002825AE /* Assets.xcassets */; };
 		F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */; };
 		F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */; };
@@ -50,27 +41,10 @@
 		F83B450C20324A33002825AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F83B450B20324A33002825AE /* Assets.xcassets */; };
 		F83B450F20324A33002825AE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F83B450D20324A33002825AE /* LaunchScreen.storyboard */; };
 		F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84794F7207FDEED0024A230 /* SBAFactory.swift */; };
-		F847950D207FE2CB0024A230 /* TrackingNavigatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F847950C207FE2CB0024A230 /* TrackingNavigatorTests.swift */; };
-		F847950F207FE2E20024A230 /* MedicationTrackingNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F847950E207FE2E20024A230 /* MedicationTrackingNavigationTests.swift */; };
-		F8479512207FE3160024A230 /* TrackedSelectionDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479510207FE3160024A230 /* TrackedSelectionDataSourceTests.swift */; };
-		F8479513207FE3160024A230 /* TrackedLoggingDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479511207FE3160024A230 /* TrackedLoggingDataSourceTests.swift */; };
-		F8479515207FE3720024A230 /* CodableTrackedDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479514207FE3720024A230 /* CodableTrackedDataTests.swift */; };
-		F847951D207FEA8C0024A230 /* SBATrackedLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479518207FEA4C0024A230 /* SBATrackedLoggingStepViewController.swift */; };
-		F847951E207FEA9D0024A230 /* SBATrackedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA5D207FD64200D29F60 /* SBATrackedItem.swift */; };
-		F847951F207FEA9D0024A230 /* SBAMedicationTrackingStepNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA67207FD83200D29F60 /* SBAMedicationTrackingStepNavigator.swift */; };
-		F8479521207FEA9D0024A230 /* SBATrackedItemsLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA6C207FD83300D29F60 /* SBATrackedItemsLoggingStepObject.swift */; };
-		F8479523207FEA9D0024A230 /* SBATrackedItemsStepNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA69207FD83300D29F60 /* SBATrackedItemsStepNavigator.swift */; };
-		F8479524207FEA9D0024A230 /* SBATrackedSelectionStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA6B207FD83300D29F60 /* SBATrackedSelectionStepObject.swift */; };
-		F8479525207FEA9D0024A230 /* SBATrackedSelectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA73207FD96100D29F60 /* SBATrackedSelectionDataSource.swift */; };
-		F8479526207FEA9D0024A230 /* SBATrackedLoggingDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA75207FD96100D29F60 /* SBATrackedLoggingDataSource.swift */; };
-		F8479527207FEA9D0024A230 /* SBATrackingDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA74207FD96100D29F60 /* SBATrackingDataSource.swift */; };
 		F847952E207FEE090024A230 /* Medication.json in Resources */ = {isa = PBXBuildFile; fileRef = F847952D207FEE090024A230 /* Medication.json */; };
-		F85AABE920800D120059F019 /* SBATrackedLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F8479530207FF0DF0024A230 /* SBATrackedLoggingCell.xib */; };
-		F869804B20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F869804A20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift */; };
 		F86AFC2822AED6140070E347 /* BridgeApp.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = F86AFC2722AED6140070E347 /* BridgeApp.stringsdict */; };
 		F87D2AC622780599007CA2B5 /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC522780599007CA2B5 /* BridgeSDK.framework */; };
 		F87D2AC822780599007CA2B5 /* Research.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC722780599007CA2B5 /* Research.framework */; };
-		F87D2ACC22780599007CA2B5 /* ResearchUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2ACB22780599007CA2B5 /* ResearchUI.framework */; };
 		F87D2ACE227805B1007CA2B5 /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2ACD227805B1007CA2B5 /* BridgeSDK_Test.framework */; };
 		F87D2AD0227805B1007CA2B5 /* Research_UnitTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2ACF227805B1007CA2B5 /* Research_UnitTest.framework */; };
 		F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87D69692037956B00409087 /* SBAActivityReference.swift */; };
@@ -82,46 +56,90 @@
 		F886FD342036067300EF2248 /* BridgeApp.strings in Resources */ = {isa = PBXBuildFile; fileRef = F886FD332036067300EF2248 /* BridgeApp.strings */; };
 		F899D0E520D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */; };
 		F89B3DEA20C6F647002EAE2D /* Sequence+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89B3DE920C6F647002EAE2D /* Sequence+Utilities.swift */; };
-		F89B3DEC20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89B3DEB20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift */; };
 		F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F67692032789800B5CC4B /* StepProtocolTests.swift */; };
 		F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676B203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift */; };
 		F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F676D20327A8700B5CC4B /* SBASurveyConfiguration.swift */; };
-		F8A5CE4A20A2AE7100E9FD75 /* SBARootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4920A2AE7100E9FD75 /* SBARootViewController.swift */; };
-		F8A5CE4C20A2B5C400E9FD75 /* SBAAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4B20A2B5C400E9FD75 /* SBAAppDelegate.swift */; };
-		F8A5CE4F20A2BBEF00E9FD75 /* CatastrophicError.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8A5CE4D20A2BBEF00E9FD75 /* CatastrophicError.storyboard */; };
-		F8A5CE5020A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4E20A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift */; };
 		F8A5CE6F20A36B0700E9FD75 /* SBAScheduleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE6E20A36B0700E9FD75 /* SBAScheduleManager.swift */; };
 		F8A5CE9020A3837100E9FD75 /* SBAParticipantManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE8F20A3837100E9FD75 /* SBAParticipantManager.swift */; };
-		F8A7FA0322B31E660053FF74 /* SBAMedicationDosageTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F8A7FA0122B31E660053FF74 /* SBAMedicationDosageTableCell.xib */; };
-		F8A7FA0822B809FA0053FF74 /* Medication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8A7FA0722B809FA0053FF74 /* Medication.storyboard */; };
-		F8A7FA0C22B814760053FF74 /* BoxedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA0B22B814760053FF74 /* BoxedTextField.swift */; };
-		F8A7FA0E22B815570053FF74 /* SBAMedicationEditDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA0D22B815570053FF74 /* SBAMedicationEditDetailsViewController.swift */; };
-		F8A7FA1422B9B3820053FF74 /* SBADayTimePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA1322B9B3820053FF74 /* SBADayTimePickerViewController.swift */; };
 		F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A8EAF82037834E00FED4EC /* SBAModuleIdentifier.swift */; };
 		F8B86AA520C074E800943127 /* ScheduleFilteringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B86AA420C074E800943127 /* ScheduleFilteringTests.swift */; };
 		F8B86AA720C075FA00943127 /* ScheduleArchivingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B86AA620C075FA00943127 /* ScheduleArchivingTests.swift */; };
 		F8BF02A620B60F730016C343 /* MockActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8BF02A520B60F730016C343 /* MockActivityManager.swift */; };
 		F8BF02F020B71F580016C343 /* SBAScheduledActivityArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8BF02EF20B71F580016C343 /* SBAScheduledActivityArchive.swift */; };
 		F8C7D3D020927065007490BC /* Symptoms.json in Resources */ = {isa = PBXBuildFile; fileRef = F8C7D3BC20927065007490BC /* Symptoms.json */; };
-		F8C7D3F6209285A8007490BC /* SBASymptomLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */; };
-		F8C7D40D20929AFF007490BC /* SBASymptomLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D40C20929AFF007490BC /* SBASymptomLoggingStepViewController.swift */; };
-		F8C7D4132092A1F5007490BC /* SBASymptomLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F8C7D4112092A1F5007490BC /* SBASymptomLoggingCell.xib */; };
 		F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D4152092CF36007490BC /* UIColor+BridgeKeyNames.swift */; };
-		F8CE288A211E27E2007765F1 /* SBAMedicationReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8CE2889211E27E2007765F1 /* SBAMedicationReminderManager.swift */; };
 		F8E4A4EF20A420380046577B /* SBAScheduleManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4A4EE20A420380046577B /* SBAScheduleManagerTests.swift */; };
 		F8E4A4FB20A4D9F00046577B /* JSONDecoder+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4A4FA20A4D9F00046577B /* JSONDecoder+Utilities.swift */; };
-		F8F063DA20BF7E4C00DB7D9C /* SBAClientDataResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */; };
-		F8F063F220BFB51B00DB7D9C /* ArchivableTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */; };
 		F8F367BB2159C03C00A49F89 /* SBAArchiveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F367BA2159C03C00A49F89 /* SBAArchiveManager.swift */; };
 		F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7241D203D007800AC0E5B /* SurveyTests.swift */; };
-		F8FD5681214714A000BA2FA6 /* SBATaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */; };
-		FF3A810B22C16D0000CD737D /* SBATimeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810A22C16D0000CD737D /* SBATimeRange.swift */; };
-		FF3A810D22C16DE100CD737D /* SBAWarningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */; };
 		FF3A810F22C17B9300CD737D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF3A810E22C17B9300CD737D /* Images.xcassets */; };
-		FF3CC62322D69C8C0037E65B /* SBAMedicationTrackingStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3CC62222D69C8C0037E65B /* SBAMedicationTrackingStep.swift */; };
-		FF3F050622EFBD5E008C507B /* SBATriggerResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3F050522EFBD5E008C507B /* SBATriggerResult.swift */; };
 		FF63D5002303731B006C7BD3 /* SBALearnItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FE2303731A006C7BD3 /* SBALearnItem.swift */; };
 		FF63D5012303731B006C7BD3 /* SBALearnInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FF2303731A006C7BD3 /* SBALearnInfo.swift */; };
+		FF9D7969230C71B1005CFB37 /* BridgeAppUI.h in Headers */ = {isa = PBXBuildFile; fileRef = FF9D7967230C71B1005CFB37 /* BridgeAppUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FF9D796C230C71B1005CFB37 /* BridgeAppUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */; };
+		FF9D796D230C71B1005CFB37 /* BridgeAppUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FF9D7971230C7249005CFB37 /* BridgeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44A52032467D002825AE /* BridgeApp.framework */; };
+		FF9D7972230C7259005CFB37 /* Research.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC722780599007CA2B5 /* Research.framework */; };
+		FF9D7973230C725D005CFB37 /* ResearchUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2ACB22780599007CA2B5 /* ResearchUI.framework */; };
+		FF9D7974230C7279005CFB37 /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC522780599007CA2B5 /* BridgeSDK.framework */; };
+		FF9D7983230C737C005CFB37 /* DataTracking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D797A230C737C005CFB37 /* DataTracking.framework */; };
+		FF9D798C230C737C005CFB37 /* DataTracking.h in Headers */ = {isa = PBXBuildFile; fileRef = FF9D797C230C737C005CFB37 /* DataTracking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FF9D798F230C737C005CFB37 /* DataTracking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D797A230C737C005CFB37 /* DataTracking.framework */; };
+		FF9D7990230C737C005CFB37 /* DataTracking.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D797A230C737C005CFB37 /* DataTracking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FF9D7998230C73BE005CFB37 /* Research.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC722780599007CA2B5 /* Research.framework */; };
+		FF9D7999230C73C4005CFB37 /* ResearchUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2ACB22780599007CA2B5 /* ResearchUI.framework */; };
+		FF9D799A230C74D4005CFB37 /* SBAAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4B20A2B5C400E9FD75 /* SBAAppDelegate.swift */; };
+		FF9D799B230C74D4005CFB37 /* SBARootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4920A2AE7100E9FD75 /* SBARootViewController.swift */; };
+		FF9D799C230C74D4005CFB37 /* CatastrophicError.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8A5CE4D20A2BBEF00E9FD75 /* CatastrophicError.storyboard */; };
+		FF9D799D230C74D4005CFB37 /* SBACatastrophicErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4E20A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift */; };
+		FF9D799F230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9D799E230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift */; };
+		FF9D79A0230C758F005CFB37 /* SBATaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */; };
+		FF9D79A1230C759C005CFB37 /* SBATrackedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA5D207FD64200D29F60 /* SBATrackedItem.swift */; };
+		FF9D79A2230C759C005CFB37 /* SBATimeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810A22C16D0000CD737D /* SBATimeRange.swift */; };
+		FF9D79A3230C759C005CFB37 /* SBATrackedItemsStepNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA69207FD83300D29F60 /* SBATrackedItemsStepNavigator.swift */; };
+		FF9D79A4230C759C005CFB37 /* SBATrackingDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA74207FD96100D29F60 /* SBATrackingDataSource.swift */; };
+		FF9D79A5230C759C005CFB37 /* SBATrackedItemsLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA6C207FD83300D29F60 /* SBATrackedItemsLoggingStepObject.swift */; };
+		FF9D79A6230C759C005CFB37 /* SBATrackedLoggingDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA75207FD96100D29F60 /* SBATrackedLoggingDataSource.swift */; };
+		FF9D79A7230C759C005CFB37 /* SBATrackedSelectionStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA6B207FD83300D29F60 /* SBATrackedSelectionStepObject.swift */; };
+		FF9D79A8230C759C005CFB37 /* SBATrackedSelectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA73207FD96100D29F60 /* SBATrackedSelectionDataSource.swift */; };
+		FF9D79A9230C759C005CFB37 /* SBATrackedItemRemindersStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB18537F21064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift */; };
+		FF9D79AA230C75A7005CFB37 /* SBATrackedReminderModalButtonCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CBC1F44D20F98F8A003DFF9B /* SBATrackedReminderModalButtonCell.xib */; };
+		FF9D79AB230C75A7005CFB37 /* SBATrackedLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F8479530207FF0DF0024A230 /* SBATrackedLoggingCell.xib */; };
+		FF9D79AC230C75AC005CFB37 /* SBATrackedLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479518207FEA4C0024A230 /* SBATrackedLoggingStepViewController.swift */; };
+		FF9D79AD230C75AC005CFB37 /* SBATrackedItemRemindersStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */; };
+		FF9D79AE230C75B4005CFB37 /* SBAMedicationTrackingStepNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA67207FD83200D29F60 /* SBAMedicationTrackingStepNavigator.swift */; };
+		FF9D79AF230C75B4005CFB37 /* SBATrackedMedicationReviewStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBED324320C5E2F6009D32F0 /* SBATrackedMedicationReviewStepObject.swift */; };
+		FF9D79B0230C75B4005CFB37 /* SBATrackedMedicationReviewStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBED325920C5E349009D32F0 /* SBATrackedMedicationReviewStepViewController.swift */; };
+		FF9D79B1230C75B4005CFB37 /* SBAMedicationReminderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8CE2889211E27E2007765F1 /* SBAMedicationReminderManager.swift */; };
+		FF9D79B2230C75B4005CFB37 /* SBAMedicationLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89B3DEB20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift */; };
+		FF9D79B3230C75B4005CFB37 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB267A9C20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift */; };
+		FF9D79B4230C75B4005CFB37 /* SBAMedicationEditDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA0D22B815570053FF74 /* SBAMedicationEditDetailsViewController.swift */; };
+		FF9D79B5230C75B4005CFB37 /* SBADayTimePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA1322B9B3820053FF74 /* SBADayTimePickerViewController.swift */; };
+		FF9D79B6230C75B4005CFB37 /* SBAWarningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */; };
+		FF9D79B7230C75B4005CFB37 /* BoxedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A7FA0B22B814760053FF74 /* BoxedTextField.swift */; };
+		FF9D79B8230C75B4005CFB37 /* SBAMedicationTrackingStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3CC62222D69C8C0037E65B /* SBAMedicationTrackingStep.swift */; };
+		FF9D79B9230C75BB005CFB37 /* SBATrackedTextfieldCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB74DC9220D88EC4008DBB6C /* SBATrackedTextfieldCell.xib */; };
+		FF9D79BA230C75BB005CFB37 /* SBAMedicationLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CB267AB220FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib */; };
+		FF9D79BB230C75BB005CFB37 /* SBATrackedMedicationReviewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CBED325B20C5EBDA009D32F0 /* SBATrackedMedicationReviewCell.xib */; };
+		FF9D79BC230C75BB005CFB37 /* SBAMedicationDosageTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F8A7FA0122B31E660053FF74 /* SBAMedicationDosageTableCell.xib */; };
+		FF9D79BD230C75BB005CFB37 /* Medication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8A7FA0722B809FA0053FF74 /* Medication.storyboard */; };
+		FF9D79BE230C75C3005CFB37 /* SBASymptomLoggingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F8C7D4112092A1F5007490BC /* SBASymptomLoggingCell.xib */; };
+		FF9D79BF230C75C9005CFB37 /* SBASymptomLoggingStepObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */; };
+		FF9D79C0230C75C9005CFB37 /* SBASymptomLoggingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D40C20929AFF007490BC /* SBASymptomLoggingStepViewController.swift */; };
+		FF9D79C1230C75D0005CFB37 /* SBATriggerResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3F050522EFBD5E008C507B /* SBATriggerResult.swift */; };
+		FF9D79C3230C76AB005CFB37 /* SBADataTrackingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9D79C2230C76AB005CFB37 /* SBADataTrackingFactory.swift */; };
+		FF9D79C5230C78CB005CFB37 /* ArchivableTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */; };
+		FF9D79C6230C78CB005CFB37 /* MedicationLoggingDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F869804A20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift */; };
+		FF9D79C7230C78CB005CFB37 /* MedicationTrackingNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F847950E207FE2E20024A230 /* MedicationTrackingNavigationTests.swift */; };
+		FF9D79C8230C78CB005CFB37 /* CodableTrackedDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479514207FE3720024A230 /* CodableTrackedDataTests.swift */; };
+		FF9D79C9230C78CB005CFB37 /* TrackingNavigatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F847950C207FE2CB0024A230 /* TrackingNavigatorTests.swift */; };
+		FF9D79CA230C78CB005CFB37 /* TrackedLoggingDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479511207FE3160024A230 /* TrackedLoggingDataSourceTests.swift */; };
+		FF9D79CB230C78CB005CFB37 /* TrackedSelectionDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8479510207FE3160024A230 /* TrackedSelectionDataSourceTests.swift */; };
+		FF9D79CD230C7A5F005CFB37 /* TimeZone+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9D79CC230C7A5F005CFB37 /* TimeZone+Utilities.swift */; };
+		FF9D79CF230C7C30005CFB37 /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D79CE230C7C30005CFB37 /* BridgeSDK.framework */; };
+		FF9D79D0230C7C30005CFB37 /* BridgeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44A52032467D002825AE /* BridgeApp.framework */; };
+		FF9D79D2230C7DEF005CFB37 /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D79D1230C7DEF005CFB37 /* BridgeSDK_Test.framework */; };
+		FF9D79D4230C7DEF005CFB37 /* Research_UnitTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D79D3230C7DEF005CFB37 /* Research_UnitTest.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -146,6 +164,34 @@
 			remoteGlobalIDString = F83B450120324A33002825AE;
 			remoteInfo = BridgeAppExample;
 		};
+		FF9D796A230C71B1005CFB37 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F83B449C2032467D002825AE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FF9D7964230C71B1005CFB37;
+			remoteInfo = BridgeAppUI;
+		};
+		FF9D7984230C737C005CFB37 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F83B449C2032467D002825AE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FF9D7979230C737C005CFB37;
+			remoteInfo = DataTracking;
+		};
+		FF9D7986230C737C005CFB37 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F83B449C2032467D002825AE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F83B450120324A33002825AE;
+			remoteInfo = BridgeAppExample;
+		};
+		FF9D798D230C737C005CFB37 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F83B449C2032467D002825AE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FF9D7979230C737C005CFB37;
+			remoteInfo = DataTracking;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -155,7 +201,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				FF9D7990230C737C005CFB37 /* DataTracking.framework in Embed Frameworks */,
 				F825BA56207FD0C500D29F60 /* BridgeApp.framework in Embed Frameworks */,
+				FF9D796D230C71B1005CFB37 /* BridgeAppUI.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -271,7 +319,6 @@
 		F8CE2889211E27E2007765F1 /* SBAMedicationReminderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationReminderManager.swift; sourceTree = "<group>"; };
 		F8E4A4EE20A420380046577B /* SBAScheduleManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAScheduleManagerTests.swift; sourceTree = "<group>"; };
 		F8E4A4FA20A4D9F00046577B /* JSONDecoder+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONDecoder+Utilities.swift"; sourceTree = "<group>"; };
-		F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAClientDataResult.swift; sourceTree = "<group>"; };
 		F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivableTrackingTests.swift; sourceTree = "<group>"; };
 		F8F367BA2159C03C00A49F89 /* SBAArchiveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAArchiveManager.swift; sourceTree = "<group>"; };
 		F8F7241D203D007800AC0E5B /* SurveyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyTests.swift; sourceTree = "<group>"; };
@@ -283,6 +330,21 @@
 		FF3F050522EFBD5E008C507B /* SBATriggerResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATriggerResult.swift; sourceTree = "<group>"; };
 		FF63D4FE2303731A006C7BD3 /* SBALearnItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBALearnItem.swift; sourceTree = "<group>"; };
 		FF63D4FF2303731A006C7BD3 /* SBALearnInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBALearnInfo.swift; sourceTree = "<group>"; };
+		FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BridgeAppUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9D7967230C71B1005CFB37 /* BridgeAppUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeAppUI.h; sourceTree = "<group>"; };
+		FF9D7968230C71B1005CFB37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FF9D797A230C737C005CFB37 /* DataTracking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataTracking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9D797C230C737C005CFB37 /* DataTracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataTracking.h; sourceTree = "<group>"; };
+		FF9D797D230C737C005CFB37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FF9D7982230C737C005CFB37 /* DataTrackingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataTrackingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9D798B230C737C005CFB37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FF9D799E230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBJSONValue+RSDJSONSerializable.swift"; sourceTree = "<group>"; };
+		FF9D79C2230C76AB005CFB37 /* SBADataTrackingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBADataTrackingFactory.swift; sourceTree = "<group>"; };
+		FF9D79CC230C7A5F005CFB37 /* TimeZone+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeZone+Utilities.swift"; sourceTree = "<group>"; };
+		FF9D79CE230C7C30005CFB37 /* BridgeSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BridgeSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9D79D1230C7DEF005CFB37 /* BridgeSDK_Test.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BridgeSDK_Test.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9D79D3230C7DEF005CFB37 /* Research_UnitTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Research_UnitTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9D79D5230C7E8D005CFB37 /* DataTrackingTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DataTrackingTests-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -292,7 +354,6 @@
 			files = (
 				F87D2AC622780599007CA2B5 /* BridgeSDK.framework in Frameworks */,
 				F87D2AC822780599007CA2B5 /* Research.framework in Frameworks */,
-				F87D2ACC22780599007CA2B5 /* ResearchUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,7 +371,41 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF9D798F230C737C005CFB37 /* DataTracking.framework in Frameworks */,
 				F825BA55207FD0C500D29F60 /* BridgeApp.framework in Frameworks */,
+				FF9D796C230C71B1005CFB37 /* BridgeAppUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D7962230C71B1005CFB37 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D7974230C7279005CFB37 /* BridgeSDK.framework in Frameworks */,
+				FF9D7973230C725D005CFB37 /* ResearchUI.framework in Frameworks */,
+				FF9D7972230C7259005CFB37 /* Research.framework in Frameworks */,
+				FF9D7971230C7249005CFB37 /* BridgeApp.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D7977230C737C005CFB37 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D79D0230C7C30005CFB37 /* BridgeApp.framework in Frameworks */,
+				FF9D79CF230C7C30005CFB37 /* BridgeSDK.framework in Frameworks */,
+				FF9D7999230C73C4005CFB37 /* ResearchUI.framework in Frameworks */,
+				FF9D7998230C73BE005CFB37 /* Research.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D797F230C737C005CFB37 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D79D2230C7DEF005CFB37 /* BridgeSDK_Test.framework in Frameworks */,
+				FF9D79D4230C7DEF005CFB37 /* Research_UnitTest.framework in Frameworks */,
+				FF9D7983230C737C005CFB37 /* DataTracking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,34 +433,6 @@
 				60B08E7C221B413D00166CAF /* ProfileDataSourceTests.swift */,
 			);
 			name = "Profile Tests";
-			sourceTree = "<group>";
-		};
-		F825BA5B207FD49D00D29F60 /* Data Tracking */ = {
-			isa = PBXGroup;
-			children = (
-				F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */,
-				F8F063D920BF7E4C00DB7D9C /* SBAClientDataResult.swift */,
-				F8479516207FE99A0024A230 /* Model */,
-				F8479517207FE9BB0024A230 /* iOS */,
-				F8C2F37D22B2EC7800AC6A41 /* Medication Tracking */,
-				F8C2F37F22B2EE2600AC6A41 /* Symptom Tracking */,
-				FF3F050422EFBD23008C507B /* Triggers Tracking */,
-			);
-			path = "Data Tracking";
-			sourceTree = "<group>";
-		};
-		F825BA79207FD9AE00D29F60 /* Data Tracking Tests */ = {
-			isa = PBXGroup;
-			children = (
-				F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */,
-				F8479514207FE3720024A230 /* CodableTrackedDataTests.swift */,
-				F847950C207FE2CB0024A230 /* TrackingNavigatorTests.swift */,
-				F847950E207FE2E20024A230 /* MedicationTrackingNavigationTests.swift */,
-				F869804A20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift */,
-				F8479510207FE3160024A230 /* TrackedSelectionDataSourceTests.swift */,
-				F8479511207FE3160024A230 /* TrackedLoggingDataSourceTests.swift */,
-			);
-			name = "Data Tracking Tests";
 			sourceTree = "<group>";
 		};
 		F83906E420325C53005FC0BA /* Resources */ = {
@@ -410,9 +477,12 @@
 		F83B449B2032467D002825AE = {
 			isa = PBXGroup;
 			children = (
+				F83B450320324A33002825AE /* BridgeAppExample */,
 				F83B44A72032467D002825AE /* BridgeApp */,
 				F83B44B22032467D002825AE /* BridgeAppTests */,
-				F83B450320324A33002825AE /* BridgeAppExample */,
+				FF9D7966230C71B1005CFB37 /* BridgeAppUI */,
+				FF9D797B230C737C005CFB37 /* DataTracking */,
+				FF9D7988230C737C005CFB37 /* DataTrackingTests */,
 				F83B44C02032470A002825AE /* Frameworks */,
 				F83B44A62032467D002825AE /* Products */,
 			);
@@ -424,6 +494,9 @@
 				F83B44A52032467D002825AE /* BridgeApp.framework */,
 				F83B44AE2032467D002825AE /* BridgeAppTests.xctest */,
 				F83B450220324A33002825AE /* BridgeAppExample.app */,
+				FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */,
+				FF9D797A230C737C005CFB37 /* DataTracking.framework */,
+				FF9D7982230C737C005CFB37 /* DataTrackingTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -434,12 +507,10 @@
 				F83B44A82032467D002825AE /* BridgeApp.h */,
 				F818E2402032B07D00C538ED /* README.md */,
 				F83B44A92032467D002825AE /* Info-iOS.plist */,
-				60D9611220BF161200B5CFEB /* Profile */,
 				F8A5CE8320A36CEE00E9FD75 /* Study Management */,
 				F89F67602032774800B5CC4B /* Research Model */,
-				F825BA5B207FD49D00D29F60 /* Data Tracking */,
+				60D9611220BF161200B5CFEB /* Profile */,
 				FF63D4FD230372F3006C7BD3 /* Learn */,
-				F8A5CE3520A2ADFF00E9FD75 /* iOS */,
 				F886FD2B203523D400EF2248 /* Extensions */,
 				F886FD322036042E00EF2248 /* Localization */,
 				F8C7D4142092CEF3007490BC /* StyleGuide */,
@@ -454,7 +525,6 @@
 				F85AABD3207FFCF40059F019 /* BridgeAppTests-Bridging-Header.h */,
 				F84B312B207FF9EB0006F2C7 /* Mock Objects */,
 				F8A5CE9120A41FA500E9FD75 /* Study Management */,
-				F825BA79207FD9AE00D29F60 /* Data Tracking Tests */,
 				F84B3117207FF9BE0006F2C7 /* Research Model Tests */,
 				80027FED2213679D000B00B0 /* Profile Tests */,
 			);
@@ -464,6 +534,9 @@
 		F83B44C02032470A002825AE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FF9D79D1230C7DEF005CFB37 /* BridgeSDK_Test.framework */,
+				FF9D79D3230C7DEF005CFB37 /* Research_UnitTest.framework */,
+				FF9D79CE230C7C30005CFB37 /* BridgeSDK.framework */,
 				F87D2ACD227805B1007CA2B5 /* BridgeSDK_Test.framework */,
 				F87D2ACF227805B1007CA2B5 /* Research_UnitTest.framework */,
 				F87D2AC522780599007CA2B5 /* BridgeSDK.framework */,
@@ -491,6 +564,7 @@
 		F8479516207FE99A0024A230 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */,
 				F825BA5D207FD64200D29F60 /* SBATrackedItem.swift */,
 				FF3A810A22C16D0000CD737D /* SBATimeRange.swift */,
 				F825BA69207FD83300D29F60 /* SBATrackedItemsStepNavigator.swift */,
@@ -552,6 +626,7 @@
 				F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */,
 				F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */,
 				F89B3DE920C6F647002EAE2D /* Sequence+Utilities.swift */,
+				FF9D79CC230C7A5F005CFB37 /* TimeZone+Utilities.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -577,6 +652,7 @@
 				F80F175E2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift */,
 				F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */,
 				F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */,
+				FF9D799E230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift */,
 			);
 			path = "Research Model";
 			sourceTree = "<group>";
@@ -691,6 +767,47 @@
 			path = Learn;
 			sourceTree = "<group>";
 		};
+		FF9D7966230C71B1005CFB37 /* BridgeAppUI */ = {
+			isa = PBXGroup;
+			children = (
+				FF9D7967230C71B1005CFB37 /* BridgeAppUI.h */,
+				FF9D7968230C71B1005CFB37 /* Info.plist */,
+				F8A5CE3520A2ADFF00E9FD75 /* iOS */,
+			);
+			path = BridgeAppUI;
+			sourceTree = "<group>";
+		};
+		FF9D797B230C737C005CFB37 /* DataTracking */ = {
+			isa = PBXGroup;
+			children = (
+				FF9D797C230C737C005CFB37 /* DataTracking.h */,
+				FF9D797D230C737C005CFB37 /* Info.plist */,
+				FF9D79C2230C76AB005CFB37 /* SBADataTrackingFactory.swift */,
+				F8479516207FE99A0024A230 /* Model */,
+				F8479517207FE9BB0024A230 /* iOS */,
+				F8C2F37D22B2EC7800AC6A41 /* Medication Tracking */,
+				F8C2F37F22B2EE2600AC6A41 /* Symptom Tracking */,
+				FF3F050422EFBD23008C507B /* Triggers Tracking */,
+			);
+			path = DataTracking;
+			sourceTree = "<group>";
+		};
+		FF9D7988230C737C005CFB37 /* DataTrackingTests */ = {
+			isa = PBXGroup;
+			children = (
+				FF9D798B230C737C005CFB37 /* Info.plist */,
+				FF9D79D5230C7E8D005CFB37 /* DataTrackingTests-Bridging-Header.h */,
+				F8F063F120BFB51B00DB7D9C /* ArchivableTrackingTests.swift */,
+				F8479514207FE3720024A230 /* CodableTrackedDataTests.swift */,
+				F847950C207FE2CB0024A230 /* TrackingNavigatorTests.swift */,
+				F847950E207FE2E20024A230 /* MedicationTrackingNavigationTests.swift */,
+				F869804A20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift */,
+				F8479510207FE3160024A230 /* TrackedSelectionDataSourceTests.swift */,
+				F8479511207FE3160024A230 /* TrackedLoggingDataSourceTests.swift */,
+			);
+			path = DataTrackingTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -699,6 +816,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				F83B44B62032467D002825AE /* BridgeApp.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D7960230C71B1005CFB37 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D7969230C71B1005CFB37 /* BridgeAppUI.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D7975230C737C005CFB37 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D798C230C737C005CFB37 /* DataTracking.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -755,11 +888,68 @@
 			);
 			dependencies = (
 				F825BA58207FD0C500D29F60 /* PBXTargetDependency */,
+				FF9D796B230C71B1005CFB37 /* PBXTargetDependency */,
+				FF9D798E230C737C005CFB37 /* PBXTargetDependency */,
 			);
 			name = BridgeAppExample;
 			productName = BridgeAppExample;
 			productReference = F83B450220324A33002825AE /* BridgeAppExample.app */;
 			productType = "com.apple.product-type.application";
+		};
+		FF9D7964230C71B1005CFB37 /* BridgeAppUI (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF9D7970230C71B1005CFB37 /* Build configuration list for PBXNativeTarget "BridgeAppUI (iOS)" */;
+			buildPhases = (
+				FF9D7960230C71B1005CFB37 /* Headers */,
+				FF9D7961230C71B1005CFB37 /* Sources */,
+				FF9D7962230C71B1005CFB37 /* Frameworks */,
+				FF9D7963230C71B1005CFB37 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "BridgeAppUI (iOS)";
+			productName = BridgeAppUI;
+			productReference = FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		FF9D7979230C737C005CFB37 /* DataTracking (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF9D7991230C737C005CFB37 /* Build configuration list for PBXNativeTarget "DataTracking (iOS)" */;
+			buildPhases = (
+				FF9D7975230C737C005CFB37 /* Headers */,
+				FF9D7976230C737C005CFB37 /* Sources */,
+				FF9D7977230C737C005CFB37 /* Frameworks */,
+				FF9D7978230C737C005CFB37 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DataTracking (iOS)";
+			productName = DataTracking;
+			productReference = FF9D797A230C737C005CFB37 /* DataTracking.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		FF9D7981230C737C005CFB37 /* DataTrackingTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF9D7994230C737C005CFB37 /* Build configuration list for PBXNativeTarget "DataTrackingTests" */;
+			buildPhases = (
+				FF9D797E230C737C005CFB37 /* Sources */,
+				FF9D797F230C737C005CFB37 /* Frameworks */,
+				FF9D7980230C737C005CFB37 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FF9D7985230C737C005CFB37 /* PBXTargetDependency */,
+				FF9D7987230C737C005CFB37 /* PBXTargetDependency */,
+			);
+			name = DataTrackingTests;
+			productName = DataTrackingTests;
+			productReference = FF9D7982230C737C005CFB37 /* DataTrackingTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -767,7 +957,7 @@
 		F83B449C2032467D002825AE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0920;
+				LastSwiftUpdateCheck = 1030;
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Sage Bionetworks";
 				TargetAttributes = {
@@ -801,6 +991,19 @@
 							};
 						};
 					};
+					FF9D7964230C71B1005CFB37 = {
+						CreatedOnToolsVersion = 10.3;
+						ProvisioningStyle = Automatic;
+					};
+					FF9D7979230C737C005CFB37 = {
+						CreatedOnToolsVersion = 10.3;
+						ProvisioningStyle = Automatic;
+					};
+					FF9D7981230C737C005CFB37 = {
+						CreatedOnToolsVersion = 10.3;
+						ProvisioningStyle = Automatic;
+						TestTargetID = F83B450120324A33002825AE;
+					};
 				};
 			};
 			buildConfigurationList = F83B449F2032467D002825AE /* Build configuration list for PBXProject "BridgeApp" */;
@@ -818,6 +1021,9 @@
 			targets = (
 				F83B44A42032467D002825AE /* BridgeApp (iOS) */,
 				F83B44AD2032467D002825AE /* BridgeAppTests */,
+				FF9D7964230C71B1005CFB37 /* BridgeAppUI (iOS) */,
+				FF9D7979230C737C005CFB37 /* DataTracking (iOS) */,
+				FF9D7981230C737C005CFB37 /* DataTrackingTests */,
 				F83B450120324A33002825AE /* BridgeAppExample */,
 			);
 		};
@@ -828,18 +1034,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CBED325C20C5EBDA009D32F0 /* SBATrackedMedicationReviewCell.xib in Resources */,
-				F8A5CE4F20A2BBEF00E9FD75 /* CatastrophicError.storyboard in Resources */,
-				CBC1F46220F98F8A003DFF9B /* SBATrackedReminderModalButtonCell.xib in Resources */,
-				F8C7D4132092A1F5007490BC /* SBASymptomLoggingCell.xib in Resources */,
-				F8A7FA0322B31E660053FF74 /* SBAMedicationDosageTableCell.xib in Resources */,
 				FF3A810F22C17B9300CD737D /* Images.xcassets in Resources */,
-				CB74DC9320D88EC4008DBB6C /* SBATrackedTextfieldCell.xib in Resources */,
-				F85AABE920800D120059F019 /* SBATrackedLoggingCell.xib in Resources */,
 				CBED325D20C83538009D32F0 /* Assets.xcassets in Resources */,
-				CB267AB320FD8CEF00D6C116 /* SBAMedicationLoggingCell.xib in Resources */,
 				F818E2412032B07E00C538ED /* README.md in Resources */,
-				F8A7FA0822B809FA0053FF74 /* Medication.storyboard in Resources */,
 				F886FD342036067300EF2248 /* BridgeApp.strings in Resources */,
 				F86AFC2822AED6140070E347 /* BridgeApp.stringsdict in Resources */,
 			);
@@ -868,6 +1065,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF9D7963230C71B1005CFB37 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D799C230C74D4005CFB37 /* CatastrophicError.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D7978230C737C005CFB37 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D79BE230C75C3005CFB37 /* SBASymptomLoggingCell.xib in Resources */,
+				FF9D79BC230C75BB005CFB37 /* SBAMedicationDosageTableCell.xib in Resources */,
+				FF9D79AA230C75A7005CFB37 /* SBATrackedReminderModalButtonCell.xib in Resources */,
+				FF9D79B9230C75BB005CFB37 /* SBATrackedTextfieldCell.xib in Resources */,
+				FF9D79AB230C75A7005CFB37 /* SBATrackedLoggingCell.xib in Resources */,
+				FF9D79BD230C75BB005CFB37 /* Medication.storyboard in Resources */,
+				FF9D79BB230C75BB005CFB37 /* SBATrackedMedicationReviewCell.xib in Resources */,
+				FF9D79BA230C75BB005CFB37 /* SBAMedicationLoggingCell.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D7980230C737C005CFB37 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -875,58 +1102,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8CE288A211E27E2007765F1 /* SBAMedicationReminderManager.swift in Sources */,
 				F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */,
 				60E84E5C20D306A9000DDCB1 /* SBAProfileItemType.swift in Sources */,
-				F8A7FA1422B9B3820053FF74 /* SBADayTimePickerViewController.swift in Sources */,
 				F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */,
 				F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */,
-				FF3A810B22C16D0000CD737D /* SBATimeRange.swift in Sources */,
-				CB267A9D20FD8C1D00D6C116 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */,
-				F8C7D3F6209285A8007490BC /* SBASymptomLoggingStepObject.swift in Sources */,
-				F8479521207FEA9D0024A230 /* SBATrackedItemsLoggingStepObject.swift in Sources */,
-				F8A7FA0E22B815570053FF74 /* SBAMedicationEditDetailsViewController.swift in Sources */,
 				F8398C9A212C868A005DE6E0 /* SBAReportManager.swift in Sources */,
 				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,
 				F8A5CE9020A3837100E9FD75 /* SBAParticipantManager.swift in Sources */,
+				FF9D79CD230C7A5F005CFB37 /* TimeZone+Utilities.swift in Sources */,
 				602BB7A7226130D400C17E12 /* SBAProfileDataStorageManager.swift in Sources */,
-				F8479527207FEA9D0024A230 /* SBATrackingDataSource.swift in Sources */,
+				FF9D799F230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift in Sources */,
 				F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */,
-				F847951E207FEA9D0024A230 /* SBATrackedItem.swift in Sources */,
-				F8F063DA20BF7E4C00DB7D9C /* SBAClientDataResult.swift in Sources */,
-				F8FD5681214714A000BA2FA6 /* SBATaskViewModel.swift in Sources */,
 				F8F367BB2159C03C00A49F89 /* SBAArchiveManager.swift in Sources */,
 				F80F17A32033CB1B00352C3E /* SBBSurvey+RSDTask.swift in Sources */,
-				F8A5CE4A20A2AE7100E9FD75 /* SBARootViewController.swift in Sources */,
-				F8A5CE4C20A2B5C400E9FD75 /* SBAAppDelegate.swift in Sources */,
-				F8479523207FEA9D0024A230 /* SBATrackedItemsStepNavigator.swift in Sources */,
 				60D9611D20BF161300B5CFEB /* SBAProfileSection.swift in Sources */,
 				60D9611F20BF161300B5CFEB /* SBAProfileDataSource.swift in Sources */,
 				FF63D5002303731B006C7BD3 /* SBALearnItem.swift in Sources */,
 				F886FD2D2035244F00EF2248 /* NSPredicate+Utilities.swift in Sources */,
-				0356943A20EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift in Sources */,
 				F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */,
 				60D9611E20BF161300B5CFEB /* SBAProfileItem.swift in Sources */,
-				FF3A810D22C16DE100CD737D /* SBAWarningViewController.swift in Sources */,
-				FF3CC62322D69C8C0037E65B /* SBAMedicationTrackingStep.swift in Sources */,
-				F8479525207FEA9D0024A230 /* SBATrackedSelectionDataSource.swift in Sources */,
-				FF3F050622EFBD5E008C507B /* SBATriggerResult.swift in Sources */,
-				F89B3DEC20C7155D002EAE2D /* SBAMedicationLoggingStepObject.swift in Sources */,
-				CB18538021064CF90076EFBB /* SBATrackedItemRemindersStepObject.swift in Sources */,
-				F8C7D40D20929AFF007490BC /* SBASymptomLoggingStepViewController.swift in Sources */,
 				F8A5CE6F20A36B0700E9FD75 /* SBAScheduleManager.swift in Sources */,
 				60D9612220BF161300B5CFEB /* SBAProfileManager.swift in Sources */,
-				CBED324420C5E2F6009D32F0 /* SBATrackedMedicationReviewStepObject.swift in Sources */,
-				F8A7FA0C22B814760053FF74 /* BoxedTextField.swift in Sources */,
-				F8479524207FEA9D0024A230 /* SBATrackedSelectionStepObject.swift in Sources */,
-				CBED325A20C5E349009D32F0 /* SBATrackedMedicationReviewStepViewController.swift in Sources */,
 				F8BF02F020B71F580016C343 /* SBAScheduledActivityArchive.swift in Sources */,
 				F886FD31203524C600EF2248 /* Date+Utilities.swift in Sources */,
 				FF63D5012303731B006C7BD3 /* SBALearnInfo.swift in Sources */,
-				F8479526207FEA9D0024A230 /* SBATrackedLoggingDataSource.swift in Sources */,
-				F8A5CE5020A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift in Sources */,
 				F89B3DEA20C6F647002EAE2D /* Sequence+Utilities.swift in Sources */,
-				F847951D207FEA8C0024A230 /* SBATrackedLoggingStepViewController.swift in Sources */,
 				F82B1A892036305200FEA16D /* SBBImage+Utilities.swift in Sources */,
 				F89F676E20327A8700B5CC4B /* SBASurveyConfiguration.swift in Sources */,
 				F886FD2F2035248600EF2248 /* SBBScheduledActivity+Filters.swift in Sources */,
@@ -936,7 +1136,6 @@
 				6090544821308CF7002D1895 /* SBAProfileOnSelectedAction.swift in Sources */,
 				F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */,
 				F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */,
-				F847951F207FEA9D0024A230 /* SBAMedicationTrackingStepNavigator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -944,24 +1143,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8479515207FE3720024A230 /* CodableTrackedDataTests.swift in Sources */,
-				F847950D207FE2CB0024A230 /* TrackingNavigatorTests.swift in Sources */,
 				F8B86AA720C075FA00943127 /* ScheduleArchivingTests.swift in Sources */,
 				8002800422136822000B00B0 /* ProfileManagerTests.swift in Sources */,
-				F8479513207FE3160024A230 /* TrackedLoggingDataSourceTests.swift in Sources */,
 				F87D69C0203B5C4900409087 /* ActivityReferenceTests.swift in Sources */,
 				F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */,
 				F8E4A4EF20A420380046577B /* SBAScheduleManagerTests.swift in Sources */,
 				F83703012282AFDD00939733 /* JSONSerializableTests.swift in Sources */,
 				60B08E7D221B413D00166CAF /* ProfileDataSourceTests.swift in Sources */,
-				F869804B20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift in Sources */,
 				F89F676A2032789800B5CC4B /* StepProtocolTests.swift in Sources */,
 				F8B86AA520C074E800943127 /* ScheduleFilteringTests.swift in Sources */,
-				F8479512207FE3160024A230 /* TrackedSelectionDataSourceTests.swift in Sources */,
 				F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */,
 				F8BF02A620B60F730016C343 /* MockActivityManager.swift in Sources */,
-				F847950F207FE2E20024A230 /* MedicationTrackingNavigationTests.swift in Sources */,
-				F8F063F220BFB51B00DB7D9C /* ArchivableTrackingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -972,6 +1164,64 @@
 				6035687822AEF39600AAF37D /* ParticipantManager.swift in Sources */,
 				F825BA54207FD09100D29F60 /* MainViewController.swift in Sources */,
 				F83B450520324A33002825AE /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D7961230C71B1005CFB37 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D799D230C74D4005CFB37 /* SBACatastrophicErrorViewController.swift in Sources */,
+				FF9D799A230C74D4005CFB37 /* SBAAppDelegate.swift in Sources */,
+				FF9D799B230C74D4005CFB37 /* SBARootViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D7976230C737C005CFB37 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D79C1230C75D0005CFB37 /* SBATriggerResult.swift in Sources */,
+				FF9D79A1230C759C005CFB37 /* SBATrackedItem.swift in Sources */,
+				FF9D79AC230C75AC005CFB37 /* SBATrackedLoggingStepViewController.swift in Sources */,
+				FF9D79B2230C75B4005CFB37 /* SBAMedicationLoggingStepObject.swift in Sources */,
+				FF9D79A5230C759C005CFB37 /* SBATrackedItemsLoggingStepObject.swift in Sources */,
+				FF9D79B4230C75B4005CFB37 /* SBAMedicationEditDetailsViewController.swift in Sources */,
+				FF9D79A6230C759C005CFB37 /* SBATrackedLoggingDataSource.swift in Sources */,
+				FF9D79A7230C759C005CFB37 /* SBATrackedSelectionStepObject.swift in Sources */,
+				FF9D79B6230C75B4005CFB37 /* SBAWarningViewController.swift in Sources */,
+				FF9D79B7230C75B4005CFB37 /* BoxedTextField.swift in Sources */,
+				FF9D79B1230C75B4005CFB37 /* SBAMedicationReminderManager.swift in Sources */,
+				FF9D79B3230C75B4005CFB37 /* SBATrackedMedicationLoggingStepViewController.swift in Sources */,
+				FF9D79C0230C75C9005CFB37 /* SBASymptomLoggingStepViewController.swift in Sources */,
+				FF9D79AE230C75B4005CFB37 /* SBAMedicationTrackingStepNavigator.swift in Sources */,
+				FF9D79B8230C75B4005CFB37 /* SBAMedicationTrackingStep.swift in Sources */,
+				FF9D79AD230C75AC005CFB37 /* SBATrackedItemRemindersStepViewController.swift in Sources */,
+				FF9D79B5230C75B4005CFB37 /* SBADayTimePickerViewController.swift in Sources */,
+				FF9D79A8230C759C005CFB37 /* SBATrackedSelectionDataSource.swift in Sources */,
+				FF9D79C3230C76AB005CFB37 /* SBADataTrackingFactory.swift in Sources */,
+				FF9D79B0230C75B4005CFB37 /* SBATrackedMedicationReviewStepViewController.swift in Sources */,
+				FF9D79A9230C759C005CFB37 /* SBATrackedItemRemindersStepObject.swift in Sources */,
+				FF9D79A4230C759C005CFB37 /* SBATrackingDataSource.swift in Sources */,
+				FF9D79A2230C759C005CFB37 /* SBATimeRange.swift in Sources */,
+				FF9D79AF230C75B4005CFB37 /* SBATrackedMedicationReviewStepObject.swift in Sources */,
+				FF9D79A3230C759C005CFB37 /* SBATrackedItemsStepNavigator.swift in Sources */,
+				FF9D79A0230C758F005CFB37 /* SBATaskViewModel.swift in Sources */,
+				FF9D79BF230C75C9005CFB37 /* SBASymptomLoggingStepObject.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9D797E230C737C005CFB37 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9D79C7230C78CB005CFB37 /* MedicationTrackingNavigationTests.swift in Sources */,
+				FF9D79CB230C78CB005CFB37 /* TrackedSelectionDataSourceTests.swift in Sources */,
+				FF9D79C9230C78CB005CFB37 /* TrackingNavigatorTests.swift in Sources */,
+				FF9D79C6230C78CB005CFB37 /* MedicationLoggingDataSourceTests.swift in Sources */,
+				FF9D79C5230C78CB005CFB37 /* ArchivableTrackingTests.swift in Sources */,
+				FF9D79C8230C78CB005CFB37 /* CodableTrackedDataTests.swift in Sources */,
+				FF9D79CA230C78CB005CFB37 /* TrackedLoggingDataSourceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -992,6 +1242,26 @@
 			isa = PBXTargetDependency;
 			target = F83B450120324A33002825AE /* BridgeAppExample */;
 			targetProxy = F83B452920324CB0002825AE /* PBXContainerItemProxy */;
+		};
+		FF9D796B230C71B1005CFB37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FF9D7964230C71B1005CFB37 /* BridgeAppUI (iOS) */;
+			targetProxy = FF9D796A230C71B1005CFB37 /* PBXContainerItemProxy */;
+		};
+		FF9D7985230C737C005CFB37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FF9D7979230C737C005CFB37 /* DataTracking (iOS) */;
+			targetProxy = FF9D7984230C737C005CFB37 /* PBXContainerItemProxy */;
+		};
+		FF9D7987230C737C005CFB37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F83B450120324A33002825AE /* BridgeAppExample */;
+			targetProxy = FF9D7986230C737C005CFB37 /* PBXContainerItemProxy */;
+		};
+		FF9D798E230C737C005CFB37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FF9D7979230C737C005CFB37 /* DataTracking (iOS) */;
+			targetProxy = FF9D798D230C737C005CFB37 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1135,6 +1405,7 @@
 		F83B44BA2032467D002825AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -1160,6 +1431,7 @@
 		F83B44BB2032467D002825AE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_CODE_COVERAGE = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1250,6 +1522,149 @@
 			};
 			name = Release;
 		};
+		FF9D796E230C71B1005CFB37 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = KA9Z8R6M6K;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = BridgeAppUI/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.sagebionetworks.BridgeAppUI-iOS";
+				PRODUCT_NAME = BridgeAppUI;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FF9D796F230C71B1005CFB37 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = KA9Z8R6M6K;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = BridgeAppUI/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.sagebionetworks.BridgeAppUI-iOS";
+				PRODUCT_NAME = BridgeAppUI;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FF9D7992230C737C005CFB37 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = KA9Z8R6M6K;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = DataTracking/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.sagebionetworks.DataTracking-iOS";
+				PRODUCT_NAME = DataTracking;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FF9D7993230C737C005CFB37 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = KA9Z8R6M6K;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = DataTracking/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.sagebionetworks.DataTracking-iOS";
+				PRODUCT_NAME = DataTracking;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FF9D7995230C737C005CFB37 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = KA9Z8R6M6K;
+				INFOPLIST_FILE = DataTrackingTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = org.sagebionetworks.DataTrackingTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "DataTrackingTests/DataTrackingTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BridgeAppExample.app/BridgeAppExample";
+			};
+			name = Debug;
+		};
+		FF9D7996230C737C005CFB37 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = KA9Z8R6M6K;
+				INFOPLIST_FILE = DataTrackingTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = org.sagebionetworks.DataTrackingTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "DataTrackingTests/DataTrackingTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BridgeAppExample.app/BridgeAppExample";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1285,6 +1700,33 @@
 			buildConfigurations = (
 				F83B451220324A33002825AE /* Debug */,
 				F83B451320324A33002825AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF9D7970230C71B1005CFB37 /* Build configuration list for PBXNativeTarget "BridgeAppUI (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF9D796E230C71B1005CFB37 /* Debug */,
+				FF9D796F230C71B1005CFB37 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF9D7991230C737C005CFB37 /* Build configuration list for PBXNativeTarget "DataTracking (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF9D7992230C737C005CFB37 /* Debug */,
+				FF9D7993230C737C005CFB37 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF9D7994230C737C005CFB37 /* Build configuration list for PBXNativeTarget "DataTrackingTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF9D7995230C737C005CFB37 /* Debug */,
+				FF9D7996230C737C005CFB37 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

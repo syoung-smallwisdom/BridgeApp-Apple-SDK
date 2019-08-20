@@ -463,7 +463,7 @@ open class SBAScheduleManager: SBAReportManager {
         return taskViewModel
     }
     
-    func scheduledActivity(for taskIdentifier: String, in activityGroup: SBAActivityGroup?) -> SBBScheduledActivity? {
+    public func scheduledActivity(for taskIdentifier: String, in activityGroup: SBAActivityGroup?) -> SBBScheduledActivity? {
         // Set up predicates.
         var taskPredicate = SBBScheduledActivity.activityIdentifierPredicate(with: taskIdentifier)
         if let group = (activityGroup ?? self.activityGroup) {

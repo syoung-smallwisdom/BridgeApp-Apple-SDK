@@ -1,11 +1,26 @@
 # BridgeApp-Apple-SDK
 Shared code for developing Research applications that use [Sage Bionetworks](http://sagebase.org) [Bridge services](https://developer.sagebridge.org).
 
+## Framework Structure
+
+### BridgeApp Framework
+This is the base framework to include in your applications to allow using the Research task model for archiving
+and uploading results. This framework is built with "Allow app extension API only" selected to allow building with 
+app extensions such as a custom keyboard or a Today widget.
+
+### BridgeAppUI Framework
+This framework is intended for platform-specific main applications and includes some convenience view controller
+and app delegate classes that can be used in an application.
+
+### DataTracking Framework
+This is a work-in-progress framework that Sage is currently developing for use in tracking user data and unioning
+results from various activities.
+
 ## License
 
 Sage BridgeApp SDK is available under the BSD license:
 
-Copyright (c) 2018, Sage Bionetworks
+Copyright (c) 2018-2019, Sage Bionetworks
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

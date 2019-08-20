@@ -1,8 +1,8 @@
 //
-//  Date+Utilities.swift
-//  BridgeApp
+//  TimeZone+Utilities.swift
+//  BridgeApp (iOS)
 //
-//  Copyright © 2018 Sage Bionetworks. All rights reserved.
+//  Copyright © 2019 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -33,45 +33,43 @@
 
 import Foundation
 
-extension Date {
+extension TimeZone {
     
-    public func startOfDay() -> Date {
-        let calendar = Calendar.current
-        let unitFlags: NSCalendar.Unit = [.day, .month, .year]
-        let components = (calendar as NSCalendar).components(unitFlags, from: self)
-        return calendar.date(from: components) ?? self
-    }
-    
-    public var isToday: Bool {
-        return Calendar.current.isDateInToday(self)
-    }
-    
-    public var isTomorrow: Bool {
-        return Calendar.current.isDateInTomorrow(self)
-    }
-    
-    public func addingNumberOfDays(_ days: Int) -> Date {
-        let calendar = Calendar.current
-        return calendar.date(byAdding: .day, value: days, to: self, wrappingComponents: false)!
-    }
-    
-    public func addingNumberOfYears(_ years: Int) -> Date {
-        let calendar = Calendar.current
-        return calendar.date(byAdding: .year, value: years, to: self, wrappingComponents: false)!
-    }
-    
-    public func addingDateComponents(_ dateComponents: DateComponents) -> Date {
-        let calendar = dateComponents.calendar ?? Calendar.current
-        return calendar.date(byAdding: dateComponents, to: self) ?? self
-    }
-    
-    public func dateOnly() -> DateComponents {
-        let calendar = Calendar.current
-        return calendar.dateComponents([.day, .month, .year], from: self)
-    }
-    
-    public func timeOnly() -> DateComponents {
-        let calendar = Calendar.current
-        return calendar.dateComponents([.hour, .minute], from: self)
+    /// Parse the TimeZone from an iso8601 string.
+    ///
+    /// - note: This handles the formats used by both iOS and Android.
+    /// Copied from https://stackoverflow.com/a/50384957
+    public init?(iso8601: String) {
+        if iso8601.hasSuffix("Z") {
+            self.init(secondsFromGMT: 0)
+            return
+        }
+        
+        guard let zoneStart = iso8601.lastIndex(where: { $0 == "+" }) ?? iso8601.lastIndex(where: { $0 == "-" })
+            else {
+                return nil
+        }
+        
+        let tz = iso8601[zoneStart...]
+        if tz.count == 3 { // assume +/-HH
+            if let hour = Int(tz) {
+                self.init(secondsFromGMT: hour * 3600)
+                return
+            }
+        } else if tz.count == 5 { // assume +/-HHMM
+            if let hour = Int(tz.dropLast(2)), let min = Int(tz.dropFirst(3)) {
+                self.init(secondsFromGMT: (hour * 60 + min) * 60)
+                return
+            }
+        } else if tz.count == 6 { // assime +/-HH:MM
+            let parts = tz.components(separatedBy: ":")
+            if parts.count == 2 {
+                if let hour = Int(parts[0]), let min = Int(parts[1]) {
+                    self.init(secondsFromGMT: (hour * 60 + min) * 60)
+                    return
+                }
+            }
+        }
+        return nil
     }
 }

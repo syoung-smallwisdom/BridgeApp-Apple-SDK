@@ -1,6 +1,6 @@
 //
-//  Date+Utilities.swift
-//  BridgeApp
+//  DataTrackingTests-Bridging-Header.h
+//  DataTrackingTests
 //
 //  Copyright © 2018 Sage Bionetworks. All rights reserved.
 //
@@ -31,47 +31,5 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-import Foundation
-
-extension Date {
-    
-    public func startOfDay() -> Date {
-        let calendar = Calendar.current
-        let unitFlags: NSCalendar.Unit = [.day, .month, .year]
-        let components = (calendar as NSCalendar).components(unitFlags, from: self)
-        return calendar.date(from: components) ?? self
-    }
-    
-    public var isToday: Bool {
-        return Calendar.current.isDateInToday(self)
-    }
-    
-    public var isTomorrow: Bool {
-        return Calendar.current.isDateInTomorrow(self)
-    }
-    
-    public func addingNumberOfDays(_ days: Int) -> Date {
-        let calendar = Calendar.current
-        return calendar.date(byAdding: .day, value: days, to: self, wrappingComponents: false)!
-    }
-    
-    public func addingNumberOfYears(_ years: Int) -> Date {
-        let calendar = Calendar.current
-        return calendar.date(byAdding: .year, value: years, to: self, wrappingComponents: false)!
-    }
-    
-    public func addingDateComponents(_ dateComponents: DateComponents) -> Date {
-        let calendar = dateComponents.calendar ?? Calendar.current
-        return calendar.date(byAdding: dateComponents, to: self) ?? self
-    }
-    
-    public func dateOnly() -> DateComponents {
-        let calendar = Calendar.current
-        return calendar.dateComponents([.day, .month, .year], from: self)
-    }
-    
-    public func timeOnly() -> DateComponents {
-        let calendar = Calendar.current
-        return calendar.dateComponents([.hour, .minute], from: self)
-    }
-}
+@import Research_UnitTest;
+@import BridgeSDK_Test;

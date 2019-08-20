@@ -51,6 +51,7 @@ extension UIColor {
     //    252, 233, 230 and 255, 197, 189
 
     /// The fill colors for the severity toggle.
+    @available(*, deprecated, message: "Use Sage Design System. This will be deleted in future versions.")
     @objc open class var sba_severityFill: [UIColor] {
         return [
             UIColor(red: 232 / 255.0, green: 250.0 / 255.0, blue: 232.0 / 255.0, alpha: 1),
@@ -61,6 +62,7 @@ extension UIColor {
     }
 
     /// The stroke colors for the severity toggle.
+    @available(*, deprecated, message: "Use Sage Design System. This will be deleted in future versions.")
     @objc open class var sba_severityStroke: [UIColor] {
         return [
             UIColor(red: 192.0 / 255.0, green: 235.0 / 255.0, blue: 192.0 / 255.0, alpha: 1),

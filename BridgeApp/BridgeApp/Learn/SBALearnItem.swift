@@ -72,17 +72,11 @@ public struct SBALearnItemObject : SBALearnItem, Codable {
         return _learnURL!
     }
     private var _learnURL: URL? {
-        if href == nil {
-            print("WARNING! Missing `href` value for \(learnTitle)")
-        }
-        // Use of the "detail" for the url is deprecated, but is still supported for now. syoung 08/13/2019
-        guard let urlString = href ?? learnDetail else { return nil }
-        
-        if urlString.hasPrefix("http") || urlString.hasPrefix("file") {
-            return URL(string: urlString)
+        if href.hasPrefix("http") || href.hasPrefix("file") {
+            return URL(string: href)
         }
         else {
-            let resource = RSDResourceTransformerObject(resourceName: urlString)
+            let resource = RSDResourceTransformerObject(resourceName: href)
             do {
                 let (url, _) = try resource.resourceURL(ofType: "html", bundle: nil)
                 return url
@@ -93,7 +87,7 @@ public struct SBALearnItemObject : SBALearnItem, Codable {
             }
         }
     }
-    private let href: String?
+    private let href: String
     
     /// An added detail string for the learn item.
     public let learnDetail: String?

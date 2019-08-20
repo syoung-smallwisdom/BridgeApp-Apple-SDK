@@ -130,7 +130,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     
     /// This is an internal function that can be used in testing instead of using `Date()` directly. It can
     /// then be overridden by a test subclass of this manager in order to return a known date.
-    func now() -> Date {
+    public func now() -> Date {
         return Date()
     }
     
@@ -641,46 +641,5 @@ extension SBBReportData {
     
     var isEmpty: Bool {
         return data == nil && date == nil
-    }
-}
-
-extension TimeZone {
-    
-    /// Parse the TimeZone from an iso8601 string.
-    ///
-    /// - note: This handles the formats used by both iOS and Android.
-    /// Copied from https://stackoverflow.com/a/50384957
-    init?(iso8601: String) {
-        if iso8601.hasSuffix("Z") {
-            self.init(secondsFromGMT: 0)
-            return
-        }
-        
-        guard let zoneStart = iso8601.lastIndex(where: { $0 == "+" }) ?? iso8601.lastIndex(where: { $0 == "-" })
-            else {
-                return nil
-        }
-
-        let tz = iso8601[zoneStart...]
-        if tz.count == 3 { // assume +/-HH
-            if let hour = Int(tz) {
-                self.init(secondsFromGMT: hour * 3600)
-                return
-            }
-        } else if tz.count == 5 { // assume +/-HHMM
-            if let hour = Int(tz.dropLast(2)), let min = Int(tz.dropFirst(3)) {
-                self.init(secondsFromGMT: (hour * 60 + min) * 60)
-                return
-            }
-        } else if tz.count == 6 { // assime +/-HH:MM
-            let parts = tz.components(separatedBy: ":")
-            if parts.count == 2 {
-                if let hour = Int(parts[0]), let min = Int(parts[1]) {
-                    self.init(secondsFromGMT: (hour * 60 + min) * 60)
-                    return
-                }
-            }
-        }
-        return nil
     }
 }
