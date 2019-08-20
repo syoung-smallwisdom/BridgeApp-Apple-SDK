@@ -47,7 +47,10 @@ open class SBAAppDelegate : RSDAppDelegate, SBBBridgeErrorUIDelegate {
     }
     
     open override func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization before application launch.
+        guard super.application(application, willFinishLaunchingWithOptions: launchOptions)
+            else {
+                return false
+        }
         
         // Set up bridge.
         BridgeSDK.setErrorUIDelegate(self)
