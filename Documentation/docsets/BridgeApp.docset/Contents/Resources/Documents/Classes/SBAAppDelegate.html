@@ -471,7 +471,7 @@
             <h1>SBAAppDelegate</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAAppDelegate</span> <span class="p">:</span> <span class="kt">UIResponder</span><span class="p">,</span> <span class="kt">UIApplicationDelegate</span><span class="p">,</span> <span class="kt">RSDAlertPresenter</span><span class="p">,</span> <span class="kt">SBBBridgeErrorUIDelegate</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">SBAAppDelegate</span> <span class="p">:</span> <span class="kt">RSDAppDelegate</span><span class="p">,</span> <span class="kt">SBBBridgeErrorUIDelegate</span></code></pre>
 
                 </div>
               </div>
@@ -479,44 +479,6 @@
 
           </section>
           <section class="section task-group-section">
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/UIApplicationDelegate"></a>
-                <a name="//apple_ref/swift/Section/UIApplicationDelegate" class="dashAnchor"></a>
-                <a href="#/UIApplicationDelegate">
-                  <h3 class="section-name">UIApplicationDelegate</h3>
-                </a>
-              </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:9BridgeApp14SBAAppDelegateC23instantiateColorPalette8Research08RSDColorG0VSgyF"></a>
-                    <a name="//apple_ref/swift/Method/instantiateColorPalette()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp14SBAAppDelegateC23instantiateColorPalette8Research08RSDColorG0VSgyF">instantiateColorPalette()</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Override and return a non-nil value to set up using a custom color palette with your app.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">instantiateColorPalette</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">RSDColorPalette</span><span class="p">?</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
             <div class="task-group">
               <div class="task-name-container">
                 <a name="/RootViewController%20management"></a>
@@ -650,44 +612,6 @@ rootViewController.</p>
                             </tr>
                           </tbody>
                         </table>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/RSDAlertPresenter"></a>
-                <a name="//apple_ref/swift/Section/RSDAlertPresenter" class="dashAnchor"></a>
-                <a href="#/RSDAlertPresenter">
-                  <h3 class="section-name">RSDAlertPresenter</h3>
-                </a>
-              </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/c:@M@BridgeApp@objc(cs)SBAAppDelegate(im)presentModal:animated:completion:"></a>
-                    <a name="//apple_ref/swift/Method/presentModal(_:animated:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@BridgeApp@objc(cs)SBAAppDelegate(im)presentModal:animated:completion:">presentModal(_:animated:completion:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Convenience method for presenting a modal view controller.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">presentModal</span><span class="p">(</span><span class="n">_</span> <span class="nv">viewController</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?)</span></code></pre>
-
-                        </div>
                       </div>
                     </section>
                   </div>
@@ -895,101 +819,6 @@ by the server).</p>
                           <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">handleUnsupportedAppVersionError</span><span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt">Error</span><span class="p">,</span> <span class="nv">networkManager</span><span class="p">:</span> <span class="kt">SBBNetworkManagerProtocol</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
 
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Lock%20orientation%20to%20portrait%20by%20default"></a>
-                <a name="//apple_ref/swift/Section/Lock orientation to portrait by default" class="dashAnchor"></a>
-                <a href="#/Lock%20orientation%20to%20portrait%20by%20default">
-                  <h3 class="section-name">Lock orientation to portrait by default</h3>
-                </a>
-              </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:9BridgeApp14SBAAppDelegateC22defaultOrientationLockSo011UIInterfaceF4MaskVvp"></a>
-                    <a name="//apple_ref/swift/Property/defaultOrientationLock" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp14SBAAppDelegateC22defaultOrientationLockSo011UIInterfaceF4MaskVvp">defaultOrientationLock</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The default orientation lock if not overridden by setting the <code><a href="../Classes/SBAAppDelegate.html#/s:9BridgeApp14SBAAppDelegateC15orientationLockSo26UIInterfaceOrientationMaskVSgvp">orientationLock</a></code> property.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">defaultOrientationLock</span><span class="p">:</span> <span class="kt">UIInterfaceOrientationMask</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:9BridgeApp14SBAAppDelegateC15orientationLockSo26UIInterfaceOrientationMaskVSgvp"></a>
-                    <a name="//apple_ref/swift/Property/orientationLock" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9BridgeApp14SBAAppDelegateC15orientationLockSo26UIInterfaceOrientationMaskVSgvp">orientationLock</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The <code>orientationLock</code> property is used to override the default allowed orientations.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">orientationLock</span><span class="p">:</span> <span class="kt">UIInterfaceOrientationMask</span><span class="p">?</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/c:@M@BridgeApp@objc(cs)SBAAppDelegate(im)application:supportedInterfaceOrientationsForWindow:"></a>
-                    <a name="//apple_ref/swift/Method/application(_:supportedInterfaceOrientationsFor:)" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@BridgeApp@objc(cs)SBAAppDelegate(im)application:supportedInterfaceOrientationsForWindow:">application(_:supportedInterfaceOrientationsFor:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="n">_</span> <span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span> <span class="n">supportedInterfaceOrientationsFor</span> <span class="nv">window</span><span class="p">:</span> <span class="kt">UIWindow</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">UIInterfaceOrientationMask</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>The <code><a href="../Classes/SBAAppDelegate.html#/s:9BridgeApp14SBAAppDelegateC15orientationLockSo26UIInterfaceOrientationMaskVSgvp">orientationLock</a></code> or the <code><a href="../Classes/SBAAppDelegate.html#/s:9BridgeApp14SBAAppDelegateC22defaultOrientationLockSo011UIInterfaceF4MaskVvp">defaultOrientationLock</a></code> if nil.</p>
                       </div>
                     </section>
                   </div>

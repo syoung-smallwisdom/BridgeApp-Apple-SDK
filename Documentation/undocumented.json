@@ -457,13 +457,6 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATimeRange.swift",
-      "line": 120,
-      "symbol": "SBATime.timeZone",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Data Tracking/Model/SBATimeRange.swift",
       "line": 124,
       "symbol": "SBATime.init(hour:minute:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
@@ -1690,41 +1683,27 @@
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
       "line": 39,
-      "symbol": "SBAAppDelegate.window",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
-      "line": 41,
       "symbol": "SBAAppDelegate.shared",
       "symbol_kind": "source.lang.swift.decl.var.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
-      "line": 47,
-      "symbol": "SBAAppDelegate.instantiateFactory()",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
-      "line": 51,
+      "line": 45,
       "symbol": "SBAAppDelegate.instantiateBridgeConfiguration()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
-      "line": 60,
+      "line": 49,
       "symbol": "SBAAppDelegate.application(_:willFinishLaunchingWithOptions:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/iOS/SBAAppDelegate.swift",
-      "line": 83,
+      "line": 68,
       "symbol": "SBAAppDelegate.applicationDidBecomeActive(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
