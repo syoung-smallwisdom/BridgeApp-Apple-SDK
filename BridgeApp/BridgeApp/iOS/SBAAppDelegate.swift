@@ -34,9 +34,7 @@
 import UIKit
 
 /// `SBAAppDelegate` is an optional class that can be used as the appDelegate for an application.
-open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresenter, SBBBridgeErrorUIDelegate {
-    
-    open var window: UIWindow?
+open class SBAAppDelegate : RSDAppDelegate, SBBBridgeErrorUIDelegate {
     
     public final class var shared: SBAAppDelegate? {
         return UIApplication.shared.delegate as? SBAAppDelegate
@@ -44,33 +42,20 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
     
     // MARK: UIApplicationDelegate
     
-    open func instantiateFactory() -> RSDFactory {
-        return SBAFactory()
-    }
-    
     open func instantiateBridgeConfiguration() -> SBABridgeConfiguration {
         return SBABridgeConfiguration()
     }
     
-    /// Override and return a non-nil value to set up using a custom color palette with your app.
-    open func instantiateColorPalette() -> RSDColorPalette? {
-        return nil
-    }
-    
-    open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization before application launch.
+    open override func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        guard super.application(application, willFinishLaunchingWithOptions: launchOptions)
+            else {
+                return false
+        }
         
         // Set up bridge.
         BridgeSDK.setErrorUIDelegate(self)
         SBABridgeConfiguration.shared = instantiateBridgeConfiguration()
         SBABridgeConfiguration.shared.setupBridge(with: instantiateFactory())
-        
-        if let palette = instantiateColorPalette() {
-            RSDStudyConfiguration.shared.colorPalette = palette
-        }
-        
-        // Set the tint color.
-        self.window?.tintColor = RSDStudyConfiguration.shared.colorPalette.primary.normal.color
         
         // Replace the launch root view controller with an SBARootViewController
         // This allows transitioning between root view controllers while a lock screen
@@ -144,27 +129,6 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
     
     
     // ------------------------------------------------
-    // MARK: RSDAlertPresenter
-    // ------------------------------------------------
-    
-    /// Convenience method for presenting a modal view controller.
-    open func presentModal(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
-        guard let rootVC = self.window?.rootViewController else { return }
-        var topViewController: UIViewController = rootVC
-        while let presentedVC = topViewController.presentedViewController {
-            if presentedVC.modalPresentationStyle != .fullScreen {
-                presentedVC.dismiss(animated: false, completion: nil)
-                break
-            }
-            else {
-                topViewController = presentedVC
-            }
-        }
-        topViewController.present(viewController, animated: animated, completion: completion)
-    }
-    
-    
-    // ------------------------------------------------
     // MARK: Catastrophic startup errors
     // ------------------------------------------------
     
@@ -227,24 +191,6 @@ open class SBAAppDelegate : UIResponder, UIApplicationDelegate, RSDAlertPresente
             }
         }
         return true
-    }
-    
-    
-    // ------------------------------------------------
-    // MARK: Lock orientation to portrait by default
-    // ------------------------------------------------
-    
-    /// The default orientation lock if not overridden by setting the `orientationLock` property.
-    open var defaultOrientationLock: UIInterfaceOrientationMask {
-        return .portrait
-    }
-    
-    /// The `orientationLock` property is used to override the default allowed orientations.
-    public var orientationLock: UIInterfaceOrientationMask?
-    
-    /// - returns: The `orientationLock` or the `defaultOrientationLock` if nil.
-    open func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-        return orientationLock ?? defaultOrientationLock
     }
 }
 
