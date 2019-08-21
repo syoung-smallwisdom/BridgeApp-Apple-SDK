@@ -32,7 +32,8 @@
 //
 
 import UIKit
-import BridgeApp
+import BridgeAppUI
+import DataTracking
 
 class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
     

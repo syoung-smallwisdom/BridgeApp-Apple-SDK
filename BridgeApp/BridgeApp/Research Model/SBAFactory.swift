@@ -91,47 +91,6 @@ extension SBACategoryType {
     }
 }
 
-
-extension RSDStepNavigatorType {
-    
-    /// Defaults to creating a `SBAMedicationTrackingStepNavigator`.
-    public static let medicationTracking: RSDStepNavigatorType = "medicationTracking"
-    
-    /// Defaults to creating a `SBATrackedItemsStepNavigator`.
-    public static let tracking: RSDStepNavigatorType = "tracking"
-}
-
-extension RSDStepType {
-    
-    /// Defaults to creating a `SBATrackedItemsLoggingStepObject`.
-    public static let logging: RSDStepType = "logging"
-    
-    /// Defaults to creating a `SBATrackedItemsReviewStepObject`.
-    public static let review: RSDStepType = "review"
-    
-    /// Defaults to creating a `SBATrackedSelectionStepObject`.
-    public static let selection: RSDStepType = "selection"
-    
-    /// Defaults to creating a `SBASymptomLoggingStepObject`.
-    public static let symptomLogging: RSDStepType = "symptomLogging"
-    
-    /// Defaults to creating a `SBAMedicationRemindersStepObject`.
-    public static let medicationReminders: RSDStepType = "medicationReminders"
-
-    /// Defaults to creating a 'SBATrackedMedicationDetailStepObject'
-    public static let medicationDetails: RSDStepType = "medicationDetails"
-    
-    /// Defaults to creating a 'SBAMedicationTrackingStep'
-    public static let medicationTracking: RSDStepType = "medicationTracking"
-}
-
-extension RSDResultType {
-    
-    public static let medication: RSDResultType = "medication"
-    
-    public static let medicationDetails: RSDResultType = "medicationDetails"
-}
-
 open class SBAFactory : RSDFactory {
     
     public var configuration : SBABridgeConfiguration {
@@ -174,30 +133,10 @@ open class SBAFactory : RSDFactory {
             throw DecodingError.typeMismatch(SBACategoryType.self, context)
         }
     }
-    
-    /// Override to implement custom step navigators.
-    override open func decodeStepNavigator(from decoder: Decoder, with type: RSDStepNavigatorType) throws -> RSDStepNavigator {
-        switch type {
-        case .medicationTracking:
-            return try SBAMedicationTrackingStepNavigator(from: decoder)
-        case .tracking:
-            return try SBATrackedItemsStepNavigator(from: decoder)
-        default:
-            return try super.decodeStepNavigator(from: decoder, with: type)
-        }
-    }
-    
+
     /// Override to implement custom step types.
     override open func decodeStep(from decoder:Decoder, with type:RSDStepType) throws -> RSDStep? {
         switch (type) {
-        case .selection:
-            return try SBATrackedSelectionStepObject(from: decoder)
-        case .logging:
-            return try SBATrackedItemsLoggingStepObject(from: decoder)
-        case .symptomLogging:
-            return try SBASymptomLoggingStepObject(from: decoder)
-        case .medicationReminders:
-            return try SBATrackedItemRemindersStepObject(from: decoder)
         case .taskInfo:
             if let taskInfo = try? SBAActivityInfoObject(from: decoder) {
                 return RSDTaskInfoStepObject(with: taskInfo)

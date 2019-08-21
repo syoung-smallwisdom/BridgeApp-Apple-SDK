@@ -138,3 +138,11 @@ extension SBATime: Comparable {
         return SBATimeRange.lessThan(ltc, rtc)
     }
 }
+
+extension Date {
+    
+    public func timeRange() -> SBATimeRange {
+        let hour = Calendar.current.component(.hour, from: self)
+        return SBATimeRange(hour: hour) ?? .night
+    }
+}

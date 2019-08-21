@@ -33,6 +33,7 @@
 
 import XCTest
 @testable import BridgeApp
+@testable import DataTracking
 
 class ArchivableTrackingTests: XCTestCase {
     
