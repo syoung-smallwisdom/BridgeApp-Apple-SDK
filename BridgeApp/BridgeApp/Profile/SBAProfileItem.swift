@@ -344,15 +344,6 @@ extension HKBiologicalSex {
 }
  */
 
-// Profile items need these extensions to be able to convert between RSDJSONSerializable and SBBJSONValue.
-// Since the only NSArray and NSDictionary objects we expect to see will have come from BridgeSDK, this
-// should be safe.
-extension NSDictionary : RSDJSONSerializable {
-}
-
-extension NSArray : RSDJSONSerializable {
-}
-
 /// SBAReportProfileItem allows storing and retrieving profile item values to/from Bridge Participant Reports.
 /// For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
 /// interpreted as the report identifier. If the clientDataIsItem flag is not set, then the demographicKey
@@ -415,18 +406,18 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     
     public func storedValue(forKey key: String) -> Any? {
         guard let reportManager = self.reportManager,
-                let clientData = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: key) })?.clientData
+                let clientData = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: key) })?.clientData as? RSDJSONValue
             else {
                 return nil
         }
-        var json = clientData as? RSDJSONSerializable
+        var json = clientData.jsonObject()
         if !self.clientDataIsItem {
-            guard let dict = clientData as? [String : RSDJSONSerializable],
-                    let propJson = dict[self.demographicKey]
+            guard let dict = clientData as? NSDictionary,
+                    let propJson = dict[self.demographicKey] as? RSDJSONValue
                 else {
                     return nil
             }
-            json = propJson
+            json = propJson.jsonObject()
         }
         
         return self.commonJsonToItemType(jsonVal: json)
@@ -438,9 +429,9 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
         if self.clientDataIsItem {
             clientData = self.commonItemTypeToJson(val: newValue) as? SBBJSONValue ?? NSNull()
         } else {
-            var clientJsonDict = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? Dictionary<String, RSDJSONSerializable> ?? Dictionary<String, RSDJSONSerializable>()
-            clientJsonDict[self.demographicKey] = self.commonItemTypeToJson(val: newValue)
-            clientData = clientJsonDict as SBBJSONValue
+            let clientJsonDict = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? NSMutableDictionary ?? NSMutableDictionary()
+            clientJsonDict[self.demographicKey] = self.commonItemTypeToJson(val: newValue) as? SBBJSONValue ?? NSNull()
+            clientData = clientJsonDict
         }
         let report = SBAReport(reportKey: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: clientData)
         reportManager.saveReport(report)
