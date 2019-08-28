@@ -254,7 +254,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             }
             
             SBAReportManager.offMainQueue.async {
-                let dayOne = self.participant?.createdOn ?? self.now().startOfDay()
+                let dayOne = SBAReportSingletonDate
                 queries.forEach { (query) in
                     let category = self.reportCategory(for: query.reportIdentifier)
                     do {

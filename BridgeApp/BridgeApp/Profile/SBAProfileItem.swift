@@ -187,6 +187,13 @@ extension SBAProfileItem {
         case .integer:
             return val as? NSNumber
             
+        case .year:
+            return val as? NSNumber
+            
+        case .fraction:
+            guard let fraction = val as? RSDFraction else { return nil }
+            return fraction.jsonObject()
+            
         case .decimal:
             return val as? NSNumber
 
@@ -224,6 +231,14 @@ extension SBAProfileItem {
         case .integer:
             guard let val = jsonValue as? Int else { return nil }
             itemValue = val
+            
+        case .year:
+            guard let val = jsonValue as? Int else { return nil }
+            itemValue = val
+            
+        case .fraction:
+            guard let doubleValue = jsonValue as? Double else { return nil }
+            itemValue = RSDFraction(floatLiteral: doubleValue)
             
         case .decimal:
             guard let val = jsonValue as? Decimal else { return nil }
@@ -283,6 +298,12 @@ extension SBAProfileItem {
             return true // anything can be cast to a string
             
         case .integer:
+            return newValue as? NSNumber != nil
+            
+        case .year:
+            return newValue as? NSNumber != nil
+            
+        case .fraction:
             return newValue as? NSNumber != nil
             
         case .decimal:
@@ -385,18 +406,18 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     
     public func storedValue(forKey key: String) -> Any? {
         guard let reportManager = self.reportManager,
-                let clientData = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: key) })?.clientData
+                let clientData = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: key) })?.clientData as? RSDJSONValue
             else {
                 return nil
         }
-        var json = clientData as? RSDJSONSerializable
+        var json = clientData.jsonObject()
         if !self.clientDataIsItem {
-            guard let dict = clientData as? [String : RSDJSONSerializable],
-                    let propJson = dict[self.demographicKey]
+            guard let dict = clientData as? NSDictionary,
+                    let propJson = dict[self.demographicKey] as? RSDJSONValue
                 else {
                     return nil
             }
-            json = propJson
+            json = propJson.jsonObject()
         }
         
         return self.commonJsonToItemType(jsonVal: json)
@@ -408,9 +429,9 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
         if self.clientDataIsItem {
             clientData = self.commonItemTypeToJson(val: newValue) as? SBBJSONValue ?? NSNull()
         } else {
-            var clientJsonDict = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? Dictionary<String, RSDJSONSerializable> ?? Dictionary<String, RSDJSONSerializable>()
-            clientJsonDict[self.demographicKey] = self.commonItemTypeToJson(val: newValue)
-            clientData = clientJsonDict as SBBJSONValue
+            let clientJsonDict = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? NSMutableDictionary ?? NSMutableDictionary()
+            clientJsonDict[self.demographicKey] = self.commonItemTypeToJson(val: newValue) as? SBBJSONValue ?? NSNull()
+            clientData = clientJsonDict
         }
         let report = SBAReport(reportKey: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: clientData)
         reportManager.saveReport(report)
