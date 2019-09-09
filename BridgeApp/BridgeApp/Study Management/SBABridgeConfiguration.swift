@@ -34,19 +34,6 @@
 import Foundation
 import BridgeSDK
 
-// https://stackoverflow.com/a/48173579
-struct DecodingHelper: Decodable {
-    private let decoder: Decoder
-    
-    init(from decoder: Decoder) throws {
-        self.decoder = decoder
-    }
-    
-    func decode(to type: Decodable.Type) throws -> Decodable {
-        let decodable = try type.init(from: decoder)
-        return decodable
-    }
-}
 
 /// Override the default task repository to include transforming from surveys, compound activities, and other
 /// tasks defined by the Bridge configuration.

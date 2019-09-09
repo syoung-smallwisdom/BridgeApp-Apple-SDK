@@ -294,6 +294,7 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
         case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey, _profileManagerIdentifier = "profileManager", _editTaskIdentifier = "editTaskIdentifier"
     }
+    
     // MARK: SBAProfileTableItem
     /// Title to show for the table item.
     public var title: String?
