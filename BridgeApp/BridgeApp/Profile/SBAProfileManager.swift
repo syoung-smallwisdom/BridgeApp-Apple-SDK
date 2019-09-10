@@ -366,5 +366,10 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     override open func didFinishFetchingReports() {
         self.postValuesUpdatedNotification()
     }
+    
+    /// The profile manager should always use previous answers when redisplaying a survey.
+    public func shouldUsePreviousAnswers(for taskIdentifier: String) -> Bool {
+        return true
+    }
 }
 

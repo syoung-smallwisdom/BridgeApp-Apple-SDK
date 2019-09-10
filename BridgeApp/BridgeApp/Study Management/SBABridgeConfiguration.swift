@@ -34,19 +34,6 @@
 import Foundation
 import BridgeSDK
 
-// https://stackoverflow.com/a/48173579
-struct DecodingHelper: Decodable {
-    private let decoder: Decoder
-    
-    init(from decoder: Decoder) throws {
-        self.decoder = decoder
-    }
-    
-    func decode(to type: Decodable.Type) throws -> Decodable {
-        let decodable = try type.init(from: decoder)
-        return decodable
-    }
-}
 
 /// Override the default task repository to include transforming from surveys, compound activities, and other
 /// tasks defined by the Bridge configuration.
@@ -57,7 +44,19 @@ open class SBATaskRepository : RSDTaskRepository {
             return transformer
         }
         else if let surveyReference = taskInfo as? SBBSurveyReference {
-            return SBASurveyLoader(surveyReference: surveyReference)
+            // If this is a survey reference, we want to replace the one included in the schedule
+            // with the version that is referenced in the AppConfig.
+            let reference: SBBSurveyReference = {
+                guard let configReference = SBABridgeConfiguration.shared.survey(for: surveyReference.identifier),
+                    let configCreatedOn = configReference.createdOn,
+                    let originalCreatedOn = surveyReference.createdOn,
+                    configCreatedOn > originalCreatedOn
+                    else {
+                        return surveyReference
+                }
+                return configReference
+            }()
+            return SBASurveyLoader(surveyReference: reference)
         }
         else if let combo = taskInfo as? SBBCompoundActivity {
             return SBAConfigurationTaskTransformer(task: combo)

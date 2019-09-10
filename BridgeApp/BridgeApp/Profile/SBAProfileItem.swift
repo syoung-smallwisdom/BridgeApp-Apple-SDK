@@ -1336,3 +1336,17 @@ open class SBABirthDateProfileItem: SBAStudyParticipantCustomAttributesProfileIt
     }
 }
  */
+
+// https://stackoverflow.com/a/48173579
+struct DecodingHelper: Decodable {
+    private let decoder: Decoder
+    
+    init(from decoder: Decoder) throws {
+        self.decoder = decoder
+    }
+    
+    func decode(to type: Decodable.Type) throws -> Decodable {
+        let decodable = try type.init(from: decoder)
+        return decodable
+    }
+}

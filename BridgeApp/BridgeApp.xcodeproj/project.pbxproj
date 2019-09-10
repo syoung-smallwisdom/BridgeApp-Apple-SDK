@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		602BB7A7226130D400C17E12 /* SBAProfileDataStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602BB7A6226130D400C17E12 /* SBAProfileDataStorageManager.swift */; };
 		6035687822AEF39600AAF37D /* ParticipantManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6035687722AEF39600AAF37D /* ParticipantManager.swift */; };
 		6035687A22AEF58E00AAF37D /* AppConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = 6035687922AEF58E00AAF37D /* AppConfig.json */; };
 		6090544821308CF7002D1895 /* SBAProfileOnSelectedAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090544621308CF7002D1895 /* SBAProfileOnSelectedAction.swift */; };
@@ -212,7 +211,6 @@
 
 /* Begin PBXFileReference section */
 		0356943920EECD4D006A555A /* SBATrackedItemRemindersStepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATrackedItemRemindersStepViewController.swift; sourceTree = "<group>"; };
-		602BB7A6226130D400C17E12 /* SBAProfileDataStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAProfileDataStorageManager.swift; sourceTree = "<group>"; };
 		6035687722AEF39600AAF37D /* ParticipantManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantManager.swift; sourceTree = "<group>"; };
 		6035687922AEF58E00AAF37D /* AppConfig.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = AppConfig.json; sourceTree = "<group>"; };
 		6090544621308CF7002D1895 /* SBAProfileOnSelectedAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAProfileOnSelectedAction.swift; sourceTree = "<group>"; };
@@ -420,7 +418,6 @@
 				60E84E5B20D306A9000DDCB1 /* SBAProfileItemType.swift */,
 				60D9611620BF161200B5CFEB /* SBAProfileItem.swift */,
 				60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */,
-				602BB7A6226130D400C17E12 /* SBAProfileDataStorageManager.swift */,
 				60D9611A20BF161200B5CFEB /* SBAProfileManager.swift */,
 			);
 			path = Profile;
@@ -1110,7 +1107,6 @@
 				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,
 				F8A5CE9020A3837100E9FD75 /* SBAParticipantManager.swift in Sources */,
 				FF9D79CD230C7A5F005CFB37 /* TimeZone+Utilities.swift in Sources */,
-				602BB7A7226130D400C17E12 /* SBAProfileDataStorageManager.swift in Sources */,
 				FF9D799F230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift in Sources */,
 				F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */,
 				F8F367BB2159C03C00A49F89 /* SBAArchiveManager.swift in Sources */,
