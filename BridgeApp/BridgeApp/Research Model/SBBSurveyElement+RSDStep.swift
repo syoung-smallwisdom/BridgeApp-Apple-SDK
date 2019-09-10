@@ -340,7 +340,7 @@ extension SBBSurveyQuestionOption : RSDChoice, RSDComparable {
 extension SBBSurveyQuestionOption : sbb_BridgeImageOwner {
 }
 
-protocol sbb_NumberRange: RSDNumberRange {
+protocol sbb_NumberRange: RSDNumberRange, RSDRangeWithFormatter {
     var maxValue: NSNumber? { get }
     var minValue: NSNumber? { get }
     var step: NSNumber? { get }
@@ -377,6 +377,23 @@ extension sbb_NumberRange {
     
     public var stepInterval: Decimal? {
         return self.step?.decimalValue
+    }
+    
+    public var formatter: Formatter? {
+        get {
+            if let unit = self.unit, unit == "years" {
+                // Special-case the formatter if the unit is "years"
+                let formatter = NumberFormatter()
+                formatter.usesGroupingSeparator = false
+                formatter.maximumFractionDigits = 0
+                return formatter
+            } else {
+                return nil
+            }
+        }
+        set {
+            // Do nothing
+        }
     }
 }
 
