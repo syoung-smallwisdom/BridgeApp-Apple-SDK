@@ -267,13 +267,6 @@
       "warning": "undocumented"
     },
     {
-      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileDataStorageManager.swift",
-      "line": 34,
-      "symbol": "SBAProfileDataStorageManager",
-      "symbol_kind": "source.lang.swift.decl.class",
-      "warning": "undocumented"
-    },
-    {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileItem.swift",
       "line": null,
       "symbol": "SBAParticipantKeyPath",
@@ -436,28 +429,28 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 363,
+      "line": 364,
       "symbol": "SBAProfileItemProfileTableItem.profileManager",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 377,
+      "line": 378,
       "symbol": "SBAProfileItemProfileTableItem.editTaskIdentifier",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 604,
+      "line": 605,
       "symbol": "SBAProfileViewProfileTableItem.icon",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 613,
+      "line": 614,
       "symbol": "SBAProfileViewProfileTableItem.profileDataSource",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
@@ -681,14 +674,14 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBABridgeConfiguration.swift",
-      "line": 126,
+      "line": 125,
       "symbol": "SBABridgeConfiguration.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBABridgeConfiguration.swift",
-      "line": 756,
+      "line": 755,
       "symbol": "SBAActivityInfoObject.init(identifier:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
