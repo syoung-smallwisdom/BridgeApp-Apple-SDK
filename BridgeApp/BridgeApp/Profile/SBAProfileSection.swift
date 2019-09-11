@@ -301,7 +301,19 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     
     /// Detail text to show for the table item.
     public var detail: String? {
-        switch self.profileItem.itemType.baseType {
+        let type = self.profileItem.itemType
+        let sequenceType = type.defaultAnswerResultType().sequenceType
+        let baseType = type.baseType
+        if sequenceType == .array &&
+            baseType == .string {
+            guard let value = self.profileItem.value as? [String], value.count > 0 else {
+                return ""
+            }
+            
+            return value.joined(separator: ", ")
+        }
+        
+        switch baseType {
         case .boolean:
             // Bool table items show detail as On/Off, or blank if never set
             guard let isOn = self.profileItemValue as? Bool else { return "" }

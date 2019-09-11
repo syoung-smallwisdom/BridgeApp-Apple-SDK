@@ -178,9 +178,8 @@ extension SBAProfileItem {
         return commonItemTypeToJson(val: self.value)
     }
     
-    public func commonItemTypeToJson(val: Any?) -> RSDJSONSerializable? {
-        guard val != nil else { return NSNull() }
-        switch self.itemType.baseType {
+    func jsonFromItem(_ val: Any, baseType: RSDFormDataType.BaseType) -> RSDJSONSerializable? {
+        switch baseType {
         case .string:
             return val as? String
             
@@ -196,7 +195,7 @@ extension SBAProfileItem {
             
         case .decimal:
             return val as? NSNumber
-
+            
         case .boolean:
             return val as? NSNumber
             
@@ -204,8 +203,30 @@ extension SBAProfileItem {
             return (val as? NSDate)?.iso8601String()
             
         default:
+            debugPrint("Profile items of base type \(baseType.stringValue) not yet supported")
             return nil
         }
+    }
+    
+    public func commonItemTypeToJson(val: Any?) -> RSDJSONSerializable? {
+        guard let val = val else { return NSNull() }
+        
+        let sequenceType = self.itemType.defaultAnswerResultType().sequenceType
+        let baseType = self.itemType.baseType
+        
+        guard sequenceType == .array
+            else {
+                return jsonFromItem(val, baseType: baseType)
+        }
+        
+        guard let itemArray = val as? [Any] else { return nil }
+        var jsonArray: [RSDJSONSerializable] = []
+        for item in itemArray {
+            let json = self.jsonFromItem(item, baseType: baseType)
+            jsonArray.append(json ?? NSNull())
+        }
+        
+        return jsonArray
     }
     
     mutating func commonJsonValueSetter(jsonVal: RSDJSONSerializable?) {
@@ -217,14 +238,10 @@ extension SBAProfileItem {
         guard let itemValue = commonJsonToItemType(jsonVal: jsonValue) else { return }
         self.value = itemValue
     }
-
-    public func commonJsonToItemType(jsonVal: RSDJSONSerializable?) -> Any? {
-        guard let jsonValue = jsonVal else {
-            return nil
-        }
-        
+    
+    func itemFromJson(_ jsonValue: RSDJSONSerializable, baseType: RSDFormDataType.BaseType) -> Any? {
         var itemValue: Any? = nil
-        switch self.itemType.baseType {
+        switch baseType {
         case .string:
             itemValue = jsonValue as? String ?? String(describing: jsonValue)
             
@@ -250,15 +267,39 @@ extension SBAProfileItem {
             
         case .date:
             guard let stringVal = jsonValue as? String,
-                    let dateVal = NSDate(iso8601String: stringVal)
+                let dateVal = NSDate(iso8601String: stringVal)
                 else { return nil }
             itemValue = dateVal
-
+            
         default:
+            debugPrint("Profile items of base type \(baseType.stringValue) not yet supported")
             break
         }
         
         return itemValue
+   }
+
+    public func commonJsonToItemType(jsonVal: RSDJSONSerializable?) -> Any? {
+        guard let jsonValue = jsonVal else {
+            return nil
+        }
+        
+        let sequenceType = self.itemType.defaultAnswerResultType().sequenceType
+        let baseType = self.itemType.baseType
+        
+        guard sequenceType == .array
+            else {
+                return self.itemFromJson(jsonValue, baseType: baseType)
+        }
+        
+        guard let jsonArray = jsonVal as? [RSDJSONSerializable] else { return nil }
+        var typeArray: [Any?] = []
+        for jsonItem in jsonArray {
+            let item = itemFromJson(jsonItem, baseType: baseType)
+            typeArray.append(item)
+        }
+        
+        return typeArray
     }
     
     func commonMapObject(with dictionary: [String : RSDJSONSerializable]) -> Any? {
