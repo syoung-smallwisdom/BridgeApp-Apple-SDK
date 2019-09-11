@@ -13,7 +13,7 @@
         <!--Medication Edit Details View Controller-->
         <scene sceneID="fvF-d1-UGp">
             <objects>
-                <viewController storyboardIdentifier="MedicationEditDetails" id="msa-hP-lX4" customClass="SBAMedicationEditDetailsViewController" customModule="BridgeApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MedicationEditDetails" id="msa-hP-lX4" customClass="SBAMedicationEditDetailsViewController" customModule="DataTracking" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vb9-OB-UGD">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -26,7 +26,7 @@
                                 <rect key="frame" x="0.0" y="179.5" width="414" height="579.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="summary" rowHeight="112" id="vY8-j2-Ctt" customClass="DosageSummaryCell" customModule="BridgeApp" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="summary" rowHeight="112" id="vY8-j2-Ctt" customClass="DosageSummaryCell" customModule="DataTracking" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="112"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="vY8-j2-Ctt" id="sYE-vK-ajp">
@@ -47,7 +47,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X9k-XR-DPm" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                    <rect key="frame" x="356" y="41" width="30" height="30"/>
+                                                    <rect key="frame" x="354" y="39.5" width="32" height="33.5"/>
                                                     <state key="normal" title="Edit"/>
                                                     <connections>
                                                         <action selector="editTapped:" destination="vY8-j2-Ctt" eventType="touchUpInside" id="Kkq-bf-qUL"/>
@@ -86,7 +86,7 @@
                                             <outlet property="widthConstraint" destination="eFt-9U-gyr" id="2qM-mu-Leo"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="editDose" rowHeight="216" id="tGk-Ad-tws" customClass="EditDosageCell" customModule="BridgeApp" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="editDose" rowHeight="216" id="tGk-Ad-tws" customClass="EditDosageCell" customModule="DataTracking" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="140" width="414" height="216"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="tGk-Ad-tws" id="SAz-q9-rXa">
@@ -109,7 +109,7 @@
                                                                 <constraint firstAttribute="height" constant="1" id="RLY-b6-dGh"/>
                                                             </constraints>
                                                         </view>
-                                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" placeholder="  e.g.: 10/100 mg" textAlignment="natural" minimumFontSize="17" background="textfield" translatesAutoresizingMaskIntoConstraints="NO" id="sk4-sH-wh7" customClass="BoxedTextField" customModule="BridgeApp" customModuleProvider="target">
+                                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" placeholder="  e.g.: 10/100 mg" textAlignment="natural" adjustsFontSizeToFit="NO" minimumFontSize="17" background="textfield" translatesAutoresizingMaskIntoConstraints="NO" id="sk4-sH-wh7" customClass="BoxedTextField" customModule="DataTracking" customModuleProvider="target">
                                                             <rect key="frame" x="24" y="54.5" width="366" height="50"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="50" id="YRF-S8-1da"/>
@@ -121,23 +121,23 @@
                                                                 <outlet property="delegate" destination="msa-hP-lX4" id="QS4-2C-4qw"/>
                                                             </connections>
                                                         </textField>
-                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j9M-rA-mhb" customClass="RSDRadioButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="24" y="120.5" width="220" height="43"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j9M-rA-mhb" customClass="RSDRadioButton" customModule="ResearchUI">
+                                                            <rect key="frame" x="24" y="120.5" width="311" height="32"/>
                                                             <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                                             <state key="normal" title="Take this medication at any time"/>
                                                             <connections>
                                                                 <action selector="anytimeTapped:" destination="tGk-Ad-tws" eventType="touchUpInside" id="RKu-na-va1"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Apu-i0-lXF" customClass="RSDRadioButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="24" y="179.5" width="160" height="43"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Apu-i0-lXF" customClass="RSDRadioButton" customModule="ResearchUI">
+                                                            <rect key="frame" x="24" y="168.5" width="240.5" height="32"/>
                                                             <state key="normal" title="When do you take this?"/>
                                                             <connections>
                                                                 <action selector="useScheduleTapped:" destination="tGk-Ad-tws" eventType="touchUpInside" id="Wnj-b3-8Nl"/>
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ys5-LD-ZQ2" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="335" y="10.5" width="55" height="30"/>
+                                                            <rect key="frame" x="325" y="8" width="65" height="33.5"/>
                                                             <color key="tintColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
                                                             <state key="normal" title="Remove"/>
                                                             <connections>
@@ -154,12 +154,12 @@
                                                         <constraint firstItem="dg7-lw-veh" firstAttribute="top" secondItem="clx-U5-s7C" secondAttribute="top" constant="16" id="9ZA-V1-3m9"/>
                                                         <constraint firstItem="sk4-sH-wh7" firstAttribute="top" secondItem="7Mq-SA-pD3" secondAttribute="bottom" constant="16" id="A91-aJ-zI0"/>
                                                         <constraint firstAttribute="trailing" secondItem="ys5-LD-ZQ2" secondAttribute="trailing" constant="24" id="CVe-4K-kuF"/>
-                                                        <constraint firstItem="sk4-sH-wh7" firstAttribute="leading" secondItem="clx-U5-s7C" secondAttribute="leading" constant="24" id="NL6-k1-1tU"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Apu-i0-lXF" secondAttribute="trailing" constant="24" id="Nxn-Ou-xOp"/>
-                                                        <constraint firstAttribute="trailing" secondItem="sk4-sH-wh7" secondAttribute="trailing" constant="24" id="WEv-pK-s0R"/>
                                                         <constraint firstAttribute="trailing" secondItem="7Mq-SA-pD3" secondAttribute="trailing" id="ZNk-UC-gDI"/>
                                                         <constraint firstItem="Apu-i0-lXF" firstAttribute="top" secondItem="j9M-rA-mhb" secondAttribute="bottom" constant="16" id="ctf-vh-mHI"/>
                                                         <constraint firstItem="j9M-rA-mhb" firstAttribute="leading" secondItem="clx-U5-s7C" secondAttribute="leading" constant="24" id="gXB-cm-Euy"/>
+                                                        <constraint firstAttribute="trailing" secondItem="sk4-sH-wh7" secondAttribute="trailing" constant="24" id="iAn-sP-ezO"/>
+                                                        <constraint firstItem="sk4-sH-wh7" firstAttribute="leading" secondItem="clx-U5-s7C" secondAttribute="leading" constant="24" id="ivT-Ed-jLR"/>
                                                         <constraint firstItem="ys5-LD-ZQ2" firstAttribute="firstBaseline" secondItem="dg7-lw-veh" secondAttribute="firstBaseline" id="l2x-BN-eyJ"/>
                                                         <constraint firstItem="j9M-rA-mhb" firstAttribute="top" secondItem="sk4-sH-wh7" secondAttribute="bottom" constant="16" id="ub4-hh-Lp0"/>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="j9M-rA-mhb" secondAttribute="trailing" constant="24" id="wGN-Py-XfJ"/>
@@ -181,7 +181,7 @@
                                             <outlet property="useScheduleButton" destination="Apu-i0-lXF" id="aBX-Fa-8h6"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="editDays" rowHeight="70" id="qTf-XQ-zzH" customClass="EditDosageScheduleCell" customModule="BridgeApp" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="editDays" rowHeight="70" id="qTf-XQ-zzH" customClass="EditDosageScheduleCell" customModule="DataTracking" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="356" width="414" height="70"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="qTf-XQ-zzH" id="aUH-KR-x9N">
@@ -228,7 +228,7 @@
                                             <segue destination="TZ4-kR-Uo4" kind="presentation" id="cuz-FJ-1EF"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="editTimes" rowHeight="70" id="2jx-Ly-oou" customClass="EditDosageScheduleCell" customModule="BridgeApp" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="editTimes" rowHeight="70" id="2jx-Ly-oou" customClass="EditDosageScheduleCell" customModule="DataTracking" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="426" width="414" height="70"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="2jx-Ly-oou" id="SDA-JZ-BxK">
@@ -417,7 +417,7 @@
         <!--Warning View Controller-->
         <scene sceneID="vUm-8x-nga">
             <objects>
-                <viewController storyboardIdentifier="Warning" id="MUs-PZ-Ven" customClass="SBAWarningViewController" customModule="BridgeApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Warning" id="MUs-PZ-Ven" customClass="SBAWarningViewController" customModule="DataTracking" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ItY-x6-HLh" customClass="RSDStepNavigationView" customModule="ResearchUI">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -432,7 +432,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Rf-99-7Ax" userLabel="Header">
-                                <rect key="frame" x="0.0" y="44" width="414" height="80"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="225"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xg5-tM-1Ni" userLabel="Back Button">
                                         <rect key="frame" x="16" y="16" width="50" height="50"/>
@@ -447,7 +447,7 @@
                                         </connections>
                                     </button>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" image="removeInstruction" translatesAutoresizingMaskIntoConstraints="NO" id="hky-d3-XZe">
-                                        <rect key="frame" x="32" y="32" width="350" height="16"/>
+                                        <rect key="frame" x="32" y="32" width="350" height="161.00000000000003"/>
                                         <color key="backgroundColor" red="0.50980392159999999" green="0.8980392157" blue="0.71372549019999998" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </imageView>
@@ -473,11 +473,11 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="1000" text="Are you sure you want to remove Sinemet from your current medication list?" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ssM-wY-f0I">
-                                <rect key="frame" x="32" y="172" width="350" height="86"/>
+                                <rect key="frame" x="32" y="317" width="350" height="86"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="950" text="Removing this medication will remove it from your Medications list. If you wish to re-add it, it will not be saved." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="imH-oO-xG2">
-                                <rect key="frame" x="32" y="276" width="350" height="64.5"/>
+                                <rect key="frame" x="32" y="421" width="350" height="64.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                             </label>
                         </subviews>
@@ -518,7 +518,7 @@
         <!--Day Time Picker View Controller-->
         <scene sceneID="OWL-eb-hE8">
             <objects>
-                <viewController storyboardIdentifier="DayTimePicker" id="TZ4-kR-Uo4" customClass="SBADayTimePickerViewController" customModule="BridgeApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DayTimePicker" id="TZ4-kR-Uo4" customClass="SBADayTimePickerViewController" customModule="DataTracking" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pvC-ao-8zQ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -527,7 +527,7 @@
                                 <rect key="frame" x="0.0" y="226" width="414" height="533"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="twoButton" rowHeight="72" id="1w5-Ux-06r" customClass="TwoChoicePickerCell" customModule="BridgeApp" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="twoButton" rowHeight="72" id="1w5-Ux-06r" customClass="TwoChoicePickerCell" customModule="DataTracking" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="72"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1w5-Ux-06r" id="oUp-wV-ebl">

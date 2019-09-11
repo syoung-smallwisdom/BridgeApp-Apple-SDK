@@ -321,8 +321,9 @@ class SurveyNavigationRuleTests: XCTestCase {
     
     func testOperators() {
         
+        // Rule operator
+        
         XCTAssertNil(SBBOperatorType.all.ruleOperator)
-        XCTAssertNil(SBBOperatorType.always.ruleOperator)
         XCTAssertNil(SBBOperatorType.any.ruleOperator)
         
         XCTAssertEqual(SBBOperatorType.equal.ruleOperator, .equal)
@@ -332,6 +333,9 @@ class SurveyNavigationRuleTests: XCTestCase {
         XCTAssertEqual(SBBOperatorType.greaterThan.ruleOperator, .greaterThan)
         XCTAssertEqual(SBBOperatorType.greaterThanEqual.ruleOperator, .greaterThanEqual)
         XCTAssertEqual(SBBOperatorType.skip.ruleOperator, .skip)
+        XCTAssertEqual(SBBOperatorType.always.ruleOperator, .always)
+        
+        // Cohort operator
         
         XCTAssertEqual(SBBOperatorType.all.cohortOperator, .all)
         XCTAssertEqual(SBBOperatorType.any.cohortOperator, .any)

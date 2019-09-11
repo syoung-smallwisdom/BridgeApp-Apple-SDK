@@ -129,8 +129,8 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
         self.tableBackground = background
         self.view.backgroundColor = background.color
         
-        self.titleLabel.font = designSystem.fontRules.font(for: .heading2, compatibleWith: self.traitCollection)
-        self.titleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .heading2)
+        self.titleLabel.font = designSystem.fontRules.font(for: .largeHeader, compatibleWith: self.traitCollection)
+        self.titleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .largeHeader)
         self.headerView.tintColor = designSystem.colorRules.tintedButtonColor(on: background)
         self.headerView.backgroundColor = background.color
         self.tableView.backgroundColor = background.color

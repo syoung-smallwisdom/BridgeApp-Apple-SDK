@@ -238,6 +238,6 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
     }
     
     override open var titleTextType: RSDDesignSystem.TextType {
-        return .heading4
+        return .mediumHeader
     }
 }

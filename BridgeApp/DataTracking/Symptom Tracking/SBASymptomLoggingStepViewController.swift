@@ -176,10 +176,10 @@ open class SBASymptomLoggingCell: RSDTableViewCell {
     func updateColors() {
         let designSystem = self.designSystem ?? RSDDesignSystem()
         let background = self.backgroundColorTile ?? RSDGrayScale().white
-        self.titleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .fieldHeader)
+        self.titleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .smallHeader)
         self.subtitleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .bodyDetail)
         for label in self.labels {
-            label.textColor = designSystem.colorRules.textColor(on: background, for: .fieldHeader)
+            label.textColor = designSystem.colorRules.textColor(on: background, for: .smallHeader)
         }
         for line in self.separatorLines {
             line.backgroundColor = designSystem.colorRules.separatorLine
