@@ -213,8 +213,8 @@ class SBADayTimePickerViewController: UIViewController, UITableViewDelegate, UIT
         self.headerView.backgroundColor = background.color
         self.footerMargin.backgroundColor = background.color
         self.footerView.setDesignSystem(designSystem, with: background)
-        self.titleLabel.font = designSystem.fontRules.font(for: .heading2, compatibleWith: self.traitCollection)
-        self.titleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .heading2)
+        self.titleLabel.font = designSystem.fontRules.font(for: .largeHeader, compatibleWith: self.traitCollection)
+        self.titleLabel.textColor = designSystem.colorRules.textColor(on: background, for: .largeHeader)
         self.detailLabel.font = designSystem.fontRules.font(for: .small)
         self.detailLabel.textColor = designSystem.colorRules.textColor(on: background, for: .small)
         self.headerView.tintColor = designSystem.colorRules.tintedButtonColor(on: background)

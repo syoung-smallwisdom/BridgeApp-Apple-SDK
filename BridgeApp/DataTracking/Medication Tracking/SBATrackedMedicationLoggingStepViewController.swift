@@ -68,9 +68,9 @@ open class SBATrackedMedicationLoggingStepViewController: SBAMedicationListStepV
             // Style the header to match design
             let backgroundColor = self.designSystem.colorRules.backgroundPrimary
             header.contentView.backgroundColor = backgroundColor.color
-            header.titleLabel.textColor = self.designSystem.colorRules.textColor(on: backgroundColor, for: .heading2)
+            header.titleLabel.textColor = self.designSystem.colorRules.textColor(on: backgroundColor, for: .largeHeader)
             header.titleLabel.textAlignment = .center
-            header.titleLabel.font = self.designSystem.fontRules.font(for: .heading2, compatibleWith: traitCollection)
+            header.titleLabel.font = self.designSystem.fontRules.font(for: .largeHeader, compatibleWith: traitCollection)
         }
         return view
     }
@@ -225,8 +225,8 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
         let backgroundColor = self.backgroundColorTile ?? designSystem.colorRules.backgroundLight
         
         self.checkmarkView.backgroundColor = designSystem.colorRules.palette.secondary.normal.color
-        self.titleLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .heading3)
-        self.titleLabel.font = designSystem.fontRules.font(for: .heading3, compatibleWith: traitCollection)
+        self.titleLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .mediumHeader)
+        self.titleLabel.font = designSystem.fontRules.font(for: .mediumHeader, compatibleWith: traitCollection)
         self.weekdayLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .small)
         self.weekdayLabel.font = designSystem.fontRules.font(for: .small, compatibleWith: traitCollection)
         self.notLoggedTimeLabel.textColor = designSystem.colorRules.textColor(on: backgroundColor, for: .body)
