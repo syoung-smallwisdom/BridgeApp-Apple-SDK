@@ -254,7 +254,10 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             }
             
             SBAReportManager.offMainQueue.async {
-                let dayOne = SBAReportSingletonDate
+                // Make sure our requested date ranges from "day one" cover the ReportSingletonDate no matter what time zone it was created in.
+                // We subtract 2 days because the Bridge endpoint is non-inclusive of the startDate so only subtracting 1 day won't get reports
+                // stored with timestamp 2000-12-31T00:00:00.000Z (or date 2000-12-31).
+                let dayOne = SBAReportSingletonDate.addingNumberOfDays(-2)
                 queries.forEach { (query) in
                     let category = self.reportCategory(for: query.reportIdentifier)
                     do {
