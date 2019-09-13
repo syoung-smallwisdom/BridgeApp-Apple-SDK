@@ -37,9 +37,12 @@ extension Date {
     
     public func startOfDay() -> Date {
         let calendar = Calendar.current
-        let unitFlags: NSCalendar.Unit = [.day, .month, .year]
-        let components = (calendar as NSCalendar).components(unitFlags, from: self)
-        return calendar.date(from: components) ?? self
+        return calendar.startOfDay(for: self)
+    }
+    
+    public func endOfDay() -> Date {
+        // The end of one day is the same moment as the start of the next day
+        return self.addingNumberOfDays(1).startOfDay()
     }
     
     public var isToday: Bool {
