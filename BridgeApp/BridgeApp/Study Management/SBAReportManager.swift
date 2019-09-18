@@ -580,7 +580,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         case .groupByDay:
             // The report date on groupByDay reports will be at the start of a day, and the Bridge endpoint for retrieving reports appears
             // to be non-inclusive for the startDate parameter, so we need to fudge it a bit to make sure we include the report for startDate.
-            self.participantManager.getReport(query.reportIdentifier, fromTimestamp: startDate.startOfDay().addingTimeInterval(-1.0), toTimestamp: endDate.endOfDay()) { [weak self] (obj, error) in
+            self.participantManager.getReport(query.reportIdentifier, fromTimestamp: startDate.startOfDay().addingTimeInterval(-1.0), toTimestamp: endDate.addingNumberOfDays(1).startOfDay()) { [weak self] (obj, error) in
                 self?.didFetchReports(for: query, category: category, reports: obj as? [SBBReportData], error: error)
             }
             

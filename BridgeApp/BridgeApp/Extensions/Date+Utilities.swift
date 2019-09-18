@@ -40,11 +40,6 @@ extension Date {
         return calendar.startOfDay(for: self)
     }
     
-    public func endOfDay() -> Date {
-        // The end of one day is the same moment as the start of the next day
-        return self.addingNumberOfDays(1).startOfDay()
-    }
-    
     public var isToday: Bool {
         return Calendar.current.isDateInToday(self)
     }
