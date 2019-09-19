@@ -239,13 +239,16 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         return _reloadingReports.count > 0
     }
     private var _reloadingReports = Set<ReportQuery>()
+    private var _buildingQueries = false
     
     /// Load the reports using the `reportQueries()` for this schedule manager.
     public final func loadReports() {
         DispatchQueue.main.async {
-            if self.isReloadingReports { return }
+            if self.isReloadingReports || self._buildingQueries { return }
+            self._buildingQueries = true
             let queries = self.reportQueries()
             self._reloadingReports.formUnion(queries)
+            self._buildingQueries = false
             
             // If there aren't any reports to fetch then exit early.
             guard queries.count > 0 else {
@@ -497,29 +500,56 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     }
     
     /// Build the reports to return for this task result.
-    open func buildReports(from taskResult: RSDTaskResult) -> [SBAReport]? {
+    open func buildReports(from topLevelResult: RSDTaskResult) -> [SBAReport]? {
         
         // Recursively build a report for all the schemas in this task path.
         var newReports = [SBAReport]()
-        func appendReports(_ taskResult: RSDTaskResult) {
-            if let schemaInfo = taskResult.schemaInfo ?? self.schemaInfo(for: taskResult.identifier),
-                let schemaIdentifier = schemaInfo.schemaIdentifier,
+        func appendReports(_ taskResult: RSDTaskResult, _ level: Int) {
+            let topResult = (level == 0) ? nil : topLevelResult
+            if let reportIdentifier = self.reportIdentifier(for: taskResult, topLevelResult: topResult),
                 let clientData = buildClientData(from: taskResult) {
-                let date = self.date(for: schemaIdentifier, from: taskResult)
-                let report = SBAReport(reportKey: RSDIdentifier(rawValue: schemaIdentifier),
-                                       date: date,
-                                       clientData: clientData,
-                                       timeZone: TimeZone.current)
-                newReports.append(report)
+                
+                // Look to see if there are multiple levels with the same JSON identifier and
+                // return the merged client data from them.
+                let reportKey = RSDIdentifier(rawValue: reportIdentifier)
+                if let previousReport = newReports.remove(where: { $0.reportKey == reportKey }).first {
+                    if let newJson = clientData as? [String: Any],
+                        let previousJson = previousReport.clientData as? [String: Any] {
+                        let mergedJson = previousJson.merging(newJson) { (previous, _) in previous }
+                        let report = SBAReport(reportKey: reportKey,
+                                               date: previousReport.date,
+                                               clientData: mergedJson as NSDictionary,
+                                               timeZone: previousReport.timeZone)
+                        newReports.append(report)
+                    }
+                    else {
+                        newReports.append(previousReport)
+                    }
+                }
+                else {
+                    let date = self.date(for: reportIdentifier, from: taskResult)
+                    let report = SBAReport(reportKey: reportKey,
+                        date: date,
+                        clientData: clientData,
+                        timeZone: TimeZone.current)
+                    newReports.append(report)
+                }
             }
             taskResult.stepHistory.forEach {
                 guard let subtaskResult = $0 as? RSDTaskResult else { return }
-                appendReports(subtaskResult)
+                appendReports(subtaskResult, level + 1)
             }
         }
-        appendReports(taskResult)
+        appendReports(topLevelResult, 0)
         
         return newReports.count > 0 ? newReports : nil
+    }
+    
+    /// The report identifier to use for the given task result. If the `topLevelResult` is non-nil
+    /// then this task result is a subtask of another result.
+    open func reportIdentifier(for taskResult: RSDTaskResult, topLevelResult: RSDTaskResult?) -> String? {
+        let schemaInfo = taskResult.schemaInfo ?? self.schemaInfo(for: taskResult.identifier)
+        return schemaInfo?.schemaIdentifier
     }
     
     /// The date to use for the report with the given identifier.
@@ -540,7 +570,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     /// - parameters:
     ///     - taskResult: The task result for the task which has just run.
     /// - returns: The client data built for this task result (if any).
-    func buildClientData(from taskResult: RSDTaskResult) -> SBBJSONValue? {
+    open func buildClientData(from taskResult: RSDTaskResult) -> SBBJSONValue? {
         
         // Get the hold data, if any.
         var holdJSON: RSDJSONSerializable?
