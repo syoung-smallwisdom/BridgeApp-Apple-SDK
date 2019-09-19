@@ -200,7 +200,7 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
 public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, text, detail, loggedDate, itemIdentifier, timingIdentifier
+        case identifier, text, detail, loggedDate, itemIdentifier, timingIdentifier, timeZone
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
@@ -220,6 +220,9 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
     
     /// The marker for when the tracked item was logged.
     public var loggedDate: Date?
+    
+    /// The time zone to use for the loggedDate.
+    public let timeZone: TimeZone
     
     /// A String that indicates the type of the result. This is used to decode the result using a `RSDFactory`.
     public var type: RSDResultType = .loggingItem
@@ -243,6 +246,7 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         self.text = text
         self.detail = detail
         self.inputResults = []
+        self.timeZone = TimeZone.current
     }
     
     /// Initialize from a `Decoder`. This decoding method will use the `RSDFactory` instance associated
@@ -258,6 +262,12 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.detail = try container.decodeIfPresent(String.self, forKey: .detail)
         self.loggedDate = try container.decodeIfPresent(Date.self, forKey: .loggedDate)
+        if let tzIdentifier = try container.decodeIfPresent(String.self, forKey: .timeZone) {
+            self.timeZone = TimeZone(identifier: tzIdentifier) ?? TimeZone.current
+        }
+        else {
+            self.timeZone = TimeZone.current
+        }
         // TODO: syoung 05/30/2018 Decode the answers.
         self.inputResults = []
     }
@@ -273,6 +283,7 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         try container.encodeIfPresent(text, forKey: .text)
         try container.encodeIfPresent(detail, forKey: .detail)
         try container.encodeIfPresent(loggedDate, forKey: .loggedDate)
+        try container.encode(self.timeZone.identifier, forKey: .timeZone)
 
         var anyContainer = encoder.container(keyedBy: AnyCodingKey.self)
         try inputResults.forEach { result in

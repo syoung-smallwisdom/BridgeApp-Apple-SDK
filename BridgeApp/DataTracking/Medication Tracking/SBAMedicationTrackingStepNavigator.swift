@@ -623,7 +623,7 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
     internal fileprivate(set) var uuid = UUID().uuidString
     
     private enum CodingKeys : String, CodingKey {
-        case timeOfDay, loggedDate, quantity
+        case timeOfDay, loggedDate, quantity, timeZone
     }
     
     public init(timeOfDay: String? = nil, loggedDate: Date? = nil) {
@@ -651,7 +651,11 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
         self.loggedDate = loggedDate
         self.timeOfDay = validTimeOfDay ? timeOfDay : nil
         
-        if let dateString = try container.decodeIfPresent(String.self, forKey: .loggedDate),
+        if let timeZoneIdentifier = try container.decodeIfPresent(String.self, forKey: .timeZone),
+            let timeZone = TimeZone(identifier: timeZoneIdentifier) {
+            self.timeZone = timeZone
+        }
+        else if let dateString = try container.decodeIfPresent(String.self, forKey: .loggedDate),
             let timeZone = TimeZone(iso8601: dateString) {
             self.timeZone = timeZone
         }
@@ -664,6 +668,7 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(self.timeOfDay, forKey: .timeOfDay)
         try container.encode(self.quantity, forKey: .quantity)
+        try container.encode(self.timeZone.identifier, forKey: .timeZone)
         if let loggedDate = self.loggedDate {
             let formatter = encoder.factory.timestampFormatter
             formatter.timeZone = self.timeZone
