@@ -176,9 +176,9 @@ open class SBAScheduleManager: SBAReportManager {
     /// The predicate to use for filtering today's activities for those available today. If there is an
     /// `activityGroup` associated with this schedule manager, the fetch request for today's activities will
     /// be built using this predicate and the activity group predicate. Otherwise, only this predicate will
-    /// be used. Default is to return `SBBScheduledActivity.availableTodayPredicate()`.
+    /// be used. Default is to return `SBBScheduledActivity.availableOnPredicate(on: self.now())`.
     open func availablePredicate() -> NSPredicate {
-        return SBBScheduledActivity.availableTodayPredicate()
+        return SBBScheduledActivity.availableOnPredicate(on: self.now())
     }
     
     /// The predicate to use for filtering past activities. By default, this will return all activities where
