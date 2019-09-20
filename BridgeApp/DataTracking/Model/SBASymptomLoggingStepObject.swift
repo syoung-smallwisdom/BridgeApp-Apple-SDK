@@ -473,12 +473,12 @@ public struct SBASymptomResult : Codable, RSDScoringResult {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.identifier, forKey: .identifier)
         try container.encode(self.text, forKey: .text)
-        try container.encode(self.timeZone.identifier, forKey: .timeZone)
         if let loggedDate = self.loggedDate {
             let formatter = encoder.factory.timestampFormatter
             formatter.timeZone = self.timeZone
             let loggingString = formatter.string(from: loggedDate)
             try container.encode(loggingString, forKey: .loggedDate)
+            try container.encode(self.timeZone.identifier, forKey: .timeZone)
         }
         try container.encodeIfPresent(self.severity, forKey: .severity)
         if let durationString = self.duration?.stringValue {

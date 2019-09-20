@@ -282,8 +282,13 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         try container.encodeIfPresent(timingIdentifier, forKey: .timingIdentifier)
         try container.encodeIfPresent(text, forKey: .text)
         try container.encodeIfPresent(detail, forKey: .detail)
-        try container.encodeIfPresent(loggedDate, forKey: .loggedDate)
-        try container.encode(self.timeZone.identifier, forKey: .timeZone)
+        if let loggedDate = self.loggedDate {
+            let formatter = encoder.factory.timestampFormatter
+            formatter.timeZone = self.timeZone
+            let loggingString = formatter.string(from: loggedDate)
+            try container.encode(loggingString, forKey: .loggedDate)
+            try container.encode(self.timeZone.identifier, forKey: .timeZone)
+        }
 
         var anyContainer = encoder.container(keyedBy: AnyCodingKey.self)
         try inputResults.forEach { result in
