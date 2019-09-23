@@ -438,9 +438,13 @@ public struct SBASymptomResult : Codable, RSDScoringResult {
         let text = try container.decodeIfPresent(String.self, forKey: .text)
         self.text = text ?? identifier
         self.loggedDate = try container.decodeIfPresent(Date.self, forKey: .loggedDate)
+        if let tzIdentifier = try container.decodeIfPresent(String.self, forKey: .timeZone),
+            let timeZone = TimeZone(identifier: tzIdentifier) {
+            self.timeZone = timeZone
+        }
         if let iso8601 = try container.decodeIfPresent(String.self, forKey: .loggedDate),
-            let timezone = TimeZone(iso8601: iso8601) {
-            self.timeZone = timezone
+            let timeZone = TimeZone(iso8601: iso8601) {
+            self.timeZone = timeZone
         }
         else {
             self.timeZone = TimeZone.current
@@ -474,6 +478,7 @@ public struct SBASymptomResult : Codable, RSDScoringResult {
             formatter.timeZone = self.timeZone
             let loggingString = formatter.string(from: loggedDate)
             try container.encode(loggingString, forKey: .loggedDate)
+            try container.encode(self.timeZone.identifier, forKey: .timeZone)
         }
         try container.encodeIfPresent(self.severity, forKey: .severity)
         if let durationString = self.duration?.stringValue {

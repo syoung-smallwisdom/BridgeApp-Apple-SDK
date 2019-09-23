@@ -91,10 +91,18 @@ class ProfileManagerTests: XCTestCase {
         // check that it's stored in the appropriate Report as the expected value
         do {
             let reportData = try BridgeSDK.participantManager.getLatestCachedData(forReport: reportItem.sourceKey)
-            guard let data = reportData.data
+            guard let wrappedData = reportData.data
                 else {
                     XCTAssert(false, "Expected reportData.data to exist but it's nil")
                     return
+            }
+            var data: Any!
+            if let dict = wrappedData as? NSDictionary,
+                let clientData = dict[kReportClientDataKey] {
+                    data = clientData
+            }
+            else {
+                data = wrappedData
             }
             var reportValue = data as? RSDJSONSerializable
             if !reportItem.clientDataIsItem {

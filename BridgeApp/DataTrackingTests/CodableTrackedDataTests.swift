@@ -784,11 +784,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [2, 4, 6],
                         "timestamps": [{
                                 "timeOfDay": "07:30",
-                                "loggedDate": "2018-02-04T07:45:00.000-08:00"
+                                "loggedDate": "2018-02-04T07:45:00.000-08:00",
+                                "timeZone":"America/Los_Angeles"
                             },
                             {
                                 "timeOfDay": "10:30",
-                                "loggedDate": "2018-02-04T10:30:00.000-08:00"
+                                "loggedDate": "2018-02-04T10:30:00.000-08:00",
+                                "timeZone":"America/Los_Angeles"
                             }
                         ]
                     }]
@@ -799,13 +801,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "dosage": "5 ml",
                         "timestamps": [{
                                 "quantity": 3,
-                                "loggedDate": "2018-02-04T08:00:00.000-08:00"
+                                "loggedDate": "2018-02-04T08:00:00.000-05:00"
                             },
                             {
-                                "loggedDate": "2018-02-04T12:15:00.000-08:00"
+                                "loggedDate": "2018-02-04T12:15:00.000-05:00"
                             },
                             {
-                                "loggedDate": "2018-02-04T20:45:00.000-08:00"
+                                "loggedDate": "2018-02-04T20:45:00.000-05:00"
                             }
                         ]
                     }]
@@ -856,6 +858,19 @@ class CodableTrackedDataTests: XCTestCase {
                     if let timestamp = dosageItem.timestamps?.first {
                         XCTAssertEqual(timestamp.timeOfDay, "08:00")
                         XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0800")
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA4" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Los_Angeles")
                     }
                 }
             }
@@ -874,6 +889,7 @@ class CodableTrackedDataTests: XCTestCase {
                     if let timestamp = dosageItem.timestamps?.first {
                         XCTAssertNil(timestamp.timeOfDay)
                         XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0500")
                     }
                 }
             }
@@ -957,7 +973,6 @@ class CodableTrackedDataTests: XCTestCase {
                 XCTAssertEqual(third.medicationTiming, .preMedication)
             }
             
-            
             let jsonData = try encoder.encode(object.trackedItems)
             let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
             guard let dictionary = json as? [String : Any],
@@ -973,12 +988,14 @@ class CodableTrackedDataTests: XCTestCase {
                 ],
                 [
                     "loggedDate" : "2019-07-29T14:16:24.561-06:00",
+                    "timeZone" : "GMT-0600",
                     "severity" : 3,
                     "text" : "Anger",
                     "identifier" : "Anger"
                 ],
                 [
                     "loggedDate" : "2019-07-29T14:16:14.711-06:00",
+                    "timeZone" : "GMT-0600",
                     "identifier" : "Hallucinations",
                     "duration" : "DURATION_CHOICE_NOW",
                     "text" : "Hallucinations",
