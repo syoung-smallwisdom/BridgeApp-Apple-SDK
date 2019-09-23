@@ -548,7 +548,7 @@ today.</p>
                         <p>The predicate to use for filtering today&rsquo;s activities for those available today. If there is an
 <code><a href="../Classes/SBAScheduleManager.html#/s:9BridgeApp18SBAScheduleManagerC13activityGroupAA011SBAActivityF0_pSgvp">activityGroup</a></code> associated with this schedule manager, the fetch request for today&rsquo;s activities will
 be built using this predicate and the activity group predicate. Otherwise, only this predicate will
-be used. Default is to return <code>SBBScheduledActivity.availableTodayPredicate()</code>.</p>
+be used. Default is to return <code>SBBScheduledActivity.availableOnPredicate(on: self.now())</code>.</p>
 
                       </div>
                       <div class="declaration">
