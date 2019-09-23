@@ -108,6 +108,14 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
         }
     }
     
+    // MARK: Medication reports
+    
+    override open func reportQueries() -> [ReportQuery] {
+        let tasks: [RSDIdentifier] = [.medicationTask]
+        return tasks.map { ReportQuery(reportKey: $0, queryType: .mostRecent, dateRange: nil) }
+    }
+
+    
     // MARK: Medication notification handling
 
     struct Reminder : RSDScheduleTime, Codable {
