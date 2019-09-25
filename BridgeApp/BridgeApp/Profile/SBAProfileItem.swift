@@ -277,7 +277,7 @@ extension SBAProfileItem {
         }
         
         return itemValue
-   }
+    }
 
     public func commonJsonToItemType(jsonVal: RSDJSONSerializable?) -> Any? {
         guard let jsonValue = jsonVal else {
@@ -302,24 +302,6 @@ extension SBAProfileItem {
         return typeArray
     }
     
-    func commonMapObject(with dictionary: [String : RSDJSONSerializable]) -> Any? {
-        guard let type = dictionary["type"] as? String,
-                let clazz = NSClassFromString(type) as? (NSObject & Decodable).Type
-            else {
-                return nil
-        }
-        let decoder = RSDFactory.shared.createJSONDecoder()
-        
-        do {
-            let decodingHelper = try decoder.decode(DecodingHelper.self, from: dictionary as SBBJSONValue)
-            return try decodingHelper.decode(to: clazz) as! NSObject & Decodable
-        } catch let err {
-            debugPrint("Failed to decode an object purported to be of type \(type): \(err)")
-        }
-
-        return nil
-    }
-    
     func commonDemographicJsonValue() -> RSDJSONSerializable? {
         guard let jsonVal = self.commonJsonValueGetter() else { return nil }
 /* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
@@ -329,36 +311,6 @@ extension SBAProfileItem {
  */
         
         return jsonVal
-    }
-    
-    func commonCheckTypeCompatible(newValue: Any?) -> Bool {
-        guard newValue != nil else { return true }
-        
-        switch self.itemType.baseType {
-        case .string:
-            return true // anything can be cast to a string
-            
-        case .integer:
-            return newValue as? NSNumber != nil
-            
-        case .year:
-            return newValue as? NSNumber != nil
-            
-        case .fraction:
-            return newValue as? NSNumber != nil
-            
-        case .decimal:
-            return newValue as? NSNumber != nil
-            
-        case .boolean:
-            return newValue as? NSNumber != nil
-            
-        case .date:
-            return newValue as? NSDate != nil
-            
-        default:
-            return true   // Any extended type isn't included in the common validation
-        }
     }
     
 /* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
