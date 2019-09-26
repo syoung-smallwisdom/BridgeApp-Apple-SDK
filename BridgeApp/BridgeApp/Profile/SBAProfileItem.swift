@@ -608,11 +608,15 @@ public struct SBAStudyParticipantClientDataProfileItem: SBAProfileItemInternal {
     
     public func storedValue(forKey key: String) -> Any? {
         guard let participant = SBAParticipantManager.shared.studyParticipant else { return nil }
-        var dict = participant.clientData as? [String : RSDJSONSerializable] ?? [:]
-        guard let json = dict[self.sourceKey]
+        guard let dict = participant.clientData as? [String : RSDJSONSerializable],
+            let json = dict[self.sourceKey]
             else {
-                guard let keyPath = self.fallbackKeyPath else { return nil }
-                return participant.value(forKeyPath: keyPath)
+                if let keyPath = self.fallbackKeyPath {
+                    return participant.value(forKeyPath: keyPath)
+                }
+                else {
+                    return nil
+                }
         }
         return self.commonJsonToItemType(jsonVal: json)
     }
