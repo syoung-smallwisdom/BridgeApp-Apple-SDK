@@ -308,6 +308,8 @@ open class SBAMedicationReminderManager : SBAScheduleManager, UNUserNotification
         if hour < 0 {
             hour += 24
         }
+        dateComponents.hour = hour
+        dateComponents.minute = minute
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
         
         // Create the request.
