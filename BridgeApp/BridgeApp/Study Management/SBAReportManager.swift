@@ -630,8 +630,11 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             }
             
         case .singleton:
-            let dateComponents = SBAReportSingletonDate.dateOnly()
-            self.participantManager.getReport(query.reportIdentifier, fromDate: dateComponents, toDate: dateComponents) { [weak self] (obj, error) in
+            // Make sure we cover the ReportSingletonDate no matter what time zone it was created in
+            // and no matter what time zone it's being retrieved in:
+            let fromDateComponents = (SBAReportSingletonDate.addingNumberOfDays(-1)).dateOnly()
+            let toDateComponents = (SBAReportSingletonDate.addingNumberOfDays(1)).dateOnly()
+            self.participantManager.getReport(query.reportIdentifier, fromDate: fromDateComponents, toDate: toDateComponents) { [weak self] (obj, error) in
                 self?.didFetchReports(for: query, category: category, reports: obj as? [SBBReportData], error: error)
             }
         }
