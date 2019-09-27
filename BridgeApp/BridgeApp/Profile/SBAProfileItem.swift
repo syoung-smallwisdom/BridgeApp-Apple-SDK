@@ -57,33 +57,8 @@ public protocol SBAProfileItem: Decodable {
     /// itemType specifies what type to store the profileItem's value as. Defaults to String if not otherwise specified.
     var itemType: RSDFormDataType { get }
     
-    // TODO: syoung 09/26/2019 Delete. This is defined in the extension below so it doesn't need to
-    // be included in the protocol.
-    
-//    /// The value property is used to get and set the profile item's value in whatever internal data
-//    /// storage is used by the implementing class.
-//    var value: Any? { get set }
-    
-    // TODO: syoung 09/26/2019 Dead code? This is not used. Also, these are defined in the
-    // protocol extension below. As such, they do not need to be defined here since Swift 5.0
-    // protocol extensions do not allow for overriding of the implementation defined by the extension.
-    
-//    /// jsonValue is used to get and set the profile item's value directly from appropriate JSON.
-//    var jsonValue: RSDJSONSerializable? { get set }
-//
-//    /// demographicJsonValue is used when formatting the item as demographic data for upload to Bridge.
-//    /// By default it will fall through to the getter for the jsonValue property, but can be different
-//    /// if needed.
-//    var demographicJsonValue: RSDJSONSerializable? { get }
-    
     /// Is the value read-only?
     var readonly: Bool { get }
-    
-/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
-    /// Some of the stored value types have a unit associated with them that is used to
-    /// build the model object into an `HKQuantity`.
-    var unit: HKUnit? { get }
- */
     
     /// The class type to which to deserialize this profile item.
     var type: SBAProfileItemType { get }
@@ -156,7 +131,6 @@ extension SBAProfileItem {
         get {
             return self.storedValue(forKey: sourceKey)
         }
-        
         set {
             guard !readonly else { return }
             self.setStoredValue(newValue)
@@ -164,32 +138,6 @@ extension SBAProfileItem {
             NotificationCenter.default.post(name: .SBAProfileItemValueUpdated, object: self, userInfo: [SBAProfileItemUpdatedItemsKey: updatedItems])
         }
     }
-    
-   // TODO: syoung 09/26/2019 This is not used. Is it needed? It's kind of an obfuscated naming.
-    
-//    /// jsonValue is used to get and set the profile item's value directly from appropriate JSON.
-//    public var jsonValue: RSDJSONSerializable? {
-//        get {
-//            return self.commonJsonValueGetter()
-//        }
-//        
-//        set {
-//            commonJsonValueSetter(jsonVal: newValue)
-//        }
-//    }
-//    /// demographicJsonValue is used when formatting the item as demographic data for upload to Bridge.
-//    /// By default it will fall through to the getter for the jsonValue property, but can be different
-//    /// if needed.
-//    public var demographicJsonValue: RSDJSONSerializable? {
-//        return self.commonDemographicJsonValue()
-//    }
-  
-    // TODO: syoung 09/26/2019 Delete? It's not referenced anywhere and the naming is super-confusing.
-//    /// This is a bit of a misnomer. The getter is actually used to *set* a demographics value that
-//    /// is stored on Bridge.
-//    func commonJsonValueGetter() -> RSDJSONSerializable? {
-//        return commonItemTypeToJson(val: self.value)
-//    }
     
     /// Used in the setters for the profile items to set a new value to client data.
     public func commonItemTypeToBridgeJson(val: Any?) -> SBBJSONValue {
@@ -205,17 +153,6 @@ extension SBAProfileItem {
         }
     }
     
-    // TODO: syoung 09/26/2019 This is not used anywhere. Dead code?
-//    mutating func commonJsonValueSetter(jsonVal: RSDJSONSerializable?) {
-//        guard let jsonValue = jsonVal else {
-//            self.value = nil
-//            return
-//        }
-//
-//        guard let itemValue = commonJsonToItemType(jsonVal: jsonValue) else { return }
-//        self.value = itemValue
-//    }
-
     public func commonBridgeJsonToItemType(jsonVal: SBBJSONValue?) -> Any? {
         guard let jsonVal = jsonVal else {
             return nil
@@ -230,40 +167,7 @@ extension SBAProfileItem {
             return nil
         }
     }
-    
-    // TODO: syoung 09/26/2019 Delete? this code is not referenced anywhere.
-//    func commonDemographicJsonValue() -> SBBJSONValue {
-//        return self.commonJsonValueGetter()
-///* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
-//        if self.itemType == .hkBiologicalSex {
-//            return (self.value as? HKBiologicalSex)?.demographicDataValue
-//        }
-// */
-//    }
-    
-/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
-    func commonDefaultUnit() -> HKUnit {
-        return HKUnit.count()
-    }
- */
 }
-
-/* TODO: emm 2018-08-24 do we maybe still need to support this for updating the demographic survey from the Profile tab?
-extension HKBiologicalSex {
-    public var demographicDataValue: NSString? {
-        switch (self) {
-        case .female:
-            return "Female"
-        case .male:
-            return "Male"
-        case .other:
-            return "Other"
-        default:
-            return nil
-        }
-    }
-}
- */
 
 /// SBAReportProfileItem allows storing and retrieving profile item values to/from Bridge Participant Reports.
 /// For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
@@ -336,7 +240,7 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
             guard let dict = clientData as? NSDictionary,
                     let propJson = dict[self.demographicKey] as? SBBJSONValue
                 else {
-                    print("Could not find \(self.demographicKey) for \(key)")
+                    print("Could not find \(self.demographicKey) for \(key). clientData=\(clientData)")
                     return nil
             }
             json = propJson
