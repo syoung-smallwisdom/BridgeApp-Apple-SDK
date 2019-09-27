@@ -310,21 +310,21 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileItem.swift",
-      "line": 386,
+      "line": 211,
       "symbol": "SBAReportProfileItem.clientDataIsItem",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileItem.swift",
-      "line": 505,
+      "line": 330,
       "symbol": "SBBStudyParticipant.phoneNumber",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileItem.swift",
-      "line": 583,
+      "line": 408,
       "symbol": "SBAStudyParticipantClientDataProfileItem.fallbackKeyPath",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
@@ -429,28 +429,28 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 364,
+      "line": 376,
       "symbol": "SBAProfileItemProfileTableItem.profileManager",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 378,
+      "line": 390,
       "symbol": "SBAProfileItemProfileTableItem.editTaskIdentifier",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 605,
+      "line": 617,
       "symbol": "SBAProfileViewProfileTableItem.icon",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 614,
+      "line": 626,
       "symbol": "SBAProfileViewProfileTableItem.profileDataSource",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
