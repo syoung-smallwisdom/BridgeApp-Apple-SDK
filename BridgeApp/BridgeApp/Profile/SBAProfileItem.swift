@@ -240,7 +240,6 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
             guard let dict = clientData as? NSDictionary,
                     let propJson = dict[self.demographicKey] as? SBBJSONValue
                 else {
-                    print("Could not find \(self.demographicKey) for \(key). clientData=\(clientData)")
                     return nil
             }
             json = propJson
