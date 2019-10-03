@@ -1089,4 +1089,76 @@ class CodableTrackedDataTests: XCTestCase {
             return
         }
     }
+    
+    func testTriggersDecoding() {
+        // There is a bug in the old encodings that would add an empty dictionary if the result
+        // was nil. Check for this.
+        let json = """
+        {
+           "items" : [
+              {
+                "timingIdentifier" : "",
+                "text" : "Humidity",
+                "loggedDate" : "2019-10-03T15:26:57.679-06:00",
+                "timeZone" : "America/Denver",
+                "identifier" : "Humidity",
+                "itemIdentifier" : "Humidity"
+              },
+              {
+                "identifier" : "Cold",
+                "text" : "Cold"
+              }
+            ],
+            "endDate" : "2019-10-03T15:26:47.284-06:00",
+            "type" : "loggingCollection",
+            "identifier" : "trackedItems",
+            "startDate" : "2019-10-03T15:26:47.284-06:00"
+        }
+        """.data(using: .utf8)! // our data in native (JSON) format
+        
+        do {
+            let object = try decoder.decode(SBATriggerCollectionResult.self, from: json)
+            
+            let results = object.triggerResults
+            XCTAssertEqual(results.count, 2)
+            
+            if let cold = results.last {
+                XCTAssertEqual(cold.identifier, "Cold")
+                XCTAssertNil(cold.loggedDate)
+            }
+            
+            if let humidity = results.first {
+                XCTAssertEqual(humidity.identifier, "Humidity")
+                XCTAssertNotNil(humidity.loggedDate)
+                XCTAssertEqual(humidity.timeZone.identifier, "America/Denver")
+            }
+            
+            let jsonData = try encoder.encode(object)
+            let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dictionary = json as? [String : Any],
+                let items = dictionary["items"] as? NSArray else {
+                    XCTFail("Failed to encode object. \(json)")
+                    return
+            }
+            
+            let expectedItems: NSArray = [
+                [
+                    "loggedDate" : "2019-10-03T15:26:57.679-06:00",
+                    "timeZone" : "America/Denver",
+                    "identifier" : "Humidity",
+                    "text" : "Humidity"
+                ],
+                [
+                    "text" : "Cold",
+                    "identifier" : "Cold"
+                ]
+            ]
+            
+            XCTAssertEqual(items, expectedItems)
+            
+        } catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
 }

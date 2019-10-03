@@ -37,7 +37,7 @@ public struct SBATriggerResult : RSDResult, Codable, RSDScoringResult {
     public let type: RSDResultType = .trigger
     
     private enum CodingKeys : String, CodingKey {
-        case identifier, loggedDate, text
+        case identifier, loggedDate, text, timeZone
     }
     
     public let identifier: String
@@ -80,7 +80,11 @@ public struct SBATriggerResult : RSDResult, Codable, RSDScoringResult {
         let text = try container.decodeIfPresent(String.self, forKey: .text)
         self.text = text ?? identifier
         self.loggedDate = try container.decodeIfPresent(Date.self, forKey: .loggedDate)
-        if let iso8601 = try container.decodeIfPresent(String.self, forKey: .loggedDate),
+        if let tzIdentifier = try container.decodeIfPresent(String.self, forKey: .timeZone),
+            let timezone = TimeZone(identifier: tzIdentifier) {
+            self.timeZone = timezone
+        }
+        else if let iso8601 = try container.decodeIfPresent(String.self, forKey: .loggedDate),
             let timezone = TimeZone(iso8601: iso8601) {
             self.timeZone = timezone
         }
@@ -94,10 +98,11 @@ public struct SBATriggerResult : RSDResult, Codable, RSDScoringResult {
         try container.encode(self.identifier, forKey: .identifier)
         try container.encode(self.text, forKey: .text)
         if let loggedDate = self.loggedDate {
-            let formatter = encoder.factory.timestampFormatter
+            let formatter = encoder.factory.timestampFormatter.copy() as! DateFormatter
             formatter.timeZone = self.timeZone
             let loggingString = formatter.string(from: loggedDate)
             try container.encode(loggingString, forKey: .loggedDate)
+            try container.encode(self.timeZone.identifier, forKey: .timeZone)
         }
     }
 }

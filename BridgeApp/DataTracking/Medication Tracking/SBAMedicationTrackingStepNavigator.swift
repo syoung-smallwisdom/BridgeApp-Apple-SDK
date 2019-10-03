@@ -669,7 +669,7 @@ public struct SBATimestamp : Codable, RSDScheduleTime {
         try container.encodeIfPresent(self.timeOfDay, forKey: .timeOfDay)
         try container.encode(self.quantity, forKey: .quantity)
         if let loggedDate = self.loggedDate {
-            let formatter = encoder.factory.timestampFormatter
+            let formatter = encoder.factory.timestampFormatter.copy() as! DateFormatter
             formatter.timeZone = self.timeZone
             let loggingString = formatter.string(from: loggedDate)
             try container.encode(loggingString, forKey: .loggedDate)
