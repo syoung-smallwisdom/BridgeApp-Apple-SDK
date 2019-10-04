@@ -108,7 +108,7 @@ extension SBAReport : RSDTaskData {
 
 /// The `localDate` used as the reference date for a singleton date object. The user's enrollment date is not
 /// used for this so that the report can be found even if the enrollment date is changed.
-public let SBAReportSingletonDate: Date = Date(timeIntervalSinceReferenceDate: 0)
+public let SBAReportSingletonDate: Date = Date(timeIntervalSince1970: 0)
 
 let kReportDateKey = "reportDate"
 let kReportTimeZoneIdentifierKey = "timeZoneIdentifier"
@@ -489,28 +489,48 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     public func saveReportToBridge(_ report: SBAReport) {
         let reportIdentifier = report.reportKey.stringValue
         let category = self.reportCategory(for: reportIdentifier)
+        let bridgeReport = SBBReportData()
+        
+
         switch category {
         case .timestamp:
             
-            // The report date returned from the server is always in GMT time zone and does not
-            // include the timezone of the report. This is a work-around to allow saving a report
-            // with both a date *and* timezone. syoung 09/18/2019
+            // The report date returned from the server does not include the time zone identifier.
+            // While we can infer a timezone from the GMT offset, we don't get information such as
+            // "PDT" (Pacific Daylight Time) that may be displayed to the user. syoung 10/04/2019
             var json = [String : Any]()
             json[kReportClientDataKey] = report.clientData
-            let formatter = self.factory.timestampFormatter
-            formatter.timeZone = report.timeZone
-            json[kReportDateKey] = formatter.string(from: report.date)
             json[kReportTimeZoneIdentifierKey] = report.timeZone.identifier
+            let formatter = NSDate.iso8601formatter()!
+            formatter.timeZone = report.timeZone
+            let dateString = formatter.string(from: report.date)
+            json[kReportDateKey] = dateString
             
-            self.participantManager.saveReportJSON(json as NSDictionary,
-                                                   withDateTime: report.date,
-                                                   forReport: reportIdentifier,
-                                                   completion: nil)
-        default:
-            self.participantManager.saveReportJSON(report.clientData,
-                                                   withLocalDate: report.date.dateOnly(),
-                                                   forReport: reportIdentifier,
-                                                   completion: nil)
+            // Set the report date using ISO8601 with the time zone information.
+            bridgeReport.dateTime = dateString
+            bridgeReport.data = json as NSDictionary
+            
+        case .singleton:
+            
+            // For a singleton, always set the date to a dateString that is the singleton date
+            // in UTC timezone. This way it will always write to the report using that date.
+            bridgeReport.data  = report.clientData
+            let formatter = NSDate.iso8601DateOnlyformatter()!
+            formatter.timeZone = TimeZone(secondsFromGMT: 0)
+            bridgeReport.localDate = formatter.string(from: report.date)
+            
+        case .groupByDay:
+            
+            // For grouped by day, the date is the date in the report timezone.
+            bridgeReport.data  = report.clientData
+            let formatter = NSDate.iso8601DateOnlyformatter()!
+            formatter.timeZone = report.timeZone
+            bridgeReport.localDate = formatter.string(from: report.date)
+        }
+        
+        self.participantManager.save(bridgeReport, forReport: reportIdentifier) { (_, error) in
+            guard let error = error else { return }
+            print("Failed to save report: \(error)")
         }
     }
     
@@ -632,8 +652,8 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         case .singleton:
             // Make sure we cover the ReportSingletonDate no matter what time zone it was created in
             // and no matter what time zone it's being retrieved in:
-            let fromDateComponents = (SBAReportSingletonDate.addingNumberOfDays(-1)).dateOnly()
-            let toDateComponents = (SBAReportSingletonDate.addingNumberOfDays(1)).dateOnly()
+            let fromDateComponents = Date(timeIntervalSince1970: -48 * 60 * 60).dateOnly()
+            let toDateComponents = Date(timeIntervalSinceReferenceDate: 48 * 60 * 60).dateOnly()
             self.participantManager.getReport(query.reportIdentifier, fromDate: fromDateComponents, toDate: toDateComponents) { [weak self] (obj, error) in
                 self?.didFetchReports(for: query, category: category, reports: obj as? [SBBReportData], error: error)
             }
@@ -654,8 +674,8 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             return [report]
         }()
 
-        let newReports: [SBAReport] = reportDataObjects.compactMap {
-            guard let reportData = $0.data, let date = $0.date else { return nil }
+        let newReports: [SBAReport] = reportDataObjects.compactMap { report in
+            guard let reportData = report.data, let date = report.date else { return nil }
             
             if let json = reportData as? [String : Any],
                 let clientData = json[kReportClientDataKey] as? SBBJSONValue,
@@ -668,8 +688,24 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
                 return SBAReport(reportKey: query.reportKey, date: reportDate, clientData: clientData, timeZone: timeZone)
             }
             else {
-                let reportDate = (category == .groupByDay) ? date.startOfDay() : date
-                return SBAReport(reportKey: query.reportKey, date: reportDate, clientData: reportData)
+                switch category {
+                case .timestamp, .groupByDay:
+                    return SBAReport(reportKey: query.reportKey, date: date, clientData: reportData)
+                    
+                case .singleton:
+                    let timeZone = TimeZone(secondsFromGMT: 0)!
+                    let reportDate: Date = {
+                        if let localDate = report.localDate {
+                            let dateFormatter = NSDate.iso8601DateOnlyformatter()!
+                            dateFormatter.timeZone = timeZone
+                            return dateFormatter.date(from: localDate) ?? date
+                        }
+                        else {
+                            return date
+                        }
+                    }()
+                    return SBAReport(reportKey: query.reportKey, date: reportDate, clientData: reportData, timeZone: timeZone)
+                }
             }
         }
         
