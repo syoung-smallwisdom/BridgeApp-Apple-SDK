@@ -163,8 +163,13 @@ extension SBAProfileItem {
             return try answerType.jsonDecode(from: jsonVal.toJSONSerializable(), with: self.itemType)
         }
         catch let err {
-            assertionFailure("WARNING! Failed to decode \(self.demographicKey) from \(jsonVal): \(err)")
-            return nil
+            if self.itemType == .base(.string) {
+                return "\(jsonVal)"
+            }
+            else {
+                assertionFailure("WARNING! Failed to decode \(self.demographicKey) from \(jsonVal): \(err)")
+                return nil
+            }
         }
     }
 }

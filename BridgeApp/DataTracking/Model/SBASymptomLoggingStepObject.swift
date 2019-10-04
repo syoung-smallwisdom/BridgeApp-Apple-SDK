@@ -474,7 +474,7 @@ public struct SBASymptomResult : Codable, RSDScoringResult {
         try container.encode(self.identifier, forKey: .identifier)
         try container.encode(self.text, forKey: .text)
         if let loggedDate = self.loggedDate {
-            let formatter = encoder.factory.timestampFormatter
+            let formatter = encoder.factory.timestampFormatter.copy() as! DateFormatter
             formatter.timeZone = self.timeZone
             let loggingString = formatter.string(from: loggedDate)
             try container.encode(loggingString, forKey: .loggedDate)
