@@ -681,7 +681,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             }
             
         case .singleton:
-            // Make sure we cover the ReportSingletonDate no matter what time zone it was created in
+            // Make sure we cover the ReportSingletonDate no matter what time zone or BridgeApp version it was created in
             // and no matter what time zone it's being retrieved in:
             let fromDateComponents = Date(timeIntervalSince1970: -48 * 60 * 60).dateOnly()
             let toDateComponents = Date(timeIntervalSinceReferenceDate: 48 * 60 * 60).dateOnly()
