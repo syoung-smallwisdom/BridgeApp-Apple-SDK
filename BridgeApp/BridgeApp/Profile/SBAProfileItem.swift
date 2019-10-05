@@ -255,15 +255,18 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     
     public func setStoredValue(_ newValue: Any?) {
         guard !self.readonly, let reportManager = self.reportManager else { return }
+        let previousReport = reportManager.reports
+            .sorted(by: { $0.date < $1.date })
+            .last(where: { $0.reportKey == RSDIdentifier(rawValue: self.sourceKey) })
         var clientData : SBBJSONValue = NSNull()
         if self.clientDataIsItem {
             clientData = self.commonItemTypeToBridgeJson(val: newValue)
         } else {
-            let clientJsonDict = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: self.sourceKey) })?.clientData as? NSMutableDictionary ?? NSMutableDictionary()
+            var clientJsonDict = previousReport?.clientData as? [String : Any] ?? [String : Any] ()
             clientJsonDict[self.demographicKey] = self.commonItemTypeToBridgeJson(val: newValue)
-            clientData = clientJsonDict
+            clientData = clientJsonDict as NSDictionary
         }
-        let report = SBAReport(reportKey: RSDIdentifier(rawValue: self.sourceKey), date: Date(), clientData: clientData)
+        let report = reportManager.newReport(reportIdentifier: self.sourceKey, date: Date(), clientData: clientData)
         reportManager.saveReport(report)
     }
     

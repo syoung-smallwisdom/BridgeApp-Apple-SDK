@@ -119,7 +119,11 @@ class ParticipantManager: NSObject, SBBParticipantManagerProtocol {
     }
     
     func save(_ reportData: SBBReportData, forReport identifier: String, completion: SBBParticipantManagerCompletionBlock? = nil) -> URLSessionTask? {
-        assert(false, "save(_, forReport:, completion:) not implemented in mock")
+        var reports = self.timestampedReports[identifier] ?? []
+        reports.append(reportData)
+        self.timestampedReports[identifier] = reports
+        guard let completion = completion else { return nil }
+        completion(["message": "fake 200 response JSON"], nil)
         return nil
     }
     
@@ -136,7 +140,14 @@ class ParticipantManager: NSObject, SBBParticipantManagerProtocol {
     }
     
     func saveReportJSON(_ reportJSON: SBBJSONValue, withLocalDate dateComponents: DateComponents, forReport identifier: String, completion: SBBParticipantManagerCompletionBlock? = nil) -> URLSessionTask? {
-        assert(false, "saveReportJSON(_, withLocalDate:, forReport:, completion:) not implemented in mock")
+        let reportData = SBBReportData()
+        reportData.data = reportJSON
+        reportData.setDateComponents(dateComponents)
+        var reports = self.timestampedReports[identifier] ?? []
+        reports.append(reportData)
+        self.timestampedReports[identifier] = reports
+        guard let completion = completion else { return nil }
+        completion(["message": "fake 200 response JSON"], nil)
         return nil
     }
     
