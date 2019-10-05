@@ -514,8 +514,13 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             
             // Singleton reports can overwrite an existing report, so check for a previous report
             // and use that report date instead so that it remains a singleton.
-            let previousReport = self.reports.first(where: { $0.identifier == report.identifier })
-            let reportDate = previousReport?.date ?? report.date
+            // That said, there are a number of calls to saveReports() that do not correctly
+            // set the report date to the singleton instance, so we need to check against the
+            // most recent date stamp and use that if there is one.
+            let previousReport = self.reports
+                .sorted(by: { $0.date < $1.date })
+                .last(where: { $0.identifier == report.identifier })
+            let reportDate = previousReport?.date ?? SBAReportSingletonDate
             
             // For a singleton, always set the date to a dateString that is the singleton date
             // in UTC timezone. This way it will always write to the report using that date.
@@ -527,7 +532,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         case .groupByDay:
             
             // For grouped by day, the date is the date in the report timezone.
-            bridgeReport.data  = report.clientData
+            bridgeReport.data = report.clientData
             let formatter = NSDate.iso8601DateOnlyformatter()!
             formatter.timeZone = report.timeZone
             bridgeReport.localDate = formatter.string(from: report.date)
@@ -567,11 +572,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
                     }
                 }
                 else {
-                    let date = self.date(for: reportIdentifier, from: taskResult)
-                    let report = SBAReport(reportKey: reportKey,
-                        date: date,
-                        clientData: clientData,
-                        timeZone: TimeZone.current)
+                    let report = newReport(reportIdentifier: reportIdentifier, date: taskResult.endDate, clientData: clientData)
                     newReports.append(report)
                 }
             }
@@ -583,6 +584,31 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         appendReports(topLevelResult, 0)
         
         return newReports.count > 0 ? newReports : nil
+    }
+    
+    open func newReport(reportIdentifier: String, date: Date, clientData: SBBJSONValue) -> SBAReport {
+        
+        let category = self.reportCategory(for: reportIdentifier)
+        var reportDate: Date!
+        var timeZone: TimeZone!
+        switch category {
+        case .singleton:
+            reportDate = SBAReportSingletonDate
+            timeZone = TimeZone(secondsFromGMT: 0)!
+            
+        case .groupByDay:
+            reportDate = date.startOfDay()
+            timeZone = TimeZone.current
+
+        case .timestamp:
+            reportDate = date
+            timeZone = TimeZone.current
+        }
+        
+        return SBAReport(reportKey: RSDIdentifier(rawValue: reportIdentifier),
+            date: reportDate,
+            clientData: clientData,
+            timeZone: timeZone)
     }
     
     /// The report identifier to use for the given task result. If the `topLevelResult` is non-nil

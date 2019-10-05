@@ -106,7 +106,8 @@ class MainViewController: UITableViewController, RSDTaskViewControllerDelegate {
             if let medTrackingResultUnwrapped = medTrackingResult {
                 do {
                     if let dataScore = try medTrackingResultUnwrapped.dataScore() {
-                        self.scheduleManager.previousReport[taskController.taskViewModel.taskResult.identifier] = SBAReport(identifier: taskController.taskViewModel.taskResult.identifier, date: taskController.taskViewModel.taskResult.endDate, json: dataScore)
+                        self.scheduleManager.previousReport[taskController.taskViewModel.taskResult.identifier] =
+                            SBAReport(identifier: taskController.taskViewModel.taskResult.identifier, date: taskController.taskViewModel.taskResult.endDate.startOfDay(), json: dataScore)
                     }
                 } catch {
                     print(error)
