@@ -512,12 +512,17 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             
         case .singleton:
             
+            // Singleton reports can overwrite an existing report, so check for a previous report
+            // and use that report date instead so that it remains a singleton.
+            let previousReport = self.reports.first(where: { $0.identifier == report.identifier })
+            let reportDate = previousReport?.date ?? report.date
+            
             // For a singleton, always set the date to a dateString that is the singleton date
             // in UTC timezone. This way it will always write to the report using that date.
-            bridgeReport.data  = report.clientData
+            bridgeReport.data = report.clientData
             let formatter = NSDate.iso8601DateOnlyformatter()!
             formatter.timeZone = TimeZone(secondsFromGMT: 0)
-            bridgeReport.localDate = formatter.string(from: report.date)
+            bridgeReport.localDate = formatter.string(from: reportDate)
             
         case .groupByDay:
             
@@ -690,7 +695,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             else {
                 switch category {
                 case .timestamp, .groupByDay:
-                    return SBAReport(reportKey: query.reportKey, date: date, clientData: reportData)
+                    return SBAReport(reportKey: query.reportKey, date: date, clientData: reportData, timeZone: TimeZone.current)
                     
                 case .singleton:
                     let timeZone = TimeZone(secondsFromGMT: 0)!
