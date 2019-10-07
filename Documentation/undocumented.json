@@ -310,21 +310,21 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileItem.swift",
-      "line": 211,
+      "line": 216,
       "symbol": "SBAReportProfileItem.clientDataIsItem",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileItem.swift",
-      "line": 330,
+      "line": 338,
       "symbol": "SBBStudyParticipant.phoneNumber",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileItem.swift",
-      "line": 408,
+      "line": 416,
       "symbol": "SBAStudyParticipantClientDataProfileItem.fallbackKeyPath",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
@@ -781,6 +781,13 @@
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
       "line": 210,
       "symbol": "SBAReportManager.ReportQuery.init(reportKey:queryType:dateRange:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAReportManager.swift",
+      "line": 589,
+      "symbol": "SBAReportManager.newReport(reportIdentifier:date:clientData:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
