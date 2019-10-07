@@ -1,2 +1,2 @@
-github "Sage-Bionetworks/SageResearch" ~> 2.4
+github "Sage-Bionetworks/SageResearch" ~> 2.5
 github "Sage-Bionetworks/Bridge-iOS-SDK" "master"

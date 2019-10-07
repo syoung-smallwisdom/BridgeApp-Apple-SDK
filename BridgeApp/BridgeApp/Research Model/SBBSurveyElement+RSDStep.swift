@@ -210,8 +210,11 @@ extension SBBDataType {
         case .weight:
             return .measurement(.weight, .adult)
             
+        case .postalCode:
+            return .postalCode
+            
         default:
-            return .custom(self.rawValue, .string)
+            return RSDFormDataType(rawValue: self.rawValue) ?? .custom(self.rawValue, .string)
         }
     }
 }
