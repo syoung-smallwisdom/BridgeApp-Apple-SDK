@@ -614,15 +614,15 @@ class CodableTrackedDataTests: XCTestCase {
                         }
                     ],
                     "timestamps": [{
-                            "loggedDate": "2018-02-04T08:00:00.000-08:00",
+                            "loggedDate": "2019-06-04T08:00:00.000-06:00",
                             "timeOfDay": "08:00"
                         },
                         {
-                            "loggedDate": "2018-02-04T12:15:00.000-08:00",
+                            "loggedDate": "2019-06-04T12:15:00.000-06:00",
                             "timeOfDay": "12:00"
                         },
                         {
-                            "loggedDate": "2018-02-04T20:45:00.000-08:00",
+                            "loggedDate": "2019-06-04T20:45:00.000-06:00",
                             "timeOfDay": "20:00"
                         }
                     ]
@@ -640,11 +640,11 @@ class CodableTrackedDataTests: XCTestCase {
                         }
                     ],
                     "timestamps": [{
-                            "loggedDate": "2018-02-04T07:45:00.000-08:00",
+                            "loggedDate": "2019-06-04T07:45:00.000-06:00",
                             "timeOfDay": "07:30"
                         },
                         {
-                            "loggedDate": "2018-02-04T10:30:00.000-08:00",
+                            "loggedDate": "2019-06-04T10:30:00.000-06:00",
                             "timeOfDay": "10:30"
                         }
                     ]
@@ -656,15 +656,15 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [6, 1, 5, 4, 3, 7, 2]
                     }],
                     "timestamps": [{
-                            "loggedDate": "2018-02-04T08:00:00.000-08:00",
+                            "loggedDate": "2019-06-04T08:00:00.000-06:00",
                             "timeOfDay": "morning"
                         },
                         {
-                            "loggedDate": "2018-02-04T12:15:00.000-08:00",
+                            "loggedDate": "2019-06-04T12:15:00.000-06:00",
                             "timeOfDay": "afternoon"
                         },
                         {
-                            "loggedDate": "2018-02-04T20:45:00.000-08:00",
+                            "loggedDate": "2019-06-04T20:45:00.000-06:00",
                             "timeOfDay": "evening"
                         }
                     ]
@@ -686,10 +686,10 @@ class CodableTrackedDataTests: XCTestCase {
             "reminders": [
                 0
             ],
-            "startDate": "2019-06-04T18:12:05.233-07:00",
+            "startDate": "2019-06-04T18:12:05.233-06:00",
             "type": "medication",
             "identifier": "review",
-            "endDate": "2019-06-04T18:12:05.233-07:00"
+            "endDate": "2019-06-04T18:12:05.233-06:00"
         }
         """.data(using: .utf8)! // our data in native (JSON) format
         
@@ -702,7 +702,7 @@ class CodableTrackedDataTests: XCTestCase {
             
             let items = trackingResult.medications
             XCTAssertEqual(items.map { $0.identifier }, ["medA3", "medA4", "medA5", "medC3"])
-            
+
             if let med = trackingResult.medications.first(where: { $0.identifier == "medA3" }) {
                 XCTAssertEqual(med.dosageItems?.count, 1)
                 if let dosageItem = med.dosageItems?.first {
@@ -714,6 +714,7 @@ class CodableTrackedDataTests: XCTestCase {
                     if let timestamp = dosageItem.timestamps?.first {
                         XCTAssertEqual(timestamp.timeOfDay, "08:00")
                         XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0600")
                     }
                 }
             }
@@ -732,14 +733,13 @@ class CodableTrackedDataTests: XCTestCase {
                     if let timestamp = dosageItem.timestamps?.first {
                         XCTAssertNil(timestamp.timeOfDay)
                         XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0600")
                     }
                 }
             }
             else {
                 XCTFail("Failed to decode medA3")
             }
-
-            
         }
         catch let err {
             XCTFail("Failed to decode/encode object: \(err)")
@@ -753,8 +753,8 @@ class CodableTrackedDataTests: XCTestCase {
             "revision": 2,
             "identifier": "review",
             "type": "medication",
-            "startDate": "2019-06-04T18:12:05.233-07:00",
-            "endDate": "2019-06-04T18:12:05.233-07:00",
+            "startDate": "2019-06-04T20:42:05.233-06:00",
+            "endDate": "2019-06-04T20:47:05.233-06:00",
             "reminders": [0],
             "items": [{
                     "identifier": "medA3",
@@ -763,11 +763,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [1, 2, 3, 4, 5, 6, 7],
                         "timestamps": [{
                                 "timeOfDay": "08:00",
-                                "loggedDate": "2018-02-04T08:00:00.000-08:00"
+                                "loggedDate": "2019-06-04T08:00:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
                                 "timeOfDay": "12:00",
-                                "loggedDate": "2018-02-04T12:15:00.000-08:00"
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
                                 "timeOfDay": "20:00"
@@ -782,13 +784,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [2, 4, 6],
                         "timestamps": [{
                                 "timeOfDay": "07:30",
-                                "loggedDate": "2018-02-04T07:45:00.000-08:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T07:45:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
                                 "timeOfDay": "10:30",
-                                "loggedDate": "2018-02-04T10:30:00.000-08:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T10:30:00.000-06:00",
+                                "timeZone":"America/Denver"
                             }
                         ]
                     }]
@@ -799,13 +801,16 @@ class CodableTrackedDataTests: XCTestCase {
                         "dosage": "5 ml",
                         "timestamps": [{
                                 "quantity": 3,
-                                "loggedDate": "2018-02-04T08:00:00.000-05:00"
+                                "loggedDate": "2019-06-04T08:00:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
-                                "loggedDate": "2018-02-04T12:15:00.000-05:00"
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
-                                "loggedDate": "2018-02-04T20:45:00.000-05:00"
+                                "loggedDate": "2019-06-04T20:45:00.000-06:00",
+                                "timeZone":"America/Denver"
                             }
                         ]
                     }]
@@ -853,7 +858,7 @@ class CodableTrackedDataTests: XCTestCase {
                     if let timestamp = dosageItem.timestamps?.first {
                         XCTAssertEqual(timestamp.timeOfDay, "08:00")
                         XCTAssertNotNil(timestamp.loggedDate)
-                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0800")
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Denver")
                     }
                 }
             }
@@ -865,7 +870,7 @@ class CodableTrackedDataTests: XCTestCase {
                 XCTAssertEqual(med.dosageItems?.count, 1)
                 if let dosageItem = med.dosageItems?.first {
                     if let timestamp = dosageItem.timestamps?.first {
-                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Los_Angeles")
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Denver")
                     }
                 }
             }
@@ -884,7 +889,7 @@ class CodableTrackedDataTests: XCTestCase {
                     if let timestamp = dosageItem.timestamps?.first {
                         XCTAssertNil(timestamp.timeOfDay)
                         XCTAssertNotNil(timestamp.loggedDate)
-                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0500")
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Denver")
                     }
                 }
             }

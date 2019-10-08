@@ -210,7 +210,12 @@ public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
             if newItem.isAnytime! {
                 // If this is an `isAnytime` dosage, then nil out the days of the week and time of day.
                 newItem.daysOfWeek = nil
-                newItem.timestamps = newItem.timestamps?.compactMap { SBATimestamp (timeOfDay: nil, loggedDate: $0.loggedDate) }
+                newItem.timestamps = newItem.timestamps?.compactMap {
+                    var timestamp = $0
+                    guard timestamp.loggedDate != nil else { return nil }
+                    timestamp.timeOfDay = nil
+                    return timestamp
+                }
             }
             if let existingItem = items[dosage], existingItem.daysOfWeek == $0.daysOfWeek, let existingTimestamps = existingItem.timestamps {
                 // If there is already an existing item, add this one to that one.
