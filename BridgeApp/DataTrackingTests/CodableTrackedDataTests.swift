@@ -1053,8 +1053,8 @@ class CodableTrackedDataTests: XCTestCase {
             "revision": 2,
             "identifier": "review",
             "type": "medication",
-            "startDate": "2019-06-04T18:12:05.233-07:00",
-            "endDate": "2019-06-04T18:12:05.233-07:00",
+            "startDate": "2019-06-04T18:12:05.233-06:00",
+            "endDate": "2019-06-04T18:12:05.233-06:00",
             "reminders": [0],
             "items": [{
                     "identifier": "medA3",
@@ -1063,11 +1063,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [1, 2, 3, 4, 5, 6, 7],
                         "timestamps": [{
                                 "timeOfDay": "08:00",
-                                "loggedDate": "2019-06-04T08:00:00.000-08:00"
+                                "loggedDate": "2019-06-04T08:00:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
                                 "timeOfDay": "12:00",
-                                "loggedDate": "2019-06-04T12:15:00.000-08:00"
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
                                 "timeOfDay": "20:00"
@@ -1082,13 +1084,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [2, 4, 6],
                         "timestamps": [{
                                 "timeOfDay": "07:30",
-                                "loggedDate": "2019-06-04T07:45:00.000-08:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T07:45:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
                                 "timeOfDay": "10:30",
-                                "loggedDate": "2019-06-04T10:30:00.000-08:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T10:30:00.000-06:00",
+                                "timeZone":"America/Denver"
                             }
                         ]
                     }]
@@ -1099,13 +1101,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "dosage": "5 ml",
                         "timestamps": [{
                                 "quantity": 3,
-                                "loggedDate": "2019-06-04T08:00:00.000-05:00"
+                                "loggedDate": "2019-06-04T08:00:00.000-06:00"
                             },
                             {
-                                "loggedDate": "2019-06-04T12:15:00.000-05:00"
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00"
                             },
                             {
-                                "loggedDate": "2019-06-04T20:45:00.000-05:00"
+                                "loggedDate": "2019-06-04T20:45:00.000-06:00"
                             }
                         ]
                     }]
@@ -1215,8 +1217,8 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [1, 2, 3, 4, 5, 6, 7],
                         "timestamps": [{
                                 "timeOfDay": "08:00",
-                                "loggedDate": "2019-06-04T08:00:00.000-07:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T08:00:00.000-04:00",
+                                "timeZone":"America/New_York"
                             },
                             {
                                 "timeOfDay": "12:00",
@@ -1236,13 +1238,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [2, 4, 6],
                         "timestamps": [{
                                 "timeOfDay": "07:30",
-                                "loggedDate": "2019-06-04T07:45:00.000-07:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T07:45:00.000-04:00",
+                                "timeZone":"America/New_York"
                             },
                             {
                                 "timeOfDay": "10:30",
-                                "loggedDate": "2019-06-04T10:30:00.000-07:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T10:30:00.000-04:00",
+                                "timeZone":"America/New_York"
                             }
                         ]
                     }]
@@ -1253,15 +1255,12 @@ class CodableTrackedDataTests: XCTestCase {
                         "dosage": "5 ml",
                         "timestamps": [{
                                 "quantity": 3,
-                                "loggedDate": "2019-06-04T08:00:00.000-07:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T08:00:00.000-04:00",
+                                "timeZone":"America/New_York"
                             },
                             {
                                 "loggedDate": "2019-06-04T12:15:00.000-06:00",
                                 "timeZone":"America/Denver"
-                            },
-                            {
-                                "loggedDate": "2019-06-04T20:45:00.000-07:00"
                             }
                         ]
                     }]
@@ -1279,16 +1278,19 @@ class CodableTrackedDataTests: XCTestCase {
         """.data(using: .utf8)! // our data in native (JSON) format
         
         do {
+            let currentTimeZone = TimeZone(identifier: "America/Denver")!
             let clientData = try JSONSerialization.jsonObject(with: json, options: []) as! SBBJSONValue
-            var trackingResult = SBAMedicationTrackingResult(identifier: "foo")
+            var trackingResult = SBAMedicationTrackingResult(identifier: "foo", timeZone: currentTimeZone)
             
+            var calendar = Calendar.iso8601
+            calendar.timeZone = currentTimeZone
             var dateComponents = DateComponents()
             dateComponents.year = 2019
             dateComponents.month = 6
             dateComponents.day = 4
             dateComponents.hour = 20
             dateComponents.minute = 15
-            trackingResult.startDate = Calendar.iso8601.date(from: dateComponents)!
+            trackingResult.startDate = calendar.date(from: dateComponents)!
             trackingResult.endDate = trackingResult.startDate
             
             try trackingResult.updateSelected(from: clientData, with: [])
@@ -1312,11 +1314,11 @@ class CodableTrackedDataTests: XCTestCase {
                         let timestamp1 = timestamps[0]
                         XCTAssertEqual(timestamp1.timeOfDay, "08:00")
                         XCTAssertNotNil(timestamp1.loggedDate)
-                        XCTAssertEqual(timestamp1.timeZone, TimeZone(identifier: "America/Los_Angeles"))
+                        XCTAssertEqual(timestamp1.timeZone.identifier, "America/New_York")
                         let timestamp2 = timestamps[1]
                         XCTAssertEqual(timestamp2.timeOfDay, "12:00")
                         XCTAssertNotNil(timestamp2.loggedDate)
-                        XCTAssertEqual(timestamp2.timeZone, TimeZone(identifier: "America/Denver"))
+                        XCTAssertEqual(timestamp2.timeZone.identifier, "America/Denver")
                     }
                 }
             }
@@ -1328,7 +1330,7 @@ class CodableTrackedDataTests: XCTestCase {
                 XCTAssertEqual(med.dosageItems?.count, 1)
                 if let dosageItem = med.dosageItems?.first {
                     if let timestamp = dosageItem.timestamps?.first {
-                        XCTAssertEqual(timestamp.timeZone, TimeZone.current)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/New_York")
                     }
                 }
             }
@@ -1343,11 +1345,11 @@ class CodableTrackedDataTests: XCTestCase {
                     XCTAssertNotNil(dosageItem.isAnytime)
                     XCTAssertTrue(dosageItem.isAnytime ?? false)
                     XCTAssertNil(dosageItem.daysOfWeek)
-                    XCTAssertEqual(dosageItem.timestamps?.count, 3)
+                    XCTAssertEqual(dosageItem.timestamps?.count, 2)
                     if let timestamp = dosageItem.timestamps?.first {
                         XCTAssertNil(timestamp.timeOfDay)
                         XCTAssertNotNil(timestamp.loggedDate)
-                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Los_Angeles")
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/New_York")
                     }
                 }
             }

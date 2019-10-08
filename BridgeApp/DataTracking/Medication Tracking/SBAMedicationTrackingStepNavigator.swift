@@ -461,6 +461,12 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         self.timeZone = TimeZone.current
     }
     
+    internal init(identifier: String, timeZone: TimeZone) {
+        self.identifier = identifier
+        self.revision = SBAMedicationTrackingResult.kCurrentEncodingRevision
+        self.timeZone = timeZone
+    }
+    
     private static let kCurrentEncodingRevision = 2
     
     public init(from decoder: Decoder) throws {
