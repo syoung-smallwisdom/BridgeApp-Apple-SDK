@@ -295,7 +295,10 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         set {
             var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.severity.rawValue, answerType: .integer)
             answerResult.value = newValue?.rawValue
-            _appendResults(answerResult)
+            loggedResult.appendInputResults(with: answerResult)
+            if newValue != nil, loggedResult.loggedDate == nil {
+                loggedResult.loggedDate = Date()
+            }
         }
     }
     
@@ -306,6 +309,9 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         }
         set {
             loggedResult.loggedDate = newValue
+            if severity == nil {
+                self.severity = .moderate
+            }
         }
     }
     
@@ -318,7 +324,7 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         set {
             var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.duration.rawValue, answerType: SBASymptomDurationLevel.answerType)
             answerResult.value = newValue?.answerValue
-            _appendResults(answerResult)
+            loggedResult.appendInputResults(with: answerResult)
         }
     }
     
@@ -333,7 +339,7 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         set {
             var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.medicationTiming.rawValue, answerType: .string)
             answerResult.value = newValue?.rawValue
-            _appendResults(answerResult)
+            loggedResult.appendInputResults(with: answerResult)
         }
     }
     
@@ -345,14 +351,7 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         set {
             var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.notes.rawValue, answerType: .string)
             answerResult.value = newValue
-            _appendResults(answerResult)
-        }
-    }
-    
-    private func _appendResults(_ answerResult: RSDAnswerResultObject) {
-        loggedResult.appendInputResults(with: answerResult)
-        if loggedResult.loggedDate == nil {
-            loggedResult.loggedDate = Date()
+            loggedResult.appendInputResults(with: answerResult)
         }
     }
     

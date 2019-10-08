@@ -86,7 +86,12 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
         didSet {
             // If the previous result is set to a non-nil value then use that as the in-memory result.
             if let clientData = previousClientData {
-                try? _inMemoryResult.updateSelected(from: clientData, with: self.items)
+                do {
+                    try _inMemoryResult.updateSelected(from: clientData, with: self.items)
+                }
+                catch let err {
+                    print("WARNING! Failed to update selected items from the client data: \(err)")
+                }
             }
         }
     }
@@ -112,6 +117,7 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     open func setupTask(with data: RSDTaskData?, for path: RSDTaskPathComponent) {
         self.taskPath = path
         self.previousClientData = data?.json.toClientData()
+        print("previousClientData=\(String(describing: self.previousClientData))")
     }
     
     /// Not used. Always return `false`.

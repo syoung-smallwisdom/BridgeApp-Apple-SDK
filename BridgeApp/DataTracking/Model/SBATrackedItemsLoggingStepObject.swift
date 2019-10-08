@@ -86,6 +86,9 @@ extension RSDResultType {
 
 /// `SBATrackedLoggingCollectionResultObject` is used include multiple logged items in a single logging result.
 public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Codable, SBATrackedItemsCollectionResult, RSDNavigationResult {
+    private enum CodingKeys : String, CodingKey {
+        case identifier, type, startDate, endDate, loggingItems = "items"
+    }
     
     /// The identifier associated with the task, step, or asynchronous action.
     public let identifier: String
@@ -123,10 +126,6 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
         self.identifier = identifier
         self.type = .loggingCollection
         self.loggingItems = []
-    }
-    
-    private enum CodingKeys : String, CodingKey {
-        case identifier, type, startDate, endDate, loggingItems = "items"
     }
 
     public func copy(with identifier: String) -> SBATrackedLoggingCollectionResultObject {
@@ -182,16 +181,27 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
         guard let dictionary = (clientData as? NSDictionary) ?? (clientData as? [NSDictionary])?.last
             else {
-                assertionFailure("This is not a valid client data object.")
-                return
+                throw RSDValidationError.invalidType("\(clientData)")
         }
+        
+        // When coming from clientData, the report data might include additional results, in which
+        // case the scoring for *this* result will be included as a key/value dictionary within
+        // another dictionary.
+        let previousData: NSDictionary = {
+            if let trackedItems = dictionary["trackedItems"] as? NSDictionary,
+                let type = trackedItems[CodingKeys.type.rawValue] as? String,
+                self.type.rawValue == type {
+                return trackedItems
+            }
+            else {
+                return dictionary
+            }
+        }()
+        
         let decoder = SBAFactory.shared.createJSONDecoder()
-        let result = try decoder.decode(SBATrackedLoggingCollectionResultObject.self, from: dictionary)
+        let result = try decoder.decode(SBATrackedLoggingCollectionResultObject.self, from: previousData)
         self.loggingItems = result.loggingItems.map {
-            var loggedResult = $0
-            loggedResult.loggedDate = nil
-            loggedResult.inputResults = []
-            return loggedResult
+            return SBATrackedLoggingResultObject(identifier: $0.identifier, text: $0.text, detail: $0.detail)
         }
     }
 }
@@ -249,6 +259,15 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
         self.timeZone = TimeZone.current
     }
     
+    internal init(identifier: String, text: String?, detail: String?, loggedDate: Date?, timeZone: TimeZone, inputResults: [RSDResult]) {
+        self.identifier = identifier
+        self.text = text
+        self.detail = detail
+        self.inputResults = inputResults
+        self.timeZone = timeZone
+        self.loggedDate = loggedDate
+    }
+    
     /// Initialize from a `Decoder`. This decoding method will use the `RSDFactory` instance associated
     /// with the decoder to decode the `inputResults`.
     ///
@@ -277,19 +296,21 @@ public struct SBATrackedLoggingResultObject : RSDCollectionResult, Codable {
     /// - throws: `EncodingError`
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        
         try container.encode(identifier, forKey: .identifier)
         try container.encodeIfPresent(itemIdentifier, forKey: .itemIdentifier)
         try container.encodeIfPresent(timingIdentifier, forKey: .timingIdentifier)
         try container.encodeIfPresent(text, forKey: .text)
         try container.encodeIfPresent(detail, forKey: .detail)
-        if let loggedDate = self.loggedDate {
-            let formatter = encoder.factory.timestampFormatter.copy() as! DateFormatter
-            formatter.timeZone = self.timeZone
-            let loggingString = formatter.string(from: loggedDate)
-            try container.encode(loggingString, forKey: .loggedDate)
-            try container.encode(self.timeZone.identifier, forKey: .timeZone)
-        }
-
+        
+        guard let loggedDate = self.loggedDate else { return }
+        
+        let formatter = encoder.factory.timestampFormatter.copy() as! DateFormatter
+        formatter.timeZone = self.timeZone
+        let loggingString = formatter.string(from: loggedDate)
+        try container.encode(loggingString, forKey: .loggedDate)
+        try container.encode(self.timeZone.identifier, forKey: .timeZone)
+        
         var anyContainer = encoder.container(keyedBy: AnyCodingKey.self)
         try inputResults.forEach { result in
             let key = AnyCodingKey(stringValue: result.identifier)!

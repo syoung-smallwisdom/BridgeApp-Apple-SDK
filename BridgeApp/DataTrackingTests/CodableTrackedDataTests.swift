@@ -974,8 +974,8 @@ class CodableTrackedDataTests: XCTestCase {
             }
             
             let jsonData = try encoder.encode(object.trackedItems)
-            let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
-            guard let dictionary = json as? [String : Any],
+            let jsonResult = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dictionary = jsonResult as? [String : Any],
                 let items = dictionary["items"] as? NSArray else {
                     XCTFail("Failed to encode object. \(json)")
                     return
@@ -1006,6 +1006,116 @@ class CodableTrackedDataTests: XCTestCase {
             
             XCTAssertEqual(items, expectedItems)
             
+            // Check that the symptoms can be re-populated from the report json
+            let reportClientData = try JSONSerialization.jsonObject(with: json, options: []) as! NSDictionary
+            var result = SBATrackedLoggingCollectionResultObject(identifier: "logging")
+            try result.updateSelected(from: reportClientData, with: [])
+            
+            XCTAssertEqual(result.loggingItems.count, 3)
+            
+            if let first = result.loggingItems.first {
+                XCTAssertEqual(first.identifier, "Amnesia")
+                XCTAssertEqual(first.text, "Amnesia")
+                XCTAssertNil(first.loggedDate)
+                XCTAssertEqual(first.timeZone, TimeZone.current)
+                XCTAssertEqual(first.inputResults.count, 0)
+            }
+            
+            if result.loggingItems.count >= 2 {
+                let second = result.loggingItems[1]
+                XCTAssertEqual(second.identifier, "Anger")
+                XCTAssertEqual(second.text, "Anger")
+                XCTAssertNil(second.loggedDate)
+                XCTAssertEqual(second.timeZone, TimeZone.current)
+                XCTAssertEqual(second.inputResults.count, 0)
+            }
+            
+            if let third = result.loggingItems.last {
+                XCTAssertEqual(third.identifier, "Hallucinations")
+                XCTAssertEqual(third.text, "Hallucinations")
+                XCTAssertNil(third.loggedDate)
+                XCTAssertEqual(third.timeZone, TimeZone.current)
+                XCTAssertEqual(third.inputResults.count, 0)
+            }
+        } catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
+    
+    func testSymptomEncoding() {
+        do {
+            var trackedItems = SBATrackedLoggingCollectionResultObject(identifier: "trackedItems")
+            let item1 = SBATrackedLoggingResultObject(identifier: "Amnesia", text: "Amnesia")
+            let item2 = SBATrackedLoggingResultObject(identifier: "Anger",
+                                                      text: "Anger",
+                                                      detail: nil,
+                                                      loggedDate: NSDate(iso8601String: "2019-07-29T14:16:24.561-06:00") as Date,
+                                                      timeZone: TimeZone(identifier: "America/Denver")!,
+                                                      inputResults: [
+                                                        RSDAnswerResultObject(identifier: "severity", answerType: .integer, value: 3)])
+            let item3 = SBATrackedLoggingResultObject(identifier: "Hallucinations",
+                                                      text: "Hallucinations",
+                                                      detail: nil,
+                                                      loggedDate: NSDate(iso8601String: "2019-07-29T14:16:14.711-06:00") as Date,
+                                                      timeZone: TimeZone(identifier: "America/Denver")!,
+                                                      inputResults: [
+                                                        RSDAnswerResultObject(identifier: "severity", answerType: .integer, value: 2),
+                                                        RSDAnswerResultObject(identifier: "duration", answerType: .string, value: "DURATION_CHOICE_NOW"),
+                                                        RSDAnswerResultObject(identifier: "medicationTiming", answerType: .string, value: "pre-medication")])
+            let item4 = SBATrackedLoggingResultObject(identifier: "Nightmares",
+                                                      text: "Nightmares",
+                                                      detail: nil,
+                                                      loggedDate: nil,
+                                                      timeZone: TimeZone.current,
+                                                      inputResults: [
+                                                        RSDAnswerResultObject(identifier: "medicationTiming", answerType: .string, value: "pre-medication")])
+            trackedItems.loggingItems = [item1, item2, item3, item4]
+            
+            let jsonData = try encoder.encode(trackedItems)
+            let jsonResult = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dictionary = jsonResult as? [String : Any],
+                let items = dictionary["items"] as? [NSDictionary] else {
+                    XCTFail("Failed to encode object. \(jsonResult)")
+                    return
+            }
+            
+            let expectedItems: [NSDictionary] = [
+                [
+                    "text" : "Amnesia",
+                    "identifier" : "Amnesia"
+                ],
+                [
+                    "loggedDate" : "2019-07-29T14:16:24.561-06:00",
+                    "timeZone" : "America/Denver",
+                    "severity" : 3,
+                    "text" : "Anger",
+                    "identifier" : "Anger"
+                ],
+                [
+                    "loggedDate" : "2019-07-29T14:16:14.711-06:00",
+                    "timeZone" : "America/Denver",
+                    "identifier" : "Hallucinations",
+                    "duration" : "DURATION_CHOICE_NOW",
+                    "text" : "Hallucinations",
+                    "medicationTiming" : "pre-medication",
+                    "severity" : 2
+                ],
+                [
+                    "text" : "Nightmares",
+                    "identifier" : "Nightmares"
+                ]
+            ]
+            
+            XCTAssertEqual(items, expectedItems)
+            
+            if items.count == expectedItems.count {
+                XCTAssertEqual(items[0], expectedItems[0])
+                XCTAssertEqual(items[1], expectedItems[1])
+                XCTAssertEqual(items[2], expectedItems[2])
+                XCTAssertEqual(items[3], expectedItems[3])
+            }
+
         } catch let err {
             XCTFail("Failed to decode/encode object: \(err)")
             return
@@ -1134,8 +1244,8 @@ class CodableTrackedDataTests: XCTestCase {
             }
             
             let jsonData = try encoder.encode(object)
-            let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
-            guard let dictionary = json as? [String : Any],
+            let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            guard let dictionary = jsonDictionary as? [String : Any],
                 let items = dictionary["items"] as? NSArray else {
                     XCTFail("Failed to encode object. \(json)")
                     return
@@ -1155,6 +1265,27 @@ class CodableTrackedDataTests: XCTestCase {
             ]
             
             XCTAssertEqual(items, expectedItems)
+            
+            // Check that the triggers can be re-populated from the report json
+            let reportClientData = try JSONSerialization.jsonObject(with: json, options: []) as! NSDictionary
+            var result = SBATrackedLoggingCollectionResultObject(identifier: "logging")
+            try result.updateSelected(from: reportClientData, with: [])
+            
+            XCTAssertEqual(result.loggingItems.count, 2)
+            
+            if let first = result.loggingItems.first {
+                XCTAssertEqual(first.identifier, "Humidity")
+                XCTAssertEqual(first.text, "Humidity")
+                XCTAssertNil(first.loggedDate)
+                XCTAssertEqual(first.timeZone, TimeZone.current)
+            }
+            
+            if let second = result.loggingItems.last {
+                XCTAssertEqual(second.identifier, "Cold")
+                XCTAssertEqual(second.text, "Cold")
+                XCTAssertNil(second.loggedDate)
+                XCTAssertEqual(second.timeZone, TimeZone.current)
+            }
             
         } catch let err {
             XCTFail("Failed to decode/encode object: \(err)")
