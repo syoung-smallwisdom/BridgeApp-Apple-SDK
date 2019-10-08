@@ -74,6 +74,11 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
     @IBOutlet weak var headerShadow: RSDShadowGradient!
     @IBOutlet weak var footerMarginView: UIView!
     
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.modalPresentationStyle = .fullScreen
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

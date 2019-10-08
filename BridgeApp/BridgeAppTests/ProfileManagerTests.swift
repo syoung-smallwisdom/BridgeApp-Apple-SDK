@@ -104,15 +104,16 @@ class ProfileManagerTests: XCTestCase {
             else {
                 data = wrappedData
             }
-            var reportValue = data as? RSDJSONSerializable
+            var reportValue = data
             if !reportItem.clientDataIsItem {
-                guard let clientData = data as? [String : RSDJSONSerializable]
+                guard let clientData = data as? NSDictionary
                     else {
-                        XCTAssert(false, "Expected reportData.data to be castable to a JSON-serializable Dictionary, but it's not: \(String(describing: type(of: reportData.data)))")
+                        XCTAssert(false, "Expected reportData.data to be castable to a Dictionary, but it's not: \(String(describing: type(of: reportData.data)))")
                         return
                 }
                 reportValue = clientData[reportItem.demographicKey]
             }
+            // syoung 10/08/2018 
             guard let boolValue = (reportValue as? NSNumber)?.boolValue
                 else {
                     XCTAssert(false, "Expected report value to be an NSNumber with a boolValue, but it's a \(String(describing: type(of: reportValue))) instead")

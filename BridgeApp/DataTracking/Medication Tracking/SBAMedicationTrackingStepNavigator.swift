@@ -328,8 +328,9 @@ public struct SBADosage : Codable {
         }
     }
     
-    /// When the participant taps the "save" button, finalize editing of this dosage by stripping out the
-    /// information that should not be stored.
+    /// When the participant taps the "save" button, finalize editing of this dosage by stripping
+    /// out the information that should not be stored. This will also set the value of `isAnytime`
+    /// to `true` upon the assumption that the participant forgot to select a timing.
     mutating public func finalizeEditing() {
         if self.isAnytime ?? true {
             self.isAnytime = true
@@ -614,10 +615,9 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         let today = calendar.dateComponents([.year, .month, .day], from: self.startDate)
         self.medications = medsTracking.medications.map { (med) -> SBAMedicationAnswer in
             var medication = med
-            medication.dosageItems = med.dosageItems?.compactMap { (dosage) -> SBADosage? in
-                guard let timestamps = dosage.timestamps else { return nil }
+            medication.dosageItems = med.dosageItems?.map { (dosage) -> SBADosage in
                 var dosage = dosage
-                dosage.timestamps = timestamps.compactMap { (timestamp) -> SBATimestamp? in
+                let timestamps = dosage.timestamps?.compactMap { (timestamp) -> SBATimestamp? in
                     guard let loggingDate = timestamp.loggedDate else { return timestamp }
                     calendar.timeZone = timestamp.timeZone
                     let log = calendar.dateComponents([.year, .month, .day], from: loggingDate)
@@ -631,6 +631,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
                         return nil
                     }
                 }
+                dosage.timestamps = (timestamps?.count ?? 0 > 0) ? timestamps : nil
                 return dosage
             }
             return medication

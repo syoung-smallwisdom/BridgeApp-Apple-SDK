@@ -1034,7 +1034,7 @@ class CodableTrackedDataTests: XCTestCase {
                     XCTAssertNotNil(dosageItem.isAnytime)
                     XCTAssertTrue(dosageItem.isAnytime ?? false)
                     XCTAssertNil(dosageItem.daysOfWeek)
-                    XCTAssertEqual(dosageItem.timestamps?.count, 0)
+                    XCTAssertEqual(dosageItem.timestamps?.count ?? 0, 0)
                 }
             }
             else {
@@ -1112,17 +1112,7 @@ class CodableTrackedDataTests: XCTestCase {
                 },
                 {
                     "identifier": "medC3",
-                    "dosageItems": [{
-                            "dosage": "2 ml",
-                            "daysOfWeek": [1, 5],
-                            "timestamps": [{
-                                    "timeOfDay": "08:00"
-                                },
-                                {
-                                    "timeOfDay": "20:00"
-                                }
-                            ]
-                        },
+                    "dosageItems": [
                         {
                             "dosage": "1 ml"
                         }
@@ -1182,11 +1172,25 @@ class CodableTrackedDataTests: XCTestCase {
                     XCTAssertNotNil(dosageItem.isAnytime)
                     XCTAssertTrue(dosageItem.isAnytime ?? false)
                     XCTAssertNil(dosageItem.daysOfWeek)
-                    XCTAssertEqual(dosageItem.timestamps?.count, 0)
+                    XCTAssertEqual(dosageItem.timestamps?.count ?? 0, 0)
                 }
             }
             else {
-                XCTFail("Failed to decode medA3")
+                XCTFail("Failed to decode medA5")
+            }
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medC3" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "1 ml")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertTrue(dosageItem.isAnytime ?? false)
+                    XCTAssertNil(dosageItem.daysOfWeek)
+                    XCTAssertNil(dosageItem.timestamps)
+                }
+            }
+            else {
+                XCTFail("Failed to decode medC3")
             }
         }
         catch let err {
@@ -1264,17 +1268,7 @@ class CodableTrackedDataTests: XCTestCase {
                 },
                 {
                     "identifier": "medC3",
-                    "dosageItems": [{
-                            "dosage": "2 ml",
-                            "daysOfWeek": [1, 5],
-                            "timestamps": [{
-                                    "timeOfDay": "08:00"
-                                },
-                                {
-                                    "timeOfDay": "20:00"
-                                }
-                            ]
-                        },
+                    "dosageItems": [
                         {
                             "dosage": "1 ml"
                         }
@@ -1359,6 +1353,20 @@ class CodableTrackedDataTests: XCTestCase {
             }
             else {
                 XCTFail("Failed to decode medA3")
+            }
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medC3" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "1 ml")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertTrue(dosageItem.isAnytime ?? false)
+                    XCTAssertNil(dosageItem.daysOfWeek)
+                    XCTAssertNil(dosageItem.timestamps)
+                }
+            }
+            else {
+                XCTFail("Failed to decode medC3")
             }
         }
         catch let err {

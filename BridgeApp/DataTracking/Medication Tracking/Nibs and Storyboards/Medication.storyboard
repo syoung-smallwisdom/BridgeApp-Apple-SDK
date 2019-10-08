@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -47,7 +45,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X9k-XR-DPm" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                    <rect key="frame" x="354" y="39.5" width="32" height="33.5"/>
+                                                    <rect key="frame" x="356" y="41" width="30" height="30"/>
                                                     <state key="normal" title="Edit"/>
                                                     <connections>
                                                         <action selector="editTapped:" destination="vY8-j2-Ctt" eventType="touchUpInside" id="Kkq-bf-qUL"/>
@@ -114,30 +112,29 @@
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="50" id="YRF-S8-1da"/>
                                                             </constraints>
-                                                            <nil key="textColor"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                             <connections>
                                                                 <outlet property="delegate" destination="msa-hP-lX4" id="QS4-2C-4qw"/>
                                                             </connections>
                                                         </textField>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j9M-rA-mhb" customClass="RSDRadioButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="24" y="120.5" width="311" height="32"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j9M-rA-mhb" customClass="RSDRadioButton" customModule="ResearchUI">
+                                                            <rect key="frame" x="24" y="120.5" width="220" height="32"/>
                                                             <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                                             <state key="normal" title="Take this medication at any time"/>
                                                             <connections>
                                                                 <action selector="anytimeTapped:" destination="tGk-Ad-tws" eventType="touchUpInside" id="RKu-na-va1"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Apu-i0-lXF" customClass="RSDRadioButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="24" y="168.5" width="240.5" height="32"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Apu-i0-lXF" customClass="RSDRadioButton" customModule="ResearchUI">
+                                                            <rect key="frame" x="24" y="168.5" width="160" height="32"/>
                                                             <state key="normal" title="When do you take this?"/>
                                                             <connections>
                                                                 <action selector="useScheduleTapped:" destination="tGk-Ad-tws" eventType="touchUpInside" id="Wnj-b3-8Nl"/>
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ys5-LD-ZQ2" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                            <rect key="frame" x="325" y="8" width="65" height="33.5"/>
+                                                            <rect key="frame" x="335" y="10.5" width="55" height="30"/>
                                                             <color key="tintColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
                                                             <state key="normal" title="Remove"/>
                                                             <connections>
@@ -354,7 +351,7 @@
                                     <constraint firstItem="ev3-9n-7dt" firstAttribute="leading" secondItem="Gnc-4o-KQe" secondAttribute="leading" id="DzM-2I-X43"/>
                                     <constraint firstItem="1H2-uy-gEG" firstAttribute="top" secondItem="db1-xk-7t7" secondAttribute="bottom" id="FN0-CT-TM4"/>
                                     <constraint firstAttribute="bottom" secondItem="ev3-9n-7dt" secondAttribute="top" id="OCG-Lx-Psy"/>
-                                    <constraint firstItem="tyu-EA-B9H" firstAttribute="top" secondItem="Gnc-4o-KQe" secondAttribute="top" constant="8" id="PEe-9v-u3J"/>
+                                    <constraint firstItem="tyu-EA-B9H" firstAttribute="top" secondItem="Gnc-4o-KQe" secondAttribute="top" constant="16" id="PEe-9v-u3J"/>
                                     <constraint firstItem="vPk-8Z-eUg" firstAttribute="centerX" secondItem="Gnc-4o-KQe" secondAttribute="centerX" id="QJ2-7d-5Q3"/>
                                     <constraint firstItem="db1-xk-7t7" firstAttribute="top" secondItem="Gnc-4o-KQe" secondAttribute="top" constant="8" id="UEU-po-0Pk"/>
                                     <constraint firstItem="1H2-uy-gEG" firstAttribute="centerX" secondItem="Gnc-4o-KQe" secondAttribute="centerX" id="YRu-Lk-uOJ"/>
@@ -419,11 +416,11 @@
             <objects>
                 <viewController storyboardIdentifier="Warning" id="MUs-PZ-Ven" customClass="SBAWarningViewController" customModule="DataTracking" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ItY-x6-HLh" customClass="RSDStepNavigationView" customModule="ResearchUI">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FYU-1e-Sfy" userLabel="Status Background" customClass="RSDStatusBarBackgroundView" customModule="ResearchUI">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="0.0"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="color" keyPath="overlayColor">
@@ -432,7 +429,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Rf-99-7Ax" userLabel="Header">
-                                <rect key="frame" x="0.0" y="44" width="414" height="225"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="225"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xg5-tM-1Ni" userLabel="Back Button">
                                         <rect key="frame" x="16" y="16" width="50" height="50"/>
@@ -463,7 +460,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bXy-Bf-vTy" customClass="RSDGenericNavigationFooterView" customModule="ResearchUI">
-                                <rect key="frame" x="0.0" y="765" width="414" height="97"/>
+                                <rect key="frame" x="0.0" y="711" width="414" height="97"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="97" placeholder="YES" id="mCC-fL-Cnk"/>
@@ -473,11 +470,11 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="1000" text="Are you sure you want to remove Sinemet from your current medication list?" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ssM-wY-f0I">
-                                <rect key="frame" x="32" y="317" width="350" height="86"/>
+                                <rect key="frame" x="32" y="273" width="350" height="86"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="950" text="Removing this medication will remove it from your Medications list. If you wish to re-add it, it will not be saved." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="imH-oO-xG2">
-                                <rect key="frame" x="32" y="421" width="350" height="64.5"/>
+                                <rect key="frame" x="32" y="377" width="350" height="64.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                             </label>
                         </subviews>
@@ -520,11 +517,11 @@
             <objects>
                 <viewController storyboardIdentifier="DayTimePicker" id="TZ4-kR-Uo4" customClass="SBADayTimePickerViewController" customModule="DataTracking" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pvC-ao-8zQ">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="72" estimatedRowHeight="72" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="L33-eM-YZ7">
-                                <rect key="frame" x="0.0" y="226" width="414" height="533"/>
+                                <rect key="frame" x="0.0" y="182" width="414" height="523"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="twoButton" rowHeight="72" id="1w5-Ux-06r" customClass="TwoChoicePickerCell" customModule="DataTracking" customModuleProvider="target">
@@ -572,7 +569,7 @@
                                 </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GXm-ab-udk">
-                                <rect key="frame" x="0.0" y="44" width="414" height="182"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="182"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ozG-eV-gDb">
                                         <rect key="frame" x="12" y="8" width="50" height="50"/>
@@ -631,11 +628,11 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gre-Qv-2D8" userLabel="Footer Margin">
-                                <rect key="frame" x="0.0" y="759" width="414" height="137"/>
+                                <rect key="frame" x="0.0" y="705" width="414" height="137"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nxa-y2-CDW" customClass="RSDGenericNavigationFooterView" customModule="ResearchUI">
-                                <rect key="frame" x="0.0" y="759" width="414" height="103"/>
+                                <rect key="frame" x="0.0" y="705" width="414" height="103"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="103" placeholder="YES" id="i0X-xO-XMV"/>
