@@ -210,7 +210,12 @@ public struct SBAMedicationAnswer : Codable, SBATrackedItemAnswer {
             if newItem.isAnytime! {
                 // If this is an `isAnytime` dosage, then nil out the days of the week and time of day.
                 newItem.daysOfWeek = nil
-                newItem.timestamps = newItem.timestamps?.compactMap { SBATimestamp (timeOfDay: nil, loggedDate: $0.loggedDate) }
+                newItem.timestamps = newItem.timestamps?.compactMap {
+                    var timestamp = $0
+                    guard timestamp.loggedDate != nil else { return nil }
+                    timestamp.timeOfDay = nil
+                    return timestamp
+                }
             }
             if let existingItem = items[dosage], existingItem.daysOfWeek == $0.daysOfWeek, let existingTimestamps = existingItem.timestamps {
                 // If there is already an existing item, add this one to that one.
@@ -328,8 +333,9 @@ public struct SBADosage : Codable {
         }
     }
     
-    /// When the participant taps the "save" button, finalize editing of this dosage by stripping out the
-    /// information that should not be stored.
+    /// When the participant taps the "save" button, finalize editing of this dosage by stripping
+    /// out the information that should not be stored. This will also set the value of `isAnytime`
+    /// to `true` upon the assumption that the participant forgot to select a timing.
     mutating public func finalizeEditing() {
         if self.isAnytime ?? true {
             self.isAnytime = true
@@ -342,19 +348,6 @@ public struct SBADosage : Codable {
         else {
             self.daysOfWeek = self.daysOfWeek ?? RSDWeekday.all
             self.timestamps = self.timestamps?.filter { $0.timeOfDay != nil }
-        }
-    }
-    
-    /// Prepare this model object for logging by adding/removing the timestamps that are not applicable
-    /// for the given date.
-    mutating public func prepareForLogging(on date: Date = Date()) {
-        // Filter/nil out the timestamps where the loggedDate is *not* on the same day as the display date.
-        self.timestamps = self.timestamps?.compactMap {
-            guard let loggedDate = $0.loggedDate, Calendar.iso8601.isDate(loggedDate, inSameDayAs: date)
-                else {
-                    return $0.timeOfDay != nil ? SBATimestamp(timeOfDay: $0.timeOfDay, loggedDate: nil) : nil
-            }
-            return $0
         }
     }
 }
@@ -464,9 +457,40 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     /// The step identifier of the next step to skip to after this one.
     public var skipToIdentifier: String? = nil
     
+    /// The current timezone of the start date, used to determine "day" constraints.
+    private var timeZone: TimeZone
+    
     public init(identifier: String) {
         self.identifier = identifier
-        self.revision = 2
+        self.revision = SBAMedicationTrackingResult.kCurrentEncodingRevision
+        self.timeZone = TimeZone.current
+    }
+    
+    internal init(identifier: String, timeZone: TimeZone) {
+        self.identifier = identifier
+        self.revision = SBAMedicationTrackingResult.kCurrentEncodingRevision
+        self.timeZone = timeZone
+    }
+    
+    private static let kCurrentEncodingRevision = 2
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.identifier = try container.decode(String.self, forKey: .identifier)
+        self.type = .medication
+        self.startDate = try container.decode(Date.self, forKey: .startDate)
+        self.endDate = try container.decode(Date.self, forKey: .endDate)
+        
+        let timeZoneDate = try container.decode(String.self, forKey: .startDate)
+        self.timeZone = TimeZone(iso8601: timeZoneDate) ?? TimeZone.current
+        
+        let medicationData = try MedicationData(from: decoder)
+        self.reminders = medicationData.reminders
+        self.medications = medicationData.medications
+        
+        // If re-encoded, should encode with the current revision
+        self.revision = SBAMedicationTrackingResult.kCurrentEncodingRevision
     }
     
     public func copy(with identifier: String) -> SBAMedicationTrackingResult {
@@ -477,6 +501,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         copy.medications = self.medications
         copy.reminders = self.reminders
         copy.revision = self.revision
+        copy.timeZone = self.timeZone
         return copy
     }
     
@@ -593,24 +618,56 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating public func updateSelected(from clientData: SBBJSONValue, with items: [SBATrackedItem]) throws {
-        var clientDataMap = clientData as? [String : Any]
-        if clientDataMap == nil {
-            // Also support a collection of tracking results, but grab the last one.
-            clientDataMap = (clientData as? [[String : Any]])?.last
+        let decoder = RSDFactory.shared.createJSONDecoder()
+        let medsTracking = try decoder.decode(MedicationData.self, from: clientData)
+        self.reminders = medsTracking.reminders
+        var calendar = Calendar.iso8601
+        calendar.timeZone = self.timeZone
+        let today = calendar.dateComponents([.year, .month, .day], from: self.startDate)
+        self.medications = medsTracking.medications.map { (med) -> SBAMedicationAnswer in
+            var medication = med
+            medication.dosageItems = med.dosageItems?.map { (dosage) -> SBADosage in
+                var dosage = dosage
+                let timestamps = dosage.timestamps?.compactMap { (timestamp) -> SBATimestamp? in
+                    guard let loggingDate = timestamp.loggedDate else { return timestamp }
+                    calendar.timeZone = timestamp.timeZone
+                    let log = calendar.dateComponents([.year, .month, .day], from: loggingDate)
+                    if log.year == today.year, log.month == today.month, log.day == today.day {
+                        return timestamp
+                    }
+                    else if let timeOfDay = timestamp.timeOfDay {
+                        return SBATimestamp(timeOfDay: timeOfDay, loggedDate: nil)
+                    }
+                    else {
+                        return nil
+                    }
+                }
+                dosage.timestamps = (timestamps?.count ?? 0 > 0) ? timestamps : nil
+                return dosage
+            }
+            return medication
         }
-        if let clientDataMapUnwrapped = clientDataMap {
-            self.reminders = clientDataMapUnwrapped[CodingKeys.reminders.stringValue] as? [Int]
-            if let medJson = clientDataMapUnwrapped[CodingKeys.medications.stringValue] as? SBBJSONValue {
-                let decoder = SBAFactory.shared.createJSONDecoder()
-                if let revision = clientDataMapUnwrapped[CodingKeys.revision.stringValue] as? Int {
-                    self.revision = revision
-                    let meds = try decoder.decode([SBAMedicationAnswer].self, from: medJson)
-                    self.medications = meds
-                }
-                else {
-                    let meds = try decoder.decode([SBAMedicationAnswerV1].self, from: medJson)
-                    self.medications = meds.map { $0.convert() }
-                }
+    }
+    
+    private struct MedicationData : Decodable {
+        let reminders: [Int]?
+        let medications: [SBAMedicationAnswer]
+        
+        private enum CodingKeys : String, CodingKey {
+            case medications = "items", reminders, revision
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.reminders = try container.decodeIfPresent([Int].self, forKey: .reminders)
+            
+            // Decode to V1 if missing revision or revision == 1
+            if let revision = try container.decodeIfPresent(Int.self, forKey: .revision), revision > 1 {
+                self.medications = try container.decode([SBAMedicationAnswer].self, forKey: .medications)
+            }
+            else {
+                let meds = try container.decode([SBAMedicationAnswerV1].self, forKey: .medications)
+                self.medications = meds.map { $0.convert() }
             }
         }
     }

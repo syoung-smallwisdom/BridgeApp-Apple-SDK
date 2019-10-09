@@ -614,15 +614,15 @@ class CodableTrackedDataTests: XCTestCase {
                         }
                     ],
                     "timestamps": [{
-                            "loggedDate": "2018-02-04T08:00:00.000-08:00",
+                            "loggedDate": "2019-06-04T08:00:00.000-06:00",
                             "timeOfDay": "08:00"
                         },
                         {
-                            "loggedDate": "2018-02-04T12:15:00.000-08:00",
+                            "loggedDate": "2019-06-04T12:15:00.000-06:00",
                             "timeOfDay": "12:00"
                         },
                         {
-                            "loggedDate": "2018-02-04T20:45:00.000-08:00",
+                            "loggedDate": "2019-06-04T20:45:00.000-06:00",
                             "timeOfDay": "20:00"
                         }
                     ]
@@ -640,11 +640,11 @@ class CodableTrackedDataTests: XCTestCase {
                         }
                     ],
                     "timestamps": [{
-                            "loggedDate": "2018-02-04T07:45:00.000-08:00",
+                            "loggedDate": "2019-06-04T07:45:00.000-06:00",
                             "timeOfDay": "07:30"
                         },
                         {
-                            "loggedDate": "2018-02-04T10:30:00.000-08:00",
+                            "loggedDate": "2019-06-04T10:30:00.000-06:00",
                             "timeOfDay": "10:30"
                         }
                     ]
@@ -656,15 +656,324 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [6, 1, 5, 4, 3, 7, 2]
                     }],
                     "timestamps": [{
-                            "loggedDate": "2018-02-04T08:00:00.000-08:00",
+                            "loggedDate": "2019-06-04T08:00:00.000-06:00",
                             "timeOfDay": "morning"
                         },
                         {
-                            "loggedDate": "2018-02-04T12:15:00.000-08:00",
+                            "loggedDate": "2019-06-04T12:15:00.000-06:00",
                             "timeOfDay": "afternoon"
                         },
                         {
-                            "loggedDate": "2018-02-04T20:45:00.000-08:00",
+                            "loggedDate": "2019-06-04T20:45:00.000-06:00",
+                            "timeOfDay": "evening"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "medC3",
+                    "dosage": "2 ml",
+                    "scheduleItems": [{
+                            "timeOfDay": "08:00",
+                            "daysOfWeek": [1, 5]
+                        },
+                        {
+                            "timeOfDay": "20:00",
+                            "daysOfWeek": [1, 5]
+                        }
+                    ]
+                }
+            ],
+            "reminders": [
+                0
+            ],
+            "startDate": "2019-06-04T18:12:05.233-06:00",
+            "type": "medication",
+            "identifier": "review",
+            "endDate": "2019-06-04T18:12:05.233-06:00"
+        }
+        """.data(using: .utf8)! // our data in native (JSON) format
+        
+        do {
+            let trackingResult = try decoder.decode(SBAMedicationTrackingResult.self, from: json)
+            
+            XCTAssertNotNil(trackingResult.reminders)
+            XCTAssertEqual(trackingResult.reminders?.first, 0)
+            XCTAssertEqual(trackingResult.reminders?.count, 1)
+            
+            let items = trackingResult.medications
+            XCTAssertEqual(items.map { $0.identifier }, ["medA3", "medA4", "medA5", "medC3"])
+
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA3" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "10 mg")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertFalse(dosageItem.isAnytime ?? true)
+                    XCTAssertEqual(dosageItem.daysOfWeek, RSDWeekday.all)
+                    XCTAssertEqual(dosageItem.timestamps?.count, 3)
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertEqual(timestamp.timeOfDay, "08:00")
+                        XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0600")
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA5" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "5 ml")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertTrue(dosageItem.isAnytime ?? false)
+                    XCTAssertNil(dosageItem.daysOfWeek)
+                    XCTAssertEqual(dosageItem.timestamps?.count, 3)
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertNil(timestamp.timeOfDay)
+                        XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0600")
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
+        }
+        catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
+    
+    func testMedAnswersV2Decoding() {
+        let json = """
+        {
+            "revision": 2,
+            "identifier": "review",
+            "type": "medication",
+            "startDate": "2019-06-04T20:42:05.233-06:00",
+            "endDate": "2019-06-04T20:47:05.233-06:00",
+            "reminders": [0],
+            "items": [{
+                    "identifier": "medA3",
+                    "dosageItems": [{
+                        "dosage": "10 mg",
+                        "daysOfWeek": [1, 2, 3, 4, 5, 6, 7],
+                        "timestamps": [{
+                                "timeOfDay": "08:00",
+                                "loggedDate": "2019-06-04T08:00:00.000-06:00",
+                                "timeZone":"America/Denver"
+                            },
+                            {
+                                "timeOfDay": "12:00",
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00",
+                                "timeZone":"America/Denver"
+                            },
+                            {
+                                "timeOfDay": "20:00"
+                            }
+                        ]
+                    }]
+                },
+                {
+                    "identifier": "medA4",
+                    "dosageItems": [{
+                        "dosage": "40 mg",
+                        "daysOfWeek": [2, 4, 6],
+                        "timestamps": [{
+                                "timeOfDay": "07:30",
+                                "loggedDate": "2019-06-04T07:45:00.000-06:00",
+                                "timeZone":"America/Denver"
+                            },
+                            {
+                                "timeOfDay": "10:30",
+                                "loggedDate": "2019-06-04T10:30:00.000-06:00",
+                                "timeZone":"America/Denver"
+                            }
+                        ]
+                    }]
+                },
+                {
+                    "identifier": "medA5",
+                    "dosageItems": [{
+                        "dosage": "5 ml",
+                        "timestamps": [{
+                                "quantity": 3,
+                                "loggedDate": "2019-06-04T08:00:00.000-06:00",
+                                "timeZone":"America/Denver"
+                            },
+                            {
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00",
+                                "timeZone":"America/Denver"
+                            },
+                            {
+                                "loggedDate": "2019-06-04T20:45:00.000-06:00",
+                                "timeZone":"America/Denver"
+                            }
+                        ]
+                    }]
+                },
+                {
+                    "identifier": "medC3",
+                    "dosageItems": [{
+                            "dosage": "2 ml",
+                            "daysOfWeek": [1, 5],
+                            "timestamps": [{
+                                    "timeOfDay": "08:00"
+                                },
+                                {
+                                    "timeOfDay": "20:00"
+                                }
+                            ]
+                        },
+                        {
+                            "dosage": "1 ml"
+                        }
+                    ]
+                }
+            ]
+        }
+        """.data(using: .utf8)! // our data in native (JSON) format
+        
+        do {
+            let trackingResult = try decoder.decode(SBAMedicationTrackingResult.self, from: json)
+            
+            XCTAssertNotNil(trackingResult.reminders)
+            XCTAssertEqual(trackingResult.reminders?.first, 0)
+            XCTAssertEqual(trackingResult.reminders?.count, 1)
+            
+            let items = trackingResult.medications
+            XCTAssertEqual(items.map { $0.identifier }, ["medA3", "medA4", "medA5", "medC3"])
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA3" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "10 mg")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertFalse(dosageItem.isAnytime ?? true)
+                    XCTAssertEqual(dosageItem.daysOfWeek, RSDWeekday.all)
+                    XCTAssertEqual(dosageItem.timestamps?.count, 3)
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertEqual(timestamp.timeOfDay, "08:00")
+                        XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Denver")
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA4" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Denver")
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA5" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "5 ml")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertTrue(dosageItem.isAnytime ?? false)
+                    XCTAssertNil(dosageItem.daysOfWeek)
+                    XCTAssertEqual(dosageItem.timestamps?.count, 3)
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertNil(timestamp.timeOfDay)
+                        XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Denver")
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
+        }
+        catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
+    
+    func testMedAnswersV1_UpdateSelection_FromPreviousDay() {
+        let json = """
+        {
+            "items": [{
+                    "identifier": "medA3",
+                    "dosage": "10 mg",
+                    "scheduleItems": [{
+                            "timeOfDay": "12:00",
+                            "daysOfWeek": [2, 5, 3, 7, 6, 4, 1]
+                        },
+                        {
+                            "timeOfDay": "20:00",
+                            "daysOfWeek": [3, 1, 6, 4, 2, 5, 7]
+                        },
+                        {
+                            "timeOfDay": "08:00",
+                            "daysOfWeek": [2, 6, 5, 4, 1, 7, 3]
+                        }
+                    ],
+                    "timestamps": [{
+                            "loggedDate": "2019-06-04T08:00:00.000-08:00",
+                            "timeOfDay": "08:00"
+                        },
+                        {
+                            "loggedDate": "2019-06-04T12:15:00.000-08:00",
+                            "timeOfDay": "12:00"
+                        },
+                        {
+                            "loggedDate": "2019-06-04T20:45:00.000-08:00",
+                            "timeOfDay": "20:00"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "medA4",
+                    "dosage": "40 mg",
+                    "scheduleItems": [{
+                            "timeOfDay": "10:30",
+                            "daysOfWeek": [2, 4, 6]
+                        },
+                        {
+                            "timeOfDay": "07:30",
+                            "daysOfWeek": [2, 6, 4]
+                        }
+                    ],
+                    "timestamps": [{
+                            "loggedDate": "2019-06-04T07:45:00.000-08:00",
+                            "timeOfDay": "07:30"
+                        },
+                        {
+                            "loggedDate": "2019-06-04T10:30:00.000-08:00",
+                            "timeOfDay": "10:30"
+                        }
+                    ]
+                },
+                {
+                    "identifier": "medA5",
+                    "dosage": "5 ml",
+                    "scheduleItems": [{
+                        "daysOfWeek": [6, 1, 5, 4, 3, 7, 2]
+                    }],
+                    "timestamps": [{
+                            "loggedDate": "2019-06-04T08:00:00.000-08:00",
+                            "timeOfDay": "morning"
+                        },
+                        {
+                            "loggedDate": "2019-06-04T12:15:00.000-08:00",
+                            "timeOfDay": "afternoon"
+                        },
+                        {
+                            "loggedDate": "2019-06-04T20:45:00.000-08:00",
                             "timeOfDay": "evening"
                         }
                     ]
@@ -695,7 +1004,7 @@ class CodableTrackedDataTests: XCTestCase {
         
         do {
             let clientData = try JSONSerialization.jsonObject(with: json, options: []) as! SBBJSONValue
-            var trackingResult = SBAMedicationTrackingResult(identifier: "Foo")
+            var trackingResult = SBAMedicationTrackingResult(identifier: "foo")
             try trackingResult.updateSelected(from: clientData, with: [])
             
             XCTAssertNotNil(trackingResult.reminders)
@@ -715,7 +1024,7 @@ class CodableTrackedDataTests: XCTestCase {
                     XCTAssertEqual(dosageItem.timestamps?.count, 3)
                     if let timestamp = dosageItem.timestamps?.first {
                         XCTAssertEqual(timestamp.timeOfDay, "08:00")
-                        XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertNil(timestamp.loggedDate)
                     }
                 }
             }
@@ -730,18 +1039,12 @@ class CodableTrackedDataTests: XCTestCase {
                     XCTAssertNotNil(dosageItem.isAnytime)
                     XCTAssertTrue(dosageItem.isAnytime ?? false)
                     XCTAssertNil(dosageItem.daysOfWeek)
-                    XCTAssertEqual(dosageItem.timestamps?.count, 3)
-                    if let timestamp = dosageItem.timestamps?.first {
-                        XCTAssertNil(timestamp.timeOfDay)
-                        XCTAssertNotNil(timestamp.loggedDate)
-                    }
+                    XCTAssertEqual(dosageItem.timestamps?.count ?? 0, 0)
                 }
             }
             else {
                 XCTFail("Failed to decode medA3")
             }
-
-            
         }
         catch let err {
             XCTFail("Failed to decode/encode object: \(err)")
@@ -749,14 +1052,14 @@ class CodableTrackedDataTests: XCTestCase {
         }
     }
     
-    func testMedAnswersV2Decoding() {
+    func testMedAnswersV2_UpdateSelection_FromPreviousDay() {
         let json = """
         {
             "revision": 2,
             "identifier": "review",
             "type": "medication",
-            "startDate": "2019-06-04T18:12:05.233-07:00",
-            "endDate": "2019-06-04T18:12:05.233-07:00",
+            "startDate": "2019-06-04T18:12:05.233-06:00",
+            "endDate": "2019-06-04T18:12:05.233-06:00",
             "reminders": [0],
             "items": [{
                     "identifier": "medA3",
@@ -765,11 +1068,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [1, 2, 3, 4, 5, 6, 7],
                         "timestamps": [{
                                 "timeOfDay": "08:00",
-                                "loggedDate": "2018-02-04T08:00:00.000-08:00"
+                                "loggedDate": "2019-06-04T08:00:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
                                 "timeOfDay": "12:00",
-                                "loggedDate": "2018-02-04T12:15:00.000-08:00"
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
                                 "timeOfDay": "20:00"
@@ -784,13 +1089,13 @@ class CodableTrackedDataTests: XCTestCase {
                         "daysOfWeek": [2, 4, 6],
                         "timestamps": [{
                                 "timeOfDay": "07:30",
-                                "loggedDate": "2018-02-04T07:45:00.000-08:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T07:45:00.000-06:00",
+                                "timeZone":"America/Denver"
                             },
                             {
                                 "timeOfDay": "10:30",
-                                "loggedDate": "2018-02-04T10:30:00.000-08:00",
-                                "timeZone":"America/Los_Angeles"
+                                "loggedDate": "2019-06-04T10:30:00.000-06:00",
+                                "timeZone":"America/Denver"
                             }
                         ]
                     }]
@@ -801,30 +1106,20 @@ class CodableTrackedDataTests: XCTestCase {
                         "dosage": "5 ml",
                         "timestamps": [{
                                 "quantity": 3,
-                                "loggedDate": "2018-02-04T08:00:00.000-05:00"
+                                "loggedDate": "2019-06-04T08:00:00.000-06:00"
                             },
                             {
-                                "loggedDate": "2018-02-04T12:15:00.000-05:00"
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00"
                             },
                             {
-                                "loggedDate": "2018-02-04T20:45:00.000-05:00"
+                                "loggedDate": "2019-06-04T20:45:00.000-06:00"
                             }
                         ]
                     }]
                 },
                 {
                     "identifier": "medC3",
-                    "dosageItems": [{
-                            "dosage": "2 ml",
-                            "daysOfWeek": [1, 5],
-                            "timestamps": [{
-                                    "timeOfDay": "08:00"
-                                },
-                                {
-                                    "timeOfDay": "20:00"
-                                }
-                            ]
-                        },
+                    "dosageItems": [
                         {
                             "dosage": "1 ml"
                         }
@@ -834,10 +1129,9 @@ class CodableTrackedDataTests: XCTestCase {
         }
         """.data(using: .utf8)! // our data in native (JSON) format
         
-        
         do {
             let clientData = try JSONSerialization.jsonObject(with: json, options: []) as! SBBJSONValue
-            var trackingResult = SBAMedicationTrackingResult(identifier: "Foo")
+            var trackingResult = SBAMedicationTrackingResult(identifier: "foo")
             try trackingResult.updateSelected(from: clientData, with: [])
             
             XCTAssertNotNil(trackingResult.reminders)
@@ -857,8 +1151,8 @@ class CodableTrackedDataTests: XCTestCase {
                     XCTAssertEqual(dosageItem.timestamps?.count, 3)
                     if let timestamp = dosageItem.timestamps?.first {
                         XCTAssertEqual(timestamp.timeOfDay, "08:00")
-                        XCTAssertNotNil(timestamp.loggedDate)
-                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0800")
+                        XCTAssertNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone, TimeZone.current)
                     }
                 }
             }
@@ -870,7 +1164,7 @@ class CodableTrackedDataTests: XCTestCase {
                 XCTAssertEqual(med.dosageItems?.count, 1)
                 if let dosageItem = med.dosageItems?.first {
                     if let timestamp = dosageItem.timestamps?.first {
-                        XCTAssertEqual(timestamp.timeZone.identifier, "America/Los_Angeles")
+                        XCTAssertEqual(timestamp.timeZone, TimeZone.current)
                     }
                 }
             }
@@ -885,11 +1179,151 @@ class CodableTrackedDataTests: XCTestCase {
                     XCTAssertNotNil(dosageItem.isAnytime)
                     XCTAssertTrue(dosageItem.isAnytime ?? false)
                     XCTAssertNil(dosageItem.daysOfWeek)
+                    XCTAssertEqual(dosageItem.timestamps?.count ?? 0, 0)
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA5")
+            }
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medC3" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "1 ml")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertTrue(dosageItem.isAnytime ?? false)
+                    XCTAssertNil(dosageItem.daysOfWeek)
+                    XCTAssertNil(dosageItem.timestamps)
+                }
+            }
+            else {
+                XCTFail("Failed to decode medC3")
+            }
+        }
+        catch let err {
+            XCTFail("Failed to decode/encode object: \(err)")
+            return
+        }
+    }
+    
+    func testMedAnswersV2_UpdateSelection_FromCurrentDay() {
+        let json = """
+        {
+            "revision": 2,
+            "identifier": "review",
+            "type": "medication",
+            "startDate": "2019-06-04T12:30:05.233-06:00",
+            "endDate": "2019-06-04T12:32:05.233-06:00",
+            "reminders": [0],
+            "items": [{
+                    "identifier": "medA3",
+                    "dosageItems": [{
+                        "dosage": "10 mg",
+                        "daysOfWeek": [1, 2, 3, 4, 5, 6, 7],
+                        "timestamps": [{
+                                "timeOfDay": "08:00",
+                                "loggedDate": "2019-06-04T08:00:00.000-04:00",
+                                "timeZone":"America/New_York"
+                            },
+                            {
+                                "timeOfDay": "12:00",
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00",
+                                "timeZone":"America/Denver"
+                            },
+                            {
+                                "timeOfDay": "20:00"
+                            }
+                        ]
+                    }]
+                },
+                {
+                    "identifier": "medA4",
+                    "dosageItems": [{
+                        "dosage": "40 mg",
+                        "daysOfWeek": [2, 4, 6],
+                        "timestamps": [{
+                                "timeOfDay": "07:30",
+                                "loggedDate": "2019-06-04T07:45:00.000-04:00",
+                                "timeZone":"America/New_York"
+                            },
+                            {
+                                "timeOfDay": "10:30",
+                                "loggedDate": "2019-06-04T10:30:00.000-04:00",
+                                "timeZone":"America/New_York"
+                            }
+                        ]
+                    }]
+                },
+                {
+                    "identifier": "medA5",
+                    "dosageItems": [{
+                        "dosage": "5 ml",
+                        "timestamps": [{
+                                "quantity": 3,
+                                "loggedDate": "2019-06-04T08:00:00.000-04:00",
+                                "timeZone":"America/New_York"
+                            },
+                            {
+                                "loggedDate": "2019-06-04T12:15:00.000-06:00",
+                                "timeZone":"America/Denver"
+                            }
+                        ]
+                    }]
+                },
+                {
+                    "identifier": "medC3",
+                    "dosageItems": [
+                        {
+                            "dosage": "1 ml"
+                        }
+                    ]
+                }
+            ]
+        }
+        """.data(using: .utf8)! // our data in native (JSON) format
+        
+        do {
+            let currentTimeZone = TimeZone(identifier: "America/Denver")!
+            let clientData = try JSONSerialization.jsonObject(with: json, options: []) as! SBBJSONValue
+            var trackingResult = SBAMedicationTrackingResult(identifier: "foo", timeZone: currentTimeZone)
+            
+            var calendar = Calendar.iso8601
+            calendar.timeZone = currentTimeZone
+            var dateComponents = DateComponents()
+            dateComponents.year = 2019
+            dateComponents.month = 6
+            dateComponents.day = 4
+            dateComponents.hour = 20
+            dateComponents.minute = 15
+            trackingResult.startDate = calendar.date(from: dateComponents)!
+            trackingResult.endDate = trackingResult.startDate
+            
+            try trackingResult.updateSelected(from: clientData, with: [])
+            
+            XCTAssertNotNil(trackingResult.reminders)
+            XCTAssertEqual(trackingResult.reminders?.first, 0)
+            XCTAssertEqual(trackingResult.reminders?.count, 1)
+            
+            let items = trackingResult.medications
+            XCTAssertEqual(items.map { $0.identifier }, ["medA3", "medA4", "medA5", "medC3"])
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA3" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "10 mg")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertFalse(dosageItem.isAnytime ?? true)
+                    XCTAssertEqual(dosageItem.daysOfWeek, RSDWeekday.all)
                     XCTAssertEqual(dosageItem.timestamps?.count, 3)
-                    if let timestamp = dosageItem.timestamps?.first {
-                        XCTAssertNil(timestamp.timeOfDay)
-                        XCTAssertNotNil(timestamp.loggedDate)
-                        XCTAssertEqual(timestamp.timeZone.identifier, "GMT-0500")
+                    if let timestamps = dosageItem.timestamps, timestamps.count == 3 {
+                        let timestamp1 = timestamps[0]
+                        XCTAssertEqual(timestamp1.timeOfDay, "08:00")
+                        XCTAssertNotNil(timestamp1.loggedDate)
+                        XCTAssertEqual(timestamp1.timeZone.identifier, "America/New_York")
+                        let timestamp2 = timestamps[1]
+                        XCTAssertEqual(timestamp2.timeOfDay, "12:00")
+                        XCTAssertNotNil(timestamp2.loggedDate)
+                        XCTAssertEqual(timestamp2.timeZone.identifier, "America/Denver")
                     }
                 }
             }
@@ -897,7 +1331,50 @@ class CodableTrackedDataTests: XCTestCase {
                 XCTFail("Failed to decode medA3")
             }
             
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA4" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/New_York")
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
             
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medA5" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "5 ml")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertTrue(dosageItem.isAnytime ?? false)
+                    XCTAssertNil(dosageItem.daysOfWeek)
+                    XCTAssertEqual(dosageItem.timestamps?.count, 2)
+                    if let timestamp = dosageItem.timestamps?.first {
+                        XCTAssertNil(timestamp.timeOfDay)
+                        XCTAssertNotNil(timestamp.loggedDate)
+                        XCTAssertEqual(timestamp.timeZone.identifier, "America/New_York")
+                    }
+                }
+            }
+            else {
+                XCTFail("Failed to decode medA3")
+            }
+            
+            if let med = trackingResult.medications.first(where: { $0.identifier == "medC3" }) {
+                XCTAssertEqual(med.dosageItems?.count, 1)
+                if let dosageItem = med.dosageItems?.first {
+                    XCTAssertEqual(dosageItem.dosage, "1 ml")
+                    XCTAssertNotNil(dosageItem.isAnytime)
+                    XCTAssertTrue(dosageItem.isAnytime ?? false)
+                    XCTAssertNil(dosageItem.daysOfWeek)
+                    XCTAssertNil(dosageItem.timestamps)
+                }
+            }
+            else {
+                XCTFail("Failed to decode medC3")
+            }
         }
         catch let err {
             XCTFail("Failed to decode/encode object: \(err)")

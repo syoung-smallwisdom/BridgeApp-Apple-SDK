@@ -74,6 +74,7 @@
 		FF3A810F22C17B9300CD737D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF3A810E22C17B9300CD737D /* Images.xcassets */; };
 		FF63D5002303731B006C7BD3 /* SBALearnItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FE2303731A006C7BD3 /* SBALearnItem.swift */; };
 		FF63D5012303731B006C7BD3 /* SBALearnInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FF2303731A006C7BD3 /* SBALearnInfo.swift */; };
+		FF93F729234D1D980052F53F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF93F728234D1D980052F53F /* Images.xcassets */; };
 		FF9D7969230C71B1005CFB37 /* BridgeAppUI.h in Headers */ = {isa = PBXBuildFile; fileRef = FF9D7967230C71B1005CFB37 /* BridgeAppUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FF9D796C230C71B1005CFB37 /* BridgeAppUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */; };
 		FF9D796D230C71B1005CFB37 /* BridgeAppUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -328,6 +329,7 @@
 		FF3F050522EFBD5E008C507B /* SBATriggerResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATriggerResult.swift; sourceTree = "<group>"; };
 		FF63D4FE2303731A006C7BD3 /* SBALearnItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBALearnItem.swift; sourceTree = "<group>"; };
 		FF63D4FF2303731A006C7BD3 /* SBALearnInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBALearnInfo.swift; sourceTree = "<group>"; };
+		FF93F728234D1D980052F53F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BridgeApp/StyleGuide/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BridgeAppUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9D7967230C71B1005CFB37 /* BridgeAppUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeAppUI.h; sourceTree = "<group>"; };
 		FF9D7968230C71B1005CFB37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -780,6 +782,7 @@
 				FF9D797C230C737C005CFB37 /* DataTracking.h */,
 				FF9D797D230C737C005CFB37 /* Info.plist */,
 				FF9D79C2230C76AB005CFB37 /* SBADataTrackingFactory.swift */,
+				FF93F728234D1D980052F53F /* Images.xcassets */,
 				F8479516207FE99A0024A230 /* Model */,
 				F8479517207FE9BB0024A230 /* iOS */,
 				F8C2F37D22B2EC7800AC6A41 /* Medication Tracking */,
@@ -1074,6 +1077,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF93F729234D1D980052F53F /* Images.xcassets in Resources */,
 				FF9D79BE230C75C3005CFB37 /* SBASymptomLoggingCell.xib in Resources */,
 				FF9D79BC230C75BB005CFB37 /* SBAMedicationDosageTableCell.xib in Resources */,
 				FF9D79AA230C75A7005CFB37 /* SBATrackedReminderModalButtonCell.xib in Resources */,
