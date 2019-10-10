@@ -155,6 +155,9 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     
     /// Is the account signed in?
     private var isAuthenticated: Bool = false
+    
+    /// A mapping of a data group to add to the
+    private var dataGroupMapping: [String : Set<String>]?
    
     // MARK: Internal methods
     // TODO: emm 2019-05-03 Deal with this (or remove? is it obsolete?) for mPower 2.1
@@ -206,6 +209,10 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
         return queries
     }
     
+    open override func addedDataGroups(for taskViewModel: RSDTaskViewModel) -> Set<String>? {
+        return self.dataGroupMapping?[taskViewModel.identifier]
+    }
+    
     // MARK: SBAProfileManagerProtocol
     
     open func getDataGroups() -> Set<String> {
@@ -244,7 +251,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     
     // MARK: Codable
     private enum CodingKeys: String, CodingKey {
-        case identifier, items
+        case identifier, items, dataGroupMapping
     }
     
     private enum TypeKeys: String, CodingKey {
@@ -287,6 +294,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.identifier = try container.decodeIfPresent(String.self, forKey: .identifier) ?? SBAProfileManagerObject.defaultIdentifier
+        self.dataGroupMapping = try container.decodeIfPresent([String: Set<String>].self, forKey: .dataGroupMapping)
         if container.contains(.items) {
             var items: [SBAProfileItem] = self.items
             var schemas: [RSDIdentifier] = []

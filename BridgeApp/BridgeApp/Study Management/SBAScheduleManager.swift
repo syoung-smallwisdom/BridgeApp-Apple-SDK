@@ -498,10 +498,16 @@ open class SBAScheduleManager: SBAReportManager {
             SBAFactory.shared.trackingRules.remove(where: { $0 is DataGroupsTrackingRule})
             let rule = DataGroupsTrackingRule(initialCohorts: participant.dataGroups ?? [])
             rule.taskRunUUID = taskViewModel.taskResult.taskRunUUID
+            rule.addedDataGroups = self.addedDataGroups(for: taskViewModel)
             SBAFactory.shared.trackingRules.append(rule)
         } else {
             debugPrint("WARNING: Missing a study particpant. Cannot get the data groups.")
         }
+    }
+    
+    /// Return the data groups that should be added to the cohorts tracked by this task.
+    open func addedDataGroups(for taskViewModel: RSDTaskViewModel) -> Set<String>? {
+        return nil
     }
     
     /// Find the most recent report data appended to any schedule for this activity identifier.
@@ -541,7 +547,17 @@ open class SBAScheduleManager: SBAReportManager {
     /// Subclass the cohorts tracking rule so that we can use casting to check for an existing
     /// tracking rule.
     class DataGroupsTrackingRule : RSDCohortTrackingRule {
+        
+        /// The taks run UUID is used to associate the task with the changes to the data groups.
         var taskRunUUID : UUID!
+        
+        /// A set of data groups that should be added to the current cohorts.
+        var addedDataGroups : Set<String>?
+        
+        override var currentCohorts: Set<String> {
+            let unionSet = addedDataGroups ?? []
+            return super.currentCohorts.union(unionSet)
+        }
     }
     
     // MARK: RSDTaskViewControllerDelegate
