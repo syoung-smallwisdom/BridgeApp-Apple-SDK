@@ -44,18 +44,11 @@ open class SBATaskRepository : RSDTaskRepository {
             return transformer
         }
         else if let surveyReference = taskInfo as? SBBSurveyReference {
-            // If this is a survey reference, we want to replace the one included in the schedule
-            // with the version that is referenced in the AppConfig.
-            let reference: SBBSurveyReference = {
-                guard let configReference = SBABridgeConfiguration.shared.survey(for: surveyReference.identifier),
-                    let configCreatedOn = configReference.createdOn,
-                    let originalCreatedOn = surveyReference.createdOn,
-                    configCreatedOn > originalCreatedOn
-                    else {
-                        return surveyReference
-                }
-                return configReference
-            }()
+            // If the AppConfig includes a survey reference, *always* use that version
+            // defined by the AppConfig. This allows apps to ignore using the most recent
+            // version set when the schedule is created and explicitly define what version
+            // a given version of the app will support. syoung 10/10/2019
+            let reference: SBBSurveyReference =  SBABridgeConfiguration.shared.survey(for: surveyReference.identifier) ??  surveyReference
             return SBASurveyLoader(surveyReference: reference)
         }
         else if let combo = taskInfo as? SBBCompoundActivity {
