@@ -156,7 +156,14 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     /// Is the account signed in?
     private var isAuthenticated: Bool = false
     
-    /// A mapping of a data group to add to the
+    /// The data group mapping allows the survey or task that is used to display a survey from
+    /// the profile to have a different navigation from the initial presentation of the survey.
+    /// This can be handled by assigning a data group to the survey *before* it is displayed to
+    /// the participant. The mapping dictionary uses the activity identifier as the `key` and
+    /// the data groups to add for a given survey as the `value`.
+    ///
+    /// It is formatted as a key/value mapping to allow for decoding the data groups for a given
+    /// survey from the AppConfig JSON used to build the profile manager.
     private var dataGroupMapping: [String : Set<String>]?
    
     // MARK: Internal methods
