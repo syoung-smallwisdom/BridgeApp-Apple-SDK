@@ -155,6 +155,16 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     
     /// Is the account signed in?
     private var isAuthenticated: Bool = false
+    
+    /// The data group mapping allows the survey or task that is used to display a survey from
+    /// the profile to have a different navigation from the initial presentation of the survey.
+    /// This can be handled by assigning a data group to the survey *before* it is displayed to
+    /// the participant. The mapping dictionary uses the activity identifier as the `key` and
+    /// the data groups to add for a given survey as the `value`.
+    ///
+    /// It is formatted as a key/value mapping to allow for decoding the data groups for a given
+    /// survey from the AppConfig JSON used to build the profile manager.
+    private var dataGroupMapping: [String : Set<String>]?
    
     // MARK: Internal methods
     // TODO: emm 2019-05-03 Deal with this (or remove? is it obsolete?) for mPower 2.1
@@ -206,6 +216,10 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
         return queries
     }
     
+    open override func addedDataGroups(for taskViewModel: RSDTaskViewModel) -> Set<String>? {
+        return self.dataGroupMapping?[taskViewModel.identifier]
+    }
+    
     // MARK: SBAProfileManagerProtocol
     
     open func getDataGroups() -> Set<String> {
@@ -244,7 +258,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     
     // MARK: Codable
     private enum CodingKeys: String, CodingKey {
-        case identifier, items
+        case identifier, items, dataGroupMapping
     }
     
     private enum TypeKeys: String, CodingKey {
@@ -287,6 +301,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.identifier = try container.decodeIfPresent(String.self, forKey: .identifier) ?? SBAProfileManagerObject.defaultIdentifier
+        self.dataGroupMapping = try container.decodeIfPresent([String: Set<String>].self, forKey: .dataGroupMapping)
         if container.contains(.items) {
             var items: [SBAProfileItem] = self.items
             var schemas: [RSDIdentifier] = []
