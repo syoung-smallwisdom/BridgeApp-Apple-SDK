@@ -395,14 +395,8 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     
     /// The actual profile item for the given profileItemKey.
     public var profileItem: SBAProfileItem? {
-        get {
-            let profileItems = self.profileManager.profileItems()
-            return profileItems[self.profileItemKey]
-        }
-//        set {
-//            var profileItems = self.profileManager.profileItems()
-//            profileItems[self.profileItemKey]!.value = newValue.value
-//       }
+        let profileItems = self.profileManager.profileItems()
+        return profileItems[self.profileItemKey]
     }
     
 /* TODO: emm 2019-02-06 deal with this for mPower 2 2.1
