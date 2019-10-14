@@ -281,6 +281,14 @@ public final class SBAReportProfileItem: SBAProfileItemInternal {
 /// demographic survey. In this scenario, for each of these items you would set the demographicSchema
 /// to the survey identifier, set the source key to the survey identifier as well, and set the
 /// demographicKey to the identifier of the survey question corresponding to the profile item.
+///
+/// If you are using this mechanism to change answers to a survey, then use the `SBAReportProfileItem`
+/// for questions that do not effect data groups, and use `SBADataGroupProfileItem` for questions
+/// that can change the data groups. This is also a mechanism for changing the data groups when there
+/// are mutliple surveys that may change those groups.
+///
+/// - seealso: `SBAReportProfileItem`
+///
 public final class SBADataGroupProfileItem: SBAProfileItemInternal {
     private enum CodingKeys: String, CodingKey {
         case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema, itemType, _readonly = "readonly", type, dataGroups
