@@ -490,7 +490,6 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
         let reportIdentifier = report.reportKey.stringValue
         let category = self.reportCategory(for: reportIdentifier)
         let bridgeReport = SBBReportData()
-        
 
         switch category {
         case .timestamp:
@@ -512,21 +511,12 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             
         case .singleton:
             
-            // Singleton reports can overwrite an existing report, so check for a previous report
-            // and use that report date instead so that it remains a singleton.
-            // That said, there are a number of calls to saveReports() that do not correctly
-            // set the report date to the singleton instance, so we need to check against the
-            // most recent date stamp and use that if there is one.
-            let previousReport = self.reports
-                .sorted(by: { $0.date < $1.date })
-                .last(where: { $0.identifier == report.identifier })
-            let reportDate = previousReport?.date ?? SBAReportSingletonDate
-            
             // For a singleton, always set the date to a dateString that is the singleton date
             // in UTC timezone. This way it will always write to the report using that date.
             bridgeReport.data = report.clientData
             let formatter = NSDate.iso8601DateOnlyformatter()!
             formatter.timeZone = TimeZone(secondsFromGMT: 0)
+            let reportDate = self.date(for: reportIdentifier, from: report.date)
             bridgeReport.localDate = formatter.string(from: reportDate)
             
         case .groupByDay:
@@ -589,21 +579,19 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     open func newReport(reportIdentifier: String, date: Date, clientData: SBBJSONValue) -> SBAReport {
         
         let category = self.reportCategory(for: reportIdentifier)
-        var reportDate: Date!
-        var timeZone: TimeZone!
-        switch category {
-        case .singleton:
-            reportDate = SBAReportSingletonDate
-            timeZone = TimeZone(secondsFromGMT: 0)!
-            
-        case .groupByDay:
-            reportDate = date.startOfDay()
-            timeZone = TimeZone.current
+        let reportDate = self.date(for: reportIdentifier, from: date)
+        let timeZone: TimeZone = {
+            switch category {
+            case .singleton:
+                return TimeZone(secondsFromGMT: 0)!
+                
+            case .groupByDay:
+                return TimeZone.current
 
-        case .timestamp:
-            reportDate = date
-            timeZone = TimeZone.current
-        }
+            case .timestamp:
+                return TimeZone.current
+            }
+        }()
         
         return SBAReport(reportKey: RSDIdentifier(rawValue: reportIdentifier),
             date: reportDate,
@@ -619,15 +607,32 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     }
     
     /// The date to use for the report with the given identifier.
-    open func date(for reportIdentifier: String, from result: RSDTaskResult) -> Date {
+    public final func date(for reportIdentifier: String, from result: RSDTaskResult) -> Date {
+        return self.date(for: reportIdentifier, from: result.endDate)
+    }
+    
+    /// Convert the input date for the report into the appropriate date to use for the report
+    /// category (singleton, group by day, or timestamp).
+    public final func date(for reportIdentifier: String, from date: Date) -> Date {
         let category = self.reportCategory(for: reportIdentifier)
         switch category {
         case .singleton:
-            return SBAReportSingletonDate
+            
+            // Singleton reports can overwrite an existing report, so check for a previous report
+            // and use that report date instead so that it remains a singleton.
+            // That said, there are a number of calls to saveReports() that do not correctly
+            // set the report date to the singleton instance, so we need to check against the
+            // most recent date stamp and use that if there is one.
+            let previousReport = self.reports
+                .sorted(by: { $0.date < $1.date })
+                .last(where: { $0.identifier == reportIdentifier })
+            let reportDate = previousReport?.date ?? SBAReportSingletonDate
+            return reportDate
+            
         case .groupByDay:
-            return result.endDate.startOfDay()
+            return date.startOfDay()
         case .timestamp:
-            return result.endDate
+            return date
         }
     }
     

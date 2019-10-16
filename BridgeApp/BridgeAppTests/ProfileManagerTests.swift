@@ -80,7 +80,7 @@ class ProfileManagerTests: XCTestCase {
     func checkProfileItemStorage(profileKey: String) {
         let pm = SBAProfileManagerObject.shared
         let items = pm.profileItems()
-        guard var reportItem = items[profileKey] as? SBAReportProfileItem
+        guard let reportItem = items[profileKey] as? SBAReportProfileItem
             else {
                 XCTAssert(false, "Expected profile items to include a SBAReportProfileItem with the profile key '\(profileKey)' but it doesn't")
                 return
@@ -132,7 +132,7 @@ class ProfileManagerTests: XCTestCase {
     func checkParticipantItemStorage(profileKey: String) {
         let pm = SBAProfileManagerObject.shared
         let items = pm.profileItems()
-        guard var participantItem = items[profileKey] as? SBAStudyParticipantProfileItem
+        guard let participantItem = items[profileKey] as? SBAStudyParticipantProfileItem
             else {
                 XCTAssert(false, "Expected profile items to include a SBAStudyParticipantProfileItem with the profile key '\(profileKey)' but it doesn't")
                 return
@@ -173,7 +173,7 @@ class ProfileManagerTests: XCTestCase {
     func checkParticipantClientDataItemStorage(profileKey: String) {
         let pm = SBAProfileManagerObject.shared
         let items = pm.profileItems()
-        guard var clientDataItem = items[profileKey] as? SBAStudyParticipantClientDataProfileItem
+        guard let clientDataItem = items[profileKey] as? SBAStudyParticipantClientDataProfileItem
             else {
                 XCTAssert(false, "Expected profile items to include a SBAStudyParticipantClientDataProfileItem with the profile key '\(profileKey)' but it doesn't")
                 return
@@ -186,7 +186,7 @@ class ProfileManagerTests: XCTestCase {
                 XCTAssert(false, "Expected profile items to include an item with the source key '\(fallback)' but it doesn't")
                 return
             }
-            guard var participantItem = participantItemTuple.value as? SBAStudyParticipantProfileItem
+            guard let participantItem = participantItemTuple.value as? SBAStudyParticipantProfileItem
                 else {
                     XCTAssert(false, "Expected profile items with the source key '\(fallback)' to be a SBAStudyParticipantProfileItem but instead it's a \(String(describing: type (of:participantItemTuple.value)))")
                     return

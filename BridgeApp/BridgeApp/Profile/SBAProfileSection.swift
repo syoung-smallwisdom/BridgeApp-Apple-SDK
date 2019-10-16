@@ -215,7 +215,7 @@ open class SBAProfileSectionObject: SBAProfileSection, Decodable {
         case .profileView:
             return try SBAProfileViewProfileTableItem(from: decoder)
         default:
-            assertionFailure("Attempt to decode profile table item of unknown type \(type.rawValue)")
+            print("WARNING! Attempt to decode profile table item of unknown type \(type.rawValue)")
             return nil
         }
     }
@@ -301,12 +301,12 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     
     /// Detail text to show for the table item.
     public var detail: String? {
-        let type = self.profileItem.itemType
+        guard let type = self.profileItem?.itemType else { return nil }
         let sequenceType = type.defaultAnswerResultType().sequenceType
         let baseType = type.baseType
         if sequenceType == .array &&
             baseType == .string {
-            guard let value = self.profileItem.value as? [String], value.count > 0 else {
+            guard let value = self.profileItem?.value as? [String], value.count > 0 else {
                 return ""
             }
             
@@ -319,7 +319,7 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
             guard let isOn = self.profileItemValue as? Bool else { return "" }
             return isOn ? Localization.localizedString("SETTINGS_STATE_ON") : Localization.localizedString("SETTINGS_STATE_OFF")
         default:
-            guard let value = self.profileItem.value else { return "" }
+            guard let value = self.profileItem?.value else { return "" }
             return String(describing: value)
         }
     }
@@ -327,10 +327,10 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     /// Current profile item value to apply to, and set from, an edit control.
     public var profileItemValue: Any? {
         get {
-            return self.profileItem.value
+            return self.profileItem?.value
         }
         set {
-            self.profileItem.value = newValue
+            self.profileItem?.value = newValue
         }
     }
     
@@ -339,10 +339,10 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     private var _isEditable: Bool?
     public var isEditable: Bool? {
         get {
-            return self.profileItem.readonly ? false : self._isEditable ?? true
+            return (self.profileItem?.readonly ?? true) ? false : (self._isEditable ?? true)
         }
         set {
-            guard self.profileItem.readonly == false else { return }
+            guard self.profileItem?.readonly == false else { return }
             self._isEditable = newValue
         }
     }
@@ -389,20 +389,14 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     public var _editTaskIdentifier: String?
     public var editTaskIdentifier: String? {
         get {
-            return _editTaskIdentifier ?? self.profileItem.demographicSchema
+            return _editTaskIdentifier ?? self.profileItem?.demographicSchema
         }
     }
     
     /// The actual profile item for the given profileItemKey.
-    public var profileItem: SBAProfileItem {
-        get {
-            let profileItems = self.profileManager.profileItems()
-            return profileItems[self.profileItemKey]!
-        }
-        set {
-            var profileItems = self.profileManager.profileItems()
-            profileItems[self.profileItemKey]!.value = newValue.value
-       }
+    public var profileItem: SBAProfileItem? {
+        let profileItems = self.profileManager.profileItems()
+        return profileItems[self.profileItemKey]
     }
     
 /* TODO: emm 2019-02-06 deal with this for mPower 2 2.1

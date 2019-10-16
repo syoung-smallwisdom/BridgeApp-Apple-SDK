@@ -53,6 +53,9 @@ public struct SBAProfileItemType : RawRepresentable, Codable {
     /// Defaults to creating a `SBAReportProfileItem`.
     public static let report: SBAProfileItemType = "report"
     
+    /// Defaults to creating a `SBADataGroupProfileItem`.
+    public static let dataGroup: SBAProfileItemType = "dataGroup"
+    
     /// List of all the standard types.
     public static func allStandardTypes() -> [SBAProfileItemType] {
         return [.participant, .participantClientData, .report]

@@ -76,7 +76,7 @@ class ProfileDataSourceTests: XCTestCase {
         
         XCTAssert(piptItem.title == ProfileDataSourceTests.testProfileItemTitle, "Expected profile table item title to be '\(ProfileDataSourceTests.testProfileItemTitle)' but got '\(String(describing:piptItem.title))' instead")
         
-        XCTAssert(piptItem.profileItem.itemType == .base(.boolean), "Expected profile table item's profile item type to be boolean, but it's \(String(describing: piptItem.profileItem.itemType)) instead")
+        XCTAssert(piptItem.profileItem?.itemType == .base(.boolean), "Expected profile table item's profile item type to be boolean, but it's \(String(describing: piptItem.profileItem?.itemType)) instead")
         
         XCTAssert(piptItem.profileItemValue == nil, "Expected default profile item value to be nil but it's \(String(describing: piptItem.profileItemValue))")
         

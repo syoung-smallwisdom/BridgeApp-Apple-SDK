@@ -249,7 +249,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     /// - parameter value: The new value to set.
     /// - parameter key: The profileKey of the profile item on which to set the new value.
     public func setValue(_ value: Any?, forProfileKey key: String) throws {
-        guard var item = self.itemsMap[key] else {
+        guard let item = self.itemsMap[key] else {
             throw SBAProfileManagerError(errorType: .unknownProfileKey, profileKey: key)
         }
         
@@ -339,9 +339,11 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
         
         switch (type) {
         case .report:
-            var item: SBAReportProfileItem = try SBAReportProfileItem(from: decoder)
+            let item: SBAReportProfileItem = try SBAReportProfileItem(from: decoder)
             item.reportManager = self
             return item
+        case .dataGroup:
+            return try SBADataGroupProfileItem(from: decoder)
         case .participant:
             return try SBAStudyParticipantProfileItem(from: decoder)
         case .participantClientData:
@@ -359,7 +361,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
             return try SBABirthDateProfileItem(from: decoder)
  */
         default:
-            assertionFailure("Attempt to decode profile item of unknown type '\(type.rawValue)'")
+            print("WARNING! Attempt to decode profile item of unknown type '\(type.rawValue)'")
             return nil
         }
     }

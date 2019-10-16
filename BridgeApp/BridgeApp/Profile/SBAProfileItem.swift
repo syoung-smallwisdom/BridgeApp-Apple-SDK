@@ -35,7 +35,7 @@ import Foundation
 import HealthKit
 import BridgeSDK
 
-public protocol SBAProfileItem: Decodable {
+public protocol SBAProfileItem: class, Decodable {
     
     /// profileKey is used to access a specific profile item, and so must be unique across all SBAProfileItems
     /// within an app.
@@ -186,7 +186,7 @@ extension SBAProfileItem {
 /// an editable profile item for each question/answer in the demographic survey. In this scenario, for each of these
 /// items you would set the demographicSchema to the survey identifier, set the source key to the survey identifier
 /// as well, and set the demographicKey to the identifier of the survey question corresponding to the profile item.
-public struct SBAReportProfileItem: SBAProfileItemInternal {
+public final class SBAReportProfileItem: SBAProfileItemInternal {
     private enum CodingKeys: String, CodingKey {
         case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema,
         _clientDataIsItem = "clientDataIsItem", itemType, _readonly = "readonly", type
@@ -272,6 +272,91 @@ public struct SBAReportProfileItem: SBAProfileItemInternal {
     
 }
 
+/// SBADataGroupProfileItem allows storing and retrieving profile item values to/from a data group.
+///
+/// A common scenario for a study would be to have a demographic survey which is administered once
+/// after the participant signs up and consents. Often (always in e.g. Canada, where required by law),
+/// the app/study design would need some way to allow the participant to change those answers later.
+/// One way to do this is to create an editable profile item for each question/answer in the
+/// demographic survey. In this scenario, for each of these items you would set the demographicSchema
+/// to the survey identifier, set the source key to the survey identifier as well, and set the
+/// demographicKey to the identifier of the survey question corresponding to the profile item.
+///
+/// If you are using this mechanism to change answers to a survey, then use the `SBAReportProfileItem`
+/// for questions that do not effect data groups, and use `SBADataGroupProfileItem` for questions
+/// that can change the data groups. This is also a mechanism for changing the data groups when there
+/// are mutliple surveys that may change those groups.
+///
+/// - seealso: `SBAReportProfileItem`
+///
+public final class SBADataGroupProfileItem: SBAProfileItemInternal {
+    private enum CodingKeys: String, CodingKey {
+        case profileKey, _sourceKey = "sourceKey", _demographicKey = "demographicKey", demographicSchema, itemType, _readonly = "readonly", type, dataGroups
+    }
+
+    fileprivate var _sourceKey: String?
+    
+    fileprivate var _demographicKey: String?
+    
+    fileprivate var _readonly: Bool?
+    
+    /// `profileKey` is used to access a specific profile item, and so must be unique across all
+    /// SBAProfileItems within an app.
+    public var profileKey: String
+    
+    /// `demographicSchema` is an optional schema identifier to mark a profile item as being part of
+    /// the indicated demographic data upload schema.
+    public var demographicSchema: String?
+
+    /// `itemType` specifies what type to store the profileItem's value as. Defaults to String if not
+    /// otherwise specified.
+    public var itemType: RSDFormDataType
+    
+    /// The class type to which to deserialize this profile item.
+    public var type: SBAProfileItemType
+    
+    /// The data groups that are linked to this profile item.
+    public var dataGroups: Set<String>
+    
+    public func storedValue(forKey key: String) -> Any? {
+        guard let currentDataGroups = SBAParticipantManager.shared.studyParticipant?.dataGroups
+            else {
+                return nil
+        }
+        let value = currentDataGroups.intersection(self.dataGroups).joined(separator: ", ")
+        return value
+    }
+    
+    public func setStoredValue(_ newValue: Any?) {
+        guard let participant = SBAParticipantManager.shared.studyParticipant
+            else {
+                print("WARNING! Trying to set the data groups without a participant")
+                return
+        }
+        let currentDataGroups: Set<String> = participant.dataGroups ?? []
+        let newGroups: Set<String> = {
+            if let array = newValue as? [String] {
+                return Set(array)
+            }
+            else if let set = newValue as? Set<String> {
+                return set
+            }
+            else if let string = newValue as? String {
+                let characters = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: ","))
+                let array = string.components(separatedBy: characters).compactMap { $0.isEmpty ? nil : $0
+                }
+                return Set(array)
+            }
+            else {
+                return currentDataGroups
+            }
+        }()
+        let addGroups = self.dataGroups.intersection(newGroups)
+        let updatedGroups = currentDataGroups.subtracting(self.dataGroups).union(addGroups)
+        SBBParticipantManager.default()?.updateDataGroups(withGroups: updatedGroups, completion: nil)
+    }
+}
+
 // The valid keypaths into SBBStudyParticipant for SBAStudyParticipantProfileItems. This will be used to access the
 // values via their keypaths.
 fileprivate struct SBAParticipantKeyPath : RawRepresentable, Codable {
@@ -343,7 +428,7 @@ extension SBBStudyParticipant {
 /// SBAStudyParticipantProfileItem allows storing and retrieving profile item values to/from the SBBStudyParticipant object.
 /// For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
 /// interpreted as the key path into the SBBStudyParticipant.
-public struct SBAStudyParticipantProfileItem: SBAProfileItemInternal {
+public final class SBAStudyParticipantProfileItem: SBAProfileItemInternal {
     private enum CodingKeys: String, CodingKey {
         case profileKey, _sourceKey = "sourceKey", itemType, _readonly = "readonly", type
     }
@@ -403,7 +488,7 @@ public struct SBAStudyParticipantProfileItem: SBAProfileItemInternal {
 /// If a fallbackKeyPath is set, and the item currently does not have a value specified in the clientData,
 /// the value will be retrieved from the SBBStudyParticipant object at the specified key path. New values
 /// are always set in the clientData and do not affect the value at the fallbackKeyPath.
-public struct SBAStudyParticipantClientDataProfileItem: SBAProfileItemInternal {
+public final class SBAStudyParticipantClientDataProfileItem: SBAProfileItemInternal {
     private enum CodingKeys: String, CodingKey {
         case profileKey, _sourceKey = "sourceKey", _fallbackKeyPath = "fallbackKeyPath", itemType, _readonly = "readonly", type
     }
