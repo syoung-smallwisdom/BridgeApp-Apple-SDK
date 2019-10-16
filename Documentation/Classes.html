@@ -35,6 +35,9 @@
                 <a href="Classes/SBABridgeConfiguration.html">SBABridgeConfiguration</a>
               </li>
               <li class="nav-group-task">
+                <a href="Classes/SBADataGroupProfileItem.html">SBADataGroupProfileItem</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Classes/SBAParticipantManager.html">SBAParticipantManager</a>
               </li>
               <li class="nav-group-task">
@@ -56,6 +59,9 @@
                 <a href="Classes/SBAReportManager/ReportQuery.html">– ReportQuery</a>
               </li>
               <li class="nav-group-task">
+                <a href="Classes/SBAReportProfileItem.html">SBAReportProfileItem</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Classes/SBAScheduleManager.html">SBAScheduleManager</a>
               </li>
               <li class="nav-group-task">
@@ -66,6 +72,12 @@
               </li>
               <li class="nav-group-task">
                 <a href="Classes/SBAScheduledActivityArchive.html">SBAScheduledActivityArchive</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBAStudyParticipantClientDataProfileItem.html">SBAStudyParticipantClientDataProfileItem</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SBAStudyParticipantProfileItem.html">SBAStudyParticipantProfileItem</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/SBASurveyConfiguration.html">SBASurveyConfiguration</a>
@@ -275,15 +287,6 @@
               <li class="nav-group-task">
                 <a href="Structs/SBAReport.html">SBAReport</a>
               </li>
-              <li class="nav-group-task">
-                <a href="Structs/SBAReportProfileItem.html">SBAReportProfileItem</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/SBAStudyParticipantClientDataProfileItem.html">SBAStudyParticipantClientDataProfileItem</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/SBAStudyParticipantProfileItem.html">SBAStudyParticipantProfileItem</a>
-              </li>
             </ul>
           </li>
         </ul>
@@ -296,6 +299,158 @@
 
           </section>
           <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp20SBAReportProfileItemC"></a>
+                    <a name="//apple_ref/swift/Class/SBAReportProfileItem" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp20SBAReportProfileItemC">SBAReportProfileItem</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>SBAReportProfileItem allows storing and retrieving profile item values to/from Bridge Participant Reports.
+For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
+interpreted as the report identifier. If the clientDataIsItem flag is not set, then the demographicKey
+(which, likewise, defaults to the profileKey if not specifically set) is interpreted as the item&rsquo;s key
+in the report&rsquo;s clientData. If the flag is set, the report&rsquo;s clientData value is used directly.</p>
+
+<p>A common scenario for a study would be to have a demographic survey which is administered once after the
+participant signs up and consents. Often (always in e.g. Canada, where required by law), the app/study design
+would need some way to allow the participant to change those answers later. One way to do this is to create
+an editable profile item for each question/answer in the demographic survey. In this scenario, for each of these
+items you would set the demographicSchema to the survey identifier, set the source key to the survey identifier
+as well, and set the demographicKey to the identifier of the survey question corresponding to the profile item.</p>
+
+                        <a href="Classes/SBAReportProfileItem.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">SBAReportProfileItem</span> <span class="p">:</span> <span class="kt">SBAProfileItemInternal</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp23SBADataGroupProfileItemC"></a>
+                    <a name="//apple_ref/swift/Class/SBADataGroupProfileItem" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp23SBADataGroupProfileItemC">SBADataGroupProfileItem</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>SBADataGroupProfileItem allows storing and retrieving profile item values to/from a data group.</p>
+
+<p>A common scenario for a study would be to have a demographic survey which is administered once
+after the participant signs up and consents. Often (always in e.g. Canada, where required by law),
+the app/study design would need some way to allow the participant to change those answers later.
+One way to do this is to create an editable profile item for each question/answer in the
+demographic survey. In this scenario, for each of these items you would set the demographicSchema
+to the survey identifier, set the source key to the survey identifier as well, and set the
+demographicKey to the identifier of the survey question corresponding to the profile item.</p>
+
+<p>If you are using this mechanism to change answers to a survey, then use the <code><a href="Classes/SBAReportProfileItem.html">SBAReportProfileItem</a></code>
+for questions that do not effect data groups, and use <code>SBADataGroupProfileItem</code> for questions
+that can change the data groups. This is also a mechanism for changing the data groups when there
+are mutliple surveys that may change those groups.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <code><a href="Classes/SBAReportProfileItem.html">SBAReportProfileItem</a></code>
+
+</div>
+
+                        <a href="Classes/SBADataGroupProfileItem.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">SBADataGroupProfileItem</span> <span class="p">:</span> <span class="kt">SBAProfileItemInternal</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp30SBAStudyParticipantProfileItemC"></a>
+                    <a name="//apple_ref/swift/Class/SBAStudyParticipantProfileItem" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp30SBAStudyParticipantProfileItemC">SBAStudyParticipantProfileItem</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>SBAStudyParticipantProfileItem allows storing and retrieving profile item values to/from the SBBStudyParticipant object.
+For this type of profile item, the sourceKey (which defaults to the profileKey if not specifically set) is
+interpreted as the key path into the SBBStudyParticipant.</p>
+
+                        <a href="Classes/SBAStudyParticipantProfileItem.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">SBAStudyParticipantProfileItem</span> <span class="p">:</span> <span class="kt">SBAProfileItemInternal</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:9BridgeApp40SBAStudyParticipantClientDataProfileItemC"></a>
+                    <a name="//apple_ref/swift/Class/SBAStudyParticipantClientDataProfileItem" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9BridgeApp40SBAStudyParticipantClientDataProfileItemC">SBAStudyParticipantClientDataProfileItem</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>SBAStudyParticipantClientDataProfileItem allows storing and retrieving profile item values to/from the
+SBBStudyParticipant object&rsquo;s clientData field. For this type of profile item, the sourceKey (which defaults
+to the profileKey if not specifically set) is interpreted as the key into SBBStudyParticipant.clientData.
+If a fallbackKeyPath is set, and the item currently does not have a value specified in the clientData,
+the value will be retrieved from the SBBStudyParticipant object at the specified key path. New values
+are always set in the clientData and do not affect the value at the fallbackKeyPath.</p>
+
+                        <a href="Classes/SBAStudyParticipantClientDataProfileItem.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">SBAStudyParticipantClientDataProfileItem</span> <span class="p">:</span> <span class="kt">SBAProfileItemInternal</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
             <div class="task-group">
               <ul>
                 <li class="item">
