@@ -66,7 +66,7 @@ struct SBAMedicationLoggingTask : RSDTask, RSDStepNavigator, RSDTrackingTask {
         }
         self.identifier = mainTask.identifier
         self.schemaInfo = mainTask.schemaInfo
-        self.loggingStep = loggingStep
+        self.loggingStep = loggingStep.copy(with: loggingStep.identifier)
         self.loggingStep.shouldIncludeAll = false
     }
     
