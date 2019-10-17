@@ -140,6 +140,8 @@
 		FF9D79D0230C7C30005CFB37 /* BridgeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44A52032467D002825AE /* BridgeApp.framework */; };
 		FF9D79D2230C7DEF005CFB37 /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D79D1230C7DEF005CFB37 /* BridgeSDK_Test.framework */; };
 		FF9D79D4230C7DEF005CFB37 /* Research_UnitTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D79D3230C7DEF005CFB37 /* Research_UnitTest.framework */; };
+		FFA071872357914900EA371F /* SBAMedicationReminderTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA071862357914900EA371F /* SBAMedicationReminderTask.swift */; };
+		FFA07189235801EE00EA371F /* SBAMedicationFollowupTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA07188235801EE00EA371F /* SBAMedicationFollowupTask.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -345,6 +347,8 @@
 		FF9D79D1230C7DEF005CFB37 /* BridgeSDK_Test.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BridgeSDK_Test.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9D79D3230C7DEF005CFB37 /* Research_UnitTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Research_UnitTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9D79D5230C7E8D005CFB37 /* DataTrackingTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DataTrackingTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		FFA071862357914900EA371F /* SBAMedicationReminderTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationReminderTask.swift; sourceTree = "<group>"; };
+		FFA07188235801EE00EA371F /* SBAMedicationFollowupTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationFollowupTask.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -706,6 +710,8 @@
 				FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */,
 				F8A7FA0B22B814760053FF74 /* BoxedTextField.swift */,
 				FF3CC62222D69C8C0037E65B /* SBAMedicationTrackingStep.swift */,
+				FFA071862357914900EA371F /* SBAMedicationReminderTask.swift */,
+				FFA07188235801EE00EA371F /* SBAMedicationFollowupTask.swift */,
 			);
 			path = "Medication Tracking";
 			sourceTree = "<group>";
@@ -1206,7 +1212,9 @@
 				FF9D79A2230C759C005CFB37 /* SBATimeRange.swift in Sources */,
 				FF9D79AF230C75B4005CFB37 /* SBATrackedMedicationReviewStepObject.swift in Sources */,
 				FF9D79A3230C759C005CFB37 /* SBATrackedItemsStepNavigator.swift in Sources */,
+				FFA07189235801EE00EA371F /* SBAMedicationFollowupTask.swift in Sources */,
 				FF9D79A0230C758F005CFB37 /* SBATaskViewModel.swift in Sources */,
+				FFA071872357914900EA371F /* SBAMedicationReminderTask.swift in Sources */,
 				FF9D79BF230C75C9005CFB37 /* SBASymptomLoggingStepObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

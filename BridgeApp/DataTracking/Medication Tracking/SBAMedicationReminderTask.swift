@@ -1,6 +1,6 @@
 //
-//  SBAMedicationTrackingStep.swift
-//  BridgeApp (iOS)
+//  SBAMedicationReminderTask.swift
+//  DataTracking (iOS)
 //
 //  Copyright © 2019 Sage Bionetworks. All rights reserved.
 //
@@ -33,67 +33,44 @@
 
 import Foundation
 
-/// The medication tracking step is a step that can be displayed prior to an active task to query
-/// the user about whether or not they have taken their medications that were scheduled for some
-/// point prior to "now" but have not been marked as taken.
-///
-/// Note: Currently, there is no model for marking a participant's response where they have
-/// explicitly said that they have *not* taken the medication.
-///
-/// This step is run as a subtask for two reasons:
-/// 1. Simplifies the upload of changes by using the same model and identifier as the main task.
-/// 2. At some point the UI/UX might change to include additional steps and/or structure.
-///
-public struct SBAMedicationTrackingStep : RSDSubtaskStep {
-    public let stepType: RSDStepType = .medicationTracking
-    public let task: RSDTask
-    
-    /// A logging subtask step is built from the main medication tracking task and is used to
-    /// *only* show the medications that are currently *not* marked as taken at the time when the
-    /// step is displayed.
-    public init(mainTask: RSDTask) throws {
-        self.task = try SBAMedicationLoggingTask(mainTask: mainTask)
-    }
-}
-
-struct SBAMedicationLoggingTask : RSDTask, RSDStepNavigator, RSDTrackingTask {
+public struct SBAMedicationReminderTask : RSDTask {
     
     init(mainTask: RSDTask) throws {
         guard let navigator = mainTask.stepNavigator as? SBAMedicationTrackingStepNavigator,
-            let loggingStep = navigator.loggingStep as? SBAMedicationLoggingStepObject
+            let reminderStep = navigator.reminderStep
             else {
                 throw RSDValidationError.invalidType("The navigator for the main task is not of the expected type.")
         }
         self.identifier = mainTask.identifier
         self.schemaInfo = mainTask.schemaInfo
-        let copy = loggingStep.copy(with: RSDIdentifier.trackedItemsResult.stringValue)
-        copy.shouldIncludeAll = false
-        self.loggingStep = copy
+        self.reminderStep = reminderStep.copy(with: reminderStep.identifier)
         self.medicationTracker = navigator
     }
     
-    /// The logging step used by this task.
-    public let loggingStep: SBAMedicationLoggingStepObject
+    /// The reminder step used by this task.
+    public let reminderStep: SBATrackedItemRemindersStepObject
     let medicationTracker: SBAMedicationTrackingStepNavigator
+    
+    // MARK: `RSDTask`
     
     public let identifier: String
     public let schemaInfo: RSDSchemaInfo?
 }
 
-extension SBAMedicationLoggingTask : SBAMedicationFollowupTask {
+extension SBAMedicationReminderTask : SBAMedicationFollowupTask {
 
     /// The tracking step is the reminder step.
     var trackingStep: RSDStep {
-        return loggingStep
+        return reminderStep
     }
     
     /// Only one step.
     public func hasStep(after step: RSDStep?, with result: RSDTaskResult) -> Bool {
-        return step == nil && loggingStep.medicationTimings().count > 0
+        return step == nil
     }
     
     /// Hook up the result.
     func setupFollowupTask() {
-        self.loggingStep.result = medicationTracker.medicationResult?.copy(with: self.loggingStep.identifier)
+        // TODO: syoung 10/16/2019 Hook up the reminder result.
     }
 }
