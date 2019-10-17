@@ -69,7 +69,7 @@ struct SBAMedicationLoggingTask : RSDTask, RSDStepNavigator, RSDTrackingTask {
         self.medicationTracker = navigator
         
         // The logging step is a class so make a copy of it.
-        let copy = loggingStep.copy(with: RSDIdentifier.trackedItemsResult.stringValue)
+        let copy = loggingStep.copy(with: loggingStep.identifier)
         copy.shouldIncludeAll = false
         self.loggingStep = copy
     }
