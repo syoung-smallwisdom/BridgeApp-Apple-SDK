@@ -59,6 +59,9 @@ open class SBATrackedItemRemindersStepObject: RSDFormUIStepObject, RSDStepViewCo
         return (self.inputFields.first as? RSDInputFieldObject)?.inputPrompt
     }
     
+    /// The result for the reminders.
+    var result: SBATrackedItemsResult?
+    
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let modalTitle = try container.decodeIfPresent(String.self, forKey: .modalTitle)
@@ -145,19 +148,38 @@ open class SBATrackedItemReminderDataSource : RSDFormStepDataSourceObject {
     
     /// - returns : The description of the selected reminders.
     open func reminderDescription() -> String? {
-        guard let answerResult = self.collectionResult().inputResults.last as? RSDAnswerResultObject else {
-            return self.reminderStep?.noReminderSetText
+        guard let reminderValues = self.currentAnswers(),
+            reminderValues.count > 0
+            else {
+                return self.reminderStep?.noReminderSetText
         }
-        if let reminderValues = answerResult.value as? [Any],
-            reminderValues.count > 0 {
-            let reminderValuesStr = Localization.localizedAndJoin(reminderValues.map({ "\($0)" }))
-            if let descriptionFormat = self.reminderStep?.descriptionFormat {
-                return String(format: descriptionFormat, reminderValuesStr)
-            } else {
-                return reminderValuesStr
+        let reminderValuesStr = Localization.localizedAndJoin(reminderValues.map({ "\($0)" }))
+        if let descriptionFormat = self.reminderStep?.descriptionFormat {
+            return String(format: descriptionFormat, reminderValuesStr)
+        }
+        else {
+            return reminderValuesStr
+        }
+    }
+    
+    func currentAnswers() -> [Int]? {
+        if let answerResult = self.collectionResult().inputResults.last as? RSDAnswerResultObject {
+            if let array = answerResult.value as? [Int] {
+                return array
+            }
+            else if let answer = answerResult.value as? Int {
+                return [answer]
+            }
+            else {
+                return nil
             }
         }
-        return self.reminderStep?.noReminderSetText
+        else if let trackingResult = self.reminderStep?.result as? SBAMedicationTrackingResult {
+            return trackingResult.reminders
+        }
+        else {
+            return nil
+        }
     }
     
     func modalTaskViewController() -> RSDTaskViewController? {
