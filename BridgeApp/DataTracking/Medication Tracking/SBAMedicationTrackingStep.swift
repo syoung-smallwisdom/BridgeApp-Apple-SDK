@@ -66,18 +66,23 @@ struct SBAMedicationLoggingTask : RSDTask, RSDStepNavigator, RSDTrackingTask {
         }
         self.identifier = mainTask.identifier
         self.schemaInfo = mainTask.schemaInfo
+        self.medicationTracker = navigator
+        
+        // The logging step is a class so make a copy of it.
         let copy = loggingStep.copy(with: RSDIdentifier.trackedItemsResult.stringValue)
         copy.shouldIncludeAll = false
         self.loggingStep = copy
-        self.medicationTracker = navigator
     }
     
-    /// The logging step used by this task.
-    public let loggingStep: SBAMedicationLoggingStepObject
-    let medicationTracker: SBAMedicationTrackingStepNavigator
+    // MARK: `RSDTask`
     
     public let identifier: String
     public let schemaInfo: RSDSchemaInfo?
+    
+    // MARK: `SBAMedicationFollowupTask`
+    
+    let loggingStep: SBAMedicationLoggingStepObject
+    let medicationTracker: SBAMedicationTrackingStepNavigator
 }
 
 extension SBAMedicationLoggingTask : SBAMedicationFollowupTask {

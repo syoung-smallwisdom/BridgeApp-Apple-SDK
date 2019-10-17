@@ -605,8 +605,16 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     }
     
     mutating func updateReminders(from result: RSDResult) {
-        let aResult = (result as? RSDCollectionResult)?.inputResults.first ?? result
-        self.reminders = (aResult as? RSDAnswerResult)?.value as? [Int] ?? []
+        let aResult = ((result as? RSDCollectionResult)?.inputResults.first ?? result) as? RSDAnswerResult
+        if let array = aResult?.value as? [Int] {
+            self.reminders = array
+        }
+        else if let value = aResult?.value as? Int {
+            self.reminders = [value]
+        }
+        else {
+            self.reminders = []
+        }
     }
     
     public func dataScore() throws -> RSDJSONSerializable? {

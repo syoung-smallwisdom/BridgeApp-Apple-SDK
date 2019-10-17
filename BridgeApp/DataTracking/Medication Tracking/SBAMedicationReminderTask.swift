@@ -33,9 +33,11 @@
 
 import Foundation
 
+/// The medication reminder task is used to display this from the profile to allow the participant
+/// to edit their medication reminders.
 public struct SBAMedicationReminderTask : RSDTask {
     
-    init(mainTask: RSDTask) throws {
+    public init(mainTask: RSDTask) throws {
         guard let navigator = mainTask.stepNavigator as? SBAMedicationTrackingStepNavigator,
             let reminderStep = navigator.reminderStep
             else {
@@ -43,12 +45,12 @@ public struct SBAMedicationReminderTask : RSDTask {
         }
         self.identifier = mainTask.identifier
         self.schemaInfo = mainTask.schemaInfo
-        self.reminderStep = reminderStep.copy(with: reminderStep.identifier)
         self.medicationTracker = navigator
+        self.reminderStep = reminderStep.copy(with: reminderStep.identifier)
     }
     
     /// The reminder step used by this task.
-    public let reminderStep: SBATrackedItemRemindersStepObject
+    let reminderStep: SBATrackedItemRemindersStepObject
     let medicationTracker: SBAMedicationTrackingStepNavigator
     
     // MARK: `RSDTask`
@@ -71,6 +73,6 @@ extension SBAMedicationReminderTask : SBAMedicationFollowupTask {
     
     /// Hook up the result.
     func setupFollowupTask() {
-        // TODO: syoung 10/16/2019 Hook up the reminder result.
+        self.reminderStep.result = medicationTracker.medicationResult?.copy(with: self.reminderStep.identifier)
     }
 }
