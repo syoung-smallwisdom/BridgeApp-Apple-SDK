@@ -139,19 +139,8 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     }
 
     public static let userDefaults = BridgeSDK.sharedUserDefaults()
-
-    private var items: [SBAProfileItem] = []
-    lazy private var itemsKeys: [String] = {
-        return self.items.map({ $0.profileKey })
-    }()
     
-    lazy private var itemsMap: [String: SBAProfileItem] = {
-        var allItems: [String: SBAProfileItem] = [:]
-        for item in self.items {
-            allItems[item.profileKey] = item
-        }
-        return allItems
-    }()
+    private var itemsMap: [String: SBAProfileItem] = [:]
     
     /// Is the account signed in?
     private var isAuthenticated: Bool = false
@@ -165,49 +154,15 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     /// It is formatted as a key/value mapping to allow for decoding the data groups for a given
     /// survey from the AppConfig JSON used to build the profile manager.
     private var dataGroupMapping: [String : Set<String>]?
-   
-    // MARK: Internal methods
-    // TODO: emm 2019-05-03 Deal with this (or remove? is it obsolete?) for mPower 2.1
-//    func uploadDemographicData(_ schemas: Set<String>) {
-//        let demographicItems = self.items.filter({ return $0.demographicSchema != nil && schemas.contains($0.demographicSchema!) })
-//        guard demographicItems.count > 0 else { return }
-//
-//        for schemaIdentifier in schemas {
-//            let itemsForSchema = demographicItems.filter({ $0.demographicSchema! == schemaIdentifier })
-//            let archiveFilename = schemaIdentifier
-//            let archive = SBBDataArchive(reference: schemaIdentifier, jsonValidationMapping: nil)
-//
-//            if let schemaRevision = SBABridgeConfiguration.shared.schemaInfo(for: schemaIdentifier)?.schemaVersion {
-//                archive.setArchiveInfoObject(schemaRevision, forKey: "schemaRevision")
-//            }
-//
-//            let demographics = self.demographics(with: itemsForSchema)
-//            archive.insertDictionary(intoArchive: demographics, filename: archiveFilename, createdOn: Date())
-//            do {
-//                try archive.complete()
-//                archive.encryptAndUploadArchive()
-//            }
-//            catch {}
-//        }
-//    }
-//
-//    // overrideable for testing
-//    func demographics(with demographicItems: [SBAProfileItem]) -> [String: Any] {
-//        var demographics: [String: Any] = [:]
-//        for item in demographicItems {
-//            demographics[item.demographicKey] = item.demographicJsonValue ?? NSNull()
-//        }
-//        return demographics
-//    }
     
     // MARK: SBAScheduleManager
     
     /// Set up to manage reports for all our report-based profile items.
     override open func reportQueries() -> [SBAReportManager.ReportQuery] {
-        let reportIdentifiers: [RSDIdentifier] = self.items.compactMap {
-            guard $0.type == .report else { return nil }
-            return RSDIdentifier(rawValue: $0.sourceKey)
-        }
+        let reportIdentifiers: Set<RSDIdentifier> = Set(self.itemsMap.compactMap {
+            guard $0.value.type == .report else { return nil }
+            return RSDIdentifier(rawValue: $0.value.sourceKey)
+        })
         
         let queries = Array(Set(reportIdentifiers.map({
             return ReportQuery(reportKey: $0, queryType: .mostRecent, dateRange: nil)
@@ -228,7 +183,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
     
     /// - returns: A list of all the profile keys known to the profile manager.
     public func profileKeys() -> [String] {
-        return itemsKeys
+        return itemsMap.map { $0.key }
     }
     
     /// - returns: A map of all the profile items by profileKey.
@@ -303,7 +258,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
         self.identifier = try container.decodeIfPresent(String.self, forKey: .identifier) ?? SBAProfileManagerObject.defaultIdentifier
         self.dataGroupMapping = try container.decodeIfPresent([String: Set<String>].self, forKey: .dataGroupMapping)
         if container.contains(.items) {
-            var items: [SBAProfileItem] = self.items
+            var itemsMap = [String: SBAProfileItem]()
             var schemas: [RSDIdentifier] = []
             var nestedContainer = try container.nestedUnkeyedContainer(forKey: .items)
             while !nestedContainer.isAtEnd {
@@ -311,13 +266,21 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
                 let itemTypeName = try typeName(from: itemDecoder)
                 let itemType = SBAProfileItemType(rawValue: itemTypeName)
                 if let item = try decodeItem(from: itemDecoder, with: itemType) {
-                    items.append(item)
-                    if let schema = item.demographicSchema {
-                        schemas.append(RSDIdentifier(rawValue: schema))
+                    if itemsMap[item.profileKey] != nil {
+                        // Throw an assertion but do *not* throw an error so that decoding can
+                        // continue but developer knows something is wrong with a change made
+                        // to the config element. syoung 10/17/2019
+                        assertionFailure("Attempting to add two profile items with the same profile key. \(item.profileKey)")
+                    }
+                    else {
+                        itemsMap[item.profileKey] = item
+                        if let schema = item.demographicSchema {
+                            schemas.append(RSDIdentifier(rawValue: schema))
+                        }
                     }
                 }
             }
-            self.items = items
+            self.itemsMap = itemsMap
             self.loadReports()
             
             guard schemas.count > 0 else { return }
@@ -348,18 +311,7 @@ open class SBAProfileManagerObject: SBAScheduleManager, SBAProfileManager, Decod
             return try SBAStudyParticipantProfileItem(from: decoder)
         case .participantClientData:
             return try SBAStudyParticipantClientDataProfileItem(from: decoder)
-/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
-        case .userDefaults:
-            return try SBAUserDefaultsProfileItem(from: decoder)
-        case .keychain:
-            return try SBAKeychainProfileItem(from: decoder)
-        case .clientData:
-            return try SBAClientDataProfileItem(from: decoder)
-        case .fullName:
-            return try SBAFullNameProfileItem(from: decoder)
-        case .birthDate:
-            return try SBABirthDateProfileItem(from: decoder)
- */
+
         default:
             print("WARNING! Attempt to decode profile item of unknown type '\(type.rawValue)'")
             return nil
