@@ -380,7 +380,7 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileManager.swift",
-      "line": 281,
+      "line": 236,
       "symbol": "SBAProfileManagerObject.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
