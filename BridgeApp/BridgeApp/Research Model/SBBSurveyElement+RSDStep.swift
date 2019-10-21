@@ -192,7 +192,7 @@ extension SBBDataType {
             
         case .boolean:
             return .base(.boolean)
-        case .date, .dateTime, .time:
+        case .date, .dateTime, .time, .yearMonth:
             return .base(.date)
         case .decimal:
             return .base(.decimal)
@@ -212,6 +212,9 @@ extension SBBDataType {
             
         case .postalCode:
             return .postalCode
+            
+        case .year:
+            return .base(.year)
             
         default:
             return RSDFormDataType(rawValue: self.rawValue) ?? .custom(self.rawValue, .string)
@@ -431,6 +434,7 @@ extension String {
 
 protocol sbb_DateRange : RSDDateRange {
     var allowFuture: NSNumber? { get }
+    var allowPast: NSNumber? { get }
     var earliestValue: Date? { get }
     var latestValue: Date? { get }
 }
@@ -494,7 +498,7 @@ extension sbb_DateRange {
     }
     
     public var shouldAllowPast: Bool? {
-        return nil
+        return self.allowPast?.boolValue
     }
     
     public var minuteInterval: Int? {
@@ -540,5 +544,27 @@ extension SBBTimeConstraints : RSDDatePickerDataSource {
     
     public var dateFormatter: DateFormatter {
         return RSDDateCoderObject.timeOfDay.inputFormatter
+    }
+}
+
+extension SBBYearConstraints : sbb_DateRange {
+    
+    public var defaultDate: Date? {
+        return nil
+    }
+    
+    public var dateCoder: RSDDateCoder? {
+        return RSDDateCoderObject(rawValue: "yyyy")
+    }
+}
+
+extension SBBYearMonthConstraints : sbb_DateRange {
+    
+    public var defaultDate: Date? {
+        return nil
+    }
+    
+    public var dateCoder: RSDDateCoder? {
+        return RSDDateCoderObject(rawValue: "yyyy-MM")
     }
 }
