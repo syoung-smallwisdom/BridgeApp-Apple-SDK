@@ -509,6 +509,42 @@ class StepProtocolTests: XCTestCase {
             XCTFail("Range not expected type: \(String(describing: inputField.range))")
         }
     }
+    
+    func testStep_DateConstraints_AllowFuture_False() {
+        let constraints = SBBDateConstraints()
+        constraints.allowFuture = NSNumber(value: false)
+        
+        let inputStep = createQuestion(.datePicker, constraints)
+        let inputField = inputStep
+        
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertFalse(dateRange.shouldAllowFuture ?? true)
+            XCTAssertNil(dateRange.shouldAllowPast)
+            XCTAssertNil(dateRange.minDate)
+            XCTAssertNil(dateRange.maxDate)
+            XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .dateOnly)
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+    }
+    
+    func testStep_DateConstraints_AllowPast_True() {
+        let constraints = SBBDateConstraints()
+        constraints.allowPast = NSNumber(value: true)
+        
+        let inputStep = createQuestion(.datePicker, constraints)
+        let inputField = inputStep
+        
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertNil(dateRange.shouldAllowFuture)
+            XCTAssertTrue(dateRange.shouldAllowPast ?? false)
+            XCTAssertNil(dateRange.minDate)
+            XCTAssertNil(dateRange.maxDate)
+            XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .dateOnly)
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+    }
 
     
     // MARK: TimeConstraints
@@ -618,7 +654,7 @@ class StepProtocolTests: XCTestCase {
         
         let constraints = SBBHeightConstraints()
         constraints.unit = "in"
-        constraints.isInfantValue = true
+        constraints.forInfantValue = true
         
         let inputStep = createQuestion(.height, constraints)
         
@@ -659,7 +695,7 @@ class StepProtocolTests: XCTestCase {
         
         let constraints = SBBWeightConstraints()
         constraints.unit = "lb"
-        constraints.isInfantValue = true
+        constraints.forInfantValue = true
         
         let inputStep = createQuestion(.weight, constraints)
         
@@ -695,7 +731,7 @@ class StepProtocolTests: XCTestCase {
     
     // MARK: SBBBloodPressureConstraints
     
-    func testStep_BloodPressureConstraints_Infant() {
+    func testStep_BloodPressureConstraints_Adult() {
         
         let constraints = SBBBloodPressureConstraints()
         let inputStep = createQuestion(.bloodPressure, constraints)
@@ -712,6 +748,216 @@ class StepProtocolTests: XCTestCase {
         XCTAssertTrue(inputField.isOptional)
         XCTAssertEqual(inputField.dataType, .measurement(.bloodPressure, .adult))
         XCTAssertNil(inputField.inputUIHint)
+    }
+    
+    // MARK: SBBPostalCodeConstraints
+    
+    func testStep_PostalCodeConstraints() {
+        
+        let constraints = SBBPostalCodeConstraints()
+        let inputStep = createQuestion(.postalCode, constraints)
+        
+        let surveyStep = inputStep
+        XCTAssertEqual(surveyStep.identifier, "abc123")
+        XCTAssertNil(surveyStep.title)
+        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        
+        let inputField = inputStep
+        XCTAssertNil(inputField.inputPrompt)
+        XCTAssertNil(inputField.placeholder)
+        XCTAssertTrue(inputField.isOptional)
+        XCTAssertEqual(inputField.dataType, .postalCode)
+        XCTAssertNil(inputField.inputUIHint)
+        
+        // TODO: syoung 10/21/2019 Revisit this unit test once Postal code design
+        // is better flushed out.
+    }
+    
+    // MARK: SBBYearConstraints
+    
+    func testStep_YearConstraints_NoRules() {
+        
+        let constraints = SBBYearConstraints()
+        
+        let inputStep = createQuestion(.textfield, constraints)
+        
+        let surveyStep = inputStep
+        XCTAssertEqual(surveyStep.identifier, "abc123")
+        XCTAssertNil(surveyStep.title)
+        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        
+        let inputField = inputStep
+        XCTAssertNil(inputField.inputPrompt)
+        XCTAssertNil(inputField.placeholder)
+        XCTAssertTrue(inputField.isOptional)
+        XCTAssertEqual(inputField.dataType, .base(.year))
+        XCTAssertEqual(inputField.inputUIHint, .textfield)
+
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertNil(dateRange.shouldAllowFuture)
+            XCTAssertNil(dateRange.shouldAllowPast)
+            XCTAssertNil(dateRange.minDate)
+            XCTAssertNil(dateRange.maxDate)
+            if let dateCoder = dateRange.dateCoder {
+                XCTAssertEqual(dateCoder.inputFormatter.dateFormat, "yyyy")
+                XCTAssertEqual(dateCoder.resultFormatter.dateFormat, "yyyy-MM-dd")
+            }
+            else {
+                XCTFail("Expecting non-nil date coder")
+            }
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+    }
+    
+    func testStep_YearConstraints_MinMaxDate() {
+        
+        let constraints = SBBYearConstraints()
+        let minDate = Date().addingTimeInterval(-5 * 24 * 3600)
+        let maxDate = Date().addingTimeInterval(5 * 24 * 3600)
+        constraints.earliestValue = minDate
+        constraints.latestValue = maxDate
+        
+        let inputStep = createQuestion(.datePicker, constraints)
+        let inputField = inputStep
+        
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertNil(dateRange.shouldAllowFuture)
+            XCTAssertNil(dateRange.shouldAllowPast)
+            XCTAssertEqual(dateRange.minDate, minDate)
+            XCTAssertEqual(dateRange.maxDate, maxDate)
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+    }
+    
+    func testStep_YearConstraints_AllowFuture_False() {
+        let constraints = SBBYearConstraints()
+        constraints.allowFuture = NSNumber(value: false)
+        
+        let inputStep = createQuestion(.datePicker, constraints)
+        let inputField = inputStep
+        
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertFalse(dateRange.shouldAllowFuture ?? true)
+            XCTAssertNil(dateRange.shouldAllowPast)
+            XCTAssertNil(dateRange.minDate)
+            XCTAssertNil(dateRange.maxDate)
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+    }
+    
+    func testStep_YearConstraints_AllowPast_True() {
+        let constraints = SBBYearConstraints()
+        constraints.allowPast = NSNumber(value: true)
+        
+        let inputStep = createQuestion(.datePicker, constraints)
+        let inputField = inputStep
+        
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertNil(dateRange.shouldAllowFuture)
+            XCTAssertTrue(dateRange.shouldAllowPast ?? false)
+            XCTAssertNil(dateRange.minDate)
+            XCTAssertNil(dateRange.maxDate)
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+    }
+    
+    // MARK: SBBYearMonthContraints
+    
+    func testStep_YearMonthConstraints_NoRules() {
+        
+        let constraints = SBBYearMonthConstraints()
+        
+        let inputStep = createQuestion(.textfield, constraints)
+        
+        let surveyStep = inputStep
+        XCTAssertEqual(surveyStep.identifier, "abc123")
+        XCTAssertNil(surveyStep.title)
+        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        
+        let inputField = inputStep
+        XCTAssertNil(inputField.inputPrompt)
+        XCTAssertNil(inputField.placeholder)
+        XCTAssertTrue(inputField.isOptional)
+        XCTAssertEqual(inputField.dataType, .base(.date))
+        XCTAssertEqual(inputField.inputUIHint, .textfield)
+
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertNil(dateRange.shouldAllowFuture)
+            XCTAssertNil(dateRange.shouldAllowPast)
+            XCTAssertNil(dateRange.minDate)
+            XCTAssertNil(dateRange.maxDate)
+            if let dateCoder = dateRange.dateCoder {
+                XCTAssertEqual(dateCoder.inputFormatter.dateFormat, "yyyy-MM")
+                XCTAssertEqual(dateCoder.resultFormatter.dateFormat, "yyyy-MM-dd")
+            }
+            else {
+                XCTFail("Expecting non-nil date coder")
+            }
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+    }
+    
+    func testStep_YearMonthConstraints_MinMaxDate() {
+        
+        let constraints = SBBYearMonthConstraints()
+        let minDate = Date().addingTimeInterval(-5 * 24 * 3600)
+        let maxDate = Date().addingTimeInterval(5 * 24 * 3600)
+        constraints.earliestValue = minDate
+        constraints.latestValue = maxDate
+        
+        let inputStep = createQuestion(.datePicker, constraints)
+        let inputField = inputStep
+        
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertNil(dateRange.shouldAllowFuture)
+            XCTAssertNil(dateRange.shouldAllowPast)
+            XCTAssertEqual(dateRange.minDate, minDate)
+            XCTAssertEqual(dateRange.maxDate, maxDate)
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+    }
+    
+    func testStep_YearMonthConstraints_AllowFuture_False() {
+        let constraints = SBBYearMonthConstraints()
+        constraints.allowFuture = NSNumber(value: false)
+        
+        let inputStep = createQuestion(.datePicker, constraints)
+        let inputField = inputStep
+        
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertFalse(dateRange.shouldAllowFuture ?? true)
+            XCTAssertNil(dateRange.shouldAllowPast)
+            XCTAssertNil(dateRange.minDate)
+            XCTAssertNil(dateRange.maxDate)
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+    }
+    
+    func testStep_YearMonthConstraints_AllowPast_True() {
+        let constraints = SBBYearMonthConstraints()
+        constraints.allowPast = NSNumber(value: true)
+        
+        let inputStep = createQuestion(.datePicker, constraints)
+        let inputField = inputStep
+        
+        if let dateRange = inputField.range as? RSDDateRange {
+            XCTAssertNil(dateRange.shouldAllowFuture)
+            XCTAssertTrue(dateRange.shouldAllowPast ?? false)
+            XCTAssertNil(dateRange.minDate)
+            XCTAssertNil(dateRange.maxDate)
+        } else {
+            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
     }
     
     // MARK: Helper methods
