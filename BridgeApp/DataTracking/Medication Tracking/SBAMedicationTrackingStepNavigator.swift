@@ -425,7 +425,7 @@ extension SBAMedicationAnswer : SBAMedication {
 public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionResult, RSDNavigationResult {
 
     private enum CodingKeys : String, CodingKey {
-        case identifier, type, startDate, endDate, medications = "items", reminders, revision
+        case identifier, type, startDate, endDate, medications = "items", reminders, revision, timeZone
     }
     
     /// The identifier associated with the task, step, or asynchronous action.
@@ -477,13 +477,25 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.identifier = try container.decode(String.self, forKey: .identifier)
         self.type = .medication
-        self.startDate = try container.decode(Date.self, forKey: .startDate)
-        self.endDate = try container.decode(Date.self, forKey: .endDate)
         
-        let timeZoneDate = try container.decode(String.self, forKey: .startDate)
-        self.timeZone = TimeZone(iso8601: timeZoneDate) ?? TimeZone.current
+        // For medications, the encoded results do not include these values by default
+        // because they are ignored in favor of the timestamps.
+        let identifier = try container.decodeIfPresent(String.self, forKey: .identifier)
+        self.identifier = identifier ?? RSDIdentifier.logging.stringValue
+        let startDate = try container.decodeIfPresent(Date.self, forKey: .startDate)
+        let date = startDate ?? Date()
+        self.startDate = date
+        let endDate = try container.decodeIfPresent(Date.self, forKey: .endDate)
+        self.endDate = endDate ?? date
+        
+        if let timeZoneDate = try container.decodeIfPresent(String.self, forKey: .startDate),
+            let timeZone = TimeZone(iso8601: timeZoneDate) {
+            self.timeZone = timeZone
+        }
+        else {
+            self.timeZone = TimeZone.current
+        }
         
         let medicationData = try MedicationData(from: decoder)
         self.reminders = medicationData.reminders
@@ -620,7 +632,8 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
     public func dataScore() throws -> RSDJSONSerializable? {
         let dictionary = try self.rsd_jsonEncodedDictionary()
         return
-            [CodingKeys.revision.stringValue : dictionary[CodingKeys.revision.stringValue],
+            [CodingKeys.startDate.stringValue : SBAFactory.shared.encodeString(from: self.startDate, codingPath: []),
+             CodingKeys.revision.stringValue : dictionary[CodingKeys.revision.stringValue],
              CodingKeys.medications.stringValue : dictionary[CodingKeys.medications.stringValue],
              CodingKeys.reminders.stringValue : dictionary[CodingKeys.reminders.stringValue]].jsonObject()
     }
