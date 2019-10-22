@@ -604,49 +604,49 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBBSurveyElement+RSDStep.swift",
-      "line": 223,
+      "line": 226,
       "symbol": "SBBUIHintType.hint",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBBSurveyElement+RSDStep.swift",
-      "line": 360,
+      "line": 363,
       "symbol": "SBBHeightConstraints.maxValue",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBBSurveyElement+RSDStep.swift",
-      "line": 361,
+      "line": 364,
       "symbol": "SBBHeightConstraints.minValue",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBBSurveyElement+RSDStep.swift",
-      "line": 362,
+      "line": 365,
       "symbol": "SBBHeightConstraints.step",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBBSurveyElement+RSDStep.swift",
-      "line": 366,
+      "line": 369,
       "symbol": "SBBWeightConstraints.maxValue",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBBSurveyElement+RSDStep.swift",
-      "line": 367,
+      "line": 370,
       "symbol": "SBBWeightConstraints.minValue",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Research Model/SBBSurveyElement+RSDStep.swift",
-      "line": 368,
+      "line": 371,
       "symbol": "SBBWeightConstraints.step",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
