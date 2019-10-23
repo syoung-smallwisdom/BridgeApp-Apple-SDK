@@ -148,7 +148,7 @@ extension SBAProfileItem {
             return json.toClientData()
         }
         catch let err {
-            assertionFailure("WARNING! Failed to encode \(self.demographicKey) from \(String(describing: val)): \(err)")
+            print("WARNING! Failed to encode \(self.demographicKey) from \(String(describing: val)): \(err)")
             return NSNull()
         }
     }
@@ -167,7 +167,7 @@ extension SBAProfileItem {
                 return "\(jsonVal)"
             }
             else {
-                assertionFailure("WARNING! Failed to decode \(self.demographicKey) from \(jsonVal): \(err)")
+                print("WARNING! Failed to decode \(self.demographicKey) from \(jsonVal): \(err)")
                 return nil
             }
         }
