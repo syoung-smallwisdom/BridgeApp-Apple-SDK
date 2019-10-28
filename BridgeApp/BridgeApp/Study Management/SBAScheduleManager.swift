@@ -315,7 +315,7 @@ open class SBAScheduleManager: SBAReportManager {
         else {
             scheduledTime = DateFormatter.localizedString(from: schedule.scheduledOn, dateStyle: .medium, timeStyle: .none)
         }
-        return Localization.localizedStringWithFormatKey("ACTIVITY_SCHEDULE_MESSAGE_%@", scheduledTime)
+        return String.localizedStringWithFormat(Localization.localizedString("ACTIVITY_SCHEDULE_MESSAGE_%@"), scheduledTime)
     }
     
     /// Get the scheduled activity that is associated with this schedule identifier and task result.
