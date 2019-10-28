@@ -189,10 +189,10 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
             switch editType {
             case .editDays:
                 vc.setSelected(identifier: cell.dosageItem.uuid.uuidString, daysOfWeek: cell.dosageItem.dosage.daysOfWeek)
-                vc.titleText = Localization.localizedStringWithFormatKey("MEDICATION_DAY_PICKER_TEXT", self.medication.title ?? self.medication.identifier)
+                vc.titleText = String.localizedStringWithFormat(Localization.localizedString("MEDICATION_DAY_PICKER_TEXT"), self.medication.title ?? self.medication.identifier)
             case .editTimes:
                 vc.setSelected(identifier: cell.dosageItem.uuid.uuidString, times: cell.dosageItem.dosage.timestamps)
-                vc.titleText = Localization.localizedStringWithFormatKey("MEDICATION_TIME_PICKER_TEXT", self.medication.title ?? self.medication.identifier)
+                vc.titleText = String.localizedStringWithFormat(Localization.localizedString("MEDICATION_TIME_PICKER_TEXT"), self.medication.title ?? self.medication.identifier)
             default:
                 assertionFailure("\(reuseId) not supported.")
             }
@@ -203,7 +203,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
             vc.designSystem = self.designSystem
             vc.item = self.medication
             vc.buttonTitle = Localization.localizedString("MEDICATION_REMOVE_BUTTON_TEXT")
-            vc.text = Localization.localizedStringWithFormatKey("MEDICATION_REMOVE_TITLE_%@", medication.title!)
+            vc.text = String.localizedStringWithFormat(Localization.localizedString("MEDICATION_REMOVE_TITLE_%@"), medication.title!)
             vc.detailText = Localization.localizedString("MEDICATION_REMOVE_TEXT")
         }
     }
@@ -607,7 +607,7 @@ class DosageSummaryCell : DosageCell {
                 let days = dosageItem.dosage.daysText(),
                 let times = dosageItem.dosage.timesText() {
                 widthConstraint?.isActive = false
-                detailLabel?.text = Localization.localizedStringWithFormatKey("MEDICATION_SCHEDULE_SUMMARY", times, days)
+                detailLabel?.text = String.localizedStringWithFormat(Localization.localizedString("MEDICATION_SCHEDULE_SUMMARY"), times, days)
             }
             else {
                 detailLabel?.text = Localization.localizedString("MEDICATION_TAKE_ANYTIME")
