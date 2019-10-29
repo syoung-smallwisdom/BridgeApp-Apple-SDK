@@ -292,7 +292,7 @@ public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResour
 /// A profile table item that displays, and allows editing, the value of a Profile Item.
 public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
-        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey, _profileManagerIdentifier = "profileManager", _editTaskIdentifier = "editTaskIdentifier"
+        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey, _profileManagerIdentifier = "profileManager", _editTaskIdentifier = "editTaskIdentifier", choices
     }
     
     // MARK: SBAProfileTableItem
@@ -301,28 +301,36 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     
     /// Detail text to show for the table item.
     public var detail: String? {
-        guard let type = self.profileItem?.itemType else { return nil }
-        let sequenceType = type.defaultAnswerResultType().sequenceType
-        let baseType = type.baseType
-        if sequenceType == .array &&
-            baseType == .string {
-            guard let value = self.profileItem?.value as? [String], value.count > 0 else {
-                return ""
+        guard let _ = self.profileItem?.itemType else { return nil }
+        guard let profileValue = self.profileItemValue else { return "" }
+        
+        if let choices = self.choices {
+            if let items = profileValue as? [String] {
+                let answers = items.compactMap { value in
+                    return choices.first(where: { ($0.matchingAnswer as? String) == value })?.text
+                }
+                return answers.joined(separator: ", ")
             }
-            
-            return value.joined(separator: ", ")
+            else if let value = profileValue as? String,
+                let choice = choices.first(where: { ($0.matchingAnswer as? String) == value }) {
+                return choice.text ?? value
+            }
         }
         
-        switch baseType {
-        case .boolean:
-            // Bool table items show detail as On/Off, or blank if never set
-            guard let isOn = self.profileItemValue as? Bool else { return "" }
+        if let answers = profileValue as? [Any] {
+            return answers.map({ "\($0)" }).joined(separator: ", ")
+        }
+        else if let isOn = profileValue as? Bool {
             return isOn ? Localization.localizedString("SETTINGS_STATE_ON") : Localization.localizedString("SETTINGS_STATE_OFF")
-        default:
-            guard let value = self.profileItem?.value else { return "" }
-            return String(describing: value)
+        }
+        else {
+            return String(describing: profileValue)
         }
     }
+    
+    // TODO: syoung 10/28/2019 Refactor to allow for choices that map to other value types.
+    /// A mapping of a the choices to the values.
+    public let choices: [RSDChoiceObject<String>]?
     
     /// Current profile item value to apply to, and set from, an edit control.
     public var profileItemValue: Any? {

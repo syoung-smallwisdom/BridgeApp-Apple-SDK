@@ -117,7 +117,6 @@ open class SBATrackedItemsStepNavigator : Decodable, RSDStepNavigator, RSDTracki
     open func setupTask(with data: RSDTaskData?, for path: RSDTaskPathComponent) {
         self.taskPath = path
         self.previousClientData = data?.json.toClientData()
-        print("previousClientData=\(String(describing: self.previousClientData))")
     }
     
     /// Not used. Always return `false`.

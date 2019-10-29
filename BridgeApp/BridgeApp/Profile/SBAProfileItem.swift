@@ -378,9 +378,11 @@ fileprivate struct SBAParticipantKeyPath : RawRepresentable, Codable {
     
     public static let phoneNumber: SBAParticipantKeyPath = "phoneNumber"
     
+    public static let sharingScope: SBAParticipantKeyPath = "sharingScope"
+    
     /// List of all the allowed keypaths.
     public static func allowedKeypaths() -> [SBAParticipantKeyPath] {
-        return [.email, .externalId, .firstName, .lastName, .phoneNumber]
+        return [.email, .externalId, .firstName, .lastName, .phoneNumber, .sharingScope]
     }
 }
 
@@ -455,6 +457,8 @@ public final class SBAStudyParticipantProfileItem: SBAProfileItemInternal {
         case .firstName:
             itemIsPotentiallyWritable = true
         case .lastName:
+            itemIsPotentiallyWritable = true
+        case .sharingScope:
             itemIsPotentiallyWritable = true
         default:
             itemIsPotentiallyWritable = false

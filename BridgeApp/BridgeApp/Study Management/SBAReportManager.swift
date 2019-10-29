@@ -683,10 +683,6 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             // to be non-inclusive for the startDate parameter, so we need to fudge it a bit to make sure we include the report for startDate.
             self.participantManager.getReport(query.reportIdentifier, fromDate: startDate.startOfDay().addingTimeInterval(-1.0).dateOnly(), toDate: endDate.addingNumberOfDays(1).startOfDay().dateOnly()) { [weak self] (obj, error) in
                 
-                if query.reportIdentifier == "Medication" {
-                    print(category)
-                }
-                
                 self?.didFetchReports(for: query, category: category, reports: obj as? [SBBReportData], error: error)
             }
             
