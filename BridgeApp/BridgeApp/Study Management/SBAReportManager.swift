@@ -104,11 +104,18 @@ extension SBAReport : RSDTaskData {
     public var json: RSDJSONSerializable {
         return clientData.toJSONSerializable()
     }
+    
+    public var taskRunUUID: String? {
+        return (self.clientData as? [String: Any])?[SBATaskRunUUIDKey] as? String
+    }
 }
 
 /// The `localDate` used as the reference date for a singleton date object. The user's enrollment date is not
 /// used for this so that the report can be found even if the enrollment date is changed.
 public let SBAReportSingletonDate: Date = Date(timeIntervalSince1970: 0)
+
+/// Key to use in a JSON dictionary for the task run UUID.
+public let SBATaskRunUUIDKey: String = "taskRunUUID"
 
 let kReportDateKey = "reportDate"
 let kReportTimeZoneIdentifierKey = "timeZoneIdentifier"
@@ -575,7 +582,13 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
                     }
                 }
                 else {
-                    let report = newReport(reportIdentifier: reportIdentifier, date: taskResult.endDate, clientData: clientData)
+                    let jsonData: SBBJSONValue = {
+                        guard let newJSON = clientData as? [String: Any] else { return clientData }
+                        var json = newJSON
+                        json[SBATaskRunUUIDKey] = taskResult.taskRunUUID.uuidString
+                        return json as NSDictionary
+                    }()
+                    let report = newReport(reportIdentifier: reportIdentifier, date: taskResult.endDate, clientData: jsonData)
                     newReports.append(report)
                 }
             }
