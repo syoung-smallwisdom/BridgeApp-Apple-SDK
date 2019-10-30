@@ -317,14 +317,14 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileItem.swift",
-      "line": 423,
+      "line": 425,
       "symbol": "SBBStudyParticipant.phoneNumber",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileItem.swift",
-      "line": 501,
+      "line": 505,
       "symbol": "SBAStudyParticipantClientDataProfileItem.fallbackKeyPath",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
@@ -429,28 +429,28 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 376,
+      "line": 382,
       "symbol": "SBAProfileItemProfileTableItem.profileManager",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 390,
+      "line": 396,
       "symbol": "SBAProfileItemProfileTableItem.editTaskIdentifier",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 611,
+      "line": 443,
       "symbol": "SBAProfileViewProfileTableItem.icon",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Profile/SBAProfileSection.swift",
-      "line": 620,
+      "line": 452,
       "symbol": "SBAProfileViewProfileTableItem.profileDataSource",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
