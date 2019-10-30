@@ -256,7 +256,8 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
                 let expectedDictionary : NSDictionary = [
                     "stepA" : 0,
                     "stepB" : 1,
-                    "stepC" : 2
+                    "stepC" : 2,
+                    "taskRunUUID" : topResult.taskRunUUID.uuidString
                 ]
                 XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
             }
@@ -302,7 +303,8 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
                     "step2": [ "stepX" : "stepX moo",
                                "stepY" : "stepY moo"],
                     "step3": [ "stepX" : "stepX moo",
-                               "stepY" : "stepY moo"]
+                               "stepY" : "stepY moo"],
+                    "taskRunUUID" : taskPath.taskResult.taskRunUUID.uuidString
                 ]
                 XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
             }
@@ -320,7 +322,8 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
                 let expectedDictionary : NSDictionary = [
                     "stepA" : 0,
                     "stepB" : 1,
-                    "stepC" : 2
+                    "stepC" : 2,
+                    "taskRunUUID" : taskPath.taskResult.taskRunUUID.uuidString
                 ]
                 XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
             }
@@ -368,7 +371,8 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
                         "stepY" : ["identifier" : "stepY", "boolean" : true]
                     ],
                     "foo" : 3,
-                    "baroo" : 5
+                    "baroo" : 5,
+                    "taskRunUUID" : taskPath.taskResult.taskRunUUID.uuidString
                 ]
                 XCTAssertEqual(dictionary as NSDictionary, expectedDictionary)
             }
