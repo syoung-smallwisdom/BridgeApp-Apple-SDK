@@ -317,7 +317,20 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     private var _holdData = [HoldDataKey : RSDTaskData]()
     
     public func previousTaskData(for taskIdentifier: RSDIdentifier) -> RSDTaskData? {
-        return report(with: taskIdentifier.stringValue)
+        do {
+            if let report = report(with: taskIdentifier.stringValue) {
+                return report
+            }
+            else {
+                let sbbReport = try self.participantManager.getLatestCachedData(forReport: taskIdentifier.stringValue)
+                let category = self.reportCategory(for: taskIdentifier.stringValue)
+                return transformReportData(sbbReport, reportKey: taskIdentifier, category: category)
+            }
+        }
+        catch let err {
+            print("WARNING! Failed to query report. \(err)")
+        }
+        return nil
     }
     
     public func saveTaskData(_ data: RSDTaskData, from taskResult: RSDTaskResult?) {
@@ -711,39 +724,8 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             return [report]
         }()
 
-        let newReports: [SBAReport] = reportDataObjects.compactMap { report in
-            guard let reportData = report.data, let date = report.date else { return nil }
-            
-            if let json = reportData as? [String : Any],
-                let clientData = json[kReportClientDataKey] as? SBBJSONValue,
-                let dateString = json[kReportDateKey] as? String,
-                let timeZoneIdentifier = json[kReportTimeZoneIdentifierKey] as? String {
-                let reportDate = self.factory.decodeDate(from: dateString) ?? date
-                let timeZone = TimeZone(identifier: timeZoneIdentifier) ??
-                    TimeZone(iso8601: dateString) ??
-                    TimeZone.current
-                return SBAReport(reportKey: query.reportKey, date: reportDate, clientData: clientData, timeZone: timeZone)
-            }
-            else {
-                switch category {
-                case .timestamp, .groupByDay:
-                    return SBAReport(reportKey: query.reportKey, date: date, clientData: reportData, timeZone: TimeZone.current)
-                    
-                case .singleton:
-                    let timeZone = TimeZone(secondsFromGMT: 0)!
-                    let reportDate: Date = {
-                        if let localDate = report.localDate {
-                            let dateFormatter = NSDate.iso8601DateOnlyformatter()!
-                            dateFormatter.timeZone = timeZone
-                            return dateFormatter.date(from: localDate) ?? date
-                        }
-                        else {
-                            return date
-                        }
-                    }()
-                    return SBAReport(reportKey: query.reportKey, date: reportDate, clientData: reportData, timeZone: timeZone)
-                }
-            }
+        let newReports: [SBAReport] = reportDataObjects.compactMap {
+            transformReportData($0, reportKey: query.reportKey, category: category)
         }
         
         let error: Error? = {
@@ -765,6 +747,41 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
             self._reloadingReports.remove(query)
             if self._reloadingReports.count == 0 {
                 self.didFinishFetchingReports()
+            }
+        }
+    }
+    
+    open func transformReportData(_ report: SBBReportData, reportKey: RSDIdentifier, category: SBAReportCategory) -> SBAReport? {
+        guard let reportData = report.data, let date = report.date else { return nil }
+        
+        if let json = reportData as? [String : Any],
+            let clientData = json[kReportClientDataKey] as? SBBJSONValue,
+            let dateString = json[kReportDateKey] as? String,
+            let timeZoneIdentifier = json[kReportTimeZoneIdentifierKey] as? String {
+            let reportDate = self.factory.decodeDate(from: dateString) ?? date
+            let timeZone = TimeZone(identifier: timeZoneIdentifier) ??
+                TimeZone(iso8601: dateString) ??
+                TimeZone.current
+            return SBAReport(reportKey: reportKey, date: reportDate, clientData: clientData, timeZone: timeZone)
+        }
+        else {
+            switch category {
+            case .timestamp, .groupByDay:
+                return SBAReport(reportKey: reportKey, date: date, clientData: reportData, timeZone: TimeZone.current)
+                
+            case .singleton:
+                let timeZone = TimeZone(secondsFromGMT: 0)!
+                let reportDate: Date = {
+                    if let localDate = report.localDate {
+                        let dateFormatter = NSDate.iso8601DateOnlyformatter()!
+                        dateFormatter.timeZone = timeZone
+                        return dateFormatter.date(from: localDate) ?? date
+                    }
+                    else {
+                        return date
+                    }
+                }()
+                return SBAReport(reportKey: reportKey, date: reportDate, clientData: reportData, timeZone: timeZone)
             }
         }
     }
