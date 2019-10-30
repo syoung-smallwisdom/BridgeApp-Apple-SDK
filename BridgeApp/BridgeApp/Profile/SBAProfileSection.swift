@@ -292,7 +292,7 @@ public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResour
 /// A profile table item that displays, and allows editing, the value of a Profile Item.
 public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     private enum CodingKeys: String, CodingKey {
-        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey, _profileManagerIdentifier = "profileManager", _editTaskIdentifier = "editTaskIdentifier", choices
+        case title, _isEditable = "isEditable", inCohorts, notInCohorts, _onSelected = "onSelected", profileItemKey, _profileManagerIdentifier = "profileManager", _editTaskIdentifier = "editTaskIdentifier", _choices = "choices"
     }
     
     // MARK: SBAProfileTableItem
@@ -301,20 +301,15 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
     
     /// Detail text to show for the table item.
     public var detail: String? {
-        guard let _ = self.profileItem?.itemType else { return nil }
+        guard let profileItem = self.profileItem else { return nil }
         guard let profileValue = self.profileItemValue else { return "" }
         
         if let choices = self.choices {
-            if let items = profileValue as? [String] {
-                let answers = items.compactMap { value in
-                    return choices.first(where: { ($0.matchingAnswer as? String) == value })?.text
-                }
-                return answers.joined(separator: ", ")
-            }
-            else if let value = profileValue as? String,
-                let choice = choices.first(where: { ($0.matchingAnswer as? String) == value }) {
-                return choice.text ?? value
-            }
+            let answerResult = RSDAnswerResultObject(identifier: profileItem.demographicKey, answerType: profileItem.itemType.defaultAnswerResultType(), value: profileValue)
+            let answer = choices
+                .compactMap({ $0.isEqualToResult(answerResult) ? $0.text : nil })
+                .joined(separator: ", ")
+            return answer
         }
         
         if let answers = profileValue as? [Any] {
@@ -328,9 +323,12 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
         }
     }
     
-    // TODO: syoung 10/28/2019 Refactor to allow for choices that map to other value types.
     /// A mapping of a the choices to the values.
-    public let choices: [RSDChoiceObject<String>]?
+    public var choices: [RSDChoice]? {
+        // TODO: syoung 10/28/2019 Refactor to allow for choices that map to survey choices.
+        return self._choices
+    }
+    private let _choices: [RSDChoiceObject<String>]?
     
     /// Current profile item value to apply to, and set from, an edit control.
     public var profileItemValue: Any? {
@@ -406,181 +404,7 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
         let profileItems = self.profileManager.profileItems()
         return profileItems[self.profileItemKey]
     }
-    
-/* TODO: emm 2019-02-06 deal with this for mPower 2 2.1
-    func itemDetailFor(_ date: Date, format: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = format
-        formatter.calendar = Calendar.current
-        return formatter.string(from: date)
-    }
-    
-    open func dateAsItemDetail(_ date: Date) -> String {
-        guard let format = DateFormatter.dateFormat(fromTemplate: "Mdy", options: 0, locale: Locale.current)
-            else { return String(describing: date) }
-        return self.itemDetailFor(date, format: format)
-    }
-    
-    open func dateTimeAsItemDetail(_ dateTime: Date) -> String {
-        guard let format = DateFormatter.dateFormat(fromTemplate: "yEMdhma", options: 0, locale: Locale.current)
-            else { return String(describing: dateTime) }
-        return self.itemDetailFor(dateTime, format: format)
-    }
-    
-    open func timeOfDayAsItemDetail(_ timeOfDay: Date) -> String {
-        guard let format = DateFormatter.dateFormat(fromTemplate: "hma", options: 0, locale: Locale.current)
-            else { return String(describing: timeOfDay) }
-        return self.itemDetailFor(timeOfDay, format: format)
-    }
-    
-    public func centimetersToFeetAndInches(_ centimeters: Double) -> (feet: Double, inches: Double) {
-        let inches = centimeters / 2.54
-        return ((inches / 12.0).rounded(), inches.truncatingRemainder(dividingBy: 12.0))
-    }
-    
-    @objc(hkQuantityheightAsItemDetail:)
-    open func heightAsItemDetail(_ height: HKQuantity) -> String {
-        let heightInCm = height.doubleValue(for: HKUnit(from: .centimeter)) as NSNumber
-        return self.heightAsItemDetail(heightInCm)
-    }
-    
-    open func heightAsItemDetail(_ height: NSNumber) -> String {
-        let formatter = LengthFormatter()
-        formatter.isForPersonHeightUse = true
-        let meters = height.doubleValue / 100.0 // cm -> m
-        return formatter.string(fromMeters: meters)
-    }
-    
-    @objc(hkQuantityWeightAsItemDetail:)
-    open func weightAsItemDetail(_ weight: HKQuantity) -> String {
-        let weightInKg = weight.doubleValue(for: HKUnit(from: .kilogram)) as NSNumber
-        return self.weightAsItemDetail(weightInKg)
-    }
-    
-    open func weightAsItemDetail(_ weight: NSNumber) -> String {
-        let formatter = MassFormatter()
-        formatter.isForPersonMassUse = true
-        return formatter.string(fromKilograms: weight.doubleValue)
-    }
-    
-    override open var detail: String? {
-        guard let value = profileItem.value else { return "" }
-        if let surveyItem = SBASurveyFactory.profileQuestionSurveyItems?.find(withIdentifier: profileItemKey) as? SBAFormStepSurveyItem,
-            let choices = surveyItem.items as? [SBAChoice] {
-            let selected = (value as? [Any]) ?? [value]
-            let textList = selected.map({ (obj) -> String in
-                switch surveyItem.surveyItemType {
-                case .form(.singleChoice), .form(.multipleChoice),
-                     .dataGroups(.singleChoice), .dataGroups(.multipleChoice):
-                    return choices.find({ SBAObjectEquality($0.choiceValue, obj) })?.choiceText ?? String(describing: obj)
-                case .account(.profile):
-                    guard let options = surveyItem.items as? [String],
-                            options.count == 1,
-                            let option = SBAProfileInfoOption(rawValue: options[0])
-                        else { return String(describing: obj) }
-                    switch option {
-                    case .birthdate:
-                        guard let date = obj as? Date else { return String(describing: obj) }
-                        return self.dateAsItemDetail(date)
-                    case .height:
-                        // could reasonably be stored either as an HKQuantity, or as an NSNumber of cm
-                        let hkHeight = obj as? HKQuantity
-                        if hkHeight != nil {
-                            return self.heightAsItemDetail(hkHeight!)
-                        }
-                        guard let nsHeight = obj as? NSNumber else { return String(describing: obj) }
-                        return self.heightAsItemDetail(nsHeight)
-                    case .weight:
-                        // could reasonably be stored either as an HKQuantity, or as an NSNumber of kg
-                        let hkWeight = obj as? HKQuantity
-                        if hkWeight != nil {
-                            return self.weightAsItemDetail(hkWeight!)
-                        }
-                        guard let nsWeight = obj as? NSNumber else { return String(describing: obj) }
-                        return self.weightAsItemDetail(nsWeight)
-                    default:
-                        return String(describing: obj)
-                    }
-                default:
-                    return String(describing: obj)
-                }
-            })
-            return Localization.localizedJoin(textList: textList)
-        }
-        return String(describing: value)
-    }
-    
-    open var answerMapKeys: [String: String]
-    
-    // MARK: Decoder
-    private enum CodingKeys: String, CodingKey {
-        case profileItemKey, answerMapKeys
-    }
-    
-    public required init(from decoder: Decoder) throws {
-        try super.init(from: decoder)
-        
-        // HTML profile table items are not editable
-        isEditable = false
-        
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        profileItemKey = try container.decode(String.self, forKey: .profileItemKey)
-        answerMapKeys = try container.decodeIfPresent([String: String].self, forKey: .answerMapKeys) ?? [self.profileItemKey: self.profileItemKey]
-    }
- */
 }
-
-/* TODO: emm 2018-08-19 deal with this for mPower 2 2.1
-/// A profile table item that opens a resource (for example, a task defined in JSON) when selected.
-public struct SBAResourceProfileTableItem: SBAProfileTableItem, Decodable, RSDResourceTransformer {
-    private enum CodingKeys: String, CodingKey {
-        case title, detail, isEditable, inCohorts, notInCohorts, onSelected, resource, bundleIdentifier
-    }
-    
-    // MARK: SBAProfileTableItem
-    /// Title to show for the table item.
-    public var title: String?
-    
-    /// Detail text to show for the table item.
-    public var detail: String?
-    
-    /// By default resource profile table items are not editable.
-    public var isEditable: Bool? = false
-    
-    /// A set of cohorts (data groups) the participant must be in, in order to show this item in its containing profile section.
-    public var inCohorts: Set<String>?
-    
-    /// A set of cohorts (data groups) the participant must not be in, in order to show this item in its containing profile section.
-    public var notInCohorts: Set<String>?
-    
-    /// Action to perform when the item is selected. The default for HTML items is to show the HTML.
-    public var onSelected: SBAProfileOnSelectedAction? = .showHTML
-    
-    // MARK: Resource Profile Table Item
-    
-    /// The resource for this item.
-    public let resource: String
-    
-    // MARK: RSDResourceTransformer
-    
-    /// The bundle identifier for the resource bundle that contains the html.
-    public var bundleIdentifier: String?
-    
-    /// The default bundle from the factory used to decode this object.
-    public var factoryBundle: Bundle? = nil
-    
-    /// `RSDResourceTransformer` uses this to get the URL.
-    public var resourceName: String {
-        return htmlResource
-    }
-    
-    /// Ignored - required to conform to `RSDResourceTransformer`
-    public var classType: String? {
-        return nil
-    }
-
-}
- */
 
 /// A profile table item that, when selected, segues to another profile table view.
 public struct SBAProfileViewProfileTableItem: SBAProfileTableItem, Decodable {
