@@ -60,6 +60,9 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
     /// Is the archive a top-level archive?
     public let isPlaceholder: Bool
     
+    /// Hold the task result (if any) used to create the archive.
+    internal var taskResult: RSDTaskResult?
+    
     /// The schedule identifier is the `SBBScheduledActivity.guid` which is a combination of the activity
     /// guid and the `scheduledOn` property.
     public var scheduleIdentifier: String? {
@@ -93,7 +96,7 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
     
     /// Get the archivable object for the given result.
     open func archivableData(for result: RSDResult, sectionIdentifier: String?, stepPath: String?) -> RSDArchivable? {
-        if self.usesV1LegacySchema, schedule?.activity.survey != nil, let answerResult = result as? RSDAnswerResult {
+        if self.usesV1LegacySchema, let answerResult = result as? RSDAnswerResult {
             return SBAAnswerResultWrapper(sectionIdentifier: sectionIdentifier, result: answerResult)
         }
         else if let archivable = result as? RSDArchivable {
@@ -153,6 +156,16 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
         
         // insert the dictionary.
         insertDictionary(intoArchive: metadataDictionary, filename: kMetadataFilename, createdOn: createdOn)
+        
+        // Look to see that the answers.json file is included, even if it is empty.
+        // syoung 11/12/2019 This is a belt-and-suspenders for MP2-270 because I'm not sure why it
+        // isn't always included and I can't repro the bug. Due to the timing of this issue with
+        // needing to release, pushing a work-around while I continue to investigate.
+        if !self.usesV1LegacySchema, self.answersDictionary == nil, let taskResult = self.taskResult {
+            let builder = RSDDefaultScoreBuilder()
+            let answers = builder.getScoringData(from: taskResult) as? [String : Any] ?? [String : Any]()
+            self.insertAnswersDictionary(answers)
+        }
         
         // complete the archive.
         try complete()

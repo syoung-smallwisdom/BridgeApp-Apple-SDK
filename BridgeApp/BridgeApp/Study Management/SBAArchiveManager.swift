@@ -127,14 +127,23 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
         }
         
         // Otherwise, instantiate a new archive.
-        return self.instantiateArchive(archiveIdentifier, for: schedule, with: schemaInfo)
+        let archive = self.instantiateArchive(archiveIdentifier, for: schedule, with: schemaInfo)
+        (archive as? SBAScheduledActivityArchive)?.taskResult = taskResult
+        return archive
     }
     
     /// Instantiate the data archive to use for this schedule and schema info.
     open func instantiateArchive(_ archiveIdentifier: String, for schedule:SBBScheduledActivity?, with schemaInfo: RSDSchemaInfo) -> RSDDataArchive {
         let archive = SBAScheduledActivityArchive(identifier: archiveIdentifier, schemaInfo: schemaInfo, schedule: schedule, isPlaceholder: false)
-        archive.usesV1LegacySchema = (schedule?.activity.survey == nil) && self.configuration.usesV1LegacyArchiving
+        archive.usesV1LegacySchema = self.usesV1LegacySchema(archiveIdentifier, for: schedule)
         return archive
+    }
+    
+    /// Does this archive use V1 legacy formatting for archiving? By default, this will return `true`
+    /// for archives that do not map to a survey if the AppConfig *also* marks the study as using
+    /// V1 legacy formatting for schemas.
+    open func usesV1LegacySchema(_ archiveIdentifier: String, for schedule:SBBScheduledActivity?) -> Bool {
+        return (schedule?.activity.survey == nil) && self.configuration.usesV1LegacyArchiving
     }
     
     /// Finalize the upload of all the created archives.
