@@ -849,7 +849,7 @@
     },
     {
       "file": "/Users/travis/build/Sage-Bionetworks/BridgeApp-Apple-SDK/BridgeApp/BridgeApp/Study Management/SBAScheduledActivityArchive.swift",
-      "line": 69,
+      "line": 72,
       "symbol": "SBAScheduledActivityArchive.init(identifier:schemaInfo:schedule:isPlaceholder:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
