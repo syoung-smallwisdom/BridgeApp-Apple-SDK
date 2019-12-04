@@ -146,7 +146,12 @@ extension sbb_InputField {
     }
     
     public var isOptional: Bool {
-        return SBASurveyConfiguration.shared.isOptional(for: self)
+        if let required = self.constraints.required {
+            return !required.boolValue
+        }
+        else {
+            return SBASurveyConfiguration.shared.isOptional(for: self)
+        }
     }
     
     public var dataType: RSDFormDataType {
@@ -308,7 +313,12 @@ extension SBBMultiValueConstraints : RSDChoiceOptions {
     }
     
     public var isOptional: Bool {
-        return true
+        if let required = self.required {
+            return !required.boolValue
+        }
+        else {
+            return true
+        }
     }
     
     public var defaultAnswer: Any? {
@@ -339,7 +349,7 @@ extension SBBSurveyQuestionOption : RSDChoice, RSDComparable {
     }
     
     public var isExclusive: Bool {
-        return false
+        return self.exclusive?.boolValue ?? false
     }
 }
 
