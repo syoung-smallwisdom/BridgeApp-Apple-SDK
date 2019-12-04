@@ -135,6 +135,28 @@ class StepProtocolTests: XCTestCase {
         XCTAssertFalse(inputStep.isOptional)
     }
     
+    func testSurveyQuestion_Required_TRUE() {
+        
+        let testConfig = TestSurveyConfiguration()
+        SBASurveyConfiguration.shared = testConfig
+        let constraints = SBBBooleanConstraints()
+        constraints.required = NSNumber(value: true)
+        let inputStep = createQuestion(.checkbox, constraints)
+        
+        XCTAssertFalse(inputStep.isOptional)
+    }
+    
+    func testSurveyQuestion_Required_FALSE() {
+        
+        let testConfig = TestSurveyConfiguration()
+        SBASurveyConfiguration.shared = testConfig
+        let constraints = SBBBooleanConstraints()
+        constraints.required = NSNumber(value: false)
+        let inputStep = createQuestion(.checkbox, constraints)
+        
+        XCTAssertTrue(inputStep.isOptional)
+    }
+    
     // MARK: SBBSurveyInfoScreen
     
     func testStep_SBBSurveyInfoScreen() {
@@ -206,14 +228,20 @@ class StepProtocolTests: XCTestCase {
         
         if let picker = inputField.pickerSource as? RSDChoiceOptions {
             let choices = picker.choices
-            let expectedCount = 3
+            let expectedCount = 4
             if choices.count == expectedCount {
                 XCTAssertEqual(choices[0].text, "Yes, I have done this")
                 XCTAssertEqual(choices[0].answerValue as? String, "true")
+                XCTAssertFalse(choices[0].isExclusive)
                 XCTAssertEqual(choices[1].text, "No, I have never done this")
                 XCTAssertEqual(choices[1].answerValue as? String, "false")
+                XCTAssertFalse(choices[1].isExclusive)
                 XCTAssertEqual(choices[2].text, "Maybe")
                 XCTAssertEqual(choices[2].answerValue as? String, "maybe")
+                XCTAssertFalse(choices[2].isExclusive)
+                XCTAssertEqual(choices[3].text, "Prefer not to answer")
+                XCTAssertEqual(choices[3].answerValue as? String, "skip")
+                XCTAssertTrue(choices[3].isExclusive)
             } else {
                 XCTAssertEqual(choices.count, expectedCount, "\(choices)")
             }
@@ -310,6 +338,13 @@ class StepProtocolTests: XCTestCase {
                 "label" : "Maybe",
                 "value" : "maybe",
                 "type" : "SurveyQuestionOption"
+                ]))
+        constraints.addEnumerationObject(
+            SBBSurveyQuestionOption(dictionaryRepresentation:[
+                "label" : "Prefer not to answer",
+                "value" : "skip",
+                "type" : "SurveyQuestionOption",
+                "exclusive" : true
                 ]))
         
         return createQuestion(allowMultiple ? .list : .radioButton, constraints)
