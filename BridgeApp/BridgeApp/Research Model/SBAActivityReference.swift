@@ -77,9 +77,9 @@ extension SBAActivityReference {
         return self.activityDescription ?? self.activityInfo?.detail
     }
     
-    /// Return the activity info imageVendor.
-    public var imageVendor: RSDImageVendor? {
-        return self.activityInfo?.imageVendor
+    /// Return the activity info imageData.
+    public var imageData: RSDImageData? {
+        return self.activityInfo?.imageData
     }
     
     /// The resource transformer on `RSDTaskInfo` is used in cases where the transformer is

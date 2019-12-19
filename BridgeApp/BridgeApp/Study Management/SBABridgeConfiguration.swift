@@ -570,7 +570,7 @@ struct SBAActivityMappingObject : Decodable {
 ///            }
 ///            """.data(using: .utf8)! // our data in native (JSON) format
 /// ````
-public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAActivityGroup {
+public struct SBAActivityGroupObject : Decodable, SBAOptionalImageData, SBAActivityGroup {
 
     /// A short string that uniquely identifies the task group.
     public let identifier: String
@@ -587,7 +587,7 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
     public let journeyTitle: String?
     
     /// An icon image that can be used for displaying the task group.
-    public let imageSource: RSDImageWrapper?
+    public let imageSource: RSDResourceImageDataObject?
 
     /// Use an image directly rather than an image wrapper.
     public private(set) var image : UIImage? = nil
@@ -685,7 +685,7 @@ public struct SBAActivityGroupObject : Decodable, SBAOptionalImageVendor, SBAAct
 ///            }
 ///            """.data(using: .utf8)! // our data in native (JSON) format
 /// ````
-public struct SBAActivityInfoObject : Decodable, SBAOptionalImageVendor, SBAActivityInfo {
+public struct SBAActivityInfoObject : Decodable, SBAOptionalImageData, SBAActivityInfo {
 
     private enum CodingKeys : String, CodingKey {
         case identifier, title, subtitle, detail, _estimatedMinutes = "minuteDuration", imageSource, resource, moduleId
@@ -718,7 +718,7 @@ public struct SBAActivityInfoObject : Decodable, SBAOptionalImageVendor, SBAActi
     public var moduleId: SBAModuleIdentifier?
     
     /// An icon image that can be used for displaying the task.
-    public var imageSource : RSDImageWrapper?
+    public var imageSource : RSDResourceImageDataObject?
     
     /// Use an image directly rather than an image wrapper.
     public var image : UIImage? = nil
@@ -770,20 +770,20 @@ public struct SBAActivityInfoObject : Decodable, SBAOptionalImageVendor, SBAActi
     }
 }
 
-/// Convenience protocol to allow vending the image either from a `UIImage` *or* `RSDImageWrapper`.
-public protocol SBAOptionalImageVendor {
+/// Convenience protocol to allow vending the image either from a `UIImage` *or* `RSDResourceImageDataObject`.
+public protocol SBAOptionalImageData {
     
     /// The image property is used if the  object is instantiated from within the app.
     var image : UIImage? { get }
     
     /// The image source is used if decoding the object.
-    var imageSource : RSDImageWrapper? { get }
+    var imageSource : RSDResourceImageDataObject? { get }
 }
 
-extension SBAOptionalImageVendor {
+extension SBAOptionalImageData {
 
     /// Returns either the `iconImage` or `icon`
-    public var imageVendor: RSDImageVendor? {
+    public var imageData: RSDImageData? {
         return self.image ?? self.imageSource
     }
 }

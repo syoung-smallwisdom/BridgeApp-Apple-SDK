@@ -125,7 +125,7 @@ class SBAMedicationEditDetailsViewController: UIViewController, UITableViewDeleg
         }
     }
     
-    var tableBackground: RSDColorTile = RSDStudyConfiguration.shared.colorPalette.primary.normal
+    var tableBackground: RSDColorTile = RSDDesignSystem.shared.colorRules.palette.primary.normal
     
     func updateColorsAndFonts() {
         guard let designSystem = self.designSystem, isViewLoaded else { return }

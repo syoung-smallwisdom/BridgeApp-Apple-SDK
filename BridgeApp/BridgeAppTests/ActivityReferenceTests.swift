@@ -34,14 +34,6 @@
 import XCTest
 @testable import BridgeApp
 
-struct TestImageWrapperDelegate : RSDImageWrapperDelegate {
-    func fetchImage(for imageWrapper: RSDImageWrapper, callback: @escaping ((String?, UIImage?) -> Void)) {
-        DispatchQueue.main.async {
-            callback(imageWrapper.imageName, nil)
-        }
-    }
-}
-
 let testFactory: RSDFactory = {
     RSDFactory.shared = SBAFactory()
     return RSDFactory.shared
@@ -60,9 +52,6 @@ class ActivityReferenceTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        
-        // setup to have an image wrapper delegate set so the image wrapper won't crash
-        RSDImageWrapper.sharedDelegate = TestImageWrapperDelegate()
     }
     
     override func tearDown() {

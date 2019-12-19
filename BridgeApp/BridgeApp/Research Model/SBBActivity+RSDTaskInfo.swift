@@ -55,8 +55,8 @@ extension SBBActivity : RSDTaskInfo {
         return self.activityReference?.estimatedMinutes ?? activityReference?.estimatedMinutes ?? 0
     }
     
-    public var imageVendor: RSDImageVendor? {
-        return self.image ?? activityReference?.imageVendor
+    public var imageData: RSDImageData? {
+        return self.image ?? activityReference?.imageData
     }
     
     public var schemaInfo: RSDSchemaInfo? {

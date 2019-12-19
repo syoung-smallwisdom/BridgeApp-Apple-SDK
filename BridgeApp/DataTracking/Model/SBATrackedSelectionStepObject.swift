@@ -123,7 +123,7 @@ open class SBATrackedSelectionStepObject : RSDUIStepObject, SBATrackedItemsStep 
     private func commonInit() {
         // Set the default color theme.
         if self.colorMapping == nil {
-            let placement: [RSDColorPlacement : RSDColorRules.Style] = [
+            let placement: [RSDColorPlacement : RSDColorStyle] = [
                 .header: .primary,
                 .body: .primary,
                 .footer: .white
@@ -245,7 +245,7 @@ public struct SBATrackedSectionObject : Codable, SBATrackedSection {
 ///            }
 ///            """.data(using: .utf8)! // our data in native (JSON) format
 /// ```
-public struct SBATrackedItemObject : Codable, SBATrackedItem, RSDEmbeddedIconVendor {
+public struct SBATrackedItemObject : Codable, SBATrackedItem, RSDEmbeddedIconData {
     
     private enum CodingKeys : String, CodingKey {
         case identifier
@@ -278,7 +278,7 @@ public struct SBATrackedItemObject : Codable, SBATrackedItem, RSDEmbeddedIconVen
     public let shortText : String?
     
     /// Optional icon to display for the selection.
-    public let icon: RSDImageWrapper?
+    public let icon: RSDResourceImageDataObject?
     
     /// Whether or not the tracked item is set up so that *only* this item can be selected
     /// for a given section.
@@ -287,7 +287,7 @@ public struct SBATrackedItemObject : Codable, SBATrackedItem, RSDEmbeddedIconVen
     }
     private let _isExclusive: Bool?
     
-    public init(identifier: String, sectionIdentifier: String?, title: String? = nil, shortText: String? = nil, detail: String? = nil, icon: RSDImageWrapper? = nil, isExclusive: Bool = false, addDetailsIdentifier: String? = nil) {
+    public init(identifier: String, sectionIdentifier: String?, title: String? = nil, shortText: String? = nil, detail: String? = nil, icon: RSDResourceImageDataObject? = nil, isExclusive: Bool = false, addDetailsIdentifier: String? = nil) {
         self.identifier = identifier
         self.sectionIdentifier = sectionIdentifier
         self.title = title
@@ -401,7 +401,7 @@ extension RSDIdentifier : SBATrackedItem {
         return false
     }
     
-    public var imageVendor: RSDImageVendor? {
+    public var imageData: RSDImageData? {
         return nil
     }
 }

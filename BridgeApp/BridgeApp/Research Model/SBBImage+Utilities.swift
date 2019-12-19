@@ -38,36 +38,45 @@ protocol sbb_BridgeImageOwner {
 }
 
 extension sbb_BridgeImageOwner {
-    public var imageVendor: RSDImageVendor? {
+    public var imageData: RSDImageData? {
         return self.image
     }
 }
 
-extension SBBImage : RSDFetchableImageThemeElement {
+extension SBBImage : RSDImageThemeElement {
+    
+    public var imageSize: RSDSize? {
+        return nil
+    }
+    
+    public var imageName: String {
+        return source
+    }
     
     public var placementType: RSDImagePlacementType? {
         return nil
     }
-    
-    public var bundle: Bundle? {
-        return nil
-    }
 }
 
-extension SBBImage : RSDImageVendor {
-    
-    public var imageIdentifier: String {
+extension SBBImage : RSDResourceImageData {
+
+    public var resourceName: String {
         return source
     }
     
-    public var size: CGSize {
-        return CGSize(width: self.widthValue, height: self.heightValue)
+    public var rawFileExtension: String? {
+        return nil
     }
     
-    public func fetchImage(for size: CGSize, callback: @escaping ((String?, UIImage?) -> Void)) {
-        DispatchQueue.main.async {
-            let img = UIImage(named: self.source)
-            callback(self.source, img)
-        }
+    public var factoryBundle: RSDResourceBundle? {
+        return nil
+    }
+    
+    public var bundleIdentifier: String? {
+        return nil
+    }
+    
+    public var packageName: String? {
+        return nil
     }
 }

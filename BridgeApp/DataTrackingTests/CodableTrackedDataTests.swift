@@ -35,14 +35,6 @@ import XCTest
 @testable import BridgeApp
 @testable import DataTracking
 
-struct TestImageWrapperDelegate : RSDImageWrapperDelegate {
-    func fetchImage(for imageWrapper: RSDImageWrapper, callback: @escaping ((String?, UIImage?) -> Void)) {
-        DispatchQueue.main.async {
-            callback(imageWrapper.imageName, nil)
-        }
-    }
-}
-
 let testFactory: RSDFactory = {
     RSDFactory.shared = SBADataTrackingFactory()
     return RSDFactory.shared
@@ -60,9 +52,6 @@ class CodableTrackedDataTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-
-        // setup to have an image wrapper delegate set so the image wrapper won't crash
-        RSDImageWrapper.sharedDelegate = TestImageWrapperDelegate()
     }
     
     override func tearDown() {

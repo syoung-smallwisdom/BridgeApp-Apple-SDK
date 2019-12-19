@@ -110,7 +110,7 @@ public protocol SBAMedication : SBATrackedItem {
 ///            }
 ///            """.data(using: .utf8)! // our data in native (JSON) format
 /// ```
-public struct SBAMedicationItem : Codable, SBAMedication, RSDEmbeddedIconVendor {
+public struct SBAMedicationItem : Codable, SBAMedication, RSDEmbeddedIconData {
     
     private enum CodingKeys : String, CodingKey {
         case identifier
@@ -146,13 +146,13 @@ public struct SBAMedicationItem : Codable, SBAMedication, RSDEmbeddedIconVendor 
     private let _isExclusive: Bool?
     
     /// An optional icon to display for the medication.
-    public let icon: RSDImageWrapper?
+    public let icon: RSDResourceImageDataObject?
     
     /// Is the medication delivered via continuous injection? If this is the case, then questions about
     /// schedule timing and dosage should be skipped.
     public let isContinuousInjection: Bool?
     
-    public init(identifier: String, sectionIdentifier: String?, title: String? = nil, shortText: String? = nil, detail: String? = nil, icon: RSDImageWrapper? = nil, isExclusive: Bool = false, isContinuousInjection: Bool? = nil) {
+    public init(identifier: String, sectionIdentifier: String?, title: String? = nil, shortText: String? = nil, detail: String? = nil, icon: RSDResourceImageDataObject? = nil, isExclusive: Bool = false, isContinuousInjection: Bool? = nil) {
         self.identifier = identifier
         self.sectionIdentifier = sectionIdentifier
         self.title = title
@@ -415,7 +415,7 @@ extension SBAMedicationAnswer : SBAMedication {
         return false
     }
     
-    public var imageVendor: RSDImageVendor? {
+    public var imageData: RSDImageData? {
         return nil
     }
 }

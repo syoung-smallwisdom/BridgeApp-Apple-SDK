@@ -89,7 +89,7 @@ public struct SBALearnInfoPList: SBALearnInfo {
     
     public init(name: String, bundle: Bundle? = nil) throws {
         let resource = RSDResourceTransformerObject(resourceName: name)
-        let (plistData, _) = try resource.resourceData(ofType: "plist", bundle: bundle)
+        let (plistData, _) = try resource.resourceData(ofType: .plist)
         let decoder = try RSDFactory.shared.createDecoder(for: .plist)
         let list = try decoder.decode(SBALearnInfoObject.self, from: plistData)
         self.rowItems = list.rowItems
