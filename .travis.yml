@@ -2,7 +2,7 @@ notifications:
   email:
   - apple.builds@sagebase.org
 language: objective-c
-osx_image: xcode10.2
+osx_image: xcode11.2
 xcode_workspace: BridgeApp.xcworkspace
 xcode_scheme: BridgeAppExample 
 cache:
