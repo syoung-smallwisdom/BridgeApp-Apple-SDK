@@ -46,7 +46,7 @@ extension sbb_BridgeImageOwner {
 extension SBBImage : RSDImageThemeElement {
     
     public var imageSize: RSDSize? {
-        return nil
+        return RSDSize(width: self.widthValue, height: self.heightValue)
     }
     
     public var imageName: String {
