@@ -275,7 +275,10 @@ public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResour
     public var bundleIdentifier: String?
     
     /// The default bundle from the factory used to decode this object.
-    public var factoryBundle: Bundle? = nil
+    public var factoryBundle: RSDResourceBundle? = nil
+    
+    /// The Android package name.
+    public var packageName: String? = nil
     
     /// `RSDResourceTransformer` uses this to get the URL.
     public var resourceName: String {

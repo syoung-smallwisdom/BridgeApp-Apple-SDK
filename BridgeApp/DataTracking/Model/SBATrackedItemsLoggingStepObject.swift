@@ -352,7 +352,7 @@ extension SBATrackedLoggingResultObject : SBATrackedItemAnswer {
         return false
     }
     
-    public var imageVendor: RSDImageVendor? {
+    public var imageData: RSDImageData? {
         return nil
     }
     

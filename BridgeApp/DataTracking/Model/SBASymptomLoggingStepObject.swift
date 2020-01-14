@@ -263,7 +263,7 @@ extension SBASymptomDurationLevel : RSDChoice {
         return true
     }
     
-    public var imageVendor: RSDImageVendor? {
+    public var imageData: RSDImageData? {
         return nil
     }
     
