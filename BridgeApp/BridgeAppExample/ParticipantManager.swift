@@ -35,9 +35,10 @@ import BridgeApp
 import BridgeSDK_Test
 
 public struct StudySetup {
-    var email: String = "fake.address@fake.domain.tld"
-    var number: String = "206-555-1234"
-    var firstName: String = "Fürst"
+    let email: String = "fake.address@fake.domain.tld"
+    let number: String = "206-555-1234"
+    let firstName: String = "Fürst"
+    let finishedTasks: [RSDIdentifier]
     
     func createParticipant() -> SBBStudyParticipant {
         return SBBStudyParticipant(dictionaryRepresentation: [
@@ -51,6 +52,19 @@ public struct StudySetup {
     }
 }
 
+extension RSDIdentifier {
+    static let allDay: RSDIdentifier = "All Day"
+    static let evening: RSDIdentifier = "Evening"
+    static let morning: RSDIdentifier = "Morning"
+    static let allTasks: [RSDIdentifier] = [.morning, .evening, .allDay]
+}
+
+extension StudySetup {
+    static let allDone = StudySetup(finishedTasks: RSDIdentifier.allTasks)
+    static let morningCompleted = StudySetup(finishedTasks: [.morning])
+    static let noneCompleted = StudySetup(finishedTasks: [])
+}
+
 class ParticipantManager: NSObject, SBBParticipantManagerProtocol {
     var timestampedReports: [String: [SBBReportData]] = [:]
     var datestampedReports: [String: [SBBReportData]] = [:]
@@ -59,10 +73,14 @@ class ParticipantManager: NSObject, SBBParticipantManagerProtocol {
         return (UIApplication.shared.delegate as? AppDelegate)?.testHarness
     }
     
-    var mockParticipant: SBBStudyParticipant = StudySetup().createParticipant()
+    var mockParticipant: SBBStudyParticipant
     
-    override init() {
+    init(studySetup: StudySetup) {
+        self.mockParticipant = studySetup.createParticipant()
         super.init()
+    }
+    
+    func setupParticipant() {
         self.testHarness?.post(self.mockParticipant)
     }
     

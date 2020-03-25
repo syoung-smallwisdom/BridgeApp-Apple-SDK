@@ -79,6 +79,19 @@
             ]
         }
     },
+    "schemaReferences": [{
+        "id": "Tapping",
+        "revision": 4,
+        "type": "SchemaReference"
+    }, {
+        "id": "Tremor",
+        "revision": 3,
+        "type": "SchemaReference"
+    }, {
+        "id": "WalkAndBalance",
+        "revision": 1,
+        "type": "SchemaReference"
+    }],
     "clientData": {
     },
     "createdOn": "2019-04-26T21:26:25.510Z",

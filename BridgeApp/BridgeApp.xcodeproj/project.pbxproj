@@ -22,12 +22,9 @@
 		F80F17742033B20C00352C3E /* SurveyNavigationRuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F17732033B20C00352C3E /* SurveyNavigationRuleTests.swift */; };
 		F80F17A32033CB1B00352C3E /* SBBSurvey+RSDTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */; };
 		F818E2412032B07E00C538ED /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F818E2402032B07D00C538ED /* README.md */; };
-		F825BA54207FD09100D29F60 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F825BA40207FD09000D29F60 /* MainViewController.swift */; };
 		F825BA55207FD0C500D29F60 /* BridgeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44A52032467D002825AE /* BridgeApp.framework */; };
 		F825BA56207FD0C500D29F60 /* BridgeApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F83B44A52032467D002825AE /* BridgeApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F825BA5A207FD48300D29F60 /* Triggers.json in Resources */ = {isa = PBXBuildFile; fileRef = F825BA59207FD48300D29F60 /* Triggers.json */; };
 		F82B1A892036305200FEA16D /* SBBImage+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1A882036305200FEA16D /* SBBImage+Utilities.swift */; };
-		F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */; };
 		F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82B1AB02036410C00FEA16D /* SBABridgeConfiguration.swift */; };
 		F83703012282AFDD00939733 /* JSONSerializableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83703002282AFDD00939733 /* JSONSerializableTests.swift */; };
 		F83906FB20325D13005FC0BA /* BridgeInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = F83906FA20325D13005FC0BA /* BridgeInfo.plist */; };
@@ -40,7 +37,6 @@
 		F83B450C20324A33002825AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F83B450B20324A33002825AE /* Assets.xcassets */; };
 		F83B450F20324A33002825AE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F83B450D20324A33002825AE /* LaunchScreen.storyboard */; };
 		F84794F8207FDEED0024A230 /* SBAFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84794F7207FDEED0024A230 /* SBAFactory.swift */; };
-		F847952E207FEE090024A230 /* Medication.json in Resources */ = {isa = PBXBuildFile; fileRef = F847952D207FEE090024A230 /* Medication.json */; };
 		F86AFC2822AED6140070E347 /* BridgeApp.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = F86AFC2722AED6140070E347 /* BridgeApp.stringsdict */; };
 		F87D2AC622780599007CA2B5 /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC522780599007CA2B5 /* BridgeSDK.framework */; };
 		F87D2AC822780599007CA2B5 /* Research.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC722780599007CA2B5 /* Research.framework */; };
@@ -65,12 +61,18 @@
 		F8B86AA720C075FA00943127 /* ScheduleArchivingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B86AA620C075FA00943127 /* ScheduleArchivingTests.swift */; };
 		F8BF02A620B60F730016C343 /* MockActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8BF02A520B60F730016C343 /* MockActivityManager.swift */; };
 		F8BF02F020B71F580016C343 /* SBAScheduledActivityArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8BF02EF20B71F580016C343 /* SBAScheduledActivityArchive.swift */; };
-		F8C7D3D020927065007490BC /* Symptoms.json in Resources */ = {isa = PBXBuildFile; fileRef = F8C7D3BC20927065007490BC /* Symptoms.json */; };
 		F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C7D4152092CF36007490BC /* UIColor+BridgeKeyNames.swift */; };
 		F8E4A4EF20A420380046577B /* SBAScheduleManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4A4EE20A420380046577B /* SBAScheduleManagerTests.swift */; };
 		F8E4A4FB20A4D9F00046577B /* JSONDecoder+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4A4FA20A4D9F00046577B /* JSONDecoder+Utilities.swift */; };
 		F8F367BB2159C03C00A49F89 /* SBAArchiveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F367BA2159C03C00A49F89 /* SBAArchiveManager.swift */; };
 		F8F7241E203D007800AC0E5B /* SurveyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F7241D203D007800AC0E5B /* SurveyTests.swift */; };
+		FF196A7B242AB452008BD7EA /* ScheduledAssessment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF196A7A242AB452008BD7EA /* ScheduledAssessment.swift */; };
+		FF196A7D242ABC96008BD7EA /* ActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF196A7C242ABC96008BD7EA /* ActivityManager.swift */; };
+		FF196A81242ABFBC008BD7EA /* Evening.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A7E242ABFBC008BD7EA /* Evening.json */; };
+		FF196A82242ABFBC008BD7EA /* Morning.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A7F242ABFBC008BD7EA /* Morning.json */; };
+		FF196A83242ABFBC008BD7EA /* All_Day.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A80242ABFBC008BD7EA /* All_Day.json */; };
+		FF196A8A242BEC8A008BD7EA /* SBBScheduledActivity+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF196A88242BEC69008BD7EA /* SBBScheduledActivity+Utilities.swift */; };
+		FF196A8C242BF66F008BD7EA /* ScheduleTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF196A8B242BF66F008BD7EA /* ScheduleTableViewController.swift */; };
 		FF3A810F22C17B9300CD737D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF3A810E22C17B9300CD737D /* Images.xcassets */; };
 		FF63D5002303731B006C7BD3 /* SBALearnItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FE2303731A006C7BD3 /* SBALearnItem.swift */; };
 		FF63D5012303731B006C7BD3 /* SBALearnInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FF2303731A006C7BD3 /* SBALearnInfo.swift */; };
@@ -237,8 +239,6 @@
 		F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBSurvey+RSDTask.swift"; sourceTree = "<group>"; };
 		F818E23F2032AFA500C538ED /* BridgeAppExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BridgeAppExample.entitlements; sourceTree = "<group>"; };
 		F818E2402032B07D00C538ED /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../README.md; sourceTree = "<group>"; };
-		F825BA40207FD09000D29F60 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
-		F825BA59207FD48300D29F60 /* Triggers.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Triggers.json; sourceTree = "<group>"; };
 		F825BA5D207FD64200D29F60 /* SBATrackedItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATrackedItem.swift; sourceTree = "<group>"; };
 		F825BA67207FD83200D29F60 /* SBAMedicationTrackingStepNavigator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAMedicationTrackingStepNavigator.swift; sourceTree = "<group>"; };
 		F825BA69207FD83300D29F60 /* SBATrackedItemsStepNavigator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATrackedItemsStepNavigator.swift; sourceTree = "<group>"; };
@@ -248,7 +248,6 @@
 		F825BA74207FD96100D29F60 /* SBATrackingDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATrackingDataSource.swift; sourceTree = "<group>"; };
 		F825BA75207FD96100D29F60 /* SBATrackedLoggingDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATrackedLoggingDataSource.swift; sourceTree = "<group>"; };
 		F82B1A882036305200FEA16D /* SBBImage+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBImage+Utilities.swift"; sourceTree = "<group>"; };
-		F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+Utilities.swift"; sourceTree = "<group>"; };
 		F82B1AB02036410C00FEA16D /* SBABridgeConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBABridgeConfiguration.swift; sourceTree = "<group>"; };
 		F83703002282AFDD00939733 /* JSONSerializableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONSerializableTests.swift; sourceTree = "<group>"; };
 		F83906FA20325D13005FC0BA /* BridgeInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = BridgeInfo.plist; sourceTree = "<group>"; };
@@ -272,7 +271,6 @@
 		F8479511207FE3160024A230 /* TrackedLoggingDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackedLoggingDataSourceTests.swift; sourceTree = "<group>"; };
 		F8479514207FE3720024A230 /* CodableTrackedDataTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableTrackedDataTests.swift; sourceTree = "<group>"; };
 		F8479518207FEA4C0024A230 /* SBATrackedLoggingStepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATrackedLoggingStepViewController.swift; sourceTree = "<group>"; };
-		F847952D207FEE090024A230 /* Medication.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Medication.json; sourceTree = "<group>"; };
 		F8479530207FF0DF0024A230 /* SBATrackedLoggingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SBATrackedLoggingCell.xib; sourceTree = "<group>"; };
 		F85AABD3207FFCF40059F019 /* BridgeAppTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BridgeAppTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		F869804A20C85BD800476D6C /* MedicationLoggingDataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationLoggingDataSourceTests.swift; sourceTree = "<group>"; };
@@ -312,7 +310,6 @@
 		F8B86AA620C075FA00943127 /* ScheduleArchivingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleArchivingTests.swift; sourceTree = "<group>"; };
 		F8BF02A520B60F730016C343 /* MockActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockActivityManager.swift; sourceTree = "<group>"; };
 		F8BF02EF20B71F580016C343 /* SBAScheduledActivityArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAScheduledActivityArchive.swift; sourceTree = "<group>"; };
-		F8C7D3BC20927065007490BC /* Symptoms.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Symptoms.json; sourceTree = "<group>"; };
 		F8C7D3F5209285A8007490BC /* SBASymptomLoggingStepObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SBASymptomLoggingStepObject.swift; path = ../Model/SBASymptomLoggingStepObject.swift; sourceTree = "<group>"; };
 		F8C7D40C20929AFF007490BC /* SBASymptomLoggingStepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBASymptomLoggingStepViewController.swift; sourceTree = "<group>"; };
 		F8C7D4112092A1F5007490BC /* SBASymptomLoggingCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SBASymptomLoggingCell.xib; sourceTree = "<group>"; };
@@ -324,6 +321,13 @@
 		F8F367BA2159C03C00A49F89 /* SBAArchiveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAArchiveManager.swift; sourceTree = "<group>"; };
 		F8F7241D203D007800AC0E5B /* SurveyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyTests.swift; sourceTree = "<group>"; };
 		F8FD5680214714A000BA2FA6 /* SBATaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATaskViewModel.swift; sourceTree = "<group>"; };
+		FF196A7A242AB452008BD7EA /* ScheduledAssessment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledAssessment.swift; sourceTree = "<group>"; };
+		FF196A7C242ABC96008BD7EA /* ActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityManager.swift; sourceTree = "<group>"; };
+		FF196A7E242ABFBC008BD7EA /* Evening.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Evening.json; sourceTree = "<group>"; };
+		FF196A7F242ABFBC008BD7EA /* Morning.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Morning.json; sourceTree = "<group>"; };
+		FF196A80242ABFBC008BD7EA /* All_Day.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = All_Day.json; sourceTree = "<group>"; };
+		FF196A88242BEC69008BD7EA /* SBBScheduledActivity+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+Utilities.swift"; sourceTree = "<group>"; };
+		FF196A8B242BF66F008BD7EA /* ScheduleTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewController.swift; sourceTree = "<group>"; };
 		FF3A810A22C16D0000CD737D /* SBATimeRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATimeRange.swift; sourceTree = "<group>"; };
 		FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAWarningViewController.swift; sourceTree = "<group>"; };
 		FF3A810E22C17B9300CD737D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -441,9 +445,7 @@
 		F83906E420325C53005FC0BA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				F8C7D3BC20927065007490BC /* Symptoms.json */,
-				F847952D207FEE090024A230 /* Medication.json */,
-				F825BA59207FD48300D29F60 /* Triggers.json */,
+				FF196A84242ABFF3008BD7EA /* JSON Files */,
 				6035687922AEF58E00AAF37D /* AppConfig.json */,
 				F83906FC20325E53005FC0BA /* Certificates */,
 				F83B450B20324A33002825AE /* Assets.xcassets */,
@@ -556,7 +558,7 @@
 				F83906FA20325D13005FC0BA /* BridgeInfo.plist */,
 				F83B450420324A33002825AE /* AppDelegate.swift */,
 				6035687722AEF39600AAF37D /* ParticipantManager.swift */,
-				F825BA40207FD09000D29F60 /* MainViewController.swift */,
+				FF196A7C242ABC96008BD7EA /* ActivityManager.swift */,
 				F83906F920325CB6005FC0BA /* Storyboards */,
 				F83906E420325C53005FC0BA /* Resources */,
 				F83906F820325C6D005FC0BA /* Supporting Files */,
@@ -623,11 +625,11 @@
 		F886FD2B203523D400EF2248 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				FF196A88242BEC69008BD7EA /* SBBScheduledActivity+Utilities.swift */,
 				F886FD30203524C600EF2248 /* Date+Utilities.swift */,
 				F8E4A4FA20A4D9F00046577B /* JSONDecoder+Utilities.swift */,
 				F886FD2C2035244F00EF2248 /* NSPredicate+Utilities.swift */,
 				F886FD2E2035248600EF2248 /* SBBScheduledActivity+Filters.swift */,
-				F82B1A9D20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift */,
 				F89B3DE920C6F647002EAE2D /* Sequence+Utilities.swift */,
 				FF9D79CC230C7A5F005CFB37 /* TimeZone+Utilities.swift */,
 			);
@@ -656,6 +658,7 @@
 				F80F17A22033CB1B00352C3E /* SBBSurvey+RSDTask.swift */,
 				F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */,
 				FF9D799E230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift */,
+				FF196A7A242AB452008BD7EA /* ScheduledAssessment.swift */,
 			);
 			path = "Research Model";
 			sourceTree = "<group>";
@@ -667,6 +670,7 @@
 				F8A5CE4920A2AE7100E9FD75 /* SBARootViewController.swift */,
 				F8A5CE4D20A2BBEF00E9FD75 /* CatastrophicError.storyboard */,
 				F8A5CE4E20A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift */,
+				FF196A8B242BF66F008BD7EA /* ScheduleTableViewController.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -753,6 +757,16 @@
 				FF3A810E22C17B9300CD737D /* Images.xcassets */,
 			);
 			path = StyleGuide;
+			sourceTree = "<group>";
+		};
+		FF196A84242ABFF3008BD7EA /* JSON Files */ = {
+			isa = PBXGroup;
+			children = (
+				FF196A80242ABFBC008BD7EA /* All_Day.json */,
+				FF196A7E242ABFBC008BD7EA /* Evening.json */,
+				FF196A7F242ABFBC008BD7EA /* Morning.json */,
+			);
+			name = "JSON Files";
 			sourceTree = "<group>";
 		};
 		FF3F050422EFBD23008C507B /* Triggers Tracking */ = {
@@ -1060,13 +1074,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F83B450F20324A33002825AE /* LaunchScreen.storyboard in Resources */,
-				F8C7D3D020927065007490BC /* Symptoms.json in Resources */,
+				FF196A83242ABFBC008BD7EA /* All_Day.json in Resources */,
+				FF196A82242ABFBC008BD7EA /* Morning.json in Resources */,
 				F83B450C20324A33002825AE /* Assets.xcassets in Resources */,
 				F83B450A20324A33002825AE /* Main.storyboard in Resources */,
 				F83906FB20325D13005FC0BA /* BridgeInfo.plist in Resources */,
-				F847952E207FEE090024A230 /* Medication.json in Resources */,
-				F825BA5A207FD48300D29F60 /* Triggers.json in Resources */,
 				F83906FE20325E70005FC0BA /* sample-study.pem in Resources */,
+				FF196A81242ABFBC008BD7EA /* Evening.json in Resources */,
 				6035687A22AEF58E00AAF37D /* AppConfig.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1116,6 +1130,8 @@
 				F8398C9A212C868A005DE6E0 /* SBAReportManager.swift in Sources */,
 				F89F676C203279EF00B5CC4B /* SBBSurveyElement+RSDStep.swift in Sources */,
 				F8A5CE9020A3837100E9FD75 /* SBAParticipantManager.swift in Sources */,
+				FF196A8A242BEC8A008BD7EA /* SBBScheduledActivity+Utilities.swift in Sources */,
+				FF196A7B242AB452008BD7EA /* ScheduledAssessment.swift in Sources */,
 				FF9D79CD230C7A5F005CFB37 /* TimeZone+Utilities.swift in Sources */,
 				FF9D799F230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift in Sources */,
 				F8A8EAF92037834E00FED4EC /* SBAModuleIdentifier.swift in Sources */,
@@ -1141,7 +1157,6 @@
 				F886FD1320351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift in Sources */,
 				6090544821308CF7002D1895 /* SBAProfileOnSelectedAction.swift in Sources */,
 				F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */,
-				F82B1A9E20363DD500FEA16D /* SBBScheduledActivity+Utilities.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1167,8 +1182,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF196A7D242ABC96008BD7EA /* ActivityManager.swift in Sources */,
 				6035687822AEF39600AAF37D /* ParticipantManager.swift in Sources */,
-				F825BA54207FD09100D29F60 /* MainViewController.swift in Sources */,
 				F83B450520324A33002825AE /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1177,6 +1192,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF196A8C242BF66F008BD7EA /* ScheduleTableViewController.swift in Sources */,
 				FF9D799D230C74D4005CFB37 /* SBACatastrophicErrorViewController.swift in Sources */,
 				FF9D799A230C74D4005CFB37 /* SBAAppDelegate.swift in Sources */,
 				FF9D799B230C74D4005CFB37 /* SBARootViewController.swift in Sources */,

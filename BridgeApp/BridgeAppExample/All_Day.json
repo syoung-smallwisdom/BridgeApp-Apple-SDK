@@ -1,0 +1,17 @@
+{
+    "identifier"        : "All Day",
+    "shouldHideActions" : ["goBackward", "skip"],
+    "progressMarkers" : [],
+    "steps"             : [
+                            {
+                            "identifier": "step1",
+                            "type": "form",
+                            "title": "All Day Assessment",
+                            "text": "Enter a number",
+                            "inputFields": [{
+                                            "type": "integer",
+                                            "uiHint": "textfield"
+                                            }]
+                            }
+                           ]
+}
