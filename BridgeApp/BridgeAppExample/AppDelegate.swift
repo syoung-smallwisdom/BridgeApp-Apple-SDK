@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         testHarness = SBBBridgeTestHarness(studyIdentifier: "bridgeApp-test")
 
-        let studySetup: StudySetup = .noneCompleted
+        let studySetup: StudySetup = .morningCompleted
         let activityManager = ActivityManager(studySetup: studySetup)
         
         let participantManager = activityManager.participantManager

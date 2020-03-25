@@ -117,10 +117,6 @@ public class ActivityManager : NSObject, SBBActivityManagerProtocol {
         activity.task = SBBTaskReference(dictionaryRepresentation: [ "identifier" : identifier.stringValue ])
         schedule.activity = activity
         
-//        if participantManager != nil {
-//            participantManager.addReport(for: schedule, with: studySetup)
-//        }
-        
         return schedule
     }
     
