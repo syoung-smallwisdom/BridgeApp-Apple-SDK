@@ -84,14 +84,6 @@ extension SBBScheduledActivity : AssessmentSchedule {
         return startOfDay == scheduledOn && startOfDay.addingNumberOfDays(1) == expireDate
     }
     
-    /// Is the schedule available now?
-    public var isAvailableNow: Bool {
-        let now = Date()
-        if scheduledOn > now { return false }
-        else if let expireDate = self.expiresOn { return now < expireDate }
-        else { return true }
-    }
-    
     private var now: Date {
         return Date()
     }
