@@ -73,6 +73,9 @@
 		FF196A83242ABFBC008BD7EA /* All_Day.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A80242ABFBC008BD7EA /* All_Day.json */; };
 		FF196A8A242BEC8A008BD7EA /* SBBScheduledActivity+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF196A88242BEC69008BD7EA /* SBBScheduledActivity+Utilities.swift */; };
 		FF196A8C242BF66F008BD7EA /* ScheduleTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF196A8B242BF66F008BD7EA /* ScheduleTableViewController.swift */; };
+		FF196A99242C29CA008BD7EA /* Symptoms.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A96242C29C9008BD7EA /* Symptoms.json */; };
+		FF196A9A242C29CA008BD7EA /* Triggers.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A97242C29CA008BD7EA /* Triggers.json */; };
+		FF196A9B242C29CA008BD7EA /* Medication.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A98242C29CA008BD7EA /* Medication.json */; };
 		FF3A810F22C17B9300CD737D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF3A810E22C17B9300CD737D /* Images.xcassets */; };
 		FF63D5002303731B006C7BD3 /* SBALearnItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FE2303731A006C7BD3 /* SBALearnItem.swift */; };
 		FF63D5012303731B006C7BD3 /* SBALearnInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FF2303731A006C7BD3 /* SBALearnInfo.swift */; };
@@ -328,6 +331,9 @@
 		FF196A80242ABFBC008BD7EA /* All_Day.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = All_Day.json; sourceTree = "<group>"; };
 		FF196A88242BEC69008BD7EA /* SBBScheduledActivity+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SBBScheduledActivity+Utilities.swift"; sourceTree = "<group>"; };
 		FF196A8B242BF66F008BD7EA /* ScheduleTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewController.swift; sourceTree = "<group>"; };
+		FF196A96242C29C9008BD7EA /* Symptoms.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Symptoms.json; sourceTree = "<group>"; };
+		FF196A97242C29CA008BD7EA /* Triggers.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Triggers.json; sourceTree = "<group>"; };
+		FF196A98242C29CA008BD7EA /* Medication.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Medication.json; sourceTree = "<group>"; };
 		FF3A810A22C16D0000CD737D /* SBATimeRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBATimeRange.swift; sourceTree = "<group>"; };
 		FF3A810C22C16DE100CD737D /* SBAWarningViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBAWarningViewController.swift; sourceTree = "<group>"; };
 		FF3A810E22C17B9300CD737D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -762,6 +768,9 @@
 		FF196A84242ABFF3008BD7EA /* JSON Files */ = {
 			isa = PBXGroup;
 			children = (
+				FF196A98242C29CA008BD7EA /* Medication.json */,
+				FF196A96242C29C9008BD7EA /* Symptoms.json */,
+				FF196A97242C29CA008BD7EA /* Triggers.json */,
 				FF196A80242ABFBC008BD7EA /* All_Day.json */,
 				FF196A7E242ABFBC008BD7EA /* Evening.json */,
 				FF196A7F242ABFBC008BD7EA /* Morning.json */,
@@ -1074,11 +1083,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				F83B450F20324A33002825AE /* LaunchScreen.storyboard in Resources */,
+				FF196A9A242C29CA008BD7EA /* Triggers.json in Resources */,
 				FF196A83242ABFBC008BD7EA /* All_Day.json in Resources */,
 				FF196A82242ABFBC008BD7EA /* Morning.json in Resources */,
 				F83B450C20324A33002825AE /* Assets.xcassets in Resources */,
 				F83B450A20324A33002825AE /* Main.storyboard in Resources */,
+				FF196A99242C29CA008BD7EA /* Symptoms.json in Resources */,
 				F83906FB20325D13005FC0BA /* BridgeInfo.plist in Resources */,
+				FF196A9B242C29CA008BD7EA /* Medication.json in Resources */,
 				F83906FE20325E70005FC0BA /* sample-study.pem in Resources */,
 				FF196A81242ABFBC008BD7EA /* Evening.json in Resources */,
 				6035687A22AEF58E00AAF37D /* AppConfig.json in Resources */,
