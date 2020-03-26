@@ -63,19 +63,20 @@ open class ScheduleTableViewController: UITableViewController, RSDTaskViewContro
     // MARK: Table data source
 
     override open func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return scheduleManager.numberOfSections()
     }
 
     override open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return scheduleManager.assessmentSchedules.count
+        return scheduleManager.numberOfAssessmentSchedules(in: section)
     }
 
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let schedule = scheduleManager.assessmentSchedules[indexPath.row]
+        let schedule = scheduleManager.assessmentSchedule(at: indexPath)
+        let now = Date()
         let taskInfo = schedule.taskInfo
-        let completed = scheduleManager.isCompleted(for: taskInfo, on: Date())
-        let expired = !completed && schedule.isExpired
-        let available = !completed && schedule.isAvailableNow
+        let completed = scheduleManager.isCompleted(at: indexPath, on: now)
+        let expired = !completed && scheduleManager.isExpired(at: indexPath, on: now)
+        let available = !completed && scheduleManager.isAvailableNow(at: indexPath, on: now)
         let cell = tableView.dequeueReusableCell(withIdentifier: "BasicCell", for: indexPath)
         cell.accessoryType = completed ? .checkmark : .none
         cell.textLabel?.text = schedule.taskInfo.title ?? schedule.taskInfo.identifier
@@ -94,15 +95,12 @@ open class ScheduleTableViewController: UITableViewController, RSDTaskViewContro
     // MARK: Table delegate
     
     override open func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        let schedule = scheduleManager.assessmentSchedules[indexPath.row]
-        let taskInfo = schedule.taskInfo
-        let completed = scheduleManager.isCompleted(for: taskInfo, on: Date())
-        let selectable = schedule.isAvailableNow && !completed
+        let selectable = scheduleManager.isAvailableNow(at: indexPath, on: Date())
         return selectable ? indexPath : nil
     }
 
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let taskPath = scheduleManager.instantiateTaskViewModel(for: scheduleManager.assessmentSchedules[indexPath.row])
+        let taskPath = scheduleManager.instantiateTaskViewModel(at: indexPath)
         let vc = RSDTaskViewController(taskViewModel: taskPath)
         vc.delegate = self
         self.present(vc, animated: true, completion: nil)

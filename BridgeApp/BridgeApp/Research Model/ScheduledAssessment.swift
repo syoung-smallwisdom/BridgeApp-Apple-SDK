@@ -41,33 +41,53 @@ public protocol AssessmentSchedule {
     /// The task info associated with this schedule.
     var taskInfo: RSDTaskInfo { get }
     
-    /// Is the schedule available now?
-    var isAvailableNow: Bool { get }
-    
     /// Is this a schedule that is available all day for one day only?
     var isAllDay: Bool { get }
-    
-    /// Has the available time expired?
-    var isExpired: Bool { get }
 }
 
 public protocol AssessmentScheduleManager : RSDTaskControllerDelegate {
-    var assessmentSchedules: [AssessmentSchedule] { get }
     func reloadData()
-    func isCompleted(for taskInfo: RSDTaskInfo, on date: Date) -> Bool
-    func instantiateTaskViewModel(for assessmentSchedule: AssessmentSchedule) -> RSDTaskViewModel
+    func numberOfSections() -> Int
+    func numberOfAssessmentSchedules(in section: Int) -> Int
+    func assessmentSchedule(at indexPath: IndexPath) -> AssessmentSchedule
+    func instantiateTaskViewModel(at indexPath: IndexPath) -> RSDTaskViewModel
+    func isCompleted(at indexPath: IndexPath, on date: Date) -> Bool
+    func isExpired(at indexPath: IndexPath, on date: Date) -> Bool
+    func isAvailableNow(at indexPath: IndexPath, on date: Date) -> Bool
 }
 
 extension SBAScheduleManager : AssessmentScheduleManager {
-    public var assessmentSchedules: [AssessmentSchedule] {
-        return self.scheduledActivities
+    
+    public func numberOfSections() -> Int {
+        return 1
     }
     
-    public func instantiateTaskViewModel(for assessmentSchedule: AssessmentSchedule) -> RSDTaskViewModel {
-        guard let schedule = assessmentSchedule as? SBBScheduledActivity else {
-            fatalError("This schedule manager only supports instantiating a task view model from it's own assessments.")
-        }
+    public func numberOfAssessmentSchedules(in section: Int) -> Int {
+        return self.scheduledActivities.count
+    }
+    
+    public func assessmentSchedule(at indexPath: IndexPath) -> AssessmentSchedule {
+        return self.scheduledActivities[indexPath.row]
+    }
+    
+    public func instantiateTaskViewModel(at indexPath: IndexPath) -> RSDTaskViewModel {
+        let schedule = self.scheduledActivities[indexPath.row]
         return self.instantiateTaskViewModel(for: schedule)
+    }
+    
+    public func isCompleted(at indexPath: IndexPath, on date: Date) -> Bool {
+        let schedule = self.scheduledActivities[indexPath.row]
+        return schedule.isCompleted
+    }
+    
+    public func isExpired(at indexPath: IndexPath, on date: Date) -> Bool {
+        let schedule = self.scheduledActivities[indexPath.row]
+        return schedule.isExpired
+    }
+    
+    public func isAvailableNow(at indexPath: IndexPath, on date: Date) -> Bool {
+        let schedule = self.scheduledActivities[indexPath.row]
+        return !schedule.isCompleted && schedule.isAvailableNow
     }
 }
 
