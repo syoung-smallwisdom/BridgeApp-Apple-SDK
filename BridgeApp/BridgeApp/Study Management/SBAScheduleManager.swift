@@ -159,18 +159,24 @@ open class SBAScheduleManager: SBAReportManager {
             // schedule is *not* part of this activity group.
             group.activityIdentifiers.forEach {
                 let predicate = self.historyPredicate(for: $0)
-                let sortDescriptors = [SBBScheduledActivity.finishedOnSortDescriptor(ascending: false)]
                 requests.append(FetchRequest(predicate: predicate, sortDescriptors: sortDescriptors, fetchLimit: 1))
             }
             
             return requests
         }
         else {
-            
             // If there is no activity group associated with this schedule then return all activities that
             // are valid today.
-            return [FetchRequest(predicate: self.availablePredicate(), sortDescriptors: nil, fetchLimit: nil)]
+            return [FetchRequest(predicate: self.availablePredicate(), sortDescriptors: sortDescriptors, fetchLimit: nil)]
         }
+    }
+    
+    /// The sort descriptors to use to sort the list of scheduled activities.
+    open var sortDescriptors: [NSSortDescriptor]? {
+        return (activityGroup == nil) ?
+            [SBBScheduledActivity.scheduledOnSortDescriptor(ascending: true)] :
+            [SBBScheduledActivity.finishedOnSortDescriptor(ascending: false)]
+            
     }
     
     /// The predicate to use for filtering today's activities for those available today. If there is an
@@ -222,7 +228,10 @@ open class SBAScheduleManager: SBAReportManager {
                             scheduleMap[$0.guid] = $0
                         }
                     }
-                    let schedules: [SBBScheduledActivity] = scheduleMap.values.map { $0 }
+                    var schedules: [SBBScheduledActivity] = scheduleMap.values.map { $0 }
+                    if let descriptors = self.sortDescriptors {
+                        schedules = (schedules as NSArray).sortedArray(using: descriptors) as! [SBBScheduledActivity]
+                    }
                     //print("\n---\(self.identifier):\n\(schedules)")
 
                     DispatchQueue.main.async {

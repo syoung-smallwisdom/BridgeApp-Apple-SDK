@@ -1,0 +1,17 @@
+{
+    "identifier"        : "Evening",
+    "shouldHideActions" : ["goBackward", "skip"],
+    "progressMarkers" : [],
+    "steps"             : [
+                            {
+                            "identifier": "step1",
+                            "type": "form",
+                            "title": "Evening Assessment",
+                            "text": "Enter a number",
+                            "inputFields": [{
+                                            "type": "integer",
+                                            "uiHint": "textfield"
+                                            }]
+                            }
+                           ]
+}

@@ -48,9 +48,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         testHarness = SBBBridgeTestHarness(studyIdentifier: "bridgeApp-test")
 
-        let participantManager = ParticipantManager()
+        let studySetup: StudySetup = .morningCompleted
+        let activityManager = ActivityManager(studySetup: studySetup)
+        
+        let participantManager = activityManager.participantManager
         BridgeSDK.participantManager = participantManager
-
+        
+        SBBComponentManager.registerComponent(activityManager, for: SBBActivityManager.self)
+        SBBComponentManager.registerComponent(participantManager, for: SBBParticipantManager.self)
+        
+        activityManager.buildSchedules()
+        participantManager.setupParticipant()
+        
         SBABridgeConfiguration.shared.setupBridge(with: SBAFactory()) {
             SBABridgeConfiguration.shared.refreshAppConfig()
         }
