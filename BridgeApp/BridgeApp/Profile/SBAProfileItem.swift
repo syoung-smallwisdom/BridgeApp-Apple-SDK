@@ -236,7 +236,8 @@ public final class SBAReportProfileItem: SBAProfileItemInternal {
     
     public func storedValue(forKey key: String) -> Any? {
         guard let reportManager = self.reportManager,
-                let clientData = reportManager.reports.first(where: { $0.reportKey == RSDIdentifier(rawValue: key) })?.clientData
+            // This is the most recent report's client data.
+            let clientData = reportManager.report(with: RSDIdentifier(rawValue: key).rawValue)?.clientData
             else {
                 return nil
         }
