@@ -62,7 +62,7 @@ extension SBBSurveyElement {
 
 extension SBBSurveyElement : RSDUIStep {
     
-    public var text: String? {
+    public var subtitle: String? {
         return self.prompt.sba_parseNewLine()
     }
     
