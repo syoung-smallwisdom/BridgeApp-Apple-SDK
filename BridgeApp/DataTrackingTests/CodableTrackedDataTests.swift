@@ -243,7 +243,7 @@ class CodableTrackedDataTests: XCTestCase {
             "identifier": "ibuprofen",
             "dosageItems" : [ {
                                 "dosage": "10/100 mg",
-                                "daysOfWeek": [1,3,5],
+                                "daysOfWeek": ["Sunday","Tuesday","Thursday"],
                                 "timestamps": [{ "timeOfDay" : "08:00" }]
                               }
                             ]
@@ -279,8 +279,8 @@ class CodableTrackedDataTests: XCTestCase {
                 XCTAssertEqual(items.count, 1)
                 if let dosageDictionary = items.first {
                     XCTAssertEqual(dosageDictionary["dosage"] as? String, "10/100 mg")
-                    if let daysOfWeek = dosageDictionary["daysOfWeek"] as? [Int] {
-                        XCTAssertEqual(Set(daysOfWeek), [1,3,5])
+                    if let daysOfWeek = dosageDictionary["daysOfWeek"] as? [String] {
+                        XCTAssertEqual(Set(daysOfWeek), ["Sunday","Tuesday","Thursday"])
                     }
                     else {
                         XCTFail("Failed to encode the days of week")
@@ -462,7 +462,7 @@ class CodableTrackedDataTests: XCTestCase {
             
             XCTAssertEqual(object.identifier, "foo")
             XCTAssertEqual(object.title, "Hello World!")
-            XCTAssertEqual(object.text, "Some text.")
+            XCTAssertEqual(object.subtitle, "Some text.")
             XCTAssertEqual(object.detail, "This is a test.")
             XCTAssertEqual(object.footnote, "This is a footnote.")
             XCTAssertEqual((object.imageTheme as? RSDFetchableImageThemeElementObject)?.imageName, "before")

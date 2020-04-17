@@ -235,8 +235,8 @@ class ArchivableTrackingTests: XCTestCase {
                     if let dosageItems = item["dosageItems"] as? [[String : Any]],
                         let dosageItem = dosageItems.first {
                         XCTAssertEqual(dosageItem["dosage"] as? String, "1 ml")
-                        if let daysOfWeek = dosageItem["daysOfWeek"] as? [Int] {
-                            XCTAssertEqual(Set(daysOfWeek), [6,4,2])
+                        if let daysOfWeek = dosageItem["daysOfWeek"] as? [String] {
+                            XCTAssertEqual(Set(daysOfWeek), ["Friday","Wednesday","Monday"])
                         }
                         else {
                             XCTFail("Failed to encode `daysOfWeek`.")
