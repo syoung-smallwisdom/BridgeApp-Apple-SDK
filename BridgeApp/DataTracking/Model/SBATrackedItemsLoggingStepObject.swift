@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import JsonModel
 
 /// `SBATrackedItemsLoggingStepObject` is a custom table step that can be used to log the same
 /// information about a list of tracked items for each one.
@@ -168,7 +169,7 @@ public struct SBATrackedLoggingCollectionResultObject : RSDCollectionResult, Cod
     }
     
     /// Build the client data for this result.
-    public func dataScore() throws -> RSDJSONSerializable? {
+    public func dataScore() throws -> JsonSerializable? {
         // Only include the client data for the logging result and not the selection result.
         guard identifier == RSDIdentifier.trackedItemsResult.stringValue
             else {

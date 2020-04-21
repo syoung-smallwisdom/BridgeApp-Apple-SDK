@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import JsonModel
 
 open class SBAMedicationTrackingStepNavigator : SBATrackedItemsStepNavigator {
     
@@ -629,7 +630,7 @@ public struct SBAMedicationTrackingResult : Codable, SBATrackedItemsCollectionRe
         }
     }
     
-    public func dataScore() throws -> RSDJSONSerializable? {
+    public func dataScore() throws -> JsonSerializable? {
         let dictionary = try self.rsd_jsonEncodedDictionary()
         return
             [CodingKeys.startDate.stringValue : SBAFactory.shared.encodeString(from: self.startDate, codingPath: []),

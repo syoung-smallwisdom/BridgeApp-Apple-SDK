@@ -34,6 +34,7 @@
 import XCTest
 @testable import BridgeApp
 @testable import Research
+import JsonModel
 
 class ScheduleArchivingTests: SBAScheduleManagerTests {
     
@@ -723,7 +724,7 @@ struct TestClientDataResult : RSDScoringResult {
     var startDate: Date = Date()
     var endDate: Date = Date()
     
-    func dataScore() throws -> RSDJSONSerializable? {
+    func dataScore() throws -> JsonSerializable? {
         return "\(identifier) moo"
     }
     
@@ -735,7 +736,7 @@ struct TestClientDataResult : RSDScoringResult {
 
 class TestTracker : RSDTrackingTask {
     
-    var scoringData: RSDJSONSerializable?
+    var scoringData: JsonSerializable?
     var setupTask_data: RSDTaskData?
     
     func taskData(for taskResult: RSDTaskResult) -> RSDTaskData? {
@@ -755,5 +756,5 @@ class TestTracker : RSDTrackingTask {
 struct TestTaskData : RSDTaskData {
     let identifier: String
     let timestampDate: Date?
-    let json: RSDJSONSerializable
+    let json: JsonSerializable
 }

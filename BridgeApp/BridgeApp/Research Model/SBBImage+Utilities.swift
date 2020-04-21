@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import JsonModel
 
 protocol sbb_BridgeImageOwner {
     var image: SBBImage? { get }
@@ -68,7 +69,7 @@ extension SBBImage : RSDResourceImageData {
         return nil
     }
     
-    public var factoryBundle: RSDResourceBundle? {
+    public var factoryBundle: ResourceBundle? {
         return nil
     }
     

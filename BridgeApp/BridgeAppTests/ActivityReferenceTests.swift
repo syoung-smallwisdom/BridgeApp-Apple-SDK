@@ -181,8 +181,7 @@ class ActivityReferenceTests: XCTestCase {
             "imageSource": "fooImage",
             "minuteDuration": 10,
             "resource": {   "resourceName" : "Foo_Task",
-                            "bundleIdentifier" : "org.example.Foo",
-                            "classType" : "FooTask"
+                            "bundleIdentifier" : "org.example.Foo"
                         }
         }
         """.data(using: .utf8)! // our data in native (JSON) format
@@ -198,7 +197,6 @@ class ActivityReferenceTests: XCTestCase {
             XCTAssertEqual(object.estimatedMinutes, 10)
             XCTAssertEqual(object.resource?.resourceName, "Foo_Task")
             XCTAssertEqual(object.resource?.bundleIdentifier, "org.example.Foo")
-            XCTAssertEqual(object.resource?.classType, "FooTask")
 
         } catch let err {
             XCTFail("Failed to decode/encode object: \(err)")
