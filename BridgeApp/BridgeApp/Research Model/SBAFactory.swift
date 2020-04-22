@@ -123,7 +123,7 @@ open class SBAFactory : RSDFactory {
         let catType: SBACategoryType = SBACategoryType(rawValue: catTypeName)
         switch catType {
         case .task:
-            return (catType, try self.decodeTask(from: decoder))
+            return (catType, try self.decodePolymorphicObject(RSDTask.self, from: decoder))
         case .profileManager:
             return (catType, try self.decodeProfileManager(from: decoder))
         case .profileDataSource:
@@ -131,21 +131,6 @@ open class SBAFactory : RSDFactory {
         default:
             let context = DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "\(self) does not support `\(catTypeName)` as a decodable category type.")
             throw DecodingError.typeMismatch(SBACategoryType.self, context)
-        }
-    }
-
-    /// Override to implement custom step types.
-    override open func decodeStep(from decoder:Decoder, with type:RSDStepType) throws -> RSDStep? {
-        switch (type) {
-        case .taskInfo:
-            if let taskInfo = try? SBAActivityInfoObject(from: decoder) {
-                return RSDTaskInfoStepObject(with: taskInfo)
-            }
-            else {
-                return try super.decodeStep(from: decoder, with: type)
-            }
-        default:
-            return try super.decodeStep(from: decoder, with: type)
         }
     }
     
