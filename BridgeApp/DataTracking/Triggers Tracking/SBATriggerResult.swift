@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import JsonModel
 
 public struct SBATriggerResult : RSDResult, Codable, RSDScoringResult {
     public let type: RSDResultType = .trigger
@@ -57,7 +58,7 @@ public struct SBATriggerResult : RSDResult, Codable, RSDScoringResult {
     /// The timezone in effect when the event was logged.
     public var timeZone: TimeZone = TimeZone.current
     
-    public func dataScore() throws -> RSDJSONSerializable? {
+    public func dataScore() throws -> JsonSerializable? {
         return try self.rsd_jsonEncodedDictionary().jsonObject()
     }
     

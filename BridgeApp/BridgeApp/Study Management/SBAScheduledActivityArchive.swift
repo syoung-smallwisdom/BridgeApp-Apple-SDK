@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import JsonModel
 
 private let kScheduledActivityGuidKey         = "scheduledActivityGuid"
 private let kScheduleIdentifierKey            = "scheduleIdentifier"
@@ -209,7 +210,7 @@ struct SBAAnswerResultWrapper : RSDArchivable {
         json[kStartDateKey]  = result.startDate
         json[kEndDateKey]    = result.endDate
         json[kItemKey] = item
-        if let answer = (result.value as? RSDJSONValue)?.jsonObject() {
+        if let answer = (result.value as? JsonValue)?.jsonObject() {
             json[result.answerType.bridgeAnswerKey] = answer
             json[kQuestionResultSurveyAnswerKey] = answer
             json[kQuestionResultQuestionTypeKey] = result.answerType.bridgeAnswerType

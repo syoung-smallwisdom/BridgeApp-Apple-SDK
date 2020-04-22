@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import JsonModel
 
 /// A step used for logging symptoms.
 open class SBASymptomLoggingStepObject : SBATrackedItemsLoggingStepObject {
@@ -413,7 +414,7 @@ public struct SBASymptomResult : Codable, RSDScoringResult {
     /// Notes added by the participant.
     public var notes: String?
     
-    public func dataScore() throws -> RSDJSONSerializable? {
+    public func dataScore() throws -> JsonSerializable? {
         return try self.rsd_jsonEncodedDictionary().jsonObject()
     }
     

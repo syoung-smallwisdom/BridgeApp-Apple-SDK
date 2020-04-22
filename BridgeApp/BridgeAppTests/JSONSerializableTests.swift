@@ -33,6 +33,7 @@
 
 import XCTest
 import BridgeApp
+import JsonModel
 
 class JSONSerializableTests: XCTestCase {
 
@@ -46,7 +47,7 @@ class JSONSerializableTests: XCTestCase {
 
     func testString() {
         let obj = "foo"
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? String, "foo")
         let jsonData = clientData.toJSONSerializable()
@@ -73,7 +74,7 @@ class JSONSerializableTests: XCTestCase {
 
     func testNSNumber() {
         let obj: NSNumber = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? NSNumber, 3)
         let jsonData = clientData.toJSONSerializable()
@@ -82,91 +83,91 @@ class JSONSerializableTests: XCTestCase {
 
     func testInt() {
         let obj: Int = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? Int, 3)
     }
 
     func testInt8() {
         let obj: Int8 = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? Int8, 3)
     }
 
     func testInt16() {
         let obj: Int16 = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? Int16, 3)
     }
     
     func testInt32() {
         let obj: Int32 = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? Int32, 3)
     }
 
     func testInt64() {
         let obj: Int64 = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? Int64, 3)
     }
     
     func testUInt() {
         let obj: UInt = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? UInt, 3)
     }
     
     func testUInt8() {
         let obj: UInt8 = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? UInt8, 3)
     }
     
     func testUInt16() {
         let obj: UInt16 = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? UInt16, 3)
     }
     
     func testUInt32() {
         let obj: UInt32 = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? UInt32, 3)
     }
     
     func testUInt64() {
         let obj: UInt64 = 3
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? UInt64, 3)
     }
 
     func testBool() {
         let obj: Bool = true
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? Bool, true)
     }
 
     func testDouble() {
         let obj: Double = 3.2
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? Double, 3.2)
     }
 
     func testFloat() {
         let obj: Float = 3.2
-        let json = obj as RSDJSONSerializable
+        let json = obj as JsonSerializable
         let clientData = json.toClientData()
         XCTAssertEqual(clientData as? Float, 3.2)
     }

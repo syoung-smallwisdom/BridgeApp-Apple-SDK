@@ -1,5 +1,5 @@
 //
-//  SBBJSONValue+RSDJSONSerializable.swift
+//  SBBJSONValue+JsonSerializable.swift
 //  BridgeApp (iOS)
 //
 //  Copyright © 2018-2019 Sage Bionetworks. All rights reserved.
@@ -32,11 +32,12 @@
 //
 
 import Foundation
+import JsonModel
 
-public extension RSDJSONSerializable {
+public extension JsonSerializable {
     func toClientData() -> SBBJSONValue {
         guard let data = self as? SBBJSONValue else {
-            // Note: syoung 05/07/2019 All implementations of RSDJSONSerializable should be tested so this is
+            // Note: syoung 05/07/2019 All implementations of JsonSerializable should be tested so this is
             // unexpected to happen. Nevertheless, if it does happen, only crash in Debug and not in Release.
             assertionFailure("Failed to convert \(self) to SBBJSONValue")
             return NSNull()
@@ -46,17 +47,17 @@ public extension RSDJSONSerializable {
 }
 
 public extension SBBJSONValue {
-    func toJSONSerializable() -> RSDJSONSerializable {
-        if let data = self as? RSDJSONSerializable {
+    func toJSONSerializable() -> JsonSerializable {
+        if let data = self as? JsonSerializable {
             return data
         }
-        else if let jsonValue = self as? RSDJSONValue {
+        else if let jsonValue = self as? JsonValue {
             return jsonValue.jsonObject()
         }
         else {
             // Note: syoung 05/07/2019 All implementations of SBBJSONValue should be tested so this is
             // unexpected to happen. Nevertheless, if it does happen, only crash in Debug and not in Release.
-            assertionFailure("Failed to convert \(self) to RSDJSONSerializable")
+            assertionFailure("Failed to convert \(self) to JsonSerializable")
             return NSNull()
         }
     }

@@ -33,6 +33,7 @@
 
 import Foundation
 import HealthKit
+import JsonModel
 
 /// The type of a profile table item. This is used to decode the item in a factory.
 public struct SBAProfileTableItemType : RawRepresentable, Codable {
@@ -275,7 +276,7 @@ public struct SBAHTMLProfileTableItem: SBAProfileTableItem, Decodable, RSDResour
     public var bundleIdentifier: String?
     
     /// The default bundle from the factory used to decode this object.
-    public var factoryBundle: RSDResourceBundle? = nil
+    public var factoryBundle: ResourceBundle? = nil
     
     /// The Android package name.
     public var packageName: String? = nil

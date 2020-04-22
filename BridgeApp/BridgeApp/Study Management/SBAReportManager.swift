@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import JsonModel
 
 extension Notification.Name {
     
@@ -79,7 +80,7 @@ public struct SBAReport : Hashable {
         self.timeZone = timeZone
     }
     
-    public init(identifier: String, date: Date?, json: RSDJSONSerializable, timeZone: TimeZone = TimeZone.current) {
+    public init(identifier: String, date: Date?, json: JsonSerializable, timeZone: TimeZone = TimeZone.current) {
         self.reportKey = RSDIdentifier(rawValue: identifier)
         self.date = date ?? SBAReportSingletonDate
         self.clientData = json.toClientData()
@@ -101,7 +102,7 @@ extension SBAReport : RSDTaskData {
         return (date == SBAReportSingletonDate) ? nil : date
     }
     
-    public var json: RSDJSONSerializable {
+    public var json: JsonSerializable {
         return clientData.toJSONSerializable()
     }
     
@@ -670,7 +671,7 @@ open class SBAReportManager: SBAArchiveManager, RSDDataStorageManager {
     open func buildClientData(from taskResult: RSDTaskResult) -> SBBJSONValue? {
         
         // Get the hold data, if any.
-        var holdJSON: RSDJSONSerializable?
+        var holdJSON: JsonSerializable?
         _holdDataQueue.sync {
             let key = HoldDataKey(taskResult.taskRunUUID, taskResult.identifier)
             holdJSON = self._holdData[key]?.json
