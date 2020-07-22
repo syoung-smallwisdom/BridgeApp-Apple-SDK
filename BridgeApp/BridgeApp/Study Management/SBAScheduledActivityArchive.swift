@@ -89,10 +89,9 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
         }
     }
     
-    /// By default, the task result is not included and metadata are **not** archived directly, while the
-    /// answer map is included.
+    /// syoung 07/21/2020 Change request to include all files by default.
     open func shouldInsertData(for filename: RSDReservedFilename) -> Bool {
-        return filename == .answers
+        true
     }
     
     /// Get the archivable object for the given result.
