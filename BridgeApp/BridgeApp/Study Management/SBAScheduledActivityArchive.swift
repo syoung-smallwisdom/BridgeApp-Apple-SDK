@@ -163,7 +163,7 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
         // needing to release, pushing a work-around while I continue to investigate.
         if !self.usesV1LegacySchema, self.answersDictionary == nil, let taskResult = self.taskResult {
             let builder = RSDDefaultScoreBuilder()
-            let answers = builder.getScoringData(from: taskResult) as? [String : Any] ?? [String : Any]()
+            let answers = builder.getScoringData(from: taskResult) as? [String : JsonSerializable] ?? [String : Any]()
             self.insertAnswersDictionary(answers)
         }
         
