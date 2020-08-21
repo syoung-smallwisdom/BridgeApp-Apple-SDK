@@ -57,8 +57,8 @@ open class SBASurveyConfiguration {
     open func stepType(for step: SBBSurveyElement) -> RSDStepType {
         if let stepType = stepTypeMap[step.guid] {
             return stepType
-        } else if step is SBBSurveyQuestion {
-            return .form
+        } else if let question = step as? SBBSurveyQuestion {
+            return (question.constraints is SBBMultiValueConstraints) ? .choiceQuestion : .simpleQuestion
         } else {
             return .instruction
         }
@@ -68,11 +68,20 @@ open class SBASurveyConfiguration {
     /// By default, this will return an instance of `RSDResultObject` for an instruction step
     /// and `RSDCollectionResultObject` for a form step.
     open func instantiateStepResult(for step: SBBSurveyElement) -> RSDResult? {
-        return step is SBBSurveyInfoScreen ? RSDResultObject(identifier: step.identifier) : RSDCollectionResultObject(identifier: step.identifier)
+        if let question = step as? SBBSurveyQuestion {
+            return AnswerResultObject(identifier: question.identifier,
+                                      answerType: question.answerType,
+                                      value: nil,
+                                      questionText: question.prompt,
+                                      questionData: question.questionData)
+        }
+        else {
+            return RSDResultObject(identifier: step.identifier)
+        }
     }
     
     /// Is the input field optional? Default = `true`.
-    open func isOptional(for inputField: RSDInputField) -> Bool {
+    open func isOptional(for inputField: SBBSurveyQuestion) -> Bool {
         return true
     }
     

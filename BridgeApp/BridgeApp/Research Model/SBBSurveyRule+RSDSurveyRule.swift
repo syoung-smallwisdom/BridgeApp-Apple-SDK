@@ -74,7 +74,13 @@ extension SBBSurveyInfoScreen : RSDNavigationRule {
     }
 }
 
-extension SBBSurveyQuestion : RSDSurveyNavigationStep {
+extension SBBSurveyQuestion : SurveyRuleNavigation {
+    
+    /// Only return the rules that are valid comparable rules
+    public var surveyRules: [RSDSurveyRule] {
+        guard let rules = self.constraints.rules as? [SBBSurveyRule] else { return [] }
+        return rules.filter { $0.isValidComparableRule }
+    }
     
     /// Look at the after rules for a skip rule and return the `skipToIdentifier` for that rule.
     public var skipToIfNil: String? {
@@ -95,15 +101,6 @@ extension SBBSurveyQuestion : RSDCohortAssignmentStep {
     
     public func cohortsToApply(with result: RSDTaskResult) -> (add: Set<String>, remove: Set<String>)? {
         return self.evaluateCohortsToApply(with: result)
-    }
-}
-
-extension sbb_InputField {
-    
-    /// Only return the rules that are valid comparable rules
-    public var surveyRules: [RSDSurveyRule]? {
-        guard let rules = self.constraints.rules as? [SBBSurveyRule] else { return nil }
-        return rules.filter { $0.isValidComparableRule }
     }
 }
 

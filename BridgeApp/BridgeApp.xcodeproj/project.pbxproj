@@ -149,6 +149,8 @@
 		FF9D79D4230C7DEF005CFB37 /* Research_UnitTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D79D3230C7DEF005CFB37 /* Research_UnitTest.framework */; };
 		FFA071872357914900EA371F /* SBAMedicationReminderTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA071862357914900EA371F /* SBAMedicationReminderTask.swift */; };
 		FFA07189235801EE00EA371F /* SBAMedicationFollowupTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA07188235801EE00EA371F /* SBAMedicationFollowupTask.swift */; };
+		FFF2968F24EF2C52000E36FB /* TextConstraintWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF2968E24EF2C52000E36FB /* TextConstraintWrapper.swift */; };
+		FFF2969324F454B9000E36FB /* SBAProfileDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF2969224F454B9000E36FB /* SBAProfileDataType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -364,6 +366,8 @@
 		FF9D79D5230C7E8D005CFB37 /* DataTrackingTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DataTrackingTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		FFA071862357914900EA371F /* SBAMedicationReminderTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationReminderTask.swift; sourceTree = "<group>"; };
 		FFA07188235801EE00EA371F /* SBAMedicationFollowupTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationFollowupTask.swift; sourceTree = "<group>"; };
+		FFF2968E24EF2C52000E36FB /* TextConstraintWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextConstraintWrapper.swift; sourceTree = "<group>"; };
+		FFF2969224F454B9000E36FB /* SBAProfileDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAProfileDataType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -441,6 +445,7 @@
 				60D9611620BF161200B5CFEB /* SBAProfileItem.swift */,
 				60D9611720BF161200B5CFEB /* SBAProfileDataSource.swift */,
 				60D9611A20BF161200B5CFEB /* SBAProfileManager.swift */,
+				FFF2969224F454B9000E36FB /* SBAProfileDataType.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -673,6 +678,7 @@
 				F899D0E420D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift */,
 				FF9D799E230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift */,
 				FF196A7A242AB452008BD7EA /* ScheduledAssessment.swift */,
+				FFF2968E24EF2C52000E36FB /* TextConstraintWrapper.swift */,
 			);
 			path = "Research Model";
 			sourceTree = "<group>";
@@ -1144,6 +1150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F80F175F2033980300352C3E /* SBBSurveyRule+RSDSurveyRule.swift in Sources */,
+				FFF2968F24EF2C52000E36FB /* TextConstraintWrapper.swift in Sources */,
 				60E84E5C20D306A9000DDCB1 /* SBAProfileItemType.swift in Sources */,
 				F82B1AB12036410C00FEA16D /* SBABridgeConfiguration.swift in Sources */,
 				F87D696A2037956B00409087 /* SBAActivityReference.swift in Sources */,
@@ -1176,6 +1183,7 @@
 				F899D0E520D03C9A0039FE8A /* SBBScheduledActivity+ResearchModel.swift in Sources */,
 				F886FD1320351E1E00EF2248 /* SBBActivity+RSDTaskInfo.swift in Sources */,
 				6090544821308CF7002D1895 /* SBAProfileOnSelectedAction.swift in Sources */,
+				FFF2969324F454B9000E36FB /* SBAProfileDataType.swift in Sources */,
 				F8C7D4162092CF36007490BC /* UIColor+BridgeKeyNames.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
