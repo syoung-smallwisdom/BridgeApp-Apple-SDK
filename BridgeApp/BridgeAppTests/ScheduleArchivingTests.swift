@@ -502,7 +502,13 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         // Check that the setup method was called as expected
         XCTAssertNotNil(tracker.setupTask_data)
-        XCTAssertEqual(tracker.setupTask_data?.json as? [String : String], ["addedInfo" : "ragu"])
+        if let json = tracker.setupTask_data?.json as? [String : JsonSerializable],
+            let dict = json as? [String : String] {
+            XCTAssertEqual(dict, ["addedInfo" : "ragu"])
+        }
+        else {
+            XCTFail("Failed to setup the task JSON. actual = \(String(describing: tracker.setupTask_data?.json))")
+        }
         
         // step to just before completion
         let _ = taskController.test_stepTo("step4")
@@ -682,7 +688,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     func convertWithIndex(_ steps: [TestStep]) -> [TestStep] {
         return steps.enumerated().map {
             var step = $1
-            step.result = RSDAnswerResultObject(identifier: step.identifier, answerType: .integer, value: $0)
+            step.result = AnswerResultObject(identifier: step.identifier, value: .integer($0))
             return step
         }
     }
@@ -699,8 +705,8 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         return steps.map { (inStep) -> TestStep in
             var step = inStep
             var collectionResult = RSDCollectionResultObject(identifier: step.identifier)
-            collectionResult.appendInputResults(with: RSDAnswerResultObject(identifier: "identifier", answerType: .string, value: step.identifier))
-            collectionResult.appendInputResults(with: RSDAnswerResultObject(identifier: "boolean", answerType: .boolean, value: true))
+            collectionResult.appendInputResults(with: AnswerResultObject(identifier: "identifier", value: .string(step.identifier)))
+            collectionResult.appendInputResults(with: AnswerResultObject(identifier: "boolean", value: .boolean(true)))
             step.result = collectionResult
             return step
         }
@@ -710,7 +716,7 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         return steps.map { (inStep) -> TestStep in
             var step = inStep
             var collectionResult = RSDCollectionResultObject(identifier: step.identifier)
-            collectionResult.appendInputResults(with: RSDAnswerResultObject(identifier: step.identifier, answerType: .integer, value: step.identifier.count))
+            collectionResult.appendInputResults(with: AnswerResultObject(identifier: step.identifier, value: .integer(step.identifier.count)))
             step.result = collectionResult
             return step
         }

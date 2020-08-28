@@ -80,30 +80,24 @@ class SurveyNavigationRuleTests: XCTestCase {
         ruleNo.endSurveyValue = true
         constraints.addRulesObject(ruleNo)
         
-        var answerResult = RSDAnswerResultObject(identifier: inputStep.identifier, answerType: .boolean)
-        var stepResult = RSDCollectionResultObject(identifier: inputStep.identifier)
+        let answerResult = inputStep.instantiateAnswerResult()
         var taskResult = RSDTaskResultObject(identifier: "test")
+        taskResult.appendStepHistory(with: answerResult)
         
         // Set the answer to "yes"
-        answerResult.value = true
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
+        answerResult.jsonValue = .boolean(true)
         
         let identifierYes = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierYes, "keepGoing")
         
         // Set the answer to "no"
-        answerResult.value = false
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
+        answerResult.jsonValue = .boolean(false)
         
         let identifierNo = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierNo, "nextSection")
         
         // Set the answer to "skip"
-        answerResult.value = nil
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
+        answerResult.jsonValue = nil
         
         let identifierSkip = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifierSkip)
@@ -138,38 +132,31 @@ class SurveyNavigationRuleTests: XCTestCase {
         ruleNo.endSurveyValue = true
         constraints.addRulesObject(ruleNo)
         
-        var answerResult = RSDAnswerResultObject(identifier: inputStep.identifier, answerType: .string)
-        var stepResult = RSDCollectionResultObject(identifier: inputStep.identifier)
+        let answerResult = AnswerResultObject(identifier: inputStep.identifier, answerType: AnswerTypeString())
         var taskResult = RSDTaskResultObject(identifier: "test")
+        taskResult.appendStepHistory(with: answerResult)
         
         // Set the answer to "yes"
-        answerResult.value = "true"
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
+        answerResult.jsonValue = .string("true")
+        
         
         let identifierYes = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierYes, "keepGoing")
         
         // Set the answer to "no"
-        answerResult.value = "false"
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
+        answerResult.jsonValue = .string("false")
         
         let identifierNo = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifierNo, "nextSection")
         
         // Set the answer to "maybe"
-        answerResult.value = "maybe"
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
+        answerResult.jsonValue = .string("maybe")
         
         let identifierMaybe = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifierMaybe)
         
         // Set the answer to "skip"
-        answerResult.value = nil
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
+        answerResult.jsonValue = nil
         
         let identifierSkip = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifierSkip)
@@ -226,23 +213,17 @@ class SurveyNavigationRuleTests: XCTestCase {
         rule.value = NSNumber(value: 1)
         constraints.addRulesObject(rule)
         
-        var answerResult = RSDAnswerResultObject(identifier: inputStep.identifier, answerType: .integer)
-        var stepResult = RSDCollectionResultObject(identifier: inputStep.identifier)
+        let answerResult = AnswerResultObject(identifier: inputStep.identifier, answerType: AnswerTypeInteger())
         var taskResult = RSDTaskResultObject(identifier: "test")
+        taskResult.appendStepHistory(with: answerResult)
         
         // Set the answer to invalid
-        answerResult.value = 0
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
-        
+        answerResult.jsonValue = .integer(0)
         let identifier1 = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifier1)
         
         // Set the answer to valid
-        answerResult.value = 1
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
-        
+        answerResult.jsonValue = .integer(1)
         let identifier2 = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifier2, "correct")
     }
@@ -260,22 +241,18 @@ class SurveyNavigationRuleTests: XCTestCase {
         rule.value = NSNumber(value: 1)
         constraints.addRulesObject(rule)
         
-        var answerResult = RSDAnswerResultObject(identifier: inputStep.identifier, answerType: .integer)
-        var stepResult = RSDCollectionResultObject(identifier: inputStep.identifier)
+        let answerResult = AnswerResultObject(identifier: inputStep.identifier, answerType: AnswerTypeInteger())
         var taskResult = RSDTaskResultObject(identifier: "test")
+        taskResult.appendStepHistory(with: answerResult)
         
         // Set the answer to invalid
-        answerResult.value = 1
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
+        answerResult.jsonValue = .integer(1)
         
         let identifier1 = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertNil(identifier1)
         
         // Set the answer to valid
-        answerResult.value = 0
-        stepResult.appendInputResults(with: answerResult)
-        taskResult.appendStepHistory(with: stepResult)
+        answerResult.jsonValue = .integer(0)
         
         let identifier2 = surveyStep.nextStepIdentifier(with: taskResult, isPeeking: false)
         XCTAssertEqual(identifier2, "correct")
