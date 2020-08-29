@@ -74,13 +74,11 @@
 		FF196A99242C29CA008BD7EA /* Symptoms.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A96242C29C9008BD7EA /* Symptoms.json */; };
 		FF196A9A242C29CA008BD7EA /* Triggers.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A97242C29CA008BD7EA /* Triggers.json */; };
 		FF196A9B242C29CA008BD7EA /* Medication.json in Resources */ = {isa = PBXBuildFile; fileRef = FF196A98242C29CA008BD7EA /* Medication.json */; };
-		FF29AAA624492FAD00C39E02 /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF29AAA424492F8B00C39E02 /* BridgeSDK_Test.framework */; };
-		FF29AAA724492FAD00C39E02 /* BridgeSDK_Test.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF29AAA424492F8B00C39E02 /* BridgeSDK_Test.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FF29AAA924492FAF00C39E02 /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC522780599007CA2B5 /* BridgeSDK.framework */; };
-		FF29AAAA24492FAF00C39E02 /* BridgeSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC522780599007CA2B5 /* BridgeSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FF29AAAB24492FB100C39E02 /* Research.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC722780599007CA2B5 /* Research.framework */; };
-		FF29AAAC24492FB100C39E02 /* Research.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2AC722780599007CA2B5 /* Research.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FF3A810F22C17B9300CD737D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF3A810E22C17B9300CD737D /* Images.xcassets */; };
+		FF4A22D624F9FFBF00944009 /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A22D524F9FFBF00944009 /* BridgeSDK_Test.framework */; };
+		FF4A22D724F9FFBF00944009 /* BridgeSDK_Test.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A22D524F9FFBF00944009 /* BridgeSDK_Test.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FF63D5002303731B006C7BD3 /* SBALearnItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FE2303731A006C7BD3 /* SBALearnItem.swift */; };
 		FF63D5012303731B006C7BD3 /* SBALearnInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF63D4FF2303731A006C7BD3 /* SBALearnInfo.swift */; };
 		FF93F729234D1D980052F53F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF93F728234D1D980052F53F /* Images.xcassets */; };
@@ -214,20 +212,8 @@
 			files = (
 				FF9D7990230C737C005CFB37 /* DataTracking.framework in Embed Frameworks */,
 				F825BA56207FD0C500D29F60 /* BridgeApp.framework in Embed Frameworks */,
+				FF4A22D724F9FFBF00944009 /* BridgeSDK_Test.framework in Embed Frameworks */,
 				FF9D796D230C71B1005CFB37 /* BridgeAppUI.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FF29AAA824492FAD00C39E02 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				FF29AAAA24492FAF00C39E02 /* BridgeSDK.framework in Embed Frameworks */,
-				FF29AAAC24492FB100C39E02 /* Research.framework in Embed Frameworks */,
-				FF29AAA724492FAD00C39E02 /* BridgeSDK_Test.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -357,6 +343,7 @@
 		FF3A810E22C17B9300CD737D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		FF3CC62222D69C8C0037E65B /* SBAMedicationTrackingStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBAMedicationTrackingStep.swift; sourceTree = "<group>"; };
 		FF3F050522EFBD5E008C507B /* SBATriggerResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SBATriggerResult.swift; sourceTree = "<group>"; };
+		FF4A22D524F9FFBF00944009 /* BridgeSDK_Test.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BridgeSDK_Test.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF63D4FE2303731A006C7BD3 /* SBALearnItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBALearnItem.swift; sourceTree = "<group>"; };
 		FF63D4FF2303731A006C7BD3 /* SBALearnInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBALearnInfo.swift; sourceTree = "<group>"; };
 		FF93F728234D1D980052F53F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BridgeApp/StyleGuide/Images.xcassets; sourceTree = SOURCE_ROOT; };
@@ -384,7 +371,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF29AAA624492FAD00C39E02 /* BridgeSDK_Test.framework in Frameworks */,
 				FF29AAAB24492FB100C39E02 /* Research.framework in Frameworks */,
 				FF29AAA924492FAF00C39E02 /* BridgeSDK.framework in Frameworks */,
 			);
@@ -406,6 +392,7 @@
 			files = (
 				FF9D798F230C737C005CFB37 /* DataTracking.framework in Frameworks */,
 				F825BA55207FD0C500D29F60 /* BridgeApp.framework in Frameworks */,
+				FF4A22D624F9FFBF00944009 /* BridgeSDK_Test.framework in Frameworks */,
 				FF9D796C230C71B1005CFB37 /* BridgeAppUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -564,6 +551,7 @@
 		F83B44C02032470A002825AE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FF4A22D524F9FFBF00944009 /* BridgeSDK_Test.framework */,
 				FF29AAA424492F8B00C39E02 /* BridgeSDK_Test.framework */,
 				FF9D79D1230C7DEF005CFB37 /* BridgeSDK_Test.framework */,
 				FF9D79D3230C7DEF005CFB37 /* Research_UnitTest.framework */,
@@ -895,7 +883,6 @@
 				F83B44A12032467D002825AE /* Frameworks */,
 				F83B44A22032467D002825AE /* Headers */,
 				F83B44A32032467D002825AE /* Resources */,
-				FF29AAA824492FAD00C39E02 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
