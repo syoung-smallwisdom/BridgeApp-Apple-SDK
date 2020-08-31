@@ -50,7 +50,7 @@ class SBACatastrophicErrorViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        appNameLabel.text = Localization.localizedAppName
+        appNameLabel.text = currentPlatformContext.appName
         logoImageView.image = UIImage(named: "logo")
         
         if let message = initialMessage {
@@ -68,7 +68,7 @@ class SBACatastrophicErrorViewController: UIViewController {
         messageLabel.text = message
         
         // If the button title is nil set to default title.
-        let buttonTitle = buttonText ?? String.localizedStringWithFormat(Localization.localizedString("UPDATE_APP_BUTTON"), Localization.localizedAppName)
+        let buttonTitle = buttonText ?? String.localizedStringWithFormat(Localization.localizedString("UPDATE_APP_BUTTON"), currentPlatformContext.appName)
         actionButton.setTitle(buttonTitle, for: UIControl.State())
         
         // If the action handler is nil then set to default of opening the app for update.

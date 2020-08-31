@@ -141,3 +141,9 @@
 "SYMPTOM_SEVERITY_MILD" = "Mild";
 "SYMPTOM_SEVERITY_MODERATE" = "Moderate";
 "SYMPTOM_SEVERITY_SEVERE" = "Severe";
+
+/* String length */
+"INVALID_TEXT_LENGTH_MIN_%@" = "Must be at least %@ characters.";
+"INVALID_TEXT_LENGTH_MAX_%@" = "Must be less than or equal to %@ characters.";
+"INVALID_TEXT_LENGTH_MIN_MAX" = "Must be at least %1$@ characters and less than or equal to %2$@ characters.";
+"INVALID_TEXT_LENGTH_SAME" = "Must be %@ characters.";

@@ -33,6 +33,7 @@
 
 import XCTest
 @testable import BridgeApp
+@testable import Research
 
 class StepProtocolTests: XCTestCase {
     
@@ -62,19 +63,6 @@ class StepProtocolTests: XCTestCase {
         XCTAssertEqual(SBBUIHintType.radioButton, .radioButton)
     }
     
-    func testDataTypes() {
-        XCTAssertEqual(SBBDataType.bloodPressure.dataType, .measurement(.bloodPressure, .adult))
-        XCTAssertEqual(SBBDataType.height.dataType, .measurement(.height, .adult))
-        XCTAssertEqual(SBBDataType.weight.dataType, .measurement(.weight, .adult))
-        XCTAssertEqual(SBBDataType.boolean.dataType, .base(.boolean))
-        XCTAssertEqual(SBBDataType.date.dataType, .base(.date))
-        XCTAssertEqual(SBBDataType.dateTime.dataType, .base(.date))
-        XCTAssertEqual(SBBDataType.time.dataType, .base(.date))
-        XCTAssertEqual(SBBDataType.integer.dataType, .base(.integer))
-        XCTAssertEqual(SBBDataType.decimal.dataType, .base(.decimal))
-        XCTAssertEqual(SBBDataType.duration.dataType, .base(.duration))
-    }
-    
     // MARK: SBASurveyConfiguration
     
     func testSurveyInfoScreen_Configuration_Default() {
@@ -92,15 +80,14 @@ class StepProtocolTests: XCTestCase {
     
     func testSurveyQuestion_Configuration_Default() {
         
-        let inputStep = SBBSurveyQuestion()
+        let inputStep = createQuestion(.checkbox, SBBBooleanConstraints())
         inputStep.identifier = "abc123"
         
         XCTAssertNil(inputStep.action(for: .navigation(.skip), on: inputStep))
         XCTAssertNil(inputStep.shouldHideAction(for: .navigation(.skip), on: inputStep))
         XCTAssertNil(inputStep.viewTheme)
         XCTAssertNil(inputStep.colorMapping)
-        XCTAssertEqual(inputStep.stepType, .form)
-        XCTAssertTrue(inputStep.instantiateStepResult() is RSDCollectionResultObject)
+        XCTAssertTrue(inputStep.instantiateStepResult() is AnswerResultObject)
         XCTAssertTrue(inputStep.isOptional)
     }
     
@@ -169,34 +156,72 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertEqual(surveyStep.title, "Title")
-        XCTAssertEqual(surveyStep.text, "Text")
+        XCTAssertEqual(surveyStep.subtitle, "Text")
         XCTAssertEqual(surveyStep.detail, "Detail")
         
         let copy = inputStep.copy(with: "xyz")
         XCTAssertEqual(copy.identifier, "xyz")
         XCTAssertEqual(copy.title, "Title")
-        XCTAssertEqual(copy.text, "Text")
+        XCTAssertEqual(copy.subtitle, "Text")
         XCTAssertEqual(copy.detail, "Detail")
     }
     
     // MARK: BooleanConstraints
     
-    func testStep_BooleanConstraints_NoRules() {
+    func testStep_BooleanConstraints_List_NoRules() {
+        
+        let inputStep = createQuestion(.list, SBBBooleanConstraints())
+        
+        let surveyStep = inputStep
+        XCTAssertEqual(surveyStep.identifier, "abc123")
+        XCTAssertNil(surveyStep.title)
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
+        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        
+        let answerType = inputStep.answerType
+        XCTAssertTrue(answerType is AnswerTypeBoolean, "\(answerType)")
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 2)
+        
+        guard let yesItem = inputItems.first as? ChoiceItemWrapper,
+            let noItem = inputItems.last as? ChoiceItemWrapper else {
+            XCTFail("Failed to return expected items. \(inputItems)")
+            return
+        }
+        
+        XCTAssertEqual(yesItem.choice.matchingValue, .boolean(true))
+        XCTAssertEqual(noItem.choice.matchingValue, .boolean(false))
+        XCTAssertEqual(yesItem.inputUIHint, .list)
+        XCTAssertEqual(noItem.inputUIHint, .list)
+    }
+    
+    func testStep_BooleanConstraints_Checkbox_NoRules() {
         
         let inputStep = createQuestion(.checkbox, SBBBooleanConstraints())
         
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
-        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
+        XCTAssertNil(surveyStep.detail)
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
         
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .base(.boolean))
-        XCTAssertEqual(inputField.inputUIHint, .checkbox)
+        let answerType = inputStep.answerType
+        XCTAssertTrue(answerType is AnswerTypeBoolean, "\(answerType)")
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let checkboxItem = inputItems.first as? CheckboxInputItem else {
+            XCTFail("Failed to return expected items. \(inputItems)")
+            return
+        }
+        
+        XCTAssertEqual(checkboxItem.fieldLabel, "Question prompt detail")
     }
  
     // MARK: MultiValueConstraints
@@ -208,45 +233,55 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+    }
+    
+    func testStep_MultiValueConstraints_Multiple_NoRules() {
         
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .collection(.singleChoice, .string))
-        XCTAssertEqual(inputField.inputUIHint, .radioButton)
+        let inputStep = createMultipleChoiceQuestion(allowMultiple: true)
+        
+        let surveyStep = inputStep
+        XCTAssertEqual(surveyStep.identifier, "abc123")
+        XCTAssertNil(surveyStep.title)
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
+        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertFalse(surveyStep.isSingleAnswer)
 
     }
     
     func testStep_MultiValueConstraints_StringValue() {
         
         let inputStep = createMultipleChoiceQuestion(allowMultiple: false)
-        let inputField = inputStep
-        XCTAssertEqual(inputField.dataType, .collection(.singleChoice, .string))
         
-        if let picker = inputField.pickerSource as? RSDChoiceOptions {
-            let choices = picker.choices
-            let expectedCount = 4
-            if choices.count == expectedCount {
-                XCTAssertEqual(choices[0].text, "Yes, I have done this")
-                XCTAssertEqual(choices[0].answerValue as? String, "true")
-                XCTAssertFalse(choices[0].isExclusive)
-                XCTAssertEqual(choices[1].text, "No, I have never done this")
-                XCTAssertEqual(choices[1].answerValue as? String, "false")
-                XCTAssertFalse(choices[1].isExclusive)
-                XCTAssertEqual(choices[2].text, "Maybe")
-                XCTAssertEqual(choices[2].answerValue as? String, "maybe")
-                XCTAssertFalse(choices[2].isExclusive)
-                XCTAssertEqual(choices[3].text, "Prefer not to answer")
-                XCTAssertEqual(choices[3].answerValue as? String, "skip")
-                XCTAssertTrue(choices[3].isExclusive)
-            } else {
-                XCTAssertEqual(choices.count, expectedCount, "\(choices)")
-            }
+        let surveyStep = inputStep
+        XCTAssertTrue(surveyStep.answerType is AnswerTypeString, "\(surveyStep.answerType)")
+
+        let items = inputStep.buildInputItems()
+        guard let choices = items as? [ChoiceItemWrapper] else {
+            XCTFail("Input items not of expected type: \(items)")
+            return
+        }
+        
+        let expectedCount = 4
+        if choices.count == expectedCount {
+            XCTAssertEqual(choices[0].text, "Yes, I have done this")
+            XCTAssertEqual(choices[0].choice.matchingValue, .string("true"))
+            XCTAssertFalse(choices[0].isExclusive)
+            XCTAssertEqual(choices[1].text, "No, I have never done this")
+            XCTAssertEqual(choices[1].choice.matchingValue, .string("false"))
+            XCTAssertFalse(choices[1].isExclusive)
+            XCTAssertEqual(choices[2].text, "Maybe")
+            XCTAssertEqual(choices[2].choice.matchingValue, .string("maybe"))
+            XCTAssertFalse(choices[2].isExclusive)
+            XCTAssertEqual(choices[3].text, "Prefer not to answer")
+            XCTAssertEqual(choices[3].choice.matchingValue, .string("skip"))
+            XCTAssertTrue(choices[3].isExclusive)
         } else {
-            XCTFail("Picker not expected type: \(String(describing: inputField.pickerSource))")
+            XCTAssertEqual(choices.count, expectedCount, "\(choices)")
         }
     }
     
@@ -275,45 +310,81 @@ class StepProtocolTests: XCTestCase {
                 ]))
         
         let inputStep = createQuestion(.list, constraints)
-
-        let inputField = inputStep
-        XCTAssertEqual(inputField.dataType, .collection(.singleChoice, .decimal))
         
-        if let picker = inputField.pickerSource as? RSDChoiceOptions {
-            let choices = picker.choices
-            let expectedCount = 3
-            if choices.count == expectedCount {
-                XCTAssertEqual(choices[0].text, "Yes, I have done this")
-                XCTAssertEqual(choices[0].answerValue as? Double, 0)
-                XCTAssertEqual(choices[1].text, "No, I have never done this")
-                XCTAssertEqual(choices[1].answerValue as? Double, 1)
-                XCTAssertEqual(choices[2].text, "Maybe")
-                XCTAssertEqual(choices[2].answerValue as? Double, 2)
-            } else {
-                XCTAssertEqual(choices.count, expectedCount, "\(choices)")
-            }
+        let surveyStep = inputStep
+        XCTAssertTrue(surveyStep.answerType is AnswerTypeNumber, "\(surveyStep.answerType)")
+
+        let items = inputStep.buildInputItems()
+        guard let choices = items as? [ChoiceItemWrapper] else {
+            XCTFail("Input items not of expected type: \(items)")
+            return
+        }
+        
+        let expectedCount = 3
+        if choices.count == expectedCount {
+            XCTAssertEqual(choices[0].text, "Yes, I have done this")
+            XCTAssertEqual(choices[0].choice.matchingValue, .number(0))
+            XCTAssertFalse(choices[0].isExclusive)
+            XCTAssertEqual(choices[1].text, "No, I have never done this")
+            XCTAssertEqual(choices[1].choice.matchingValue, .number(1))
+            XCTAssertFalse(choices[1].isExclusive)
+            XCTAssertEqual(choices[2].text, "Maybe")
+            XCTAssertEqual(choices[2].choice.matchingValue, .number(2))
+            XCTAssertFalse(choices[2].isExclusive)
         } else {
-            XCTFail("Picker not expected type: \(String(describing: inputField.pickerSource))")
+            XCTAssertEqual(choices.count, expectedCount, "\(choices)")
         }
     }
     
-    func testStep_MultiValueConstraints_Multiple_NoRules() {
+    func testStep_MultiValueConstraints_IntegerValue() {
         
-        let inputStep = createMultipleChoiceQuestion(allowMultiple: true)
+        let constraints = SBBMultiValueConstraints()
+        constraints.allowMultiple = NSNumber(value: false)
+        constraints.dataType = "integer"
+        constraints.addEnumerationObject(
+            SBBSurveyQuestionOption(dictionaryRepresentation:[
+                "label" : "Yes, I have done this",
+                "value" : 0,
+                "type" : "SurveyQuestionOption"
+                ]))
+        constraints.addEnumerationObject(
+            SBBSurveyQuestionOption(dictionaryRepresentation:[
+                "label" : "No, I have never done this",
+                "value" : 1,
+                "type" : "SurveyQuestionOption"
+                ]))
+        constraints.addEnumerationObject(
+            SBBSurveyQuestionOption(dictionaryRepresentation:[
+                "label" : "Maybe",
+                "value" : 2,
+                "type" : "SurveyQuestionOption"
+                ]))
+        
+        let inputStep = createQuestion(.list, constraints)
         
         let surveyStep = inputStep
-        XCTAssertEqual(surveyStep.identifier, "abc123")
-        XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
-        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .collection(.multipleChoice, .string))
-        XCTAssertEqual(inputField.inputUIHint, .list)
+        XCTAssertTrue(surveyStep.answerType is AnswerTypeInteger, "\(surveyStep.answerType)")
 
+        let items = inputStep.buildInputItems()
+        guard let choices = items as? [ChoiceItemWrapper] else {
+            XCTFail("Input items not of expected type: \(items)")
+            return
+        }
+        
+        let expectedCount = 3
+        if choices.count == expectedCount {
+            XCTAssertEqual(choices[0].text, "Yes, I have done this")
+            XCTAssertEqual(choices[0].choice.matchingValue, .integer(0))
+            XCTAssertFalse(choices[0].isExclusive)
+            XCTAssertEqual(choices[1].text, "No, I have never done this")
+            XCTAssertEqual(choices[1].choice.matchingValue, .integer(1))
+            XCTAssertFalse(choices[1].isExclusive)
+            XCTAssertEqual(choices[2].text, "Maybe")
+            XCTAssertEqual(choices[2].choice.matchingValue, .integer(2))
+            XCTAssertFalse(choices[2].isExclusive)
+        } else {
+            XCTAssertEqual(choices.count, expectedCount, "\(choices)")
+        }
     }
     
     func createMultipleChoiceQuestion(allowMultiple: Bool) -> SBBSurveyQuestion {
@@ -359,15 +430,11 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .base(.string))
-        XCTAssertEqual(inputField.inputUIHint, .textfield)
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        XCTAssertTrue(surveyStep.answerType is AnswerTypeString, "\(surveyStep.answerType) is not AnswerTypeString")
     }
     
 
@@ -379,19 +446,26 @@ class StepProtocolTests: XCTestCase {
         constraints.patternErrorMessage = "Should be hexidecimal"
         
         let inputStep = createQuestion(.textfield, constraints)
-        XCTAssertNotNil(inputStep.textFieldOptions)
-        guard let textOptions = inputStep.textFieldOptions else {
-            XCTFail("Expected non-nil value")
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
             return
         }
         
-        XCTAssertEqual(textOptions.invalidMessage, "Should be hexidecimal")
-        XCTAssertNotNil(textOptions.textValidator)
-        if let validator = textOptions.textValidator as? RSDCodableRegExMatchValidator {
-            XCTAssertEqual(validator.regExPattern, "^[0-9A-F]+$")
-        } else {
-            XCTFail("Validator not expected type: \(String(describing: textOptions.textValidator))")
+        let textValidator = item.buildTextValidator()
+        if let regexValidator = textValidator as? RegExValidator {
+            XCTAssertEqual(regexValidator.invalidMessage, "Should be hexidecimal")
+            XCTAssertEqual(regexValidator.pattern.pattern, "^[0-9A-F]+$")
         }
+        else {
+            XCTFail("\(textValidator) not of expected type `RegExValidator`")
+        }
+        
+        XCTAssertNil(item.buildPickerSource())
+        XCTAssertEqual(item.keyboardOptions as? KeyboardOptionsObject, KeyboardOptionsObject())
     }
 
     func testStep_TextAnswer_MinAndMaxLength() {
@@ -402,19 +476,26 @@ class StepProtocolTests: XCTestCase {
         constraints.maxLength = NSNumber(value: 8)
         
         let inputStep = createQuestion(.textfield, constraints)
-        XCTAssertNotNil(inputStep.textFieldOptions)
-        guard let textOptions = inputStep.textFieldOptions else {
-            XCTFail("Expected non-nil value")
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
             return
         }
         
-        XCTAssertEqual(textOptions.maximumLength, 8)
-        XCTAssertNotNil(textOptions.textValidator)
-        if let validator = textOptions.textValidator as? RSDCodableRegExMatchValidator {
-            XCTAssertEqual(validator.regExPattern, "^.{4,}$")
-        } else {
-            XCTFail("Validator not expected type: \(String(describing: textOptions.textValidator))")
+        let textValidator = item.buildTextValidator()
+        if let regexValidator = textValidator as? RegExValidator {
+            XCTAssertEqual(regexValidator.invalidMessage, "Must be at least 4 characters and less than or equal to 8 characters.")
+            XCTAssertEqual(regexValidator.pattern.pattern, "^.{4,8}$")
         }
+        else {
+            XCTFail("\(textValidator) not of expected type `RegExValidator`")
+        }
+        
+        XCTAssertNil(item.buildPickerSource())
+        XCTAssertEqual(item.keyboardOptions as? KeyboardOptionsObject, KeyboardOptionsObject())
     }
 
     func testStep_TextAnswer_MinLengthOnly() {
@@ -424,18 +505,85 @@ class StepProtocolTests: XCTestCase {
         constraints.minLength = NSNumber(value: 4)
 
         let inputStep = createQuestion(.textfield, constraints)
-        XCTAssertNotNil(inputStep.textFieldOptions)
-        guard let textOptions = inputStep.textFieldOptions else {
-            XCTFail("Expected non-nil value")
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
             return
         }
         
-        XCTAssertNotNil(textOptions.textValidator)
-        if let validator = textOptions.textValidator as? RSDCodableRegExMatchValidator {
-            XCTAssertEqual(validator.regExPattern, "^.{4,}$")
-        } else {
-            XCTFail("Validator not expected type: \(String(describing: textOptions.textValidator))")
+        let textValidator = item.buildTextValidator()
+        if let regexValidator = textValidator as? RegExValidator {
+            XCTAssertEqual(regexValidator.invalidMessage, "Must be at least 4 characters.")
+            XCTAssertEqual(regexValidator.pattern.pattern, "^.{4,}$")
         }
+        else {
+            XCTFail("\(textValidator) not of expected type `RegExValidator`")
+        }
+        
+        XCTAssertNil(item.buildPickerSource())
+        XCTAssertEqual(item.keyboardOptions as? KeyboardOptionsObject, KeyboardOptionsObject())
+    }
+    
+    func testStep_TextAnswer_MaxLength_Only() {
+
+        // pattern, maxLength and minLength are currently unsupported
+        let constraints = SBBStringConstraints()
+        constraints.maxLength = NSNumber(value: 8)
+        
+        let inputStep = createQuestion(.textfield, constraints)
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+        
+        let textValidator = item.buildTextValidator()
+        if let regexValidator = textValidator as? RegExValidator {
+            XCTAssertEqual(regexValidator.invalidMessage, "Must be less than or equal to 8 characters.")
+            XCTAssertEqual(regexValidator.pattern.pattern, "^.{0,8}$")
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `RegExValidator`")
+        }
+        
+        XCTAssertNil(item.buildPickerSource())
+        XCTAssertEqual(item.keyboardOptions as? KeyboardOptionsObject, KeyboardOptionsObject())
+    }
+    
+    func testStep_TextAnswer_MinAndMaxLength_Same() {
+
+        // pattern, maxLength and minLength are currently unsupported
+        let constraints = SBBStringConstraints()
+        constraints.minLength = NSNumber(value: 4)
+        constraints.maxLength = NSNumber(value: 4)
+        
+        let inputStep = createQuestion(.textfield, constraints)
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+        
+        let textValidator = item.buildTextValidator()
+        if let regexValidator = textValidator as? RegExValidator {
+            XCTAssertEqual(regexValidator.invalidMessage, "Must be 4 characters.")
+            XCTAssertEqual(regexValidator.pattern.pattern, "^.{4,4}$")
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `RegExValidator`")
+        }
+        
+        XCTAssertNil(item.buildPickerSource())
+        XCTAssertEqual(item.keyboardOptions as? KeyboardOptionsObject, KeyboardOptionsObject())
     }
 
     // MARK: DateTimeConstraints
@@ -450,24 +598,38 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .base(.date))
-        XCTAssertEqual(inputField.inputUIHint, .picker)
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertEqual(dateRange.shouldAllowFuture, false)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-            XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .timestamp)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        if let answerType = surveyStep.answerType as? AnswerTypeDateTime {
+            XCTAssertEqual(answerType.codingFormat, "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
         }
+        else {
+            XCTFail("\(surveyStep.answerType) is not AnswerTypeDateTime")
+        }
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+        
+        let textValidator = item.buildTextValidator()
+        if let dateValidator = textValidator as? DateTimeValidator {
+            XCTAssertEqual(dateValidator.pickerMode, .dateAndTime)
+            XCTAssertNotNil(dateValidator.range)
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `DateTimeValidator`")
+        }
+        
+        XCTAssertEqual(item.keyboardOptions as? KeyboardOptionsObject, KeyboardOptionsObject.dateTimeEntryOptions)
+        
+        let picker = item.buildPickerSource()
+        XCTAssertTrue(picker is RSDDatePickerDataSource, "\(String(describing: picker)) is not `RSDDatePickerDataSource`")
     }
     
     func testStep_DateTimeConstraints_MinMaxDate() {
@@ -478,19 +640,12 @@ class StepProtocolTests: XCTestCase {
         constraints.earliestValue = minDate
         constraints.latestValue = maxDate
         
-        let inputStep = createQuestion(.dateTimePicker, constraints)
-        let inputField = inputStep
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertEqual(dateRange.minDate, minDate)
-            XCTAssertEqual(dateRange.maxDate, maxDate)
-            XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .timestamp)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
-        }
+        let dateRange = constraints
+        XCTAssertNil(dateRange.shouldAllowFuture)
+        XCTAssertEqual(dateRange.minDate, minDate)
+        XCTAssertEqual(dateRange.maxDate, maxDate)
+        XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .timestamp)
     }
-
     
     // MARK: SBBDateConstraints
     
@@ -499,29 +654,43 @@ class StepProtocolTests: XCTestCase {
         let constraints = SBBDateConstraints()
         constraints.allowFutureValue = false
         
-        let inputStep = createQuestion(.datePicker, constraints)
+        let inputStep = createQuestion(.dateTimePicker, constraints)
         
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .base(.date))
-        XCTAssertEqual(inputField.inputUIHint, .picker)
-
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertEqual(dateRange.shouldAllowFuture, false)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-            XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .dateOnly)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        if let answerType = surveyStep.answerType as? AnswerTypeDateTime {
+            XCTAssertEqual(answerType.codingFormat, "yyyy-MM-dd")
         }
+        else {
+            XCTFail("\(surveyStep.answerType) is not AnswerTypeDateTime")
+        }
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+        
+        let textValidator = item.buildTextValidator()
+        if let dateValidator = textValidator as? DateTimeValidator {
+            XCTAssertEqual(dateValidator.pickerMode, .date)
+            XCTAssertNotNil(dateValidator.range)
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `DateTimeValidator`")
+        }
+        
+        XCTAssertEqual(item.keyboardOptions as? KeyboardOptionsObject, KeyboardOptionsObject.dateTimeEntryOptions)
+        
+        let picker = item.buildPickerSource()
+        XCTAssertTrue(picker is RSDDatePickerDataSource, "\(String(describing: picker)) is not `RSDDatePickerDataSource`")
     }
     
     func testStep_DateConstraints_MinMaxDate() {
@@ -532,53 +701,35 @@ class StepProtocolTests: XCTestCase {
         constraints.earliestValue = minDate
         constraints.latestValue = maxDate
         
-        let inputStep = createQuestion(.datePicker, constraints)
-        let inputField = inputStep
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertEqual(dateRange.minDate, minDate)
-            XCTAssertEqual(dateRange.maxDate, maxDate)
-            XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .dateOnly)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
-        }
+        let dateRange = constraints
+        XCTAssertNil(dateRange.shouldAllowFuture)
+        XCTAssertEqual(dateRange.minDate, minDate)
+        XCTAssertEqual(dateRange.maxDate, maxDate)
+        XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .dateOnly)
     }
     
     func testStep_DateConstraints_AllowFuture_False() {
         let constraints = SBBDateConstraints()
         constraints.allowFuture = NSNumber(value: false)
         
-        let inputStep = createQuestion(.datePicker, constraints)
-        let inputField = inputStep
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertFalse(dateRange.shouldAllowFuture ?? true)
-            XCTAssertNil(dateRange.shouldAllowPast)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-            XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .dateOnly)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
-        }
+        let dateRange = constraints
+        XCTAssertFalse(dateRange.shouldAllowFuture ?? true)
+        XCTAssertNil(dateRange.shouldAllowPast)
+        XCTAssertNil(dateRange.minDate)
+        XCTAssertNil(dateRange.maxDate)
+        XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .dateOnly)
     }
     
     func testStep_DateConstraints_AllowPast_True() {
         let constraints = SBBDateConstraints()
         constraints.allowPast = NSNumber(value: true)
         
-        let inputStep = createQuestion(.datePicker, constraints)
-        let inputField = inputStep
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertTrue(dateRange.shouldAllowPast ?? false)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-            XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .dateOnly)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
-        }
+        let dateRange = constraints
+        XCTAssertNil(dateRange.shouldAllowFuture)
+        XCTAssertTrue(dateRange.shouldAllowPast ?? false)
+        XCTAssertNil(dateRange.minDate)
+        XCTAssertNil(dateRange.maxDate)
+        XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .dateOnly)
     }
 
     
@@ -591,24 +742,38 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .base(.date))
-        XCTAssertEqual(inputField.inputUIHint, .picker)
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-            XCTAssertEqual(dateRange.dateCoder as? RSDDateCoderObject, .timeOfDay)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        if let answerType = surveyStep.answerType as? AnswerTypeDateTime {
+            XCTAssertEqual(answerType.codingFormat, "HH:mm:ss")
         }
+        else {
+            XCTFail("\(surveyStep.answerType) is not AnswerTypeDateTime")
+        }
+        
+        let inputItems = inputStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+        
+        let textValidator = item.buildTextValidator()
+        if let dateValidator = textValidator as? DateTimeValidator {
+            XCTAssertEqual(dateValidator.pickerMode, .time)
+            XCTAssertNotNil(dateValidator.range)
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `DateTimeValidator`")
+        }
+        
+        XCTAssertEqual(item.keyboardOptions as? KeyboardOptionsObject, KeyboardOptionsObject.dateTimeEntryOptions)
+        
+        let picker = item.buildPickerSource()
+        XCTAssertTrue(picker is RSDDatePickerDataSource, "\(String(describing: picker)) is not `RSDDatePickerDataSource`")
     }
 
     
@@ -627,23 +792,30 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        XCTAssertTrue(surveyStep.answerType is AnswerTypeInteger, "\(surveyStep.answerType) is not AnswerTypeInteger")
+
+        let inputItems = surveyStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
         
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .base(.integer))
-        XCTAssertEqual(inputField.inputUIHint, .textfield)
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
         
-        if let range = inputField.range as? RSDNumberRange {
+        XCTAssertEqual(item.placeholder, "pie")
+        
+        let textValidator = item.buildTextValidator()
+        if let range = textValidator as? IntegerFormatOptions {
             XCTAssertEqual(range.minimumValue, -3)
             XCTAssertEqual(range.maximumValue, 5)
             XCTAssertEqual(range.stepInterval, 2)
-            XCTAssertEqual(range.unit, "pie")
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `DateTimeValidator`")
         }
     }
    
@@ -662,23 +834,30 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        XCTAssertTrue(surveyStep.answerType is AnswerTypeNumber, "\(surveyStep.answerType) is not AnswerTypeNumber")
+
+        let inputItems = surveyStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
         
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .base(.decimal))
-        XCTAssertEqual(inputField.inputUIHint, .textfield)
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
         
-        if let range = inputField.range as? RSDNumberRange {
+        XCTAssertEqual(item.placeholder, "pie")
+        
+        let textValidator = item.buildTextValidator()
+        if let range = textValidator as? DoubleFormatOptions {
             XCTAssertEqual(range.minimumValue, -3.5)
             XCTAssertEqual(range.maximumValue, 5.5)
             XCTAssertEqual(range.stepInterval, 0.5)
-            XCTAssertEqual(range.unit, "pie")
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `DateTimeValidator`")
         }
     }
     
@@ -688,7 +867,6 @@ class StepProtocolTests: XCTestCase {
     func testStep_HeightConstraints_Infant() {
         
         let constraints = SBBHeightConstraints()
-        constraints.unit = "in"
         constraints.forInfantValue = true
         
         let inputStep = createQuestion(.height, constraints)
@@ -696,31 +874,55 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .measurement(.height, .infant))
-        XCTAssertNil(inputField.inputUIHint)
-        
-        if let range = inputField.range as? RSDNumberRange {
-            XCTAssertNil(range.minimumValue)
-            XCTAssertNil(range.maximumValue)
-            XCTAssertNil(range.stepInterval)
-            XCTAssertEqual(range.unit, "in")
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        if let answerType = surveyStep.answerType as? AnswerTypeMeasurement {
+            XCTAssertEqual(answerType.unit, "cm")
         }
+        else {
+            XCTFail("\(surveyStep.answerType) is not AnswerTypeMeasurement")
+        }
+        
+        let inputItems = surveyStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? HeightInputItemObject else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+        
+        XCTAssertTrue(item.lengthFormatter.isForChildHeightUse)
     }
     
     func testStep_HeightConstraints_Adult() {
         let constraints = SBBHeightConstraints()
         let inputStep = createQuestion(.height, constraints)
-        let inputField = inputStep
-        XCTAssertEqual(inputField.dataType, .measurement(.height, .adult))
+        
+        let surveyStep = inputStep
+        XCTAssertEqual(surveyStep.identifier, "abc123")
+        XCTAssertNil(surveyStep.title)
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
+        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        if let answerType = surveyStep.answerType as? AnswerTypeMeasurement {
+            XCTAssertEqual(answerType.unit, "cm")
+        }
+        else {
+            XCTFail("\(surveyStep.answerType) is not AnswerTypeMeasurement")
+        }
+        
+        let inputItems = surveyStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? HeightInputItemObject else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+        
+        XCTAssertFalse(item.lengthFormatter.isForChildHeightUse)
     }
     
     
@@ -729,7 +931,6 @@ class StepProtocolTests: XCTestCase {
     func testStep_WeightConstraints_Infant() {
         
         let constraints = SBBWeightConstraints()
-        constraints.unit = "lb"
         constraints.forInfantValue = true
         
         let inputStep = createQuestion(.weight, constraints)
@@ -737,78 +938,58 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .measurement(.weight, .infant))
-        XCTAssertNil(inputField.inputUIHint)
-        
-        if let range = inputField.range as? RSDNumberRange {
-            XCTAssertNil(range.minimumValue)
-            XCTAssertNil(range.maximumValue)
-            XCTAssertNil(range.stepInterval)
-            XCTAssertEqual(range.unit, "lb")
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        if let answerType = surveyStep.answerType as? AnswerTypeMeasurement {
+            XCTAssertEqual(answerType.unit, "kg")
         }
+        else {
+            XCTFail("\(surveyStep.answerType) is not AnswerTypeMeasurement")
+        }
+        
+        let inputItems = surveyStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? WeightInputItemObject else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+        
+        XCTAssertTrue(item.massFormatter.isForInfantMassUse)
     }
     
     func testStep_WeightConstraints_Adult() {
         let constraints = SBBWeightConstraints()
         let inputStep = createQuestion(.weight, constraints)
-        let inputField = inputStep
-        XCTAssertEqual(inputField.dataType, .measurement(.weight, .adult))
-    }
-    
-    // MARK: SBBBloodPressureConstraints
-    
-    func testStep_BloodPressureConstraints_Adult() {
-        
-        let constraints = SBBBloodPressureConstraints()
-        let inputStep = createQuestion(.bloodPressure, constraints)
-        
+
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        if let answerType = surveyStep.answerType as? AnswerTypeMeasurement {
+            XCTAssertEqual(answerType.unit, "kg")
+        }
+        else {
+            XCTFail("\(surveyStep.answerType) is not AnswerTypeMeasurement")
+        }
         
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .measurement(.bloodPressure, .adult))
-        XCTAssertNil(inputField.inputUIHint)
+        let inputItems = surveyStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? WeightInputItemObject else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+        
+        XCTAssertFalse(item.massFormatter.isForInfantMassUse)
     }
     
-    // MARK: SBBPostalCodeConstraints
-    
-    func testStep_PostalCodeConstraints() {
         
-        let constraints = SBBPostalCodeConstraints()
-        let inputStep = createQuestion(.postalCode, constraints)
-        
-        let surveyStep = inputStep
-        XCTAssertEqual(surveyStep.identifier, "abc123")
-        XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
-        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .postalCode)
-        XCTAssertNil(inputField.inputUIHint)
-        
-        // TODO: syoung 10/21/2019 Revisit this unit test once Postal code design
-        // is better flushed out.
-    }
-    
     // MARK: SBBYearConstraints
     
     func testStep_YearConstraints_NoRules() {
@@ -820,180 +1001,108 @@ class StepProtocolTests: XCTestCase {
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .base(.year))
-        XCTAssertEqual(inputField.inputUIHint, .textfield)
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        XCTAssertTrue(surveyStep.answerType is AnswerTypeInteger, "\(surveyStep.answerType) is not AnswerTypeInteger")
 
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertNil(dateRange.shouldAllowPast)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-            if let dateCoder = dateRange.dateCoder {
-                XCTAssertEqual(dateCoder.inputFormatter.dateFormat, "yyyy")
-                XCTAssertEqual(dateCoder.resultFormatter.dateFormat, "yyyy-MM-dd")
-            }
-            else {
-                XCTFail("Expecting non-nil date coder")
-            }
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        let inputItems = surveyStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+                
+        let textValidator = item.buildTextValidator()
+        if let dateRange = textValidator as? YearFormatOptions {
+            XCTAssertNil(dateRange.allowFuture)
+            XCTAssertNil(dateRange.allowPast)
+            XCTAssertNil(dateRange.minimumYear)
+            XCTAssertNil(dateRange.maximumYear)
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `DateTimeValidator`")
         }
     }
     
-    func testStep_YearConstraints_MinMaxDate() {
+    func testStep_YearConstraints_MinFutureDate() {
         
         let constraints = SBBYearConstraints()
-        let minDate = Date().addingTimeInterval(-5 * 24 * 3600)
-        let maxDate = Date().addingTimeInterval(5 * 24 * 3600)
+        let minDate = Date().addingNumberOfYears(-24)
         constraints.earliestValue = minDate
-        constraints.latestValue = maxDate
-        
-        let inputStep = createQuestion(.datePicker, constraints)
-        let inputField = inputStep
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertNil(dateRange.shouldAllowPast)
-            XCTAssertEqual(dateRange.minDate, minDate)
-            XCTAssertEqual(dateRange.maxDate, maxDate)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
-        }
-    }
-    
-    func testStep_YearConstraints_AllowFuture_False() {
-        let constraints = SBBYearConstraints()
-        constraints.allowFuture = NSNumber(value: false)
-        
-        let inputStep = createQuestion(.datePicker, constraints)
-        let inputField = inputStep
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertFalse(dateRange.shouldAllowFuture ?? true)
-            XCTAssertNil(dateRange.shouldAllowPast)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
-        }
-    }
-    
-    func testStep_YearConstraints_AllowPast_True() {
-        let constraints = SBBYearConstraints()
-        constraints.allowPast = NSNumber(value: true)
-        
-        let inputStep = createQuestion(.datePicker, constraints)
-        let inputField = inputStep
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertTrue(dateRange.shouldAllowPast ?? false)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
-        }
-    }
-    
-    // MARK: SBBYearMonthContraints
-    
-    func testStep_YearMonthConstraints_NoRules() {
-        
-        let constraints = SBBYearMonthConstraints()
+        constraints.allowFuture = NSNumber(booleanLiteral: false)
         
         let inputStep = createQuestion(.textfield, constraints)
         
         let surveyStep = inputStep
         XCTAssertEqual(surveyStep.identifier, "abc123")
         XCTAssertNil(surveyStep.title)
-        XCTAssertEqual(surveyStep.text, "Question prompt")
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
         XCTAssertEqual(surveyStep.detail, "Question prompt detail")
-        
-        let inputField = inputStep
-        XCTAssertNil(inputField.inputPrompt)
-        XCTAssertNil(inputField.placeholder)
-        XCTAssertTrue(inputField.isOptional)
-        XCTAssertEqual(inputField.dataType, .base(.date))
-        XCTAssertEqual(inputField.inputUIHint, .textfield)
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        XCTAssertTrue(surveyStep.answerType is AnswerTypeInteger, "\(surveyStep.answerType) is not AnswerTypeInteger")
 
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertNil(dateRange.shouldAllowPast)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-            if let dateCoder = dateRange.dateCoder {
-                XCTAssertEqual(dateCoder.inputFormatter.dateFormat, "yyyy-MM")
-                XCTAssertEqual(dateCoder.resultFormatter.dateFormat, "yyyy-MM-dd")
-            }
-            else {
-                XCTFail("Expecting non-nil date coder")
-            }
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        let inputItems = surveyStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+                
+        let textValidator = item.buildTextValidator()
+        if let dateRange = textValidator as? YearFormatOptions {
+            XCTAssertNotNil(dateRange.allowFuture)
+            XCTAssertNil(dateRange.allowPast)
+            XCTAssertNotNil(dateRange.minimumYear)
+            XCTAssertNil(dateRange.maximumYear)
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `DateTimeValidator`")
         }
     }
     
-    func testStep_YearMonthConstraints_MinMaxDate() {
+    func testStep_YearConstraints_MaxPastDate() {
         
-        let constraints = SBBYearMonthConstraints()
-        let minDate = Date().addingTimeInterval(-5 * 24 * 3600)
-        let maxDate = Date().addingTimeInterval(5 * 24 * 3600)
-        constraints.earliestValue = minDate
+        let constraints = SBBYearConstraints()
+        let maxDate = Date().addingNumberOfYears(24)
         constraints.latestValue = maxDate
+        constraints.allowPast = NSNumber(booleanLiteral: false)
         
-        let inputStep = createQuestion(.datePicker, constraints)
-        let inputField = inputStep
+        let inputStep = createQuestion(.textfield, constraints)
         
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertNil(dateRange.shouldAllowPast)
-            XCTAssertEqual(dateRange.minDate, minDate)
-            XCTAssertEqual(dateRange.maxDate, maxDate)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
+        let surveyStep = inputStep
+        XCTAssertEqual(surveyStep.identifier, "abc123")
+        XCTAssertNil(surveyStep.title)
+        XCTAssertEqual(surveyStep.subtitle, "Question prompt")
+        XCTAssertEqual(surveyStep.detail, "Question prompt detail")
+        XCTAssertTrue(surveyStep.isOptional)
+        XCTAssertTrue(surveyStep.isSingleAnswer)
+        XCTAssertTrue(surveyStep.answerType is AnswerTypeInteger, "\(surveyStep.answerType) is not AnswerTypeInteger")
+
+        let inputItems = surveyStep.buildInputItems()
+        XCTAssertEqual(inputItems.count, 1)
+        
+        guard let item = inputItems.first as? KeyboardTextInputItem else {
+            XCTFail("\(inputItems) not of expected type `KeyboardTextInputItem`")
+            return
+        }
+                
+        let textValidator = item.buildTextValidator()
+        if let dateRange = textValidator as? YearFormatOptions {
+            XCTAssertNil(dateRange.allowFuture)
+            XCTAssertNotNil(dateRange.allowPast)
+            XCTAssertNil(dateRange.minimumYear)
+            XCTAssertNotNil(dateRange.maximumYear)
+        }
+        else {
+            XCTFail("\(textValidator) not of expected type `DateTimeValidator`")
         }
     }
-    
-    func testStep_YearMonthConstraints_AllowFuture_False() {
-        let constraints = SBBYearMonthConstraints()
-        constraints.allowFuture = NSNumber(value: false)
-        
-        let inputStep = createQuestion(.datePicker, constraints)
-        let inputField = inputStep
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertFalse(dateRange.shouldAllowFuture ?? true)
-            XCTAssertNil(dateRange.shouldAllowPast)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
-        }
-    }
-    
-    func testStep_YearMonthConstraints_AllowPast_True() {
-        let constraints = SBBYearMonthConstraints()
-        constraints.allowPast = NSNumber(value: true)
-        
-        let inputStep = createQuestion(.datePicker, constraints)
-        let inputField = inputStep
-        
-        if let dateRange = inputField.range as? RSDDateRange {
-            XCTAssertNil(dateRange.shouldAllowFuture)
-            XCTAssertTrue(dateRange.shouldAllowPast ?? false)
-            XCTAssertNil(dateRange.minDate)
-            XCTAssertNil(dateRange.maxDate)
-        } else {
-            XCTFail("Range not expected type: \(String(describing: inputField.range))")
-        }
-    }
+
     
     // MARK: Helper methods
     
@@ -1045,7 +1154,7 @@ class TestSurveyConfiguration : SBASurveyConfiguration {
         return TestResult(identifier: step.identifier)
     }
     
-    override func isOptional(for inputField: RSDInputField) -> Bool {
+    override func isOptional(for inputField: SBBSurveyQuestion) -> Bool {
         return false
     }
     

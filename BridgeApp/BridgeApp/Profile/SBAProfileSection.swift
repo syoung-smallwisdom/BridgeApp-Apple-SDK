@@ -309,11 +309,21 @@ public struct SBAProfileItemProfileTableItem: SBAProfileTableItem, Decodable {
         guard let profileValue = self.profileItemValue else { return "" }
         
         if let choices = self.choices {
-            let answerResult = RSDAnswerResultObject(identifier: profileItem.demographicKey, answerType: profileItem.itemType.defaultAnswerResultType(), value: profileValue)
-            let answer = choices
-                .compactMap({ $0.isEqualToResult(answerResult) ? $0.text : nil })
-                .joined(separator: ", ")
-            return answer
+            let answerType = profileItem.itemType.defaultAnswerType()
+            do {
+                let value = try answerType.encodeAnswer(from: profileValue)
+                let answerResult = AnswerResultObject(identifier: profileItem.demographicKey,
+                                                      answerType: answerType,
+                                                      value: value)
+                let answer = choices
+                    .compactMap({ $0.isEqualToResult(answerResult) ? $0.text : nil })
+                    .joined(separator: ", ")
+                return answer
+            }
+            catch let err {
+                assertionFailure("Failed to convert \(profileValue) to \(answerType). \(err)")
+                return nil
+            }
         }
         
         if let answers = profileValue as? [Any] {

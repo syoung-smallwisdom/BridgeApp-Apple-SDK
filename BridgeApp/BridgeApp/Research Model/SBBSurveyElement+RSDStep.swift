@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import JsonModel
 
 extension SBBBridgeObject {
     
@@ -63,27 +64,35 @@ extension SBBSurveyElement {
 extension SBBSurveyElement : RSDUIStep {
     
     public var subtitle: String? {
-        return self.prompt.sba_parseNewLine()
+        self.prompt.sba_parseNewLine()
     }
     
     public var detail: String? {
-        return self.promptDetail?.sba_parseNewLine()
+        // For a boolean, the prompt detail is set on the input item. Need to special-case it.
+        if let question = self as? SBBSurveyQuestion,
+            let boolConstraints = question.constraints as? SBBBooleanConstraints,
+            boolConstraints.isToggle(for: question) {
+            return nil
+        }
+        else {
+            return self.promptDetail?.sba_parseNewLine()
+        }
     }
     
     public var footnote: String? {
-        return nil
+        nil
     }
 
     public var stepType: RSDStepType {
-        return SBASurveyConfiguration.shared.stepType(for: self)
+        SBASurveyConfiguration.shared.stepType(for: self)
     }
     
     public func instantiateStepResult() -> RSDResult {
-        return SBASurveyConfiguration.shared.instantiateStepResult(for: self) ?? RSDResultObject(identifier: self.identifier)
+        SBASurveyConfiguration.shared.instantiateStepResult(for: self) ?? RSDResultObject(identifier: self.identifier)
     }
     
     fileprivate func parseNewLine(_ string: String?) -> String? {
-        return string?.replacingOccurrences(of: "\\n", with: "\n")
+        string?.replacingOccurrences(of: "\\n", with: "\n")
     }
 }
 
@@ -102,48 +111,13 @@ extension SBBSurveyInfoScreen : RSDDesignableUIStep {
 extension SBBSurveyInfoScreen : sbb_BridgeImageOwner {
 }
 
-/// Use a protocol so that this can easily be extended to either `SBBSurveyQuestion` or
-/// `SBBSurveyConstraints` (if the ui hint is ever refactored to attach to the constraints)
-/// This will also allow for fairly easy refactor to support multiple input fields in a single
-/// question step.
-protocol sbb_InputField : RSDSurveyInputField {
-    var uiHintValue : SBBUIHintType? { get }
-    var constraints : SBBSurveyConstraints { get }
-}
-
 extension SBBSurveyQuestion : RSDDesignableUIStep {
     public var imageTheme: RSDImageThemeElement? {
         return nil
     }
 }
 
-extension SBBSurveyQuestion : RSDFormUIStep {
-    
-    /// `SBBSurveyQuestion` only supports a single input field per step.
-    public var inputFields: [RSDInputField] {
-        return [self]
-    }
-}
-
-extension SBBSurveyQuestion : sbb_InputField {
-    
-    /// The input prompt detail is not supported.
-    public var inputPromptDetail: String? {
-        return nil
-    }
-    
-    /// The input prompt is not supported.
-    public var inputPrompt: String? {
-        return nil
-    }
-}
-
-extension sbb_InputField {
-    
-    public var placeholder: String? {
-        guard let constraint = self.constraints as? SBBStringConstraints else { return nil }
-        return constraint.patternPlaceholder
-    }
+extension SBBSurveyQuestion : QuestionStep {
     
     public var isOptional: Bool {
         if let required = self.constraints.required {
@@ -154,78 +128,38 @@ extension sbb_InputField {
         }
     }
     
-    public var dataType: RSDFormDataType {
-        if let constraint = self.constraints as? SBBMultiValueConstraints {
-            let dateType = self.constraints.dataTypeValue.dataType
-            let collectionType: RSDFormDataType.CollectionType = constraint.allowMultipleValue ? .multipleChoice : .singleChoice
-            return .collection(collectionType, dateType.baseType)
-        } else if let constraint = self.constraints as? SBBHeightConstraints {
-            return .measurement(.height, constraint.isInfantValue ? .infant : .adult)
-        }  else if let constraint = self.constraints as? SBBWeightConstraints {
-            return .measurement(.weight, constraint.isInfantValue ? .infant : .adult)
-        } else {
-            return self.constraints.dataTypeValue.dataType
+    public var isSingleAnswer: Bool {
+        (self.constraints as? SBBMultiValueConstraints)?.allowMultipleValue != true
+    }
+    
+    public var answerType: AnswerType {
+        guard let answerType = (self.constraints as? sbb_InputItemBuilder)?.answerType
+            else {
+                assertionFailure("\(self.constraints.classForCoder) does not implement `sbb_InputItemBuilder`")
+                return AnswerTypeString()
         }
+        return answerType
+    }
+
+    public func buildInputItems() -> [InputItem] {
+        guard let builder = self.constraints as? sbb_InputItemBuilder
+            else {
+                assertionFailure("\(self.constraints.classForCoder) does not implement `sbb_InputItemBuilder`")
+                return [TextEntryConstraintsWrapper(question: self)]
+        }
+        return builder.buildInputItems(with: self)
     }
     
-    public var inputUIHint: RSDFormUIHint? {
-        return self.uiHintValue?.hint
-    }
-    
-    public var textFieldOptions: RSDTextFieldOptions? {
-        return self.constraints as? RSDTextFieldOptions
-    }
-    
-    public var range: RSDRange? {
-        return self.constraints as? RSDRange
-    }
-    
-    /// The formatter is not supported.
-    public var formatter: Formatter? {
-        return nil
-    }
-    
-    /// Optional picker source for a picker or multiple selection input field.
-    public var pickerSource: RSDPickerDataSource? {
-        return self.constraints as? RSDPickerDataSource
+    var questionData : JsonElement {
+        .object([
+            kConstraintsType : self.constraints.type,
+            kConstraintsDataType : self.constraints.dataTypeValue.rawValue
+        ])
     }
 }
 
-extension SBBDataType {
-    public var dataType: RSDFormDataType {
-        switch self {
-            
-        case .boolean:
-            return .base(.boolean)
-        case .date, .dateTime, .time, .yearMonth:
-            return .base(.date)
-        case .decimal:
-            return .base(.decimal)
-        case .duration:
-            return .base(.duration)
-        case .integer:
-            return .base(.integer)
-        case .string:
-            return .base(.string)
-            
-        case .bloodPressure:
-            return .measurement(.bloodPressure, .adult)
-        case .height:
-            return .measurement(.height, .adult)
-        case .weight:
-            return .measurement(.weight, .adult)
-            
-        case .postalCode:
-            return .postalCode
-            
-        case .year:
-            return .base(.year)
-            
-        default:
-            return RSDFormDataType(rawValue: self.rawValue) ?? .custom(self.rawValue, .string)
-        }
-    }
-}
+let kConstraintsType = "constraints.type"
+let kConstraintsDataType = "constraints.dataType"
 
 extension SBBUIHintType {
     public var hint: RSDFormUIHint? {
@@ -254,51 +188,72 @@ extension SBBUIHintType {
     }
 }
 
-extension SBBStringConstraints: RSDTextFieldOptions, RSDCodableRegExMatchValidator {
+protocol sbb_InputItemBuilder {
+    var answerType: AnswerType { get }
+    func buildInputItems(with question: SBBSurveyQuestion) -> [InputItem]
+}
 
-    public var textValidator: RSDTextValidator? {
-        return (_validationRegex != nil) ? self : nil
+protocol sbb_KeyboardOptionsBuilder {
+    func buildKeyboardOptions() -> KeyboardOptions
+}
+
+protocol sbb_PatternPlaceholder {
+    var patternPlaceholder : String? { get }
+}
+
+protocol sbb_TextValidatorBuilder {
+    func buildTextValidator() -> TextInputValidator?
+}
+
+protocol sbb_TextEntry : sbb_InputItemBuilder {
+}
+extension sbb_TextEntry {
+    func buildInputItems(with question: SBBSurveyQuestion) -> [InputItem] {
+        [TextEntryConstraintsWrapper(question: question)]
+    }
+}
+
+extension SBBStringConstraints : sbb_TextEntry, sbb_PatternPlaceholder, sbb_TextValidatorBuilder {
+    
+    var answerType: AnswerType {
+        AnswerTypeString()
     }
     
-    public var invalidMessage: String? {
-        return self.patternErrorMessage
-    }
-    
-    public var maximumLength: Int {
-        return Int(self.maxLengthValue)
-    }
-    
-    public var isSecureTextEntry: Bool {
-        return false
-    }
-    
-    public var autocapitalizationType: RSDTextAutocapitalizationType {
-        return .none
-    }
-    
-    public var autocorrectionType: RSDTextAutocorrectionType {
-        return .default
-    }
-    
-    public var spellCheckingType: RSDTextSpellCheckingType {
-        return .no
-    }
-    
-    public var keyboardType: RSDKeyboardType {
-        return .default
-    }
-    
-    public var regExPattern: String {
-        return _validationRegex ?? ""
-    }
-    
-    private var _validationRegex: String? {
-        if self.pattern != nil {
-            return self.pattern
+    func buildTextValidator() -> TextInputValidator? {
+        if let pattern = self.pattern, let message = self.patternErrorMessage {
+            do {
+                let regex = try NSRegularExpression(pattern: pattern, options: [])
+                return RegExValidator(pattern: regex, invalidMessage: message)
+            }
+            catch let err {
+                assertionFailure("Failed to create RegEx. \(err)")
+                return nil
+            }
         }
-        else if self.minLengthValue > 0 {
+        else if self.minLengthValue > 0 || self.maxLength != nil {
             assert(self.pattern == nil, "Factory does not currently support items with both a min length and a regex pattern.")
-            return "^.{\(self.minLengthValue),}$"
+            let max = (self.maxLengthValue > 0) ? "\(self.maxLengthValue)" : ""
+            let regex = try! NSRegularExpression(pattern: "^.{\(self.minLengthValue),\(max)}$", options: [])
+            let message: String = {
+                if let minLen = self.minLength {
+                    if let maxLen = self.maxLength {
+                        if minLen.intValue == maxLen.intValue {
+                            return String(format: Localization.localizedString("INVALID_TEXT_LENGTH_SAME"), maxLen)
+                        }
+                        else {
+                            return String(format: Localization.localizedString("INVALID_TEXT_LENGTH_MIN_MAX"), minLen, maxLen)
+                        }
+                    }
+                    else {
+                        return String(format: Localization.localizedString("INVALID_TEXT_LENGTH_MIN_%@"), minLen)
+                    }
+                }
+                else {
+                    let maxLen = self.maxLength!
+                    return String(format: Localization.localizedString("INVALID_TEXT_LENGTH_MAX_%@"), maxLen)
+                }
+            }()
+            return RegExValidator(pattern: regex, invalidMessage: message)
         }
         else {
             return nil
@@ -306,139 +261,127 @@ extension SBBStringConstraints: RSDTextFieldOptions, RSDCodableRegExMatchValidat
     }
 }
 
-extension SBBMultiValueConstraints : RSDChoiceOptions {
-    
-    public var choices: [RSDChoice] {
-        return self.enumeration as? [SBBSurveyQuestionOption] ?? []
-    }
-    
-    public var isOptional: Bool {
-        if let required = self.required {
-            return !required.boolValue
-        }
-        else {
-            return true
-        }
-    }
-    
-    public var defaultAnswer: Any? {
-        return nil
-    }
-}
+// -- Number Constraints
 
-extension SBBSurveyQuestionOption : RSDChoice, RSDComparable {
-    
-    public var matchingAnswer: Any? {
-        return self.value
-    }
-    
-    public var answerValue: Codable? {
-        if let strValue = self.value as? String {
-            return strValue
-        }
-        else if let numValue = self.value as? NSNumber {
-            return numValue.doubleValue
-        }
-        else {
-            return self.value as? Codable
-        }
-    }
-    
-    public var text: String? {
-        return self.label
-    }
-    
-    public var isExclusive: Bool {
-        return self.exclusive?.boolValue ?? false
-    }
-}
-
-extension SBBSurveyQuestionOption : sbb_BridgeImageOwner {
-}
-
-protocol sbb_NumberRange: RSDNumberRange, RSDRangeWithFormatter {
-    var maxValue: NSNumber? { get }
-    var minValue: NSNumber? { get }
-    var step: NSNumber? { get }
+protocol sbb_UnitPlaceholder : sbb_PatternPlaceholder {
     var unit: String? { get }
 }
-
-extension SBBIntegerConstraints: sbb_NumberRange {
-}
-
-extension SBBDecimalConstraints: sbb_NumberRange {
-}
-
-extension SBBHeightConstraints: sbb_NumberRange {
-    public var maxValue: NSNumber? { return nil }
-    public var minValue: NSNumber? { return nil }
-    public var step: NSNumber? { return nil }
-}
-
-extension SBBWeightConstraints: sbb_NumberRange {
-    public var maxValue: NSNumber? { return nil }
-    public var minValue: NSNumber? { return nil }
-    public var step: NSNumber? { return nil }
-}
-
-extension sbb_NumberRange {
+extension sbb_UnitPlaceholder {
     
-    public var minimumValue: Decimal? {
-        return self.minValue?.decimalValue
+    var patternPlaceholder: String? {
+        self.unit
+    }
+}
+
+extension SBBIntegerConstraints : sbb_TextEntry, sbb_TextValidatorBuilder, sbb_UnitPlaceholder, sbb_KeyboardOptionsBuilder {
+    
+    var answerType: AnswerType {
+        AnswerTypeInteger()
+    }
+
+    func buildKeyboardOptions() -> KeyboardOptions {
+        KeyboardOptionsObject.integerEntryOptions
     }
     
-    public var maximumValue: Decimal? {
-        return self.maxValue?.decimalValue
+    func buildTextValidator() -> TextInputValidator? {
+        var validator = IntegerFormatOptions()
+        validator.minimumValue = self.minValue?.intValue
+        validator.maximumValue = self.maxValue?.intValue
+        validator.stepInterval = self.step?.intValue
+        return validator
+    }
+}
+
+extension SBBDecimalConstraints : sbb_TextEntry, sbb_TextValidatorBuilder, sbb_UnitPlaceholder, sbb_KeyboardOptionsBuilder {
+    
+    var answerType: AnswerType {
+        AnswerTypeNumber()
     }
     
-    public var stepInterval: Decimal? {
-        return self.step?.decimalValue
+    func buildKeyboardOptions() -> KeyboardOptions {
+        KeyboardOptionsObject.decimalEntryOptions
     }
     
-    public var formatter: Formatter? {
-        get {
-            if let unit = self.unit, unit == "years" {
-                // Special-case the formatter if the unit is "years"
-                let formatter = NumberFormatter()
-                formatter.usesGroupingSeparator = false
-                formatter.maximumFractionDigits = 0
-                return formatter
-            } else {
-                return nil
-            }
+    func buildTextValidator() -> TextInputValidator? {
+        var validator = DoubleFormatOptions()
+        validator.minimumValue = self.minValue?.doubleValue
+        validator.maximumValue = self.maxValue?.doubleValue
+        validator.stepInterval = self.step?.doubleValue
+        return validator
+    }
+}
+
+extension SBBYearConstraints : sbb_TextEntry, sbb_TextValidatorBuilder, sbb_KeyboardOptionsBuilder {
+    
+    var answerType: AnswerType {
+        AnswerTypeInteger()
+    }
+
+    func buildKeyboardOptions() -> KeyboardOptions {
+        KeyboardOptionsObject.integerEntryOptions
+    }
+    
+    func buildTextValidator() -> TextInputValidator? {
+        var validator = YearFormatOptions()
+        validator.allowFuture = self.allowFuture?.boolValue
+        validator.allowPast = self.allowPast?.boolValue
+        if let minDate = self.earliestValue {
+            validator.minimumYear = Calendar(identifier: .gregorian).component(.year, from: minDate)
         }
-        set {
-            // Do nothing
+        if let maxDate = self.latestValue {
+            validator.maximumYear = Calendar(identifier: .gregorian).component(.year, from: maxDate)
         }
+        return validator
     }
 }
 
-extension SBBDurationConstraints: RSDDurationRange {
+// -- Measurement Constraints
+
+extension SBBHeightConstraints: sbb_InputItemBuilder {
     
-    public var minimumDuration: Measurement<UnitDuration> {
-        return Measurement(value: 0, unit: _baseUnit)
+    var answerType: AnswerType {
+        AnswerTypeMeasurement(unit: self.unit ?? "cm")
     }
     
-    public var maximumDuration: Measurement<UnitDuration>? {
-        return nil
-    }
-    
-    public var stepInterval: Int? {
-        return nil
-    }
-    
-    public var durationUnits: Set<UnitDuration> {
-        return _baseUnit.defaultUnits()
-    }
-    
-    private var _baseUnit: UnitDuration {
-        return self.unit?.unitDuration() ?? .seconds
+    func buildInputItems(with question: SBBSurveyQuestion) -> [InputItem] {
+        let range: HumanMeasurementRange = self.isInfantValue ? .infant : .adult
+        let item = HeightInputItemObject(measurementRange: range,
+                                         identifier: nil,
+                                         fieldLabel: nil,
+                                         isOptional: question.isOptional,
+                                         placeholder: nil)
+        return [item]
     }
 }
 
-extension String {
-    fileprivate func unitDuration() -> UnitDuration? {
-        return UnitDuration(fromSymbol: self)
+extension SBBWeightConstraints: sbb_InputItemBuilder {
+    
+    var answerType: AnswerType {
+        AnswerTypeMeasurement(unit: self.unit ?? "kg")
+    }
+
+    func buildInputItems(with question: SBBSurveyQuestion) -> [InputItem] {
+        let range: HumanMeasurementRange = self.isInfantValue ? .infant : .adult
+        let item = WeightInputItemObject(measurementRange: range,
+                                         identifier: nil,
+                                         fieldLabel: nil,
+                                         isOptional: question.isOptional,
+                                         placeholder: nil)
+        return [item]
+    }
+}
+
+// -- Date Constraints
+
+protocol sbb_DateTime : sbb_InputItemBuilder, RSDDatePickerDataSource, RSDDateRange  {
+}
+extension sbb_DateTime {
+    var answerType: AnswerType {
+        AnswerTypeDateTime(codingFormat: self.dateFormatter.dateFormat)
+    }
+    
+    func buildInputItems(with question: SBBSurveyQuestion) -> [InputItem] {
+        [DateEntryConstraintsWrapper(question: question)]
     }
 }
 
@@ -447,50 +390,6 @@ protocol sbb_DateRange : RSDDateRange {
     var allowPast: NSNumber? { get }
     var earliestValue: Date? { get }
     var latestValue: Date? { get }
-}
-
-extension SBBDateConstraints : sbb_DateRange {
-    
-    public var defaultDate: Date? {
-        return nil
-    }
-    
-    public var dateCoder: RSDDateCoder? {
-        return RSDDateCoderObject.dateOnly
-    }
-}
-
-extension SBBDateConstraints : RSDDatePickerDataSource {
-    
-    public var datePickerMode: RSDDatePickerMode {
-        return .date
-    }
-    
-    public var dateFormatter: DateFormatter {
-        return RSDDateCoderObject.dateOnly.inputFormatter
-    }
-}
-
-extension SBBDateTimeConstraints : sbb_DateRange {
-    
-    public var defaultDate: Date? {
-        return nil
-    }
-    
-    public var dateCoder: RSDDateCoder? {
-        return RSDDateCoderObject.timestamp
-    }
-}
-
-extension SBBDateTimeConstraints : RSDDatePickerDataSource {
-    
-    public var datePickerMode: RSDDatePickerMode {
-        return .dateAndTime
-    }
-    
-    public var dateFormatter: DateFormatter {
-        return RSDDateCoderObject.timestamp.inputFormatter
-    }
 }
 
 extension sbb_DateRange {
@@ -516,7 +415,46 @@ extension sbb_DateRange {
     }
 }
 
-extension SBBTimeConstraints : RSDDateRange {
+
+extension SBBDateConstraints : sbb_DateTime, sbb_DateRange {
+    
+    public var defaultDate: Date? {
+        return nil
+    }
+    
+    public var dateCoder: RSDDateCoder? {
+        return RSDDateCoderObject.dateOnly
+    }
+    
+    public var datePickerMode: RSDDatePickerMode {
+        return .date
+    }
+    
+    public var dateFormatter: DateFormatter {
+        return RSDDateCoderObject.dateOnly.inputFormatter
+    }
+}
+
+extension SBBDateTimeConstraints : sbb_DateTime, sbb_DateRange {
+    
+    public var defaultDate: Date? {
+        return nil
+    }
+    
+    public var dateCoder: RSDDateCoder? {
+        return RSDDateCoderObject.timestamp
+    }
+    
+    public var datePickerMode: RSDDatePickerMode {
+        return .dateAndTime
+    }
+    
+    public var dateFormatter: DateFormatter {
+        return RSDDateCoderObject.timestamp.inputFormatter
+    }
+}
+
+extension SBBTimeConstraints : sbb_DateTime {
     
     public var defaultDate: Date? {
         return nil
@@ -545,9 +483,7 @@ extension SBBTimeConstraints : RSDDateRange {
     public var dateCoder: RSDDateCoder? {
         return RSDDateCoderObject.timeOfDay
     }
-}
-
-extension SBBTimeConstraints : RSDDatePickerDataSource {
+    
     public var datePickerMode: RSDDatePickerMode {
         return .time
     }
@@ -557,24 +493,163 @@ extension SBBTimeConstraints : RSDDatePickerDataSource {
     }
 }
 
-extension SBBYearConstraints : sbb_DateRange {
+// -- Multiple Choice Constraits
+
+extension SBBBooleanConstraints : sbb_InputItemBuilder {
     
-    public var defaultDate: Date? {
-        return nil
+    var answerType: AnswerType {
+        AnswerTypeBoolean()
     }
     
-    public var dateCoder: RSDDateCoder? {
-        return RSDDateCoderObject(rawValue: "yyyy")
+    func isToggle(for question: SBBSurveyQuestion) -> Bool {
+        if question.promptDetail != nil,
+            let hint = question.uiHintValue, hint == .checkbox || hint == .radioButton {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    
+    func buildInputItems(with question: SBBSurveyQuestion) -> [InputItem] {
+        if isToggle(for: question) {
+            let fieldLabel = question.promptDetail?.sba_parseNewLine() ?? Localization.buttonYes()
+            return [CheckboxInputItemObject(fieldLabel: fieldLabel)]
+        }
+        else {
+            let yesItem = ChoiceItemWrapper(choice: JsonChoiceObject(matchingValue: .boolean(true),
+                                                                     text: Localization.buttonYes()),
+                                            answerType: AnswerTypeBoolean(),
+                                            isSingleAnswer: true,
+                                            uiHint: .list)
+            let noItem = ChoiceItemWrapper(choice: JsonChoiceObject(matchingValue: .boolean(false),
+                                                                     text: Localization.buttonNo()),
+                                            answerType: AnswerTypeBoolean(),
+                                            isSingleAnswer: true,
+                                            uiHint: .list)
+            return [yesItem, noItem]
+        }
     }
 }
 
-extension SBBYearMonthConstraints : sbb_DateRange {
-    
-    public var defaultDate: Date? {
-        return nil
+extension SBBMultiValueConstraints : sbb_InputItemBuilder {
+
+    var answerType: AnswerType {
+        allowMultipleValue ? multipleAnswerType : singleAnswerType
+    }
+
+    var baseType : JsonType {
+        switch self.dataTypeValue {
+        case .boolean:
+            return .boolean
+        case .decimal:
+            return .number
+        case .integer:
+            return .integer
+        default:
+            return .string
+        }
+    }
+
+    var multipleAnswerType : AnswerType {
+        AnswerTypeArray(baseType: self.baseType, sequenceSeparator: nil)
+    }
+
+    var singleAnswerType : AnswerType {
+        switch self.dataTypeValue {
+        case .boolean:
+            return AnswerTypeBoolean()
+        case .decimal:
+            return AnswerTypeNumber()
+        case .integer:
+            return AnswerTypeInteger()
+        default:
+            return AnswerTypeString()
+        }
     }
     
-    public var dateCoder: RSDDateCoder? {
-        return RSDDateCoderObject(rawValue: "yyyy-MM")
+    func buildInputItems(with question: SBBSurveyQuestion) -> [InputItem] {
+        let options = self.enumeration as? [SBBSurveyQuestionOption] ?? []
+        let answerType = self.answerType
+        let singleAnswer = !self.allowMultipleValue
+        let hint = question.uiHintValue?.hint ?? .list
+        let dataTypeValue = self.dataTypeValue
+        return options.map {
+            ChoiceItemWrapper(choice: SurveyQuestionOptionWrapper(option: $0, dataTypeValue: dataTypeValue),
+                              answerType: answerType,
+                              isSingleAnswer: singleAnswer,
+                              uiHint: hint)
+        }
     }
 }
+
+extension SBBSurveyQuestionOption : sbb_BridgeImageOwner {
+}
+
+struct SurveyQuestionOptionWrapper : JsonChoice {
+    let option: SBBSurveyQuestionOption
+    let dataTypeValue : SBBDataType
+    
+    var text: String? {
+        option.label
+    }
+    
+    var detail: String? {
+        option.detail
+    }
+    
+    var isExclusive: Bool {
+        option.exclusive?.boolValue ?? false
+    }
+    
+    var imageData: RSDImageData? {
+        option.imageData
+    }
+    
+    var matchingValue: JsonElement? {
+        guard let value = option.value else { return nil }
+        if let num = value as? NSNumber {
+            switch self.dataTypeValue {
+            case .boolean:
+                return .boolean(num.boolValue)
+            case .decimal:
+                return .number(num.doubleValue)
+            case .integer:
+                return .integer(num.intValue)
+            default:
+                return .string(num.stringValue)
+            }
+        }
+        else {
+            return .string("\(value)")
+        }
+    }
+}
+
+// --- TODO: syoung 08/21/2020 Include support including unit tests for these if there is a need.
+// The following constraints are not used in the mPower App, which is the only legacy app that we
+// will need to revise in the future.
+
+//extension SBBYearMonthConstraints : sbb_InputItemBuilder {
+//   var answerType: AnswerType {
+//       AnswerTypeDateTime(codingFormat: "yyyy-MM")
+//    }
+//}
+//
+//extension SBBBloodPressureConstraints : sbb_InputItemBuilder {
+//    var answerType: AnswerType {
+//        AnswerTypeString()
+//    }
+//}
+//
+//extension SBBPostalCodeConstraints : sbb_InputItemBuilder {
+//    var answerType: AnswerType {
+//        AnswerTypeString()
+//    }
+//}
+//
+//extension SBBDurationConstraints : sbb_InputItemBuilder {
+//    var answerType: AnswerType {
+//        AnswerTypeNumber()
+//    }
+//}

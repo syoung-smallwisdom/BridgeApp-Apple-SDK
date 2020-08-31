@@ -34,6 +34,12 @@
 import Foundation
 import JsonModel
 
+public extension JsonElement {
+    func toClientData() -> SBBJSONValue {
+        self.jsonObject().toClientData()
+    }
+}
+
 public extension JsonSerializable {
     func toClientData() -> SBBJSONValue {
         guard let data = self as? SBBJSONValue else {
@@ -47,6 +53,19 @@ public extension JsonSerializable {
 }
 
 public extension SBBJSONValue {
+    
+    func toJsonElement() -> JsonElement {
+        if let jsonValue = self as? JsonValue {
+            return JsonElement(jsonValue)
+        }
+        else {
+            // Note: syoung 05/07/2019 All implementations of SBBJSONValue should be tested so this is
+            // unexpected to happen. Nevertheless, if it does happen, only crash in Debug and not in Release.
+            assertionFailure("Failed to convert \(self) to JsonElement")
+            return .null
+        }
+    }
+    
     func toJSONSerializable() -> JsonSerializable {
         if let data = self as? JsonSerializable {
             return data
