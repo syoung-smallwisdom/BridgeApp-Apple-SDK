@@ -33,6 +33,7 @@
 
 import Foundation
 import BridgeSDK
+import ResearchUI
 
 
 /// Override the default task repository to include transforming from surveys, compound activities, and other
