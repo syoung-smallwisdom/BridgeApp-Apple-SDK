@@ -151,6 +151,7 @@
 		FFA07189235801EE00EA371F /* SBAMedicationFollowupTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA07188235801EE00EA371F /* SBAMedicationFollowupTask.swift */; };
 		FFF2968F24EF2C52000E36FB /* TextConstraintWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF2968E24EF2C52000E36FB /* TextConstraintWrapper.swift */; };
 		FFF2969324F454B9000E36FB /* SBAProfileDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF2969224F454B9000E36FB /* SBAProfileDataType.swift */; };
+		FFF6F439254236FD00130EDD /* ResearchUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F87D2ACB22780599007CA2B5 /* ResearchUI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -377,6 +378,7 @@
 			files = (
 				FF29AAAB24492FB100C39E02 /* Research.framework in Frameworks */,
 				FF29AAA924492FAF00C39E02 /* BridgeSDK.framework in Frameworks */,
+				FFF6F439254236FD00130EDD /* ResearchUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
