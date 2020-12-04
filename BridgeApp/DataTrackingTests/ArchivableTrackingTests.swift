@@ -35,6 +35,7 @@ import XCTest
 @testable import BridgeApp
 @testable import DataTracking
 import JsonModel
+import Research
 
 class ArchivableTrackingTests: XCTestCase {
     

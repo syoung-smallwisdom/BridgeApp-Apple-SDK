@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import Research
 
 /// A wrapper for displaying a single step of the medication tracking.
 protocol SBAMedicationFollowupTask : RSDTask, RSDStepNavigator, RSDTrackingTask {

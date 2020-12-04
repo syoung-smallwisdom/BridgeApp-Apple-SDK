@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import Research
+
 
 /// The medication reminder task is used to display this from the profile to allow the participant
 /// to edit their medication reminders.

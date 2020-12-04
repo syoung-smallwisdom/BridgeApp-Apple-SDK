@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import Research
+import BridgeApp
 
 extension RSDStepNavigatorType {
     

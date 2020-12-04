@@ -33,6 +33,9 @@
 
 import Foundation
 import JsonModel
+import Research
+import BridgeApp
+import BridgeSDK
 
 /// `SBATrackedItemsLoggingStepObject` is a custom table step that can be used to log the same
 /// information about a list of tracked items for each one.

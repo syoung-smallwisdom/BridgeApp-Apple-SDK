@@ -32,6 +32,8 @@
 //
 
 import UIKit
+import Research
+import ResearchUI
 
 /// Extend `SBAMedicationLoggingStepObject` to implement the step view controller vendor.
 extension SBAMedicationLoggingStepObject : RSDStepViewControllerVendor {

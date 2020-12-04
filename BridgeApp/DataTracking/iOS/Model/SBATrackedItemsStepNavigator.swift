@@ -32,6 +32,9 @@
 //
 
 import Foundation
+import Research
+import BridgeApp
+import BridgeSDK
 
 /// `SBATrackedItemsStepNavigator` is a general-purpose navigator designed to be used for selecting tracked
 /// data such as medication, triggers, or symptoms.

@@ -34,6 +34,7 @@
 import XCTest
 @testable import BridgeApp
 @testable import DataTracking
+import Research
 
 class MedicationTrackingNavigationTests: XCTestCase {
     

@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import Research
+import ResearchUI
 
 protocol SBAWarningViewControllerDelegate : class {
     func cancel(_ viewController: SBAWarningViewController)

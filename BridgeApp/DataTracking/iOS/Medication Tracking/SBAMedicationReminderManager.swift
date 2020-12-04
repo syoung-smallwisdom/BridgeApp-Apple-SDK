@@ -33,6 +33,9 @@
 
 import Foundation
 import UserNotifications
+import Research
+import BridgeApp
+import BridgeSDK
 
 let SBAMedicationNotificationCategory = "Medication"
 let SBAMedicationNotificationTakenAction = "MedicationTaken"

@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import Research
+
 
 extension RSDFormUIHint {
     

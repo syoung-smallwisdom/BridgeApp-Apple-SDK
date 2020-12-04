@@ -33,6 +33,7 @@
 
 import Foundation
 import JsonModel
+import Research
 
 public struct SBATriggerResult : RSDResult, Codable, RSDScoringResult {
     public let type: RSDResultType = .trigger

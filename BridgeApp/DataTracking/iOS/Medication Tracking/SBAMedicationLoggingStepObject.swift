@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import UIKit
+import Research
 
 /// The medication logging step is used to log information about each item that is being tracked.
 open class SBAMedicationLoggingStepObject : SBATrackedSelectionStepObject {

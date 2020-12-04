@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import Research
 
 /// `SBATrackingDataSource` is an abstract class for handling shared data tracking.
 open class SBATrackingDataSource : RSDStepViewModel, RSDTableDataSource {

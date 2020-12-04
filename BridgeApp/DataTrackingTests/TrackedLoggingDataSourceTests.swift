@@ -34,6 +34,8 @@
 import XCTest
 @testable import BridgeApp
 @testable import DataTracking
+import Research
+import NSLocaleSwizzle
 
 class TrackedLoggingDataSourceTests: XCTestCase {
     

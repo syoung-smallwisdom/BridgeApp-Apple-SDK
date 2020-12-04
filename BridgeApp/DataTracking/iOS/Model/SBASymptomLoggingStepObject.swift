@@ -32,7 +32,10 @@
 //
 
 import Foundation
+import UIKit
 import JsonModel
+import Research
+import ResearchUI
 
 /// A step used for logging symptoms.
 open class SBASymptomLoggingStepObject : SBATrackedItemsLoggingStepObject {

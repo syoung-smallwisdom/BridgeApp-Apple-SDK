@@ -32,6 +32,9 @@
 //
 
 import Foundation
+import Research
+import BridgeApp
+import BridgeSDK
 
 /// `SBATrackedItem` is a protocol for defining an item that can be mapped using its `identifier`
 /// to a list of selected items.

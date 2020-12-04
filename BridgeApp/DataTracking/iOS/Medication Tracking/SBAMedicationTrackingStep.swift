@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import Research
 
 /// The medication tracking step is a step that can be displayed prior to an active task to query
 /// the user about whether or not they have taken their medications that were scheduled for some

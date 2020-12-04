@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import UIKit
+import ResearchUI
 
 @IBDesignable
 class BoxedTextField: RSDStepTextField {

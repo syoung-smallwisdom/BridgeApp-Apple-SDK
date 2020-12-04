@@ -33,6 +33,8 @@
 
 
 import UIKit
+import Research
+import ResearchUI
 
 protocol SBAMedicationEditDetailsViewControllerDelegate : class {
     func save(_ medication: SBAMedicationAnswer, from sender: SBAMedicationEditDetailsViewController)

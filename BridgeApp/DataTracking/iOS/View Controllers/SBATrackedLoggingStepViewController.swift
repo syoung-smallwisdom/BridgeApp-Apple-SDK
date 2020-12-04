@@ -32,6 +32,8 @@
 //
 
 import UIKit
+import Research
+import ResearchUI
 
 /// Extend `SBATrackedItemsLoggingStepObject` to implement the step view controller vendor.
 extension SBATrackedItemsLoggingStepObject : RSDStepViewControllerVendor {

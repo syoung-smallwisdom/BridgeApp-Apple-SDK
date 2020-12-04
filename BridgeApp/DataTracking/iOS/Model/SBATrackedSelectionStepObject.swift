@@ -32,6 +32,9 @@
 //
 
 import Foundation
+import Research
+import BridgeApp
+import BridgeSDK
 
 /// `SBATrackedSelectionStepObject` is intended for use in selecting items from a long, sectioned list.
 /// In general, this would be the first step in setting up tracked data such as symptoms of a disease

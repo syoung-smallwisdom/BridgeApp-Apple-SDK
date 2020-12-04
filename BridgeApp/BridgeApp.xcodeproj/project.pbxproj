@@ -348,7 +348,7 @@
 		FF4A22D524F9FFBF00944009 /* BridgeSDK_Test.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BridgeSDK_Test.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF63D4FE2303731A006C7BD3 /* SBALearnItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBALearnItem.swift; sourceTree = "<group>"; };
 		FF63D4FF2303731A006C7BD3 /* SBALearnInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBALearnInfo.swift; sourceTree = "<group>"; };
-		FF93F728234D1D980052F53F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = DataTracking/Resources/Images.xcassets; sourceTree = SOURCE_ROOT; };
+		FF93F728234D1D980052F53F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = DataTracking/iOS/Resources/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BridgeAppUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9D7967230C71B1005CFB37 /* BridgeAppUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeAppUI.h; sourceTree = "<group>"; };
 		FF9D7968230C71B1005CFB37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };

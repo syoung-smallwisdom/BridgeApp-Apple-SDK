@@ -30,7 +30,9 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
+
 import Foundation
+import Research
 
 
 /// A time range is a set of groupings used in scheduling to group a time into morning, afternoon, evening, and night.
