@@ -32,6 +32,8 @@
 //
 
 import UIKit
+import BridgeApp
+import Research
 
 class SBACatastrophicErrorViewController: UIViewController {
     

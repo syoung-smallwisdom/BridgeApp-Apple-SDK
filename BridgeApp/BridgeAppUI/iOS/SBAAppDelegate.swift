@@ -32,6 +32,10 @@
 //
 
 import UIKit
+import Research
+import ResearchUI
+import BridgeApp
+import BridgeSDK
 
 /// `SBAAppDelegate` is an optional class that can be used as the appDelegate for an application.
 open class SBAAppDelegate : RSDAppDelegate, SBBBridgeErrorUIDelegate {
