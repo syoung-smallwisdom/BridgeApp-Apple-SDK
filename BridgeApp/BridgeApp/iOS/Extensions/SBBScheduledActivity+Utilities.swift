@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import BridgeSDK
+import Research
 
 extension SBBScheduledActivity {
     

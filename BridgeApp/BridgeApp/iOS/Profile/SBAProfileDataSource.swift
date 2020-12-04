@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import UIKit
+
 
 /// The type of a profile data source. This is used to decode the data source in a factory.
 public struct SBAProfileDataSourceType : RawRepresentable, Codable {

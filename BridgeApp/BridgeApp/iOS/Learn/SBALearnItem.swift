@@ -33,6 +33,8 @@
 
 import Foundation
 import Research
+import UIKit
+
 
 /// A learn item is intended for a table-style display of information about a research study.
 public protocol SBALearnItem {

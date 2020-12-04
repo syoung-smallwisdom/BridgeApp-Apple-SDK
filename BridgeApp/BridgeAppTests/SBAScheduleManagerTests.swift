@@ -33,6 +33,7 @@
 
 import XCTest
 @testable import BridgeApp
+import Research
 
 class SBAScheduleManagerTests: XCTestCase {
     

@@ -34,6 +34,8 @@
 import Foundation
 import HealthKit
 import JsonModel
+import Research
+import UIKit
 
 /// The type of a profile table item. This is used to decode the item in a factory.
 public struct SBAProfileTableItemType : RawRepresentable, Codable {

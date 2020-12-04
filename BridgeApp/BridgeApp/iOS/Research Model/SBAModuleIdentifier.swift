@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import BridgeSDK
+import Research
 
 /// `RSDModuleIdentifier` is intended to allow a developer to add a light-weight reference to
 /// active task modules (such as a tapping task or hole-in-peg test) by referencing an identifier

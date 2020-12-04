@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import BridgeSDK
+import Research
 
 
 /// `SBAActivityReference` is used to cast all the activity reference types to a

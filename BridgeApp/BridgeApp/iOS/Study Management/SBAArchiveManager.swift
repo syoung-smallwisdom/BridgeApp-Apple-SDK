@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import BridgeSDK
+import Research
 
 open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
     

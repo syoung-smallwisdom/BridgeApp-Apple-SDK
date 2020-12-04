@@ -33,6 +33,8 @@
 
 import Foundation
 import JsonModel
+import BridgeSDK
+import Research
 
 protocol sbb_BridgeImageOwner {
     var image: SBBImage? { get }

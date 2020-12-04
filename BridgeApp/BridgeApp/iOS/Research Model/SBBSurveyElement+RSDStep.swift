@@ -33,6 +33,8 @@
 
 import Foundation
 import JsonModel
+import BridgeSDK
+import Research
 
 extension SBBBridgeObject {
     

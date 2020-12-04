@@ -32,6 +32,9 @@
 //
 
 import Foundation
+import BridgeSDK
+import Research
+
 
 /// The type of a profile manager. This is used to decode the manager in a factory.
 public struct SBAProfileManagerType : RawRepresentable, Codable {

@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import Research
 @testable import BridgeApp
 
 class MockActivityManager : NSObject, SBBActivityManagerProtocol {

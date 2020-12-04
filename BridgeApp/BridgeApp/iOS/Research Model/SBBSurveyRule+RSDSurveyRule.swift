@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import BridgeSDK
+import Research
 
 // TODO: syoung 02/13/2018 Implement rules for data groups.
 

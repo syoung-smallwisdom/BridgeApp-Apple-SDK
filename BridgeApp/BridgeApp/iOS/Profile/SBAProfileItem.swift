@@ -34,6 +34,7 @@
 import Foundation
 import HealthKit
 import BridgeSDK
+import Research
 
 public protocol SBAProfileItem: class, Decodable {
     

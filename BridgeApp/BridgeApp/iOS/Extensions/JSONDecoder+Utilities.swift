@@ -32,6 +32,7 @@
 //
 
 import Foundation
+import BridgeSDK
 
 extension JSONDecoder {
     

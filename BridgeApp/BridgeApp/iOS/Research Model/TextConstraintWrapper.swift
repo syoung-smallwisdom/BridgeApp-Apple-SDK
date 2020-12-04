@@ -33,6 +33,8 @@
 //
 
 import Foundation
+import BridgeSDK
+import Research
 
 class AbstractTextConstraintsWrapper {
     

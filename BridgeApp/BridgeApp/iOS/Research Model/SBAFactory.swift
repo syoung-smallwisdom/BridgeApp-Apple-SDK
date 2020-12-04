@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import BridgeSDK
+import Research
 
 /// The category type of an object. This is used to decide which decode*(from:) method to call to
 /// decode the item.

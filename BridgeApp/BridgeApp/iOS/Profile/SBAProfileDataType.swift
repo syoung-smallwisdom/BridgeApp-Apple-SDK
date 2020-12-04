@@ -33,7 +33,7 @@
 //
 
 import Foundation
-
+import Research
 import JsonModel
 
 public enum SBAProfileDataType {

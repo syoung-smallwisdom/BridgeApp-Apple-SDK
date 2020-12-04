@@ -32,6 +32,8 @@
 //
 
 import Foundation
+import BridgeSDK
+import Research
 
 /// `SBASurveyConfiguration` is a survey wrapper that can extend the default implementation
 /// of UI/UX handling for all the Bridge surveys used by a given app.
