@@ -123,7 +123,7 @@ open class SBATrackedReminderModalButtonCell : RSDButtonCell {
     
     /// The nib to use with this cell. Default will instantiate a `SBATrackedModalButtonCell`.
     open class var nib: UINib {
-        let bundle = Bundle(for: SBATrackedReminderModalButtonCell.self)
+        let bundle = Bundle.module
         let nibName = String(describing: SBATrackedReminderModalButtonCell.self)
         return UINib(nibName: nibName, bundle: bundle)
     }

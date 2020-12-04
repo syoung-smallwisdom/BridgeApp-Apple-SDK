@@ -127,7 +127,7 @@ open class SBABridgeConfiguration {
         RSDTaskRepository.shared = SBATaskRepository()
         
         // Insert this bundle into the list of localized bundles.
-        Localization.insert(bundle: LocalizationBundle(Bundle(for: SBABridgeConfiguration.self)),
+        Localization.insert(bundle: LocalizationBundle(Bundle.module),
                             at: UInt(Localization.allBundles.count))
         
         // Set the factory to this one by default.
@@ -527,9 +527,10 @@ struct SBAActivityMappingObject : Decodable {
     let usesV1LegacyArchiving : Bool?
     let groups : [SBAActivityGroupObject]?
     let activityList : [SBAActivityInfoObject]?
-    let tasks : [RSDTaskObject]?
     let taskToSchemaIdentifierMap : [String : String]?
     let reportMappings : [String : SBAReportCategory]?
+    @available(*,deprecated)
+    let tasks : [RSDTaskObject]?
 }
 
 /// `SBAActivityGroupObject` is a `Decodable` implementation of a `SBAActivityGroup`.

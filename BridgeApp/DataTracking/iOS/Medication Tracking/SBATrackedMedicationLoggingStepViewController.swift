@@ -309,7 +309,7 @@ open class SBAMedicationLoggingCell: RSDTableViewCell {
     
     /// The nib to use with this cell. Default will instantiate a `SBAMedicationLoggingCell`.
     open class var nib: UINib {
-        let bundle = Bundle(for: SBAMedicationLoggingCell.self)
+        let bundle = Bundle.module
         let nibName = String(describing: SBAMedicationLoggingCell.self)
         return UINib(nibName: nibName, bundle: bundle)
     }

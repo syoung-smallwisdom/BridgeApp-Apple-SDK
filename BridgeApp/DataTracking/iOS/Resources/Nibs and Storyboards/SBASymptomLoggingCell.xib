@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_0" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" shouldIndentWhileEditing="NO" rowHeight="538" id="KGk-i7-Jjw" customClass="SBASymptomLoggingCell" customModule="BridgeApp" customModuleProvider="target">
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" shouldIndentWhileEditing="NO" rowHeight="538" id="KGk-i7-Jjw" customClass="SBASymptomLoggingCell" customModule="DataTracking" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="375" height="566"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="375" height="565.5"/>
+                <rect key="frame" x="0.0" y="0.0" width="375" height="566"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mM6-Ae-bzg">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="555.5"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="556"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nRL-JT-023">
                                 <rect key="frame" x="28" y="8" width="41.5" height="24"/>
@@ -42,7 +40,7 @@
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qfO-hr-hg7" userLabel="Severity Line Separator">
                                 <rect key="frame" x="0.0" y="87" width="375" height="1"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="groupTableViewBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="uh6-UY-rdz"/>
                                 </constraints>
@@ -50,7 +48,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="fjX-fh-Mlp">
                                 <rect key="frame" x="16" y="98" width="343" height="60"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BZI-YR-K5P" customClass="SBASeverityButton" customModule="BridgeApp" customModuleProvider="target">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BZI-YR-K5P" customClass="SBASeverityButton" customModule="DataTracking" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="83.5" height="60"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <state key="normal" title="None"/>
@@ -58,7 +56,7 @@
                                             <action selector="severityTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="thS-iV-ulR"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wfi-R4-TPv" customClass="SBASeverityButton" customModule="BridgeApp" customModuleProvider="target">
+                                    <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wfi-R4-TPv" customClass="SBASeverityButton" customModule="DataTracking" customModuleProvider="target">
                                         <rect key="frame" x="86.5" y="0.0" width="83.5" height="60"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <state key="normal" title="Mild"/>
@@ -66,7 +64,7 @@
                                             <action selector="severityTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="OQF-if-UEn"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="flH-oC-dvF" customClass="SBASeverityButton" customModule="BridgeApp" customModuleProvider="target">
+                                    <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="flH-oC-dvF" customClass="SBASeverityButton" customModule="DataTracking" customModuleProvider="target">
                                         <rect key="frame" x="173" y="0.0" width="83.5" height="60"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <state key="normal" title="Moderate"/>
@@ -74,7 +72,7 @@
                                             <action selector="severityTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ZGP-SC-ByR"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gfU-76-99P" customClass="SBASeverityButton" customModule="BridgeApp" customModuleProvider="target">
+                                    <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gfU-76-99P" customClass="SBASeverityButton" customModule="DataTracking" customModuleProvider="target">
                                         <rect key="frame" x="259.5" y="0.0" width="83.5" height="60"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <state key="normal" title="Severe"/>
@@ -95,7 +93,7 @@
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Kwf-zh-HMw" userLabel="Timing Line Separator">
                                 <rect key="frame" x="0.0" y="203.5" width="375" height="1"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="groupTableViewBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="JEq-6z-fgC"/>
                                 </constraints>
@@ -104,17 +102,17 @@
                                 <rect key="frame" x="0.0" y="204.5" width="375" height="216"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="SIq-bz-LDK">
-                                        <rect key="frame" x="29" y="91.5" width="190" height="33.5"/>
+                                        <rect key="frame" x="29" y="91.5" width="189" height="33.5"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="975" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dyG-4c-Rfv" customClass="RSDUnderlinedButton" customModule="ResearchUI">
+                                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="975" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dyG-4c-Rfv" customClass="RSDUnderlinedButton" customModule="ResearchUI">
                                                 <rect key="frame" x="0.0" y="0.0" width="69" height="33.5"/>
                                                 <state key="normal" title="7:00 AM"/>
                                                 <connections>
                                                     <action selector="timeTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ZJf-sz-25D"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rVc-pW-GGU" customClass="RSDUnderlinedButton" customModule="ResearchUI">
-                                                <rect key="frame" x="85" y="0.0" width="105" height="33.5"/>
+                                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rVc-pW-GGU" customClass="RSDUnderlinedButton" customModule="ResearchUI">
+                                                <rect key="frame" x="85" y="0.0" width="104" height="33.5"/>
                                                 <state key="normal" title="Add duration"/>
                                                 <connections>
                                                     <action selector="addDurationTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="fnJ-aZ-Rpz"/>
@@ -124,9 +122,6 @@
                                     </stackView>
                                     <datePicker contentMode="scaleToFill" verticalHuggingPriority="980" verticalCompressionResistancePriority="980" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="5" translatesAutoresizingMaskIntoConstraints="NO" id="Z6W-kF-sY1">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="216"/>
-                                        <date key="date" timeIntervalSinceReferenceDate="546545880.15172601">
-                                            <!--2018-04-27 18:18:00 +0000-->
-                                        </date>
                                     </datePicker>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -159,16 +154,16 @@
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S0D-Pw-QHw" userLabel="Details Line Separator">
                                 <rect key="frame" x="0.0" y="442" width="375" height="1"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="groupTableViewBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="uVL-y3-7AX"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="X2g-gN-yoK" userLabel="Details View">
-                                <rect key="frame" x="0.0" y="442" width="375" height="113.5"/>
+                                <rect key="frame" x="0.0" y="442" width="375" height="114"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="P4t-sD-P7T" userLabel="Medication Stack View">
-                                        <rect key="frame" x="29" y="12" width="317" height="68"/>
+                                        <rect key="frame" x="29" y="12" width="317" height="68.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="749" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k8V-Jc-acP" customClass="RSDCheckboxButton" customModule="ResearchUI">
                                                 <rect key="frame" x="0.0" y="0.0" width="317" height="32"/>
@@ -178,7 +173,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" tag="1" contentMode="scaleToFill" verticalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0jW-x4-zKr" customClass="RSDCheckboxButton" customModule="ResearchUI">
-                                                <rect key="frame" x="0.0" y="36" width="317" height="32"/>
+                                                <rect key="frame" x="0.0" y="36.5" width="317" height="32"/>
                                                 <state key="normal" title="Post-medication"/>
                                                 <connections>
                                                     <action selector="medicationTimingTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="e07-5Q-4sN"/>
@@ -265,4 +260,41 @@
             <point key="canvasLocation" x="-64.6875" y="50.70422535211268"/>
         </tableViewCell>
     </objects>
+    <designables>
+        <designable name="0jW-x4-zKr">
+            <size key="intrinsicContentSize" width="133" height="34"/>
+        </designable>
+        <designable name="BZI-YR-K5P">
+            <size key="intrinsicContentSize" width="35" height="29"/>
+        </designable>
+        <designable name="Wfi-R4-TPv">
+            <size key="intrinsicContentSize" width="30" height="29"/>
+        </designable>
+        <designable name="dyG-4c-Rfv">
+            <size key="intrinsicContentSize" width="69" height="33.5"/>
+        </designable>
+        <designable name="flH-oC-dvF">
+            <size key="intrinsicContentSize" width="62" height="29"/>
+        </designable>
+        <designable name="gfU-76-99P">
+            <size key="intrinsicContentSize" width="45" height="29"/>
+        </designable>
+        <designable name="k8V-Jc-acP">
+            <size key="intrinsicContentSize" width="124" height="34"/>
+        </designable>
+        <designable name="rVc-pW-GGU">
+            <size key="intrinsicContentSize" width="104" height="33.5"/>
+        </designable>
+    </designables>
+    <resources>
+        <systemColor name="groupTableViewBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="groupTableViewBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="groupTableViewBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
 </document>

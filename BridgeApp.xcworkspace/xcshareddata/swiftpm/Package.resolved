@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "OpenSSL",
+        "repositoryURL": "https://github.com/syoung-smallwisdom/CMSSupport.git",
+        "state": {
+          "branch": "swiftPM",
+          "revision": "cef78ced14b297ee57fde7f9e76fd00e00372c92",
+          "version": null
+        }
+      },
+      {
         "package": "JsonModel",
         "repositoryURL": "https://github.com/Sage-Bionetworks/JsonModel-Swift.git",
         "state": {

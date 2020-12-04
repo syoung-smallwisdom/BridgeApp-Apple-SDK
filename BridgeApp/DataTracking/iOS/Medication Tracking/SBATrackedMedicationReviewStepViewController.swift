@@ -132,7 +132,7 @@ open class SBAMedicationListStepViewController: RSDTableStepViewController {
     
     func showMedicationDetails(for tableItem: SBATrackedMedicationReviewItem) {
         
-        let storyboard = UIStoryboard(name: "Medication", bundle: Bundle(for: SBAMedicationEditDetailsViewController.self))
+        let storyboard = UIStoryboard(name: "Medication", bundle: Bundle.module)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "MedicationEditDetails") as? SBAMedicationEditDetailsViewController
             else {
                 assertionFailure("Failed to instantiate expected view controller")
@@ -191,7 +191,7 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
     
     /// The nib to use with this cell. Default will instantiate a `SBATrackedMedicationReviewCell`.
     open class var nib: UINib {
-        let bundle = Bundle(for: SBATrackedMedicationReviewCell.self)
+        let bundle = Bundle.module
         let nibName = String(describing: SBATrackedMedicationReviewCell.self)
         return UINib(nibName: nibName, bundle: bundle)
     }
@@ -227,7 +227,7 @@ open class SBATrackedMedicationReviewCell: RSDSelectionTableViewCell {
                 let doseCount = medItem.medication.dosageItems?.count ?? 0
                 let formatString : String = NSLocalizedString("MEDICATION_DOSES",
                                                               tableName: "BridgeApp",
-                                                              bundle: Bundle(for: SBATrackedMedicationReviewCell.self),
+                                                              bundle: Bundle.module,
                                                               value: "%u doses",
                                                               comment: "Number of doses of medication")
                 self.detailLabel?.text = String.localizedStringWithFormat(formatString, doseCount)

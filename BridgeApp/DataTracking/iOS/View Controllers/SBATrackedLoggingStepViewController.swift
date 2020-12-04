@@ -60,7 +60,7 @@ open class SBATrackedLoggingCell: RSDButtonCell {
     
     /// The nib to use with this cell. Default will instantiate a `SBATrackedLoggingCell`.
     open class var nib: UINib {
-        let bundle = Bundle(for: SBATrackedLoggingCell.self)
+        let bundle = Bundle.module
         let nibName = String(describing: SBATrackedLoggingCell.self)
         return UINib(nibName: nibName, bundle: bundle)
     }

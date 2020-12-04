@@ -150,7 +150,7 @@ open class SBASymptomLoggingCell: RSDTableViewCell {
     
     /// The nib to use with this cell. Default will instantiate a `SBASymptomLoggingCell`.
     open class var nib: UINib {
-        let bundle = Bundle(for: SBASymptomLoggingCell.self)
+        let bundle = Bundle.module
         let nibName = String(describing: SBASymptomLoggingCell.self)
         return UINib(nibName: nibName, bundle: bundle)
     }
