@@ -34,6 +34,7 @@
 import Foundation
 import Research
 import ResearchUI
+import UIKit
 
 extension SBATrackedMedicationReviewStepObject : RSDStepViewControllerVendor {
 }

@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "OpenSSL",
-        "repositoryURL": "https://github.com/syoung-smallwisdom/CMSSupport.git",
+        "repositoryURL": "https://github.com/Sage-Bionetworks/CMSSupport",
         "state": {
-          "branch": "swiftPM",
-          "revision": "cef78ced14b297ee57fde7f9e76fd00e00372c92",
-          "version": null
+          "branch": null,
+          "revision": "110620479cac183bb781c8fb0986398adadff609",
+          "version": "1.1.1"
         }
       },
       {

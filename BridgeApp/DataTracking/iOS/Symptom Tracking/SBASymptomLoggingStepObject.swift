@@ -2,7 +2,7 @@
 //  SBASymptomLoggingStepObject.swift
 //  BridgeApp
 //
-//  Copyright © 2018 Sage Bionetworks. All rights reserved.
+//  Copyright © 2018-2019 Sage Bionetworks. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -32,6 +32,10 @@
 //
 
 import Foundation
+import UIKit
+import JsonModel
+import Research
+import ResearchUI
 
 /// A step used for logging symptoms.
 open class SBASymptomLoggingStepObject : SBATrackedItemsLoggingStepObject {
@@ -231,6 +235,17 @@ public enum SBASymptomDurationLevel : Int, Codable {
     public static var answerType : RSDAnswerResultType {
         return .string
     }
+    
+    public init(from decoder: Decoder) throws {
+        let singleContainer = try decoder.singleValueContainer()
+        if let stringValue = try? singleContainer.decode(String.self) {
+            self.init(stringValue: stringValue)!
+        }
+        else {
+            let rawValue = try singleContainer.decode(Int.self)
+            self.init(rawValue: rawValue)!
+        }
+    }
 }
 
 extension SBASymptomDurationLevel : RSDChoice {
@@ -252,7 +267,7 @@ extension SBASymptomDurationLevel : RSDChoice {
         return true
     }
     
-    public var imageVendor: RSDImageVendor? {
+    public var imageData: RSDImageData? {
         return nil
     }
     
@@ -284,7 +299,10 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         set {
             var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.severity.rawValue, answerType: .integer)
             answerResult.value = newValue?.rawValue
-            _appendResults(answerResult)
+            loggedResult.appendInputResults(with: answerResult)
+            if newValue != nil, loggedResult.loggedDate == nil {
+                loggedResult.loggedDate = Date()
+            }
         }
     }
     
@@ -295,6 +313,9 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         }
         set {
             loggedResult.loggedDate = newValue
+            if severity == nil {
+                self.severity = .moderate
+            }
         }
     }
     
@@ -307,7 +328,7 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         set {
             var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.duration.rawValue, answerType: SBASymptomDurationLevel.answerType)
             answerResult.value = newValue?.answerValue
-            _appendResults(answerResult)
+            loggedResult.appendInputResults(with: answerResult)
         }
     }
     
@@ -322,7 +343,7 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         set {
             var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.medicationTiming.rawValue, answerType: .string)
             answerResult.value = newValue?.rawValue
-            _appendResults(answerResult)
+            loggedResult.appendInputResults(with: answerResult)
         }
     }
     
@@ -334,14 +355,7 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         set {
             var answerResult = RSDAnswerResultObject(identifier: ResultIdentifier.notes.rawValue, answerType: .string)
             answerResult.value = newValue
-            _appendResults(answerResult)
-        }
-    }
-    
-    private func _appendResults(_ answerResult: RSDAnswerResultObject) {
-        loggedResult.appendInputResults(with: answerResult)
-        if loggedResult.loggedDate == nil {
-            loggedResult.loggedDate = Date()
+            loggedResult.appendInputResults(with: answerResult)
         }
     }
     
@@ -355,3 +369,165 @@ open class SBASymptomTableItem : RSDModalStepTableItem {
         super.init(identifier: loggedResult.identifier, rowIndex: rowIndex, reuseIdentifier: reuseIdentifier)
     }
 }
+
+/// The symptom table item is tracked using the result object.
+public struct SBASymptomResult : Codable, RSDScoringResult {
+    private enum CodingKeys : String, CodingKey {
+        case identifier, text, loggedDate, timeZone, severity, duration, medicationTiming, notes
+    }
+    
+    public let type: RSDResultType = .symptom
+    
+    public let identifier: String
+    
+    /// The start date timestamp for the result.
+    public var startDate: Date = Date()
+    
+    /// The end date timestamp for the result.
+    public var endDate: Date = Date()
+    
+    /// The text shown to the user as the title.
+    public let text: String
+    
+    /// The date timestamp for when the item was logged.
+    public var loggedDate: Date?
+    
+    /// The time zone in effect when the item was logged.
+    public var timeZone: TimeZone = TimeZone.current
+    
+    /// The severity level of the symptom.
+    public var severity : SBASymptomSeverityLevel?
+    
+    /// The time when the symptom started occuring.
+    public var time: Date {
+        get {
+            return loggedDate ?? Date()
+        }
+        set {
+            loggedDate = newValue
+        }
+    }
+    
+    /// The duration window describing how long the symptoms occurred.
+    public var duration: SBASymptomDurationLevel?
+    
+    /// The medication timing for when the symptom occurred.
+    public var medicationTiming: SBASymptomMedicationTiming?
+    
+    /// Notes added by the participant.
+    public var notes: String?
+    
+    public func dataScore() throws -> JsonSerializable? {
+        return try self.rsd_jsonEncodedDictionary().jsonObject()
+    }
+    
+    public func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
+        // create the manifest and encode the result.
+        let manifest = RSDFileManifest(filename: self.identifier, timestamp: self.startDate, contentType: "application/json", identifier: self.identifier, stepPath: stepPath)
+        let data = try self.rsd_jsonEncodedData()
+        return (manifest, data)
+    }
+    
+    public init(identifier: String, text: String? = nil) {
+        self.identifier = identifier
+        self.text = text ?? identifier
+    }
+    
+    public init(from decoder: Decoder) throws {
+        //identifier, loggedDate, timeZone, severity, duration, medicationTiming, notes
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let identifier = try container.decode(String.self, forKey: .identifier)
+        self.identifier = identifier
+        let text = try container.decodeIfPresent(String.self, forKey: .text)
+        self.text = text ?? identifier
+        self.loggedDate = try container.decodeIfPresent(Date.self, forKey: .loggedDate)
+        if let tzIdentifier = try container.decodeIfPresent(String.self, forKey: .timeZone),
+            let timeZone = TimeZone(identifier: tzIdentifier) {
+            self.timeZone = timeZone
+        }
+        if let iso8601 = try container.decodeIfPresent(String.self, forKey: .loggedDate),
+            let timeZone = TimeZone(iso8601: iso8601) {
+            self.timeZone = timeZone
+        }
+        else {
+            self.timeZone = TimeZone.current
+        }
+        // syoung 07/29/2019 Because of a bug in the encoding, need to catch and nil out encoding
+        // errors where the container has a type mismatch.
+        do {
+            self.severity = try container.decodeIfPresent(SBASymptomSeverityLevel.self, forKey: .severity)
+        } catch DecodingError.typeMismatch(_, _) {
+            self.severity = nil
+        }
+        do {
+            self.duration = try container.decodeIfPresent(SBASymptomDurationLevel.self, forKey: .duration)
+        } catch DecodingError.typeMismatch(_, _) {
+            self.duration = nil
+        }
+        do {
+            self.medicationTiming = try container.decodeIfPresent(SBASymptomMedicationTiming.self, forKey: .medicationTiming)
+        } catch DecodingError.typeMismatch(_, _) {
+            self.medicationTiming = nil
+        }
+        self.notes = try container.decodeIfPresent(String.self, forKey: .notes)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.identifier, forKey: .identifier)
+        try container.encode(self.text, forKey: .text)
+        if let loggedDate = self.loggedDate {
+            let formatter = encoder.factory.timestampFormatter.copy() as! DateFormatter
+            formatter.timeZone = self.timeZone
+            let loggingString = formatter.string(from: loggedDate)
+            try container.encode(loggingString, forKey: .loggedDate)
+            try container.encode(self.timeZone.identifier, forKey: .timeZone)
+        }
+        try container.encodeIfPresent(self.severity, forKey: .severity)
+        if let durationString = self.duration?.stringValue {
+            try container.encodeIfPresent(durationString, forKey: .duration)
+        }
+        try container.encodeIfPresent(self.medicationTiming, forKey: .medicationTiming)
+        try container.encodeIfPresent(self.notes, forKey: .notes)
+    }
+}
+
+/// Wrapper for the clientData from a report.
+public struct SBASymptomReportData : Codable {
+    public let trackedItems : SBASymptomCollectionResult
+}
+
+/// Wrapper for a collection of symptoms as a result.
+public struct SBASymptomCollectionResult : Codable, RSDCollectionResult {
+    public let type: RSDResultType = .symptomCollection
+    
+    private enum CodingKeys : String, CodingKey {
+        case identifier, type, startDate, endDate, symptomResults = "items"
+    }
+    
+    public let identifier: String
+    
+    /// The start date timestamp for the result.
+    public var startDate: Date = Date()
+    
+    /// The end date timestamp for the result.
+    public var endDate: Date = Date()
+    
+    /// List of the symptom results.
+    public var symptomResults: [SBASymptomResult] = []
+    
+    /// A wrapper for the input results.
+    public var inputResults: [RSDResult] {
+        get {
+            return symptomResults
+        }
+        set {
+            symptomResults = newValue.compactMap { $0 as? SBASymptomResult }
+        }
+    }
+    
+    public init(identifier: String) {
+        self.identifier = identifier
+    }
+}
+
