@@ -33,7 +33,7 @@ let package = Package(
                  from: "3.14.0"),
         .package(name: "BridgeSDK",
                  url: "https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git",
-                 from: "4.4.77"),
+                 from: "4.4.79"),
         .package(name: "JsonModel",
                  url: "https://github.com/Sage-Bionetworks/JsonModel-Swift.git",
                  from: "1.0.2"),
