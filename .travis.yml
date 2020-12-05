@@ -4,7 +4,8 @@ notifications:
 language: objective-c
 osx_image: xcode12.1
 xcode_workspace: BridgeApp.xcworkspace
-xcode_scheme: BridgeAppExample 
+xcode_scheme: BridgeAppExample
+xcode_destination: platform:iOS Simulator, OS:14.1, name:iPhone 12
 cache:
 - bundler
 before_install:
