@@ -32,9 +32,10 @@
 //
 
 import XCTest
+import Research
 @testable import BridgeApp
 @testable import DataTracking
-
+import NSLocaleSwizzle
 
 class TrackingNavigatorTests: XCTestCase {
     

@@ -33,6 +33,7 @@
 
 import BridgeApp
 import BridgeSDK_Test
+import Research
 
 public struct StudySetup {
     let email: String = "fake.address@fake.domain.tld"

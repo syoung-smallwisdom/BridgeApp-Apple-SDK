@@ -35,6 +35,8 @@ import XCTest
 @testable import BridgeApp
 @testable import DataTracking
 import ResearchUI
+import Research
+import NSLocaleSwizzle
 
 class MedicationLoggingDataSourceTests: XCTestCase {
 

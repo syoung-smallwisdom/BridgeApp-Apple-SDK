@@ -32,6 +32,7 @@
 //
 
 import XCTest
+import Research
 @testable import BridgeApp
 
 class ScheduleFilteringTests: SBAScheduleManagerTests {

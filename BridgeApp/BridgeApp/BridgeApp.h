@@ -31,9 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-@import UIKit;
-@import Research;
-@import BridgeSDK;
+@import Foundation;
 
 //! Project version number for BridgeApp.
 FOUNDATION_EXPORT double BridgeAppVersionNumber;
@@ -41,8 +39,3 @@ FOUNDATION_EXPORT double BridgeAppVersionNumber;
 //! Project version string for BridgeApp.
 FOUNDATION_EXPORT const unsigned char BridgeAppVersionString[];
 
-#if defined(__cplusplus)
-#  define ENUM_EXTERN extern "C" __attribute__((visibility("default")))
-#else
-#  define ENUM_EXTERN extern __attribute__((visibility("default")))
-#endif

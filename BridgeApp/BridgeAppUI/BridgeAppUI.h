@@ -31,19 +31,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-@import UIKit;
-@import BridgeApp;
-@import ResearchUI;
-@import Research;
-@import BridgeSDK;
-
+@import Foundation;
 
 //! Project version number for BridgeAppUI.
 FOUNDATION_EXPORT double BridgeAppUIVersionNumber;
 
 //! Project version string for BridgeAppUI.
 FOUNDATION_EXPORT const unsigned char BridgeAppUIVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <BridgeAppUI/PublicHeader.h>
-
 

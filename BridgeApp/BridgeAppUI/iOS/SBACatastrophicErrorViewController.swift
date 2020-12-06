@@ -32,6 +32,8 @@
 //
 
 import UIKit
+import BridgeApp
+import Research
 
 class SBACatastrophicErrorViewController: UIViewController {
     
@@ -41,7 +43,7 @@ class SBACatastrophicErrorViewController: UIViewController {
     @IBOutlet weak var actionButton: UIButton!
     
     class func instantiateWithMessage(_ message: String) -> SBACatastrophicErrorViewController? {
-        let storyboard = UIStoryboard(name: "CatastrophicError", bundle: Bundle(for: self.classForCoder()))
+        let storyboard = UIStoryboard(name: "CatastrophicError", bundle: Bundle.module)
         let vc = storyboard.instantiateInitialViewController() as? SBACatastrophicErrorViewController
         vc?.initialMessage = message
         return vc

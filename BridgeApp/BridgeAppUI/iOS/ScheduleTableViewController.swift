@@ -32,6 +32,9 @@
 //
 
 import UIKit
+import Research
+import ResearchUI
+import BridgeApp
 
 open class ScheduleTableViewController: UITableViewController, RSDTaskViewControllerDelegate {
 

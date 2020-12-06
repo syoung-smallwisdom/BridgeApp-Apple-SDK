@@ -1,0 +1,34 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "BridgeSDK",
+        "repositoryURL": "https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git",
+        "state": {
+          "branch": null,
+          "revision": "6c40724c5852853a674185c6f0adb1fc72fcd904",
+          "version": "4.4.81"
+        }
+      },
+      {
+        "package": "JsonModel",
+        "repositoryURL": "https://github.com/Sage-Bionetworks/JsonModel-Swift.git",
+        "state": {
+          "branch": null,
+          "revision": "9237442bd2ea208554e01041feaa2d4a065d61a4",
+          "version": "1.0.2"
+        }
+      },
+      {
+        "package": "SageResearch",
+        "repositoryURL": "https://github.com/Sage-Bionetworks/SageResearch.git",
+        "state": {
+          "branch": null,
+          "revision": "e44433ff79ca5f9140b6457e4f043115c93ff52a",
+          "version": "3.16.5"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

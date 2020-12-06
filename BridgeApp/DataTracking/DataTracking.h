@@ -31,18 +31,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-@import UIKit;
-@import ResearchUI;
-@import Research;
-@import BridgeApp;
-@import BridgeSDK;
+@import Foundation;
 
 //! Project version number for DataTracking.
 FOUNDATION_EXPORT double DataTrackingVersionNumber;
 
 //! Project version string for DataTracking.
 FOUNDATION_EXPORT const unsigned char DataTrackingVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <DataTracking/PublicHeader.h>
 
 

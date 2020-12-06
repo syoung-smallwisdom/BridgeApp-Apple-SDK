@@ -23,6 +23,7 @@ platform :ios do
     ENV["TEAM_SAGEBIO_NOT_FOR_PROFIT"] = "KA9Z8R6M6K"
     ENV["APP_ID"] = "org.sagebase.BridgeApp-iOS"
     ENV["WORKSPACE"] = "./BridgeApp.xcworkspace"
+    ENV["FASTLANE_EXPLICIT_OPEN_SIMULATOR"] = "2"
   end
 
   desc "Create keychains to store certificates"
@@ -66,7 +67,8 @@ platform :ios do
     scan(
       workspace: ENV["WORKSPACE"],
       scheme: "#{scheme}",
-      clean: true
+      clean: true,
+      device: "iPhone 12 (14.2)"
     )
   end
 
