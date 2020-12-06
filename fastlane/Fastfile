@@ -68,7 +68,7 @@ platform :ios do
       workspace: ENV["WORKSPACE"],
       scheme: "#{scheme}",
       clean: true,
-      device: "iPhone 12 (14.1)"
+      device: "iPhone 12 (14.2)"
     )
   end
 
