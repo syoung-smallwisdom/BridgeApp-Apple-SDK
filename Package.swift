@@ -25,17 +25,18 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(name: "SageResearch",
-                 url: "https://github.com/Sage-Bionetworks/SageResearch.git",
-                 from: "3.14.0"),
+        .package(
+            name: "SageResearch",
+            url: "https://github.com/Sage-Bionetworks/SageResearch.git",
+            from: "3.14.0"),
         .package(
             name: "BridgeSDK",
             url: "https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git",
-            .branch("swiftPM")),
-                 //from: "4.4.82"),
-        .package(name: "JsonModel",
-                 url: "https://github.com/Sage-Bionetworks/JsonModel-Swift.git",
-                 from: "1.0.2"),
+            from: "4.4.83"),
+        .package(
+            name: "JsonModel",
+            url: "https://github.com/Sage-Bionetworks/JsonModel-Swift.git",
+            from: "1.0.2"),
     ],
     targets: [
 
