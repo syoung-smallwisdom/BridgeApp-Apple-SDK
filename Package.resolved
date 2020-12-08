@@ -5,9 +5,9 @@
         "package": "BridgeSDK",
         "repositoryURL": "https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git",
         "state": {
-          "branch": null,
-          "revision": "b264a2a2ec1507fb1a1329cfc852eca639704774",
-          "version": "4.4.82"
+          "branch": "swiftPM",
+          "revision": "4f09336fb67542a0792dd74e062228947c57487b",
+          "version": null
         }
       },
       {
