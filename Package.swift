@@ -8,10 +8,7 @@ let package = Package(
     defaultLocalization: "en",
     platforms: [
         // Add support for all platforms starting from a specific version.
-        .macOS(.v10_15),
-        .iOS(.v11),
-        .watchOS(.v4),
-        .tvOS(.v11)
+        .iOS(.v12),
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
@@ -28,15 +25,18 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(name: "SageResearch",
-                 url: "https://github.com/Sage-Bionetworks/SageResearch.git",
-                 from: "3.14.0"),
-        .package(name: "BridgeSDK",
-                 url: "https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git",
-                 from: "4.4.81"),
-        .package(name: "JsonModel",
-                 url: "https://github.com/Sage-Bionetworks/JsonModel-Swift.git",
-                 from: "1.0.2"),
+        .package(
+            name: "SageResearch",
+            url: "https://github.com/Sage-Bionetworks/SageResearch.git",
+            from: "3.14.0"),
+        .package(
+            name: "BridgeSDK",
+            url: "https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git",
+            from: "4.4.83"),
+        .package(
+            name: "JsonModel",
+            url: "https://github.com/Sage-Bionetworks/JsonModel-Swift.git",
+            from: "1.0.2"),
     ],
     targets: [
 
