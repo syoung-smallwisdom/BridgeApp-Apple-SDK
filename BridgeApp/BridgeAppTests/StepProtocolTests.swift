@@ -31,6 +31,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+import JsonModel
 import XCTest
 @testable import BridgeApp
 @testable import Research
@@ -1120,15 +1121,19 @@ class StepProtocolTests: XCTestCase {
 
 // MARK: Test structs
 
-struct TestResult : RSDResult {
-    
+struct TestResult : SerializableResultData {
+
     let identifier: String
-    var type: RSDResultType = .base
+    var serializableType: SerializableResultType = .base
     var startDate: Date = Date()
     var endDate: Date = Date()
     
     init(identifier: String) {
         self.identifier = identifier
+    }
+    
+    func deepCopy() -> TestResult {
+        self
     }
 }
 
@@ -1150,7 +1155,7 @@ class TestSurveyConfiguration : SBASurveyConfiguration {
         return stepType
     }
     
-    override func instantiateStepResult(for step: SBBSurveyElement) -> RSDResult? {
+    override func instantiateStepResult(for step: SBBSurveyElement) -> ResultData? {
         return TestResult(identifier: step.identifier)
     }
     

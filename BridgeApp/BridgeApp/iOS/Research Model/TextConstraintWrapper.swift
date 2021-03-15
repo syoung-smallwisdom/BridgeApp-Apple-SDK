@@ -34,6 +34,7 @@
 
 import Foundation
 import BridgeSDK
+import JsonModel
 import Research
 
 class AbstractTextConstraintsWrapper {

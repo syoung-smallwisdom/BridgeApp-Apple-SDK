@@ -192,9 +192,6 @@ open class SBABridgeConfiguration {
                 mappingObject.activityList?.forEach {
                     self.addMapping(with: $0)
                 }
-                mappingObject.tasks?.forEach {
-                    self.addMapping(with: $0)
-                }
                 mappingObject.taskToSchemaIdentifierMap?.forEach {
                     self.addMapping(from: $0.key, to: $0.value)
                 }
@@ -530,8 +527,6 @@ struct SBAActivityMappingObject : Decodable {
     let activityList : [SBAActivityInfoObject]?
     let taskToSchemaIdentifierMap : [String : String]?
     let reportMappings : [String : SBAReportCategory]?
-    @available(*,deprecated)
-    let tasks : [RSDTaskObject]?
 }
 
 /// `SBAActivityGroupObject` is a `Decodable` implementation of a `SBAActivityGroup`.

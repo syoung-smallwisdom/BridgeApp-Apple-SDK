@@ -94,7 +94,6 @@ class ActivityReferenceTests: XCTestCase {
             "activityList": [  ["identifier" : "taskA"],
                                ["identifier" : "taskC"],
                                ["identifier" : "taskD"]],
-            "tasks": [ ["identifier" : "taskF", "steps":[] ]],
             "taskToSchemaIdentifierMap": [
                 "taskA": "foo",
                 "taskF": "goo"
@@ -134,8 +133,6 @@ class ActivityReferenceTests: XCTestCase {
         XCTAssertEqual(schemaC?.schemaIdentifier, "taskC")
         XCTAssertEqual(schemaC?.schemaVersion, 5)
         
-        let taskInfoF = config.activityInfo(for: "taskF")
-        XCTAssertNotNil(taskInfoF)
         let schemaF = config.schemaInfo(for: "taskF")
         XCTAssertNotNil(schemaF)
         XCTAssertEqual(schemaF?.schemaIdentifier, "goo")
@@ -331,8 +328,7 @@ class ActivityReferenceTests: XCTestCase {
                                 {"identifier" : "taskB"},
                                 {"identifier" : "taskC"},
                                 {"identifier" : "taskD"},
-                                {"identifier" : "taskE"}],
-            "tasks": [ {"identifier" : "taskA", "steps":[] }]
+                                {"identifier" : "taskE"}]
         }
         """.data(using: .utf8)! // our data in native (JSON) format
     
@@ -346,10 +342,6 @@ class ActivityReferenceTests: XCTestCase {
             let expectedActivityIds = ["taskA", "taskB", "taskC", "taskD", "taskE"]
             let activityIds = object.activityList?.map { $0.identifier } ?? []
             XCTAssertEqual(activityIds, expectedActivityIds)
-            
-            let expectedTaskIds = ["taskA"]
-            let taskIds = object.tasks?.map { $0.identifier } ?? []
-            XCTAssertEqual(taskIds, expectedTaskIds)
             
         } catch let err {
             XCTFail("Failed to decode/encode object: \(err)")

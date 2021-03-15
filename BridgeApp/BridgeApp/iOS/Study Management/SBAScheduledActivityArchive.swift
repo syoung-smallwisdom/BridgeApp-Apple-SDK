@@ -97,7 +97,7 @@ open class SBAScheduledActivityArchive: SBBDataArchive, RSDDataArchive {
     }
     
     /// Get the archivable object for the given result.
-    open func archivableData(for result: RSDResult, sectionIdentifier: String?, stepPath: String?) -> RSDArchivable? {
+    open func archivableData(for result: ResultData, sectionIdentifier: String?, stepPath: String?) -> RSDArchivable? {
         if self.usesV1LegacySchema, let answerResult = result as? AnswerResultObject {
             return SBAAnswerResultWrapper(sectionIdentifier: sectionIdentifier, result: answerResult)
         }

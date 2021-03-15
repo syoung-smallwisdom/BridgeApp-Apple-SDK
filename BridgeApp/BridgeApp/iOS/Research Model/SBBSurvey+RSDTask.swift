@@ -98,7 +98,10 @@ open class SBASurveyWrapper : RSDTask {
     open var asyncActions: [RSDAsyncActionConfiguration]?
     
     open func instantiateTaskResult() -> RSDTaskResult {
-        return RSDTaskResultObject(identifier: self.identifier, schemaInfo: self.survey)
+        RSDTaskResultObject(identifier: self.identifier,
+                            versionString: self.schemaInfo?.versionString,
+                            assessmentIdentifier: self.identifier,
+                            schemaIdentifier: self.schemaInfo?.schemaIdentifier)
     }
     
     open func validate() throws {
@@ -111,6 +114,12 @@ open class SBASurveyWrapper : RSDTask {
     
     open func shouldHideAction(for actionType: RSDUIActionType, on step: RSDStep) -> Bool? {
         return survey.shouldHideAction(for: actionType, on: step)
+    }
+}
+
+extension RSDSchemaInfo {
+    var versionString : String? {
+        "\(self.schemaVersion)"
     }
 }
 
