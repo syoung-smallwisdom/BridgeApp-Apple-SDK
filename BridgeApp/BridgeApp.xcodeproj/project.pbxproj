@@ -102,8 +102,6 @@
 		FF9D799D230C74D4005CFB37 /* SBACatastrophicErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A5CE4E20A2BBEF00E9FD75 /* SBACatastrophicErrorViewController.swift */; };
 		FF9D799F230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9D799E230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift */; };
 		FF9D79CD230C7A5F005CFB37 /* TimeZone+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9D79CC230C7A5F005CFB37 /* TimeZone+Utilities.swift */; };
-		FF9D79D2230C7DEF005CFB37 /* BridgeSDK_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D79D1230C7DEF005CFB37 /* BridgeSDK_Test.framework */; };
-		FF9D79D4230C7DEF005CFB37 /* Research_UnitTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9D79D3230C7DEF005CFB37 /* Research_UnitTest.framework */; };
 		FFB9B00C2579C1AF00744DE0 /* Bundle+module.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB9B00B2579C1AF00744DE0 /* Bundle+module.swift */; };
 		FFB9B00D2579C1AF00744DE0 /* Bundle+module.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB9B00B2579C1AF00744DE0 /* Bundle+module.swift */; };
 		FFF2968F24EF2C52000E36FB /* TextConstraintWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF2968E24EF2C52000E36FB /* TextConstraintWrapper.swift */; };
@@ -139,13 +137,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = FF9D7964230C71B1005CFB37;
 			remoteInfo = BridgeAppUI;
-		};
-		FF9D7986230C737C005CFB37 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F83B449C2032467D002825AE /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F83B450120324A33002825AE;
-			remoteInfo = BridgeAppExample;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -261,7 +252,6 @@
 		FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BridgeAppUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9D7967230C71B1005CFB37 /* BridgeAppUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeAppUI.h; sourceTree = "<group>"; };
 		FF9D7968230C71B1005CFB37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FF9D7982230C737C005CFB37 /* DataTrackingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataTrackingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9D799E230C7555005CFB37 /* SBBJSONValue+RSDJSONSerializable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SBBJSONValue+RSDJSONSerializable.swift"; sourceTree = "<group>"; };
 		FF9D79CC230C7A5F005CFB37 /* TimeZone+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeZone+Utilities.swift"; sourceTree = "<group>"; };
 		FF9D79CE230C7C30005CFB37 /* BridgeSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BridgeSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -316,15 +306,6 @@
 				FF9D7973230C725D005CFB37 /* ResearchUI.framework in Frameworks */,
 				FF9D7972230C7259005CFB37 /* Research.framework in Frameworks */,
 				FF9D7971230C7249005CFB37 /* BridgeApp.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FF9D797F230C737C005CFB37 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FF9D79D2230C7DEF005CFB37 /* BridgeSDK_Test.framework in Frameworks */,
-				FF9D79D4230C7DEF005CFB37 /* Research_UnitTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,7 +392,6 @@
 				F83B44AE2032467D002825AE /* BridgeAppTests.xctest */,
 				F83B450220324A33002825AE /* BridgeAppExample.app */,
 				FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */,
-				FF9D7982230C737C005CFB37 /* DataTrackingTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -725,24 +705,6 @@
 			productReference = FF9D7965230C71B1005CFB37 /* BridgeAppUI.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		FF9D7981230C737C005CFB37 /* DataTrackingTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = FF9D7994230C737C005CFB37 /* Build configuration list for PBXNativeTarget "DataTrackingTests" */;
-			buildPhases = (
-				FF9D797E230C737C005CFB37 /* Sources */,
-				FF9D797F230C737C005CFB37 /* Frameworks */,
-				FF9D7980230C737C005CFB37 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				FF9D7987230C737C005CFB37 /* PBXTargetDependency */,
-			);
-			name = DataTrackingTests;
-			productName = DataTrackingTests;
-			productReference = FF9D7982230C737C005CFB37 /* DataTrackingTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -787,11 +749,6 @@
 						CreatedOnToolsVersion = 10.3;
 						ProvisioningStyle = Automatic;
 					};
-					FF9D7981230C737C005CFB37 = {
-						CreatedOnToolsVersion = 10.3;
-						ProvisioningStyle = Automatic;
-						TestTargetID = F83B450120324A33002825AE;
-					};
 				};
 			};
 			buildConfigurationList = F83B449F2032467D002825AE /* Build configuration list for PBXProject "BridgeApp" */;
@@ -810,7 +767,6 @@
 				F83B44A42032467D002825AE /* BridgeApp (iOS) */,
 				F83B44AD2032467D002825AE /* BridgeAppTests */,
 				FF9D7964230C71B1005CFB37 /* BridgeAppUI (iOS) */,
-				FF9D7981230C737C005CFB37 /* DataTrackingTests */,
 				F83B450120324A33002825AE /* BridgeAppExample */,
 			);
 		};
@@ -859,13 +815,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF9D799C230C74D4005CFB37 /* CatastrophicError.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FF9D7980230C737C005CFB37 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -955,13 +904,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FF9D797E230C737C005CFB37 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -984,11 +926,6 @@
 			isa = PBXTargetDependency;
 			target = FF9D7964230C71B1005CFB37 /* BridgeAppUI (iOS) */;
 			targetProxy = FF9D796A230C71B1005CFB37 /* PBXContainerItemProxy */;
-		};
-		FF9D7987230C737C005CFB37 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F83B450120324A33002825AE /* BridgeAppExample */;
-			targetProxy = FF9D7986230C737C005CFB37 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1300,47 +1237,6 @@
 			};
 			name = Release;
 		};
-		FF9D7995230C737C005CFB37 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = KA9Z8R6M6K;
-				INFOPLIST_FILE = DataTrackingTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.sagebionetworks.DataTrackingTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "DataTrackingTests/DataTrackingTests-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BridgeAppExample.app/BridgeAppExample";
-			};
-			name = Debug;
-		};
-		FF9D7996230C737C005CFB37 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = KA9Z8R6M6K;
-				INFOPLIST_FILE = DataTrackingTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.sagebionetworks.DataTrackingTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "DataTrackingTests/DataTrackingTests-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BridgeAppExample.app/BridgeAppExample";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1385,15 +1281,6 @@
 			buildConfigurations = (
 				FF9D796E230C71B1005CFB37 /* Debug */,
 				FF9D796F230C71B1005CFB37 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		FF9D7994230C737C005CFB37 /* Build configuration list for PBXNativeTarget "DataTrackingTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				FF9D7995230C737C005CFB37 /* Debug */,
-				FF9D7996230C737C005CFB37 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
