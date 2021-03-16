@@ -34,6 +34,7 @@
 import Foundation
 import BridgeSDK
 import Research
+import JsonModel
 
 
 /// `SBAActivityReference` is used to cast all the activity reference types to a
@@ -111,8 +112,11 @@ extension SBASingleActivityReference {
     }
     
     /// Instantiates a `RSDTaskResultObject`.
-    public func instantiateStepResult() -> RSDResult {
-        return RSDTaskResultObject(identifier: identifier, schemaInfo: schemaInfo)
+    public func instantiateStepResult() -> ResultData {
+        return RSDTaskResultObject(identifier: self.identifier,
+                                   versionString: self.schemaInfo?.versionString,
+                                   assessmentIdentifier: self.identifier,
+                                   schemaIdentifier: self.schemaInfo?.schemaIdentifier)
     }
 }
 
@@ -189,7 +193,7 @@ extension SBBCompoundActivity : SBAActivityReference {
         return .taskInfo
     }
     
-    public func instantiateStepResult() -> RSDResult {
+    public func instantiateStepResult() -> ResultData {
         return RSDTaskResultObject(identifier: identifier)
     }
 }

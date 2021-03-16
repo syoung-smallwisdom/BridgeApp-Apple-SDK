@@ -33,6 +33,7 @@
 
 import Foundation
 import BridgeSDK
+import JsonModel
 import Research
 
 /// `SBASurveyConfiguration` is a survey wrapper that can extend the default implementation
@@ -69,7 +70,7 @@ open class SBASurveyConfiguration {
     /// Allows customization of the result instantiated for a given survey element.
     /// By default, this will return an instance of `RSDResultObject` for an instruction step
     /// and `RSDCollectionResultObject` for a form step.
-    open func instantiateStepResult(for step: SBBSurveyElement) -> RSDResult? {
+    open func instantiateStepResult(for step: SBBSurveyElement) -> ResultData? {
         if let question = step as? SBBSurveyQuestion {
             return AnswerResultObject(identifier: question.identifier,
                                       answerType: question.answerType,

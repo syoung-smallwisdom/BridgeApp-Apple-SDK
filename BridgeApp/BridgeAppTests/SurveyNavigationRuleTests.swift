@@ -32,6 +32,7 @@
 //
 
 import XCTest
+import JsonModel
 import Research
 @testable import BridgeApp
 

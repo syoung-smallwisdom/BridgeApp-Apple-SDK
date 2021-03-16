@@ -224,8 +224,8 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     
     func testBuildReports_CompoundTask() {
         let taskPath = runCompoundTask()
-        let topResult = taskPath.taskResult as! RSDTaskRunResult
-        guard let reports = self.scheduleManager.buildReports(from: taskPath.taskResult)
+        guard let topResult = taskPath.taskResult as? AssessmentResult,
+            let reports = self.scheduleManager.buildReports(from: taskPath.taskResult)
             else {
                 XCTFail("Failed to build the reports for this task result")
                 return
@@ -295,7 +295,10 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         XCTAssertEqual(reports.count, 3)
         
-        let topResult = taskPath.taskResult as! RSDTaskRunResult
+        guard let topResult = taskPath.taskResult as? AssessmentResult else {
+            XCTFail("\(taskPath.taskResult) not of expected type")
+            return
+        }
         
         if let report = reports.first(where: { $0.reportKey == mainTaskSchemaIdentifier }) {
             XCTAssertEqual(report.date, mainResult?.endDate)
@@ -362,7 +365,10 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
         
         XCTAssertEqual(reports.count, 1)
         
-        let topResult = taskPath.taskResult as! RSDTaskRunResult
+        guard let topResult = taskPath.taskResult as? AssessmentResult else {
+            XCTFail("Top result not of expected type")
+            return
+        }
         
         if let report = reports.first(where: { $0.reportKey == mainTaskSchemaIdentifier }) {
             if let dictionary = report.clientData as? NSDictionary {
@@ -723,14 +729,14 @@ class ScheduleArchivingTests: SBAScheduleManagerTests {
     }
 }
 
-struct TestClientDataResult : RSDScoringResult {
+struct TestClientDataResult : SerializableResultData, RSDScoringResult {
     private enum CodingKeys: String, CodingKey {
-        case identifier, type, startDate, endDate
+        case identifier, serializableType = "type", startDate, endDate
     }
     
     let identifier: String
     
-    let type: RSDResultType = RSDResultType(rawValue: "testClientData")
+    let serializableType: SerializableResultType = SerializableResultType(rawValue: "testClientData")
     var startDate: Date = Date()
     var endDate: Date = Date()
     
@@ -741,6 +747,10 @@ struct TestClientDataResult : RSDScoringResult {
     func buildArchiveData(at stepPath: String?) throws -> (manifest: RSDFileManifest, data: Data)? {
         // archive isn't tested using this mock.
         fatalError("Archiving is not implemented for this test object")
+    }
+    
+    func deepCopy() -> TestClientDataResult {
+        self
     }
 }
 
@@ -758,7 +768,7 @@ class TestTracker : RSDTrackingTask {
         setupTask_data = data
     }
     
-    func shouldSkipStep(_ step: RSDStep) -> (shouldSkip: Bool, stepResult: RSDResult?) {
+    func shouldSkipStep(_ step: RSDStep) -> (shouldSkip: Bool, stepResult: ResultData?) {
         return (false, nil)
     }
 }

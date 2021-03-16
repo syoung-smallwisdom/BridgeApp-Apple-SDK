@@ -106,7 +106,7 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
         
         // Look for a schema info associated with this portion of the task result. If not found, then
         // return the current archive.
-        let schema = (taskResult as? RSDTaskRunResult)?.schemaInfo ?? self.schemaInfo(for: taskResult.identifier)
+        let schema = (taskResult as? AssessmentResult)?.schemaInfo ?? self.schemaInfo(for: taskResult.identifier)
         guard (currentArchive == nil) || (schema != nil) else {
             return currentArchive
         }
@@ -212,4 +212,15 @@ open class SBAArchiveManager : NSObject, RSDDataArchiveManager {
         }
     }
     #endif
+}
+
+extension AssessmentResult {
+    var schemaInfo: RSDSchemaInfoObject? {
+        guard let schemaIdentifier = self.schemaIdentifier,
+              let version = self.versionString,
+              let revision = Int(version) else {
+            return nil
+        }
+        return RSDSchemaInfoObject(identifier: schemaIdentifier, revision: revision)
+    }
 }

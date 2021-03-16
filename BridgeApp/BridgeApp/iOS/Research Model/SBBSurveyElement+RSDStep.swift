@@ -89,7 +89,7 @@ extension SBBSurveyElement : RSDUIStep {
         SBASurveyConfiguration.shared.stepType(for: self)
     }
     
-    public func instantiateStepResult() -> RSDResult {
+    public func instantiateStepResult() -> ResultData {
         SBASurveyConfiguration.shared.instantiateStepResult(for: self) ?? RSDResultObject(identifier: self.identifier)
     }
     
