@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/Sage-Bionetworks/JsonModel-Swift.git",
         "state": {
           "branch": null,
-          "revision": "9237442bd2ea208554e01041feaa2d4a065d61a4",
-          "version": "1.0.2"
+          "revision": "f6a06486d32cadec6db7d66d492968fbc8090de6",
+          "version": "1.2.0"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/Sage-Bionetworks/SageResearch.git",
         "state": {
           "branch": null,
-          "revision": "e44433ff79ca5f9140b6457e4f043115c93ff52a",
-          "version": "3.16.5"
+          "revision": "ee12b563ec839d1420afbac049a07ba269259d80",
+          "version": "4.0.1"
         }
       }
     ]

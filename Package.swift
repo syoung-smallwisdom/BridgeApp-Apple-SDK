@@ -18,17 +18,13 @@ let package = Package(
         .library(
             name: "BridgeAppUI",
             targets: ["BridgeAppUI"]),
-        .library(
-            name: "DataTracking",
-            targets: ["DataTracking"]),
-
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(
             name: "SageResearch",
             url: "https://github.com/Sage-Bionetworks/SageResearch.git",
-            from: "3.14.0"),
+            "4.0.0"..<"4.1.0"),
         .package(
             name: "BridgeSDK",
             url: "https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git",
@@ -36,7 +32,7 @@ let package = Package(
         .package(
             name: "JsonModel",
             url: "https://github.com/Sage-Bionetworks/JsonModel-Swift.git",
-            from: "1.0.2"),
+            from: "1.2.0"),
     ],
     targets: [
 
@@ -67,22 +63,5 @@ let package = Package(
                 .process("Resources"),
             ]
             ),
-        
-        .target(
-            name: "DataTracking",
-            dependencies: [
-                .product(name: "Research", package: "SageResearch"),
-                .product(name: "ResearchUI", package: "SageResearch"),
-                "BridgeApp",
-                "BridgeAppUI",
-                "BridgeSDK",
-                "JsonModel",
-            ],
-            path: "BridgeApp/DataTracking/iOS",
-            resources: [
-                .process("Resources"),
-            ]
-            ),
-        
     ]
 )
