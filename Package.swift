@@ -24,7 +24,7 @@ let package = Package(
         .package(
             name: "SageResearch",
             url: "https://github.com/Sage-Bionetworks/SageResearch.git",
-            "4.0.0"..<"4.1.0"),
+            from: "4.1.0"),
         .package(
             name: "BridgeSDK",
             url: "https://github.com/Sage-Bionetworks/Bridge-iOS-SDK.git",
