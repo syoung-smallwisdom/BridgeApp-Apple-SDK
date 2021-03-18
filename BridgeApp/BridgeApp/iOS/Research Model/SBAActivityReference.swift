@@ -35,6 +35,7 @@ import Foundation
 import BridgeSDK
 import Research
 import JsonModel
+import MobilePassiveData
 
 
 /// `SBAActivityReference` is used to cast all the activity reference types to a
@@ -270,7 +271,7 @@ extension SBBCompoundActivity : RSDTask {
         return nil
     }
     
-    public var asyncActions: [RSDAsyncActionConfiguration]? {
+    public var asyncActions: [AsyncActionConfiguration]? {
         return nil
     }
     

@@ -31,8 +31,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-import JsonModel
 import XCTest
+import JsonModel
+import MobilePassiveData
 @testable import BridgeApp
 @testable import Research
 
@@ -1137,11 +1138,12 @@ struct TestResult : SerializableResultData {
     }
 }
 
-struct TestAsyncActionConfiguration : RSDAsyncActionConfiguration {
-    var permissionTypes: [RSDPermissionType] = []
+struct TestAsyncActionConfiguration : AsyncActionConfiguration {
+    var typeName: String  = "test"
+    var permissionTypes: [PermissionType] = []
     var identifier: String = "foo"
     var startStepIdentifier: String?
-    var permissions: [RSDPermissionType] = []
+    var permissions: [PermissionType] = []
     func validate() throws {
     }
     init() {
