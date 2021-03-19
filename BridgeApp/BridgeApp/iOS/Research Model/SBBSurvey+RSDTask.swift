@@ -34,6 +34,7 @@
 import Foundation
 import BridgeSDK
 import Research
+import MobilePassiveData
 
 open class SBASurveyLoader: RSDTaskTransformer {
 
@@ -95,7 +96,7 @@ open class SBASurveyWrapper : RSDTask {
         return self.survey
     }
     
-    open var asyncActions: [RSDAsyncActionConfiguration]?
+    open var asyncActions: [AsyncActionConfiguration]?
     
     open func instantiateTaskResult() -> RSDTaskResult {
         RSDTaskResultObject(identifier: self.identifier,
