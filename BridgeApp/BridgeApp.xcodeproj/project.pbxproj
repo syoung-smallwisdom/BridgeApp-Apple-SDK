@@ -79,8 +79,6 @@
 		FF4A22D724F9FFBF00944009 /* BridgeSDK_Test.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A22D524F9FFBF00944009 /* BridgeSDK_Test.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FF4A68E2257AE0D30087E188 /* BridgeSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A68E1257AE0D30087E188 /* BridgeSDK.framework */; };
 		FF4A68E3257AE0D30087E188 /* BridgeSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A68E1257AE0D30087E188 /* BridgeSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		FF4A68E8257AE0E60087E188 /* ExceptionHandler.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A68E4257AE0E60087E188 /* ExceptionHandler.framework */; };
-		FF4A68E9257AE0E60087E188 /* ExceptionHandler.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A68E4257AE0E60087E188 /* ExceptionHandler.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FF4A68EA257AE0E60087E188 /* Formatters.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A68E5257AE0E60087E188 /* Formatters.framework */; };
 		FF4A68EB257AE0E60087E188 /* Formatters.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A68E5257AE0E60087E188 /* Formatters.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FF4A68EC257AE0E60087E188 /* Research.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF4A68E6257AE0E60087E188 /* Research.framework */; };
@@ -152,7 +150,6 @@
 				F825BA56207FD0C500D29F60 /* BridgeApp.framework in Embed Frameworks */,
 				FF4A68ED257AE0E60087E188 /* Research.framework in Embed Frameworks */,
 				FF4A68EB257AE0E60087E188 /* Formatters.framework in Embed Frameworks */,
-				FF4A68E9257AE0E60087E188 /* ExceptionHandler.framework in Embed Frameworks */,
 				FF4A22D724F9FFBF00944009 /* BridgeSDK_Test.framework in Embed Frameworks */,
 				FF9D796D230C71B1005CFB37 /* BridgeAppUI.framework in Embed Frameworks */,
 			);
@@ -292,7 +289,6 @@
 				F825BA55207FD0C500D29F60 /* BridgeApp.framework in Frameworks */,
 				FF4A68EC257AE0E60087E188 /* Research.framework in Frameworks */,
 				FF4A68EA257AE0E60087E188 /* Formatters.framework in Frameworks */,
-				FF4A68E8257AE0E60087E188 /* ExceptionHandler.framework in Frameworks */,
 				FF4A22D624F9FFBF00944009 /* BridgeSDK_Test.framework in Frameworks */,
 				FF9D796C230C71B1005CFB37 /* BridgeAppUI.framework in Frameworks */,
 			);
